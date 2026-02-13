@@ -1,0 +1,17 @@
+Sample Text Document
+
+This is a plain text document for testing document processing capabilities.
+It contains multiple paragraphs without any special formatting or metadata.
+
+The document processor should handle various file formats including plain text,
+markdown, and PDF files. Each format requires different extraction methods.
+
+Text files are the simplest format - just read the content directly.
+Markdown files may have frontmatter metadata that should be extracted.
+PDF files require special libraries like pdfplumber or pymupdf.
+
+This document can be used to test:
+- Plain text ingestion
+- Chunking without markdown headers
+- Basic search functionality
+- Entity extraction from unstructured text
