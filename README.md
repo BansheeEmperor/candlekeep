@@ -87,17 +87,16 @@ Set `CANDLEKEEP_SPICE` to `"true"` for the wizard sage persona, or omit for prof
 
 ## MCP Tools
 
-### Read-Only (always available)
 - **search** — Semantic search with adaptive routing (`simple` ~23ms, `precise` ~1550ms)
 - **list_documents** — List all indexed tomes
 - **get_stats** — Library statistics
 - **critique_document** — Check document quality before ingestion
 - **generate_documentation** — Scan a project and create structured docs
-
-### Write (local database only)
 - **ingest** — Add documents with automatic quality validation
 - **delete_document** — Remove a tome from the index
 - **repopulate_database** — Clear and rebuild the library
+
+Access to write tools is managed by your database permissions (configured via `CHROMA_AUTH_TOKEN`).
 
 ## Testing
 
