@@ -347,3 +347,23 @@ It just needed someone to ask.
 ---
 
 From the Chronicles of Candlekeep, Volume I > Transcribed by Ran Algawi and his tireless AI Familiar
+
+---
+
+## Apothecary's Appendix
+
+For those who seek the science behind the sorcery, here is the mapping of the library's "spells" to their technical implementations:
+
+| Spell | Technical Implementation | File Path |
+| :--- | :--- | :--- |
+| **Bardic Knowledge** | Ingestion-time document context prefixing | `src/candlekeep/rag/processor.py` |
+| **Arcane Recall** | Post-retrieval chunk expansion (±2) | `src/candlekeep/rag/arcane_recall.py` |
+| **Divine Insight** | Cross-encoder reranking | `src/candlekeep/rag/reranker.py` |
+| **The Relevance Ward** | Score-based result filtering (threshold 0.65) | `src/candlekeep/rag/router.py` |
+| **Mirror Image** | Query expansion variations (Research only) | `tests/test_mirror_image.py` |
+| **Flurry of Blows** | Query decomposition into sub-questions | `tests/test_flurry_of_blows.py` |
+| **Illusory Script** | Hypothetical Document Embeddings (HyDE) | `tests/test_illusory_script.py` |
+| **Wild Magic Surge** | Hybrid Search (Vector + Keyword - Deleted) | `docs/RESEARCH_DIARY.md` (Entry 3) |
+| **The Scrying Window** | Sentence Window Retrieval (Deleted) | `docs/RESEARCH_DIARY.md` (Entry 4) |
+| **Embedding Protection** | Model mismatch detection on connection | `src/candlekeep/database/vector_store.py` |
+| **Search Router** | Adaptive routing between search paths | `src/candlekeep/rag/router.py` |
