@@ -77,6 +77,44 @@ Candlekeep is a RAG (Retrieval-Augmented Generation) knowledge base server that 
 └─────────────────────────────────────────────────────────┘
 ```
 
+## The Two Roads
+
+Candlekeep provides two distinct search paths through the library, allowing the agent to choose between speed and depth.
+
+```
+            [ INPUT QUERY ]
+                   │
+         ┌─────────▼─────────┐
+         │ Negation Removal  │
+         └─────────┬─────────┘
+                   │
+         ┌─────────▼─────────┐
+         │   Vector Search   │
+         │  (Bi-Encoder)     │
+         └─────────┬─────────┘
+                   │
+         ┌─────────▼─────────┐
+         │   Arcane Recall   │
+         │ (Chunk Expansion) │
+         └─────────┬─────────┘
+                   │
+         SEARCH ROUTER DECISION
+         ┌─────────┴─────────┐
+         │                   │
+  [ ROAD 1: SIMPLE ]  [ ROAD 2: PRECISE ]
+  (Latency: ~23ms)    (Latency: ~1550ms)
+         │                   │
+  ┌──────▼──────┐     ┌──────▼──────┐
+  │  Relevance  │     │   Divine    │
+  │    Ward     │     │   Insight   │
+  │ (Filtering) │     │ (Reranking) │
+  └──────┬──────┘     └──────┬──────┘
+         │                   │
+         └─────────┬─────────┘
+                   ▼
+            [ FINAL RESULTS ]
+```
+
 ## Search Pipeline
 
 ### 1. Negation Preprocessing
