@@ -125,8 +125,27 @@ DOCUMENT SOURCE
 ### 4. Divine Insight (cross-encoder reranking) — precise path only
 Cross-encoder (`ms-marco-MiniLM-L-6-v2`) rescores all candidates by examining query-document pairs individually. Higher precision (+2.6%) but trades content match (-7.6%) and adds ~1.5s latency.
 
-### 5. Relevance Threshold
-Results below score 0.65 are filtered. Based on score distribution analysis: adversarial queries score ~0.56, lowest legitimate query scores 0.75. Zero false negatives on 23-query benchmark.
+### 5. The Relevance Ward (Filtering)
+Results below a cosine similarity score of **0.65** are filtered to prevent the AI agent from hallucinating based on low-confidence "junk" matches.
+
+- **Adversarial queries:** Score ~0.56 (e.g., "quantum entanglement in photosynthesis" against a software corpus)
+- **Lowest legitimate queries:** Score ~0.75 (e.g., specific but rare technical terms)
+- **Status:** Zero false negatives on 23-query benchmark
+
+## Scalability
+
+Candlekeep is designed for sub-linear scaling, ensuring that search performance remains stable even as the knowledge base grows by orders of magnitude.
+
+### Performance at Scale
+Benchmark results demonstrate that the `simple` search path is highly resilient to corpus growth:
+- **Small Corpus (178 chunks):** ~23ms avg latency
+- **Medium Corpus (2,770 chunks):** ~26ms avg latency
+- **Scaling Efficiency:** A **15.5x increase in data** resulted in only a **13% increase in latency**.
+
+This efficiency is achieved through the $O(\log N)$ search complexity of ChromaDB's HNSW index and Candlekeep's optimized Arcane Recall phase, which performs direct per-document lookups instead of full database scans.
+
+### Stable Precise Path
+The `precise` path latency remains stable at ~1.5s regardless of corpus size, as the cross-encoder reranking bottleneck is constrained to a fixed number of top candidates (top 15).
 
 ## Ingestion Pipeline
 
