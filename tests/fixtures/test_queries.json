@@ -1,0 +1,34 @@
+{
+  "queries": [
+    {
+      "query": "vector database concepts",
+      "expected_doc": "vector-databases.md",
+      "category": "database",
+      "description": "Basic query about vector databases"
+    },
+    {
+      "query": "how to chunk documents",
+      "expected_doc": "document-processing.md",
+      "category": "processing",
+      "description": "Query about document processing"
+    },
+    {
+      "query": "semantic search ranking",
+      "expected_doc": "semantic-search.md",
+      "category": "search",
+      "description": "Query about search techniques"
+    },
+    {
+      "query": "embeddings similarity",
+      "expected_doc": "vector-databases.md",
+      "category": "database",
+      "description": "Query about embeddings"
+    },
+    {
+      "query": "query preprocessing without negation",
+      "expected_doc": "semantic-search.md",
+      "category": "search",
+      "description": "Negation query (should be preprocessed)"
+    }
+  ]
+}
