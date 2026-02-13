@@ -120,12 +120,6 @@ def _check_ready() -> str | None:
     return None
 
 
-def _require_write_access() -> str | None:
-    if not _write_access:
-        return "❌ Write access denied. Server running in read-only mode."
-    return None
-
-
 # ============================================================
 # READ-ONLY TOOLS (always registered)
 # ============================================================
@@ -303,109 +297,84 @@ Each document must have frontmatter and section headers for proper chunking."""
 
 
 # ============================================================
-# WRITE TOOLS (only registered for local database)
+# WRITE TOOLS
 # ============================================================
 
-def _is_local_db() -> bool:
-    return _settings.chroma_host in ("localhost", "127.0.0.1")
+@mcp.tool
+def ingest(path: str) -> str:
+    """Ingest a file or directory into the knowledge base.
 
+    Validates document quality before ingestion. Documents must have:
+    - YAML frontmatter (title, description, keywords)
+    - At least 2 markdown headers
+    - Between 100 and 10,000 words
 
-def _allow_writes() -> bool:
-    """Allow write tools for local DB, or remote with explicit opt-in."""
-    if _is_local_db():
-        return True
-    import os
-    return os.getenv("CANDLEKEEP_REMOTE_WRITE", "false").lower() == "true"
+    Supports: txt, md, pdf, rst, json, yaml files.
+    """
+    if msg := _check_ready():
+        return msg
 
+    try:
+        p = Path(path)
+        if not p.exists():
+            return f"Error: Path not found: {path}"
 
-def _register_write_tools():
-    """Register write tools only for local database connections."""
+        # Quality gate for individual files
+        if p.is_file() and p.suffix in (".md", ".txt", ".rst"):
+            issues = check_document_quality(p)
+            if issues:
+                msg = f"❌ Document rejected — {len(issues)} quality issue(s):\n"
+                msg += "\n".join(f"  - {i}" for i in issues)
+                msg += "\n\nFix these issues or use critique_document() to review first."
+                return msg
 
-    @mcp.tool
-    def ingest(path: str) -> str:
-        """Ingest a file or directory into the knowledge base.
+        if p.is_file():
+            chunks = get_processor().process(p)
+        else:
+            chunks = get_processor().process_directory(p)
 
-        Validates document quality before ingestion. Documents must have:
-        - YAML frontmatter (title, description, keywords)
-        - At least 2 markdown headers
-        - Between 100 and 10,000 words
+        if not chunks:
+            return "No content found to ingest."
 
-        Supports: txt, md, pdf, rst, json, yaml files.
-        """
-        if msg := _require_write_access():
-            return msg
+        count = get_store().add_documents(chunks, collection="default")
+        return f"✓ Ingested {count} chunks from {path}"
+    except chromadb.errors.AuthorizationError as e:
+        return f"❌ Write permission denied: {e}"
+    except Exception as e:
+        return f"❌ Error: {e}"
 
-        try:
-            p = Path(path)
-            if not p.exists():
-                return f"Error: Path not found: {path}"
+@mcp.tool
+def delete_document(source: str) -> str:
+    """Delete all chunks from a source file."""
+    if msg := _check_ready():
+        return msg
 
-            # Quality gate for individual files
-            if p.is_file() and p.suffix in (".md", ".txt", ".rst"):
-                issues = check_document_quality(p)
-                if issues:
-                    msg = f"❌ Document rejected — {len(issues)} quality issue(s):\n"
-                    msg += "\n".join(f"  - {i}" for i in issues)
-                    msg += "\n\nFix these issues or use critique_document() to review first."
-                    return msg
+    try:
+        count = get_store().delete_by_source(source)
+        if count:
+            return f"✓ Deleted {count} chunks from {source}"
+        return f"No chunks found for {source}"
+    except chromadb.errors.AuthorizationError as e:
+        return f"❌ Write permission denied: {e}"
+    except Exception as e:
+        return f"❌ Error: {e}"
 
-            if p.is_file():
-                chunks = get_processor().process(p)
-            else:
-                chunks = get_processor().process_directory(p)
+@mcp.tool
+def repopulate_database() -> str:
+    """Clear and rebuild the entire database.
 
-            if not chunks:
-                return "No content found to ingest."
+    WARNING: This deletes all existing data.
+    """
+    if msg := _check_ready():
+        return msg
 
-            count = get_store().add_documents(chunks, collection="default")
-            return f"✓ Ingested {count} chunks from {path}"
-        except chromadb.errors.AuthorizationError as e:
-            return f"❌ Write permission denied: {e}"
-        except Exception as e:
-            return f"❌ Error: {e}"
-
-    @mcp.tool
-    def delete_document(source: str) -> str:
-        """Delete all chunks from a source file."""
-        if msg := _require_write_access():
-            return msg
-
-        try:
-            count = get_store().delete_by_source(source)
-            if count:
-                return f"✓ Deleted {count} chunks from {source}"
-            return f"No chunks found for {source}"
-        except chromadb.errors.AuthorizationError as e:
-            return f"❌ Write permission denied: {e}"
-        except Exception as e:
-            return f"❌ Error: {e}"
-
-    @mcp.tool
-    def repopulate_database() -> str:
-        """Clear and rebuild the entire database.
-
-        WARNING: This deletes all existing data.
-        """
-        if msg := _require_write_access():
-            return msg
-
-        try:
-            get_store().clear()
-            return "✓ Database cleared. Use ingest() to add documents."
-        except chromadb.errors.AuthorizationError as e:
-            return f"❌ Write permission denied: {e}"
-        except Exception as e:
-            return f"❌ Error: {e}"
-
-
-if _allow_writes():
-    _register_write_tools()
-    if _is_local_db():
-        print("[candlekeep] ✓ Local DB — write tools enabled", file=sys.stderr)
-    else:
-        print("[candlekeep] ✓ Remote DB — write tools enabled (CANDLEKEEP_REMOTE_WRITE=true)", file=sys.stderr)
-else:
-    print("[candlekeep] ⚠ Remote DB — read-only tools only", file=sys.stderr)
+    try:
+        get_store().clear()
+        return "✓ Database cleared. Use ingest() to add documents."
+    except chromadb.errors.AuthorizationError as e:
+        return f"❌ Write permission denied: {e}"
+    except Exception as e:
+        return f"❌ Error: {e}"
 
 
 def main():

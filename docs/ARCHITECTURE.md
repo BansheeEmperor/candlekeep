@@ -19,7 +19,7 @@ Candlekeep is a RAG (Retrieval-Augmented Generation) knowledge base server that 
 │                  Candlekeep MCP Server                   │
 │                                                          │
 │  ┌──────────────────────────────────────────────────┐   │
-│  │  Read Tools (always)    Write Tools (local/opt-in)│  │
+│  │  Read Tools              Write Tools             │  │
 │  │  • search              • ingest (+ quality gate)  │  │
 │  │  • list_documents      • delete_document          │  │
 │  │  • get_stats           • repopulate_database      │  │
@@ -124,15 +124,12 @@ This is an ingestion-time technique — the context is baked into the stored emb
 
 ## Tool Registration
 
-Tools are conditionally registered based on database location:
+All 8 tools (5 read-only, 3 write) are registered at startup. Database permissions (e.g., Bearer tokens for ChromaDB) determine whether write operations succeed.
 
-| Condition | Read Tools | Write Tools |
-|-----------|-----------|-------------|
-| Local DB (localhost) | ✓ 5 tools | ✓ 3 tools |
-| Remote DB | ✓ 5 tools | ✗ hidden |
-| Remote DB + CANDLEKEEP_REMOTE_WRITE=true | ✓ 5 tools | ✓ 3 tools |
-
-Write tools are never visible to the agent on remote DB unless explicitly opted in. Runtime write access check (`_require_write_access`) provides a second safety layer.
+| Category | Tools |
+|-----------|-----------|
+| Read Tools | search, list_documents, get_stats, critique_document, generate_documentation |
+| Write Tools | ingest, delete_document, repopulate_database |
 
 ## Embedding Model Protection
 
