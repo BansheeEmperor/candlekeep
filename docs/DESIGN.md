@@ -111,7 +111,31 @@ If a remote ChromaDB was populated with model A and the local config says model 
 | Embedding model | minilm, bge-small, nomic | bge-small | Best content (87.3%), good speed (23ms) |
 | Relevance threshold | 0.5–0.75 range | 0.65 | Clean gap between adversarial (0.56) and legitimate (0.75) |
 
-## 6. Threat Model
+## 6. Scalability
+
+### 6.1 Sub-linear Scaling
+
+The simple search path maintains consistent performance as the knowledge base grows. Testing with a 15.5x increase in data (178 → 2770 chunks) showed only a 13% latency increase (23ms → 26ms).
+
+**Why it scales:**
+- Per-document chunk lookup for Arcane Recall expansion (doesn't scan full DB)
+- Vector search complexity grows logarithmically with HNSW index
+- No full-text search or sequential scans in the critical path
+
+**Implication:** Users can grow their documentation from dozens to thousands of documents without degrading search performance.
+
+### 6.2 The Relevance Ward
+
+A minimum relevance threshold of **0.65** filters low-confidence results. This prevents the agent from receiving irrelevant matches that could lead to hallucinated answers.
+
+**Threshold validation:**
+- Legitimate queries score 0.75–1.22
+- Adversarial queries (e.g., "quantum entanglement in photosynthesis" against software docs) score ~0.56
+- Clean separation with zero false negatives in benchmark testing
+
+**Behavior:** Queries below threshold return empty results. The library says "I don't know" instead of guessing.
+
+## 7. Threat Model
 
 | Threat | Mitigation |
 |--------|-----------|
@@ -122,14 +146,14 @@ If a remote ChromaDB was populated with model A and the local config says model 
 | Model download at startup | Exit immediately if model not cached locally |
 | Write to remote DB accidentally | Write tools hidden unless explicitly opted in |
 
-## 7. Limitations
+## 8. Limitations
 
 - **Single embedding model per collection** — Switching models requires full re-ingestion
 - **Cross-encoder latency** — Precise path is 65x slower than simple; only for high-value queries
 - **No incremental ingestion** — Re-ingesting a file replaces all its chunks (by design, prevents duplicates)
 - **Agent-dependent decomposition** — Multi-doc query quality depends on the agent splitting queries correctly
 
-## 8. Future Work
+## 9. Future Work
 
 - HTTPS with ACM certificate when a domain is available
 - Faster cross-encoder or distilled reranking model
