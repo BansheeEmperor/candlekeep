@@ -25,20 +25,20 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 
 | Metric | Simple Path | Hybrid Path (Wild Magic) | Precise Path |
 |--------|------------:|-------------------------:|-------------:|
-| **Overall MRR** | 0.4864 | **0.5420** (+11%) | 0.5210 |
-| **nDCG@5** | 0.4920 | **0.5481** (+11%) | 0.5350 |
-| **Hit Rate@5** | 0.7130 | 0.5648 * | 0.6820 |
-| **Avg Latency** | **14.2ms** | 25.9ms | 1550ms |
+| **Overall MRR** | 0.5054 | **0.5424** (+7%) | 0.5046 |
+| **nDCG@5** | 0.5117 | **0.5511** (+8%) | 0.5058 |
+| **Hit Rate@5** | 0.6296 | 0.5741 | 0.6019 |
+| **Avg Latency** | **437ms** | 704ms | 1144ms |
 
-*\* Note: Hybrid path currently lacks the Relevance Ward, allowing adversarial noise to pass, which lowers its overall hit rate while significantly improving technical accuracy.*
+*\* Note: Latency includes Arcane Recall's similarity-weighted pruning (~400ms), which reduces downstream LLM costs by 22%.*
 
 ### Domain Performance (MRR / nDCG)
 
 | Category | Simple (Vector) | Hybrid (BM25+Vector) | Note |
 |----------|-----------------|----------------------|------|
-| **Lexical** (Identifiers) | 0.37 / 0.38 | **0.55 / 0.57 (+47%)** | Fixing "Keyword Blindness" |
-| **Semantic** (Concepts) | 0.86 / 0.86 | **0.87 / 0.87 (+1%)** | Stable semantic depth |
-| **Adversarial** (Noise) | 0.76 (Block Rate) | 0.00 (Block Rate) | To be warded in Workstream III |
+| **Lexical** (Identifiers) | 0.42 / 0.44 | **0.53 / 0.55 (+26%)** | Fixing "Keyword Blindness" |
+| **Semantic** (Concepts) | 0.87 / 0.87 | **0.89 / 0.90 (+2%)** | Stable semantic depth |
+| **Adversarial** (Noise) | 1.00 (Block Rate) | 1.00 (Block Rate) | Fully warded |
 
 ---
 
