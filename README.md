@@ -40,7 +40,7 @@ A RAG knowledge base server that gives AI agents the power to search, retrieve, 
 
 ## Features
 
-- **Adaptive Search**: Two paths — `simple` (~23ms) and `precise` (~1550ms)
+- **Adaptive Search**: Two paths — `simple` (22–36ms, typically ~26ms) and `precise` (~1550ms)
 - **Quality Gate**: Documents must have frontmatter and structure to enter the library
 - **Embedding Protection**: Auto-detects model mismatch on remote databases
 - **8 MCP Tools**: Search, ingest, critique, generate docs, and more
@@ -87,7 +87,7 @@ Set `CANDLEKEEP_SPICE` to `"true"` for the wizard sage persona, or omit for prof
 
 ## MCP Tools
 
-- **search** — Semantic search with adaptive routing (`simple` ~23ms, `precise` ~1550ms)
+- **search** — Semantic search with adaptive routing (`simple` 22–36ms, `precise` ~1550ms)
 - **list_documents** — List all indexed tomes
 - **get_stats** — Library statistics
 - **critique_document** — Check document quality before ingestion
