@@ -35,8 +35,10 @@ def search_with_routing(
 
     if query_type == "precise":
         from candlekeep.rag.reranker import rerank_results
+        device = getattr(db, 'settings', None)
+        device = device.device if device else "cpu"
         results = search_with_arcane_recall(db, processed, n_results * 3)
-        results = rerank_results(processed, results, top_k=n_results)
+        results = rerank_results(processed, results, top_k=n_results, device=device)
     else:
         results = search_with_arcane_recall(db, processed, n_results)
         # Filter below relevance threshold (skip for precise — cross-encoder uses different scale)

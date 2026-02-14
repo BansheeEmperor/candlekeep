@@ -39,6 +39,7 @@ class EmbeddingManager:
             cache_folder=str(cache_dir),
             trust_remote_code=trust_remote_code,
             local_files_only=True,
+            device=self.settings.device,
         )
         self._current_model = model_id
         return self._model

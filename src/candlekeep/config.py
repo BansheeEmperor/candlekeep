@@ -6,12 +6,23 @@ from typing import Literal
 from urllib.parse import urlparse
 
 EmbeddingModel = Literal["minilm", "bge-small", "nomic"]
+DeviceType = Literal["auto", "cpu", "mps", "cuda"]
 
 EMBEDDING_MODELS = {
     "minilm": "sentence-transformers/all-MiniLM-L6-v2",
     "bge-small": "BAAI/bge-small-en-v1.5",
     "nomic": "nomic-ai/nomic-embed-text-v1.5",
 }
+
+
+def detect_device() -> str:
+    """Detect best available compute device."""
+    import torch
+    if torch.cuda.is_available():
+        return "cuda"
+    if torch.backends.mps.is_available():
+        return "mps"
+    return "cpu"
 
 
 def load_dotenv(env_file: Path | None = None) -> None:
@@ -60,6 +71,9 @@ class Settings:
     # Embedding settings
     embedding_model: EmbeddingModel = field(default_factory=lambda: os.getenv("CANDLEKEEP_EMBEDDING", "bge-small"))
     
+    # Inference device
+    device: str = field(default_factory=lambda: os.getenv("CANDLEKEEP_DEVICE", "auto"))
+    
     # Document processing
     chunk_size: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_CHUNK_SIZE", "512")))
     chunk_overlap: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_CHUNK_OVERLAP", "50")))
@@ -71,6 +85,8 @@ class Settings:
     data_dir: Path = field(default_factory=get_data_dir)
 
     def __post_init__(self):
+        if self.device == "auto":
+            self.device = detect_device()
         self.data_dir = Path(self.data_dir)
         self.data_dir.mkdir(parents=True, exist_ok=True)
         (self.data_dir / "models").mkdir(exist_ok=True)
