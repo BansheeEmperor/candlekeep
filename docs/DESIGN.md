@@ -35,6 +35,35 @@ Chunk expansion (returning ±2 adjacent chunks around each match) improved conte
 
 **Decision:** Every search path uses Arcane Recall. Optimized with per-document chunk lookup instead of full DB scan (49% latency reduction).
 
+```
+Without Arcane Recall (fragmented):
+┌─────────────────────────────────────────┐
+│ Document: "Authentication Guide"       │
+├─────────────────────────────────────────┤
+│ Chunk 0: Introduction...                │
+│ Chunk 1: Prerequisites...               │
+│ Chunk 2: Token generation requires...   │ ← Match (returned alone)
+│ Chunk 3: Store tokens in environment... │
+│ Chunk 4: Example usage...               │
+└─────────────────────────────────────────┘
+         ↓
+   Agent receives incomplete context
+
+
+With Arcane Recall (±2 expansion):
+┌─────────────────────────────────────────┐
+│ Document: "Authentication Guide"       │
+├─────────────────────────────────────────┤
+│ Chunk 0: Introduction...                │ ← Included (context)
+│ Chunk 1: Prerequisites...               │ ← Included (context)
+│ Chunk 2: Token generation requires...   │ ← Match (original result)
+│ Chunk 3: Store tokens in environment... │ ← Included (context)
+│ Chunk 4: Example usage...               │ ← Included (context)
+└─────────────────────────────────────────┘
+         ↓
+   Agent receives full section with setup + usage
+```
+
 ### 3.4 Bardic Knowledge at Ingestion Time
 
 Prepending document title and description to each chunk before embedding improved precision by +14%. This is an ingestion-time technique — the context is baked into the stored vectors. It cannot be toggled at query time.
