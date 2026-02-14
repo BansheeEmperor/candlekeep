@@ -155,6 +155,7 @@ If a remote ChromaDB was populated with model A and the local config says model 
 | Technique | Result | Status |
 |-----------|--------|--------|
 | Bardic Knowledge (contextual embeddings) | +14% precision | ✅ Default |
+| Bardic Inspiration (metadata boosting) | +10x confidence gap | ✅ Default |
 | Arcane Recall (Scholar's Discernment) | +17% content, -22% tokens | ✅ Default |
 | Divine Insight (cross-encoder reranking) | +2.6% precision, +1.5s | ✅ Precise path |
 | Flurry of Blows (LLM query decomposition) | 100% precision, +1.1s | ❌ Agent does this better |
