@@ -269,6 +269,15 @@ class ChromaVectorStore(VectorDatabase):
             for doc_id, doc, meta in zip(results["ids"], results["documents"], results["metadatas"])
         ]
 
+    def get_embeddings(self, texts: list[str]) -> list[list[float]]:
+        """Get embeddings for a list of texts."""
+        if not texts:
+            return []
+        embeddings = self.embedder.embed(texts)
+        if hasattr(embeddings, 'tolist'):
+            return embeddings.tolist()
+        return embeddings
+
     def remove_orphaned(self, existing_sources: set[str]) -> int:
         """Remove chunks whose source files no longer exist."""
         docs = self.list_documents()

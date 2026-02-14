@@ -63,3 +63,8 @@ class VectorDatabase(ABC):
     def get_all_chunks(self) -> List[SearchResult]:
         """Get all chunks from the database."""
         pass
+
+    @abstractmethod
+    def get_embeddings(self, texts: List[str]) -> List[List[float]]:
+        """Get embeddings for a list of texts."""
+        pass

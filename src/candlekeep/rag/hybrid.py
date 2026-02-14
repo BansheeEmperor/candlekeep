@@ -126,13 +126,15 @@ def hybrid_search(
         bm25_results = []
         
     # 3. Combine with RRF
+    # Fetch 4x candidates to allow for merging and backfilling
     fused_results = reciprocal_rank_fusion(
         [vector_results, bm25_results],
         k=60,
-        top_n=n_results * 2 # Fetch enough for expansion
+        top_n=n_results * 4
     )
     
     # 4. Apply Arcane Recall (context expansion)
-    expanded = expand_results(db, fused_results, n_results=n_results)
+    # n_results is the final cap for the sections returned to the agent
+    expanded = expand_results(db, fused_results, n_results=n_results, query=query)
     
     return expanded
