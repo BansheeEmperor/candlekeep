@@ -535,7 +535,7 @@ queries = {
 3. Can gather data for training automatic classifier later
 4. Agent already has context about user's needs
 
-**Future:** Migrate to Option 3 (Hybrid) once we have:
+**Future:** Migrate to Option 3 (Hybrid) once available:
 - Enough data to train automatic classifier
 - Validated classification accuracy
 - Proven technique combinations per type

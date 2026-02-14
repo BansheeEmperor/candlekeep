@@ -142,7 +142,7 @@
 
 ### 1. Content vs Retrieval Quality
 - **Arcane Recall** improves content WITHOUT changing retrieval
-- Precision/Recall measure "did we find the right chunk?"
+- Precision/Recall measure "did the system find the right chunk?"
 - Content measures "does returned text contain expected phrases?"
 - These are **independent dimensions** of quality
 
@@ -209,13 +209,13 @@
 ## Research Questions for Analysis
 
 1. **Latency:** What causes 415ms overhead in failed LLM API calls?
-2. **Optimization:** Can we cache LLM-generated expansions/decompositions?
-3. **Routing:** Should we route by query complexity? (simple → fast, complex → slow)
+2. **Optimization:** Cache LLM-generated expansions/decompositions?
+3. **Routing:** Route by query complexity? (simple → fast, complex → slow)
 4. **Expansion:** What's the optimal expansion size for Arcane Recall?
 5. **Combination:** Does Arcane Recall + Flurry of Blows work well together?
 6. **Query Types:** Does Flurry of Blows help more for complex queries specifically?
-7. **Local LLMs:** Can we use local models for faster query processing?
-8. **Hybrid:** Should we combine original query + hypothetical for HyDE?
+7. **Local LLMs:** Use local models for faster query processing?
+8. **Hybrid:** Combine original query + hypothetical for HyDE?
 
 ---
 

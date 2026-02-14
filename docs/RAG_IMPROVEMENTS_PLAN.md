@@ -242,7 +242,7 @@
 
 ## Success Criteria
 
-For each technique, we'll measure:
+For each technique, the benchmark measures:
 - **Precision**: % retrieved docs that are relevant
 - **Recall**: % relevant docs that are retrieved
 - **F1 Score**: Harmonic mean
@@ -290,11 +290,11 @@ For each technique, we'll measure:
 
 ## Questions to Consider
 
-1. Should we test techniques individually or in combinations?
-2. Do we need new test queries for complex scenarios (Flurry of Blows)?
+1. Test techniques individually or in combinations?
+2. Are new test queries needed for complex scenarios (Flurry of Blows)?
 3. What's the acceptable latency increase for quality gains?
-4. Should we make all improvements optional via config flags?
-5. Do we want to test on real Candlekeep data or keep using test fixtures?
+4. Make all improvements optional via config flags?
+5. Test on real Candlekeep data or keep using test fixtures?
 
 
 ---

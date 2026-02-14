@@ -944,18 +944,18 @@ For each test, record:
 
 ## Questions for Consideration
 
-1. ✅ **Should we test with different parameter values?**
+1. ✅ **Test with different parameter values?**
    - YES - Test alpha=[0.7, 0.8, 0.9] for Wild Magic Surge
    - Test num_variations=[3, 5] for Mirror Image
    - Test max_sub_questions=[2, 3] for Flurry of Blows
    - Document all parameter variations tested
 
-2. ✅ **Should we create query-type-specific test sets?**
+2. ✅ **Create query-type-specific test sets?**
    - YES - Classify existing 15 queries by type
    - Create additional test queries for underrepresented types
    - Benchmark per query type to identify specialized techniques
 
-3. ✅ **Should we test three-way combinations?**
+3. ✅ **Test three-way combinations?**
    - YES - If two-way shows promise (≥10% improvement)
    - Document all new groups (≥2 techniques)
    - Focus on synergistic combinations
