@@ -154,14 +154,14 @@ If a remote ChromaDB was populated with model A and the local config says model 
 
 | Technique | Result | Status |
 |-----------|--------|--------|
-| Bardic Knowledge (contextual embeddings) | +14% precision | ✅ Default |
-| Bardic Inspiration (metadata boosting) | +10x confidence gap | ✅ Default |
-| Arcane Recall (Scholar's Discernment) | +17% content, -22% tokens | ✅ Default |
-| Divine Insight (cross-encoder reranking) | +2.6% precision, +1.5s | ✅ Precise path |
+| [Bardic Knowledge](GLOSSARY.md#bardic-knowledge) (contextual embeddings) | +14% precision | ✅ Default |
+| [Bardic Inspiration](GLOSSARY.md#bardic-inspiration) (metadata boosting) | +10x confidence gap | ✅ Default |
+| [Arcane Recall](GLOSSARY.md#arcane-recall) ([Scholar's Discernment](GLOSSARY.md#the-scholars-discernment)) | +17% content, -22% tokens | ✅ Default |
+| [Divine Insight](GLOSSARY.md#cross-encoder-reranking) (cross-encoder reranking) | +2.6% precision, +1.5s | ✅ Precise path |
 | Flurry of Blows (LLM query decomposition) | 100% precision, +1.1s | ❌ Agent does this better |
 | Mirror Image (LLM query expansion) | Degraded all metrics | ❌ Rejected |
 | Illusory Script (HyDE) | 3.9s latency | ❌ Too slow |
-| Wild Magic (BM25 hybrid) | +47% lexical quality | ✅ Hybrid path |
+| [Wild Magic](GLOSSARY.md#lexical-matching-bm25) (BM25 hybrid) | +47% lexical quality | ✅ Hybrid path |
 | Scrying Window (sentence splitting) | 50% precision collapse | ❌ Rejected |
 
 ## 5. Parameters Validated

@@ -131,8 +131,8 @@ All queries pass through negation removal before search. Clauses with "without",
 ### 2. Vector Search (bi-encoder)
 ChromaDB HNSW index finds candidate chunks using cosine similarity against bge-small-en-v1.5 embeddings (384 dimensions). Metadata boosting adds score for title and keyword matches.
 
-### 3. Arcane Recall (Similarity-Weighted Expansion)
-Every search result undergoes a contextual ritual to expand its vision. Instead of a fixed window, Arcane Recall now uses **The Scholar's Discernment** and **Arcane Coalescence** to provide context without bloat.
+### 3. [Arcane Recall](GLOSSARY.md#arcane-recall) (Similarity-Weighted Expansion)
+Every search result undergoes a contextual ritual to expand its vision. Instead of a fixed window, Arcane Recall now uses [**The Scholar's Discernment**](GLOSSARY.md#the-scholars-discernment) and [**Arcane Coalescence**](GLOSSARY.md#arcane-coalescence) to provide context without bloat.
 
 ```
 DOCUMENT SOURCE
@@ -159,8 +159,8 @@ DOCUMENT SOURCE
                (Exactly n_results sections)
 ```
 
-- **Arcane Coalescence**: If multiple results come from the same section of a document, they are merged into a single cohesive Divine Window, preventing redundant text and saving tokens.
-- **The Scholar's Discernment**: Neighboring chunks are only included if they are semantically related to thy query (threshold 0.92) or contain continuation markers (like Markdown lists).
+- [**Arcane Coalescence**](GLOSSARY.md#arcane-coalescence): If multiple results come from the same section of a document, they are merged into a single cohesive Divine Window, preventing redundant text and saving tokens.
+- [**The Scholar's Discernment**](GLOSSARY.md#the-scholars-discernment): Neighboring chunks are only included if they are semantically related to thy query (threshold 0.92) or contain continuation markers (like Markdown lists).
 - **Global Capping**: The library ensures exactly `n_results` merged sections are returned, backfilling from the candidate pool as needed.
 
 **Impact:**
@@ -168,10 +168,10 @@ DOCUMENT SOURCE
 - Token efficiency: **22% reduction** in context size vs fixed expansion
 - Latency overhead: ~400ms (due to batched similarity checks)
 
-### 4. Divine Insight (cross-encoder reranking) — precise path only
+### 4. [Divine Insight](GLOSSARY.md#cross-encoder-reranking) (cross-encoder reranking) — precise path only
 Cross-encoder (`ms-marco-MiniLM-L-6-v2`) rescores all candidates by examining query-document pairs individually. Higher precision (+2.6%) but trades content match (-7.6%) and adds ~1.5s latency.
 
-### 5. The Relevance Ward (Filtering)
+### 5. [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (Filtering)
 Results below a cosine similarity score of **0.65** are filtered to prevent the AI agent from hallucinating based on low-confidence "junk" matches.
 
 - **Adversarial queries:** Score ~0.56 (e.g., "quantum entanglement in photosynthesis" against a software corpus)
