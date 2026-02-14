@@ -14,18 +14,15 @@ AI agents need access to domain-specific knowledge that isn't in their training 
 
 ## 3. Design Decisions
 
-### 3.1 Two Search Paths, Not Six
+### 3.1 Three Search Paths, Not Two
 
-Early designs proposed 6 query types (simple, broad, complex, abstract, context, keyword). Benchmarking showed:
-- `context` was identical to `simple` (±3 expansion gave only +1.3% content over ±2)
-- `complex` was better handled by the agent making multiple searches (55% → 92.5% content)
-- `broad`, `abstract`, `keyword` didn't justify separate paths
+Early designs proposed 2 query types (simple and precise). Benchmarking on the Centurion Set showed that "Keyword Blindness" was a significant issue for exact technical identifiers.
 
-**Decision:** Two paths — `simple` (22–36ms, typically ~26ms) and `precise` (~1.5s). The agent picks.
+**Decision:** Three paths — `simple` (~26ms), `hybrid` (~80ms), and `precise` (~1.5s). The agent picks.
 
 ```
-The Two Roads Through Candlekeep
-═════════════════════════════════
+The Three Roads Through Candlekeep
+═══════════════════════════════════
 
 Query arrives
      │
@@ -34,48 +31,56 @@ Query arrives
 │  Agent chooses path based on query complexity   │
 └─────────────────────────────────────────────────┘
      │
-     ├──────────────────────┬──────────────────────┐
-     │                      │                      │
-     ▼                      ▼                      ▼
-┌─────────┐          ┌─────────┐          ┌─────────┐
-│ SIMPLE  │          │ PRECISE │          │ AGENT   │
-│  PATH   │          │  PATH   │          │ DECOMP  │
-└─────────┘          └─────────┘          └─────────┘
-     │                      │                      │
-     │                      │                      │
-  ~26ms                  ~1.5s              Multiple
-     │                      │               simple
-     │                      │               searches
-     ▼                      ▼                      │
-┌─────────┐          ┌─────────┐                  │
-│ Vector  │          │ Vector  │                  │
-│ Search  │          │ Search  │                  │
-└─────────┘          └─────────┘                  │
-     │                      │                      │
-     ▼                      ▼                      │
-┌─────────┐          ┌─────────┐                  │
-│ Arcane  │          │ Arcane  │                  │
-│ Recall  │          │ Recall  │                  │
-│  (±2)   │          │  (±2)   │                  │
-└─────────┘          └─────────┘                  │
-     │                      │                      │
-     │                      ▼                      │
-     │               ┌─────────┐                  │
-     │               │ Divine  │                  │
-     │               │ Insight │                  │
-     │               │ Rerank  │                  │
-     │               └─────────┘                  │
-     │                      │                      │
-     ▼                      ▼                      ▼
-┌──────────────────────────────────────────────────┐
-│         Relevance Ward (threshold 0.65)          │
-└──────────────────────────────────────────────────┘
+     ├──────────────────────┼──────────────────────┬──────────────────────┐
+     │                      │                      │                      │
+     ▼                      ▼                      ▼                      ▼
+┌─────────┐          ┌─────────┐          ┌─────────┐          ┌─────────┐
+│ SIMPLE  │          │ HYBRID  │          │ PRECISE │          │ AGENT   │
+│  PATH   │          │ (WILD)  │          │  PATH   │          │ DECOMP  │
+└─────────┘          └─────────┘          └─────────┘          └─────────┘
+     │                      │                      │                      │
+     │                      │                      │                      │
+  ~26ms                  ~80ms                  ~1.5s              Multiple
+     │                      │                      │                simple
+     │               ┌──────┴──────┐               │               searches
+     ▼               ▼             ▼               ▼                      │
+┌─────────┐     ┌─────────┐   ┌─────────┐     ┌─────────┐                  │
+│ Vector  │     │ Vector  │   │  BM25   │     │ Vector  │                  │
+│ Search  │     │ Search  │   │ Lexical │     │ Search  │                  │
+└─────────┘     └─────────┘   └─────────┘     └─────────┘                  │
+     │               │             │               │                      │
+     │               └──────┬──────┘               │                      │
+     │                      ▼                      │                      │
+     │               ┌─────────┐                  │                      │
+     │               │  Rank   │                  │                      │
+     │               │ Fusion  │                  │                      │
+     │               └─────────┘                  │                      │
+     │                      │                      │                      │
+     ▼                      ▼                      ▼                      │
+┌─────────┐          ┌─────────┐          ┌─────────┐                  │
+│ Arcane  │          │ Arcane  │          │ Arcane  │                  │
+│ Recall  │          │ Recall  │          │ Recall  │                  │
+│  (±2)   │          │  (±2)   │          │  (±2)   │                  │
+└─────────┘          └─────────┘          └─────────┘                  │
+     │                      │                      │                      │
+     │                      │                      ▼                      │
+     │                      │               ┌─────────┐                  │
+     │                      │               │ Divine  │                  │
+     │                      │               │ Insight │                  │
+     │                      │               │ Rerank  │                  │
+     │                      │               └─────────┘                  │
+     │                      │                      │                      │
+     ▼                      ▼                      ▼                      ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│         Relevance Ward (threshold 0.65 — simple/hybrid only)             │
+└──────────────────────────────────────────────────────────────────────────┘
      │
      ▼
   Results to agent
 
 Use cases:
 - Simple: "What's the API endpoint for search?"
+- Hybrid: "How do I fix error 0xEF or version mismatch?"
 - Precise: "Compare authentication methods and recommend one"
 - Agent decomp: "How do I set up, configure, and deploy?"
 ```
@@ -155,7 +160,7 @@ If a remote ChromaDB was populated with model A and the local config says model 
 | Flurry of Blows (LLM query decomposition) | 100% precision, +1.1s | ❌ Agent does this better |
 | Mirror Image (LLM query expansion) | Degraded all metrics | ❌ Rejected |
 | Illusory Script (HyDE) | 3.9s latency | ❌ Too slow |
-| Wild Magic Surge (BM25 hybrid) | Degraded precision | ❌ Rejected |
+| Wild Magic (BM25 hybrid) | +47% lexical quality | ✅ Hybrid path |
 | Scrying Window (sentence splitting) | 50% precision collapse | ❌ Rejected |
 
 ## 5. Parameters Validated
