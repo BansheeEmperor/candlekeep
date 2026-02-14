@@ -216,5 +216,6 @@ A minimum relevance threshold of **0.65** filters low-confidence results. This p
 
 - HTTPS with ACM certificate when a domain is available
 - Faster cross-encoder or distilled reranking model
+- Hardware-accelerated inference (MLX for Apple Silicon, CUDA for Nvidia, ROCm for AMD) — the cross-encoder is the bottleneck; MLX alone could cut precise path latency from ~3s to sub-1s on M-series
 - Caching reranked results for repeated queries
 - Streaming search results for lower perceived latency
