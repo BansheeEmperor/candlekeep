@@ -47,6 +47,10 @@
 **Technical Name:** Contextual Chunk Embeddings
 **The Lore:** Every fragment of knowledge in the library is etched with the name and description of the document it came from. This ensures that even the smallest chunk remembers its heritage and purpose.
 
+### Bardic Inspiration
+**Technical Name:** Metadata Boosting / Re-ranking
+**The Lore:** At query time, the library looks at the titles, descriptions, and keywords of candidate scrolls. Those that resonate with thy query are "inspired" to rise higher in the rankings, ensuring that a specific guide (like "iOS Authentication") is chosen over a generic one.
+
 ### Arcane Coalescence
 **Technical Name:** Window Merging
 **The Lore:** The ritual of stitching together adjacent fragments into a single cohesive Divine Window. It prevents the library from repeating the same text twice and ensures the agent receives a unified narrative.
