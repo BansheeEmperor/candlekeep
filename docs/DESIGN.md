@@ -174,7 +174,7 @@ If a remote ChromaDB was populated with model A and the local config says model 
 
 The simple search path maintains consistent performance as the knowledge base grows. Testing with a 15.5x increase in data (178 → 2770 chunks) showed only a 13% latency increase (23ms → 26ms).
 
-All latency numbers measured on a warm model (after initial inference). Cold-start adds ~10ms to the first few queries as the embedding model warms its inference path. Latency varies by query length: short keyword queries (e.g., "vector database") hit ~22ms, while full sentences reach ~36ms due to tokenization overhead.
+All latency numbers measured on a warm model (after initial inference) using `bge-small` (`BAAI/bge-small-en-v1.5`), the recommended embedding model. Cold-start adds ~10ms to the first few queries as the embedding model warms its inference path. Latency varies by query length: short keyword queries (e.g., "vector database") hit ~22ms, while full sentences reach ~36ms due to tokenization overhead.
 
 **Why it scales:**
 - Per-document chunk lookup for Arcane Recall expansion (doesn't scan full DB)
