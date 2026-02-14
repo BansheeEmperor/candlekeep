@@ -79,6 +79,8 @@ def run_evaluation(query_type: str = "simple"):
         print(f"Hit Rate@1:      {summary['avg_hit_rate_1']:.4f}")
         print(f"Hit Rate@5:      {summary['avg_hit_rate_5']:.4f}")
         print(f"Avg Precision@5: {summary['avg_precision_5']:.4f}")
+        print(f"Avg Tokens:      {summary['avg_tokens']:.1f}")
+        print(f"Total Tokens:    {summary['total_tokens']}")
         print(f"Avg Latency:     {summary['avg_latency_ms']:.2f}ms")
         
         print("\n📊 By Category:")

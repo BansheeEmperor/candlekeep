@@ -33,6 +33,7 @@ class EvalResult:
     hit_rate_5: float
     precision_5: float
     latency_ms: float
+    tokens: int
 
 
 class BenchmarkRunner:
@@ -59,6 +60,10 @@ class BenchmarkRunner:
             
             ground_truth = set(q.expected_sources)
             
+            # Calculate tokens (rough estimate: chars / 4)
+            total_chars = sum(len(r.text) for r in search_results)
+            tokens = total_chars // 4
+            
             results.append(EvalResult(
                 query=q.query,
                 category=q.category,
@@ -69,7 +74,8 @@ class BenchmarkRunner:
                 hit_rate_1=calculate_hit_rate(retrieved_sources, ground_truth, 1),
                 hit_rate_5=calculate_hit_rate(retrieved_sources, ground_truth, 5),
                 precision_5=calculate_precision_at_k(retrieved_sources, ground_truth, 5),
-                latency_ms=latency
+                latency_ms=latency,
+                tokens=tokens
             ))
         return results
 
@@ -84,6 +90,8 @@ class BenchmarkRunner:
             "avg_hit_rate_5": sum(r.hit_rate_5 for r in results) / len(results),
             "avg_precision_5": sum(r.precision_5 for r in results) / len(results),
             "avg_latency_ms": sum(r.latency_ms for r in results) / len(results),
+            "avg_tokens": sum(r.tokens for r in results) / len(results),
+            "total_tokens": sum(r.tokens for r in results),
             "by_category": {},
             "total_queries": len(results)
         }
