@@ -85,11 +85,35 @@ class TestExpandResults:
         assert expanded[0].text == ""  # No chunks found to expand
 
     def test_respects_n_results(self):
-        """Should not return more than n_results."""
-        source_chunks = [_make_result(f"chunk{i}", chunk_index=i) for i in range(20)]
+        """Should not return more than n_results across distinct windows."""
+        source_chunks = [_make_result(f"chunk{i}", chunk_index=i) for i in range(100)]
         db = _mock_db({"doc.md": source_chunks})
 
-        results = [_make_result(f"chunk{i}", chunk_index=i) for i in range(10)]
+        # Request 3 non-adjacent chunks far apart so they don't merge
+        results = [
+            _make_result("chunk0", chunk_index=0),
+            _make_result("chunk50", chunk_index=50),
+            _make_result("chunk90", chunk_index=90),
+            _make_result("chunk99", chunk_index=99),
+        ]
         expanded = expand_results(db, results, n_results=3, expansion_chunks=2)
 
         assert len(expanded) == 3
+
+    def test_arcane_coalescence_merges_adjacent_matches(self):
+        """Arcane Coalescence should merge adjacent/overlapping matches into one window."""
+        source_chunks = [_make_result(f"chunk{i}", chunk_index=i) for i in range(10)]
+        db = _mock_db({"doc.md": source_chunks})
+
+        results = [
+            _make_result("chunk2", chunk_index=2),
+            _make_result("chunk3", chunk_index=3),
+        ]
+        # These are adjacent, so they should merge into a single Divine Window
+        expanded = expand_results(db, results, n_results=5, expansion_chunks=2)
+
+        assert len(expanded) == 1
+        # Result should cover chunks 0 to 5 (±2 around 2 and 3)
+        assert "chunk0" in expanded[0].text
+        assert "chunk5" in expanded[0].text
+        assert "chunk6" not in expanded[0].text

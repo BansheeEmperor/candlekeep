@@ -135,9 +135,21 @@ def expand_results(
         if len(expanded) >= n_results:
             break
             
-        doc_chunks = chunks_by_source[source]
-        context_parts = [doc_chunks[i].text for i in indices]
-        expanded_text = "\n\n".join(context_parts)
+        doc_chunks = chunks_by_source.get(source, {})
+        if not doc_chunks:
+            # Fallback for orphan results (though should not happen in normal flow)
+            # Find the original result text if possible
+            expanded_text = meta.get("_original_text", "") 
+            # Note: We'd need to store original text in metadata for this to work perfectly, 
+            # but for now, let's just use what we have in doc_chunks or empty.
+            if not expanded_text:
+                # If we don't have doc_chunks, we can't build the expanded text.
+                # However, all_windows was built from source_results which came from results.
+                # Let's handle the empty case gracefully.
+                expanded_text = ""
+        else:
+            context_parts = [doc_chunks[i].text for i in indices if i in doc_chunks]
+            expanded_text = "\n\n".join(context_parts)
         
         if expanded_text in seen_texts:
             continue
