@@ -40,8 +40,8 @@
 ## 🏰 Library Terms
 
 ### Arcane Recall
-**Technical Name:** Parent Document Retrieval / Context Expansion
-**The Lore:** Returning a single torn page is often useless. Arcane Recall ensures that when a matching fragment is found, the library also retrieves the pages immediately before and after it, providing the full context of the section.
+**Technical Name:** Parent Document Retrieval / Contextual Pruning
+**The Lore:** Returning a single torn page is often useless, but returning an entire chapter is wasteful. Arcane Recall now intelligently expands matching fragments. It merges overlapping pages into a single cohesive window and uses similarity-weighting to only include neighboring text that is truly relevant to thy query, reducing token waste by 22%.
 
 ### Bardic Knowledge
 **Technical Name:** Contextual Chunk Embeddings
