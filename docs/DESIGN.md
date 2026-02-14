@@ -2,7 +2,7 @@
 
 ## 1. Problem Statement
 
-AI agents need access to domain-specific knowledge that isn't in their training data. Existing solutions either require full document context (expensive, hits token limits) or use naive keyword search (misses semantic meaning). Candlekeep provides a RAG knowledge base that an AI agent can query via MCP, getting relevant document fragments with full section context in ~23ms.
+AI agents need access to domain-specific knowledge that isn't in their training data. Existing solutions either require full document context (expensive, hits token limits) or use naive keyword search (misses semantic meaning). Candlekeep provides a RAG knowledge base that an AI agent can query via MCP, getting relevant document fragments with full section context in 22–36ms (typically ~26ms on a warm model).
 
 ## 2. Design Goals
 
@@ -21,7 +21,7 @@ Early designs proposed 6 query types (simple, broad, complex, abstract, context,
 - `complex` was better handled by the agent making multiple searches (55% → 92.5% content)
 - `broad`, `abstract`, `keyword` didn't justify separate paths
 
-**Decision:** Two paths — `simple` (23ms) and `precise` (1.5s). The agent picks.
+**Decision:** Two paths — `simple` (22–36ms, typically ~26ms) and `precise` (~1.5s). The agent picks.
 
 ```
 The Two Roads Through Candlekeep
@@ -43,7 +43,7 @@ Query arrives
 └─────────┘          └─────────┘          └─────────┘
      │                      │                      │
      │                      │                      │
-  ~23ms                  ~1.5s              Multiple
+  ~26ms                  ~1.5s              Multiple
      │                      │               simple
      │                      │               searches
      ▼                      ▼                      │
@@ -165,7 +165,7 @@ If a remote ChromaDB was populated with model A and the local config says model 
 | Chunk size | 256, 512, 768, 1024 | 512 | Best content match; Arcane Recall compensates for size |
 | Chunk overlap | 50 | 50 | Standard, not benchmarked in isolation |
 | Expansion size | ±1, ±2, ±3, ±4 | ±2 | ±3 no benefit, ±4 hurts precision by 8% |
-| Embedding model | minilm, bge-small, nomic | bge-small | Best content (87.3%), good speed (23ms) |
+| Embedding model | minilm, bge-small, nomic | bge-small | Best content (87.3%), good speed (22–36ms) |
 | Relevance threshold | 0.5–0.75 range | 0.65 | Clean gap between adversarial (0.56) and legitimate (0.75) |
 
 ## 6. Scalability
@@ -173,6 +173,8 @@ If a remote ChromaDB was populated with model A and the local config says model 
 ### 6.1 Sub-linear Scaling
 
 The simple search path maintains consistent performance as the knowledge base grows. Testing with a 15.5x increase in data (178 → 2770 chunks) showed only a 13% latency increase (23ms → 26ms).
+
+All latency numbers measured on a warm model (after initial inference). Cold-start adds ~10ms to the first few queries as the embedding model warms its inference path. Latency varies by query length: short keyword queries (e.g., "vector database") hit ~22ms, while full sentences reach ~36ms due to tokenization overhead.
 
 **Why it scales:**
 - Per-document chunk lookup for Arcane Recall expansion (doesn't scan full DB)
