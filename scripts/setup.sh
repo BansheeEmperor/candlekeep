@@ -39,16 +39,21 @@ python3 -m spacy download en_core_web_sm
 
 # Download embedding model
 echo
-echo "Downloading embedding model (this may take a few minutes)..."
+echo "Downloading embedding models (this may take a few minutes)..."
 python3 << 'EOF'
 from candlekeep.config import Settings
 from candlekeep.database.embeddings import EmbeddingManager
+from sentence_transformers import CrossEncoder
 
 settings = Settings.from_env()
-print(f"Model: {settings.embedding_model}")
+print(f"Bi-Encoder: {settings.embedding_model}")
 embedder = EmbeddingManager.get_instance(settings)
 embedder.get_model()
-print("✓ Model downloaded")
+
+print(f"Cross-Encoder: ms-marco-MiniLM-L-6-v2")
+# Trigger download of cross-encoder
+CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+print("✓ Models downloaded")
 EOF
 
 echo
