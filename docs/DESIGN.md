@@ -208,7 +208,7 @@ A minimum relevance threshold of **0.65** filters low-confidence results. This p
 ## 8. Limitations
 
 - **Single embedding model per collection** — Switching models requires full re-ingestion
-- **Cross-encoder latency** — Precise path is 65x slower than simple; only for high-value queries
+- **Cross-encoder latency** — Precise path is CPU-bound and hardware-dependent. Benchmarked at ~1.5s on the original test machine, but ~3s on Apple Silicon (M-series) running CPU inference. Only for high-value queries
 - **No incremental ingestion** — Re-ingesting a file replaces all its chunks (by design, prevents duplicates)
 - **Agent-dependent decomposition** — Multi-doc query quality depends on the agent splitting queries correctly
 
