@@ -70,6 +70,13 @@ def _background_init():
         print("[candlekeep] ✓ Write access enabled", file=sys.stderr)
     else:
         print("[candlekeep] ⚠ Read-only mode (write access denied)", file=sys.stderr)
+    
+    # Warm up models
+    print("[candlekeep] 🕯 Warming up the tomes...", file=sys.stderr)
+    get_store().embedder.get_model()
+    from candlekeep.rag.reranker import warm_up
+    warm_up(_settings.device)
+    
     get_store()
     _loading = False
 

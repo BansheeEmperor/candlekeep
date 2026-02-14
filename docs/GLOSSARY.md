@@ -55,6 +55,10 @@
 **Technical Name:** Similarity-Weighted Expansion / Contextual Pruning
 **The Lore:** The practice of discarding neighboring text that lacks the semantic resonance required to answer thy query. By only expanding into sections that are truly relevant (threshold 0.92), the library saves tokens without losing its "recall."
 
+### Arcane Attunement
+**Technical Name:** Model Pre-loading / Lazy Loading Prevention
+**The Lore:** The ritual of awakening the embedding models and rerankers as the library gates first open. Instead of waiting for the first scholar to ask a question, the library prepares its mind in advance, ensuring that even the very first query is answered without the heavy silence of model loading.
+
 ### The Relevance Ward
 **Technical Name:** Cosine Similarity Thresholding
 **The Lore:** A protective barrier that prevents the library from guessing. If no scrolls are found with enough confidence to be considered true, the library remains silent rather than presenting false or irrelevant information.
