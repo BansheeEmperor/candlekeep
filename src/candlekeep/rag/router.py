@@ -9,6 +9,12 @@ QueryType = Literal["simple", "precise", "hybrid"]
 # Based on score distribution analysis: adversarial=0.709, lowest legitimate=0.847.
 MIN_RELEVANCE_SCORE = 0.75
 
+# RRF scores for hybrid are much smaller (usually < 0.1).
+# Based on Centurion adversarial analysis, noise usually stays below 0.02.
+# NOTE: This is a statistical heuristic based on the Centurion corpus size. 
+# In production with 1M+ chunks, this threshold may require recalibration.
+HYBRID_RELEVANCE_THRESHOLD = 0.03
+
 
 def search_with_routing(
     db: VectorDatabase,
@@ -47,9 +53,8 @@ def search_with_routing(
     elif query_type == "hybrid":
         from candlekeep.rag.hybrid import hybrid_search
         results = hybrid_search(db, processed, n_results, category=category)
-        # RRF scores are on a different scale [0, 1] but often small. 
-        # We don't apply MIN_RELEVANCE_SCORE to hybrid for now as RRF 
-        # doesn't map directly to the vector similarity threshold.
+        # Apply threshold to hybrid RRF results
+        results = [r for r in results if r.score >= HYBRID_RELEVANCE_THRESHOLD]
     else:
         results = search_with_arcane_recall(db, processed, n_results)
         # Filter below relevance threshold (skip for precise/hybrid — different scales)
