@@ -41,11 +41,19 @@
 
 ### Arcane Recall
 **Technical Name:** Parent Document Retrieval / Contextual Pruning
-**The Lore:** Returning a single torn page is often useless, but returning an entire chapter is wasteful. Arcane Recall now intelligently expands matching fragments. It merges overlapping pages into a single cohesive window and uses similarity-weighting to only include neighboring text that is truly relevant to thy query, reducing token waste by 22%.
+**The Lore:** Returning a single torn page is often useless, but returning an entire chapter is wasteful. Arcane Recall now intelligently expands matching fragments using **Arcane Coalescence** to join overlapping pages and **The Scholar's Discernment** to filter out irrelevant noise, reducing token waste by 22%.
 
 ### Bardic Knowledge
 **Technical Name:** Contextual Chunk Embeddings
 **The Lore:** Every fragment of knowledge in the library is etched with the name and description of the document it came from. This ensures that even the smallest chunk remembers its heritage and purpose.
+
+### Arcane Coalescence
+**Technical Name:** Window Merging
+**The Lore:** The ritual of stitching together adjacent fragments into a single cohesive Divine Window. It prevents the library from repeating the same text twice and ensures the agent receives a unified narrative.
+
+### The Scholar's Discernment
+**Technical Name:** Similarity-Weighted Expansion / Contextual Pruning
+**The Lore:** The practice of discarding neighboring text that lacks the semantic resonance required to answer thy query. By only expanding into sections that are truly relevant (threshold 0.92), the library saves tokens without losing its "recall."
 
 ### The Relevance Ward
 **Technical Name:** Cosine Similarity Thresholding

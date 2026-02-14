@@ -357,7 +357,9 @@ For those who seek the science behind the sorcery, here is the mapping of the li
 | Spell | Technical Implementation | File Path |
 | :--- | :--- | :--- |
 | **Bardic Knowledge** | Ingestion-time document context prefixing | `src/candlekeep/rag/processor.py` |
-| **Arcane Recall** | Post-retrieval chunk expansion (±2) | `src/candlekeep/rag/arcane_recall.py` |
+| **Arcane Recall** | Intelligent contextual expansion | `src/candlekeep/rag/arcane_recall.py` |
+| **Arcane Coalescence** | Window merging of adjacent fragments | `src/candlekeep/rag/arcane_recall.py` |
+| **Scholar's Discernment** | Similarity-weighted context pruning | `src/candlekeep/rag/arcane_recall.py` |
 | **Divine Insight** | Cross-encoder reranking | `src/candlekeep/rag/reranker.py` |
 | **Wild Magic** | Hybrid Search (Vector + BM25 Lexical) | `src/candlekeep/rag/hybrid.py` |
 | **The Relevance Ward** | Score-based result filtering (threshold 0.65) | `src/candlekeep/rag/router.py` |
