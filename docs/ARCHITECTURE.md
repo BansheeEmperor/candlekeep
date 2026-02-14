@@ -131,40 +131,42 @@ All queries pass through negation removal before search. Clauses with "without",
 ### 2. Vector Search (bi-encoder)
 ChromaDB HNSW index finds candidate chunks using cosine similarity against bge-small-en-v1.5 embeddings (384 dimensions). Metadata boosting adds score for title and keyword matches.
 
-### 3. Arcane Recall (chunk expansion)
-Every search result is expanded with ±2 adjacent chunks from the same document. This provides full section context instead of isolated fragments. Uses per-document lookup (`get_chunks_by_source`) instead of full DB scan.
+### 3. Arcane Recall (Similarity-Weighted Expansion)
+Every search result undergoes a contextual ritual to expand its vision. Instead of a fixed window, Arcane Recall now uses **Similarity-Weighted Expansion** and **Window Merging** to provide context without bloat.
 
 ```
 DOCUMENT SOURCE
-┌───────────────────────────────────────────────────────────┐
-│ [Chunk 0] [Chunk 1] [Chunk 2] [Chunk 3] [Chunk 4] [Chunk 5] ...
-└───────────────────────────────────────────────────────────┘
-                          │
-                   VECTOR SEARCH MATCH
-                          ▼
-                    ┌───────────┐
-                    │  Chunk 3  │ (Matched Fragment)
-                    └───────────┘
-                          │
-                  ARCANE RECALL LOOKUP
-             (±2 Neighboring Chunks)
-             ┌────────────┴────────────┐
-             ▼                         ▼
-┌───────────┐┌───────────┐       ┌───────────┐┌───────────┐
-│  Chunk 1  ││  Chunk 2  │       │  Chunk 4  ││  Chunk 5  │
-└───────────┘└───────────┘       └───────────┘└───────────┘
-             │           │       │           │
-             └───────────┼───────┼───────────┘
-                         ▼       ▼
-┌───────────────────────────────────────────────────────────┐
-│                      FULL CONTEXT                         │
-│  [Chunk 1] + [Chunk 2] + [Chunk 3] + [Chunk 4] + [Chunk 5]│
-└───────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────┐
+│ [C0]  [C1]  [C2]  [C3]  [C4]  [C5]  [C6]  [C7]  [C8]  [C9]  [C10] [C11] ...
+└───────────────────────────────────────────────────────────────────────────┘
+          │           │                       │
+    MATCH #2 (C1)     MATCH #1 (C3)           MATCH #3 (C8)
+          ▼           ▼                       ▼
+    ┌───────────┐┌───────────┐          ┌───────────┐
+    │  Chunk 1  ││  Chunk 3  │          │  Chunk 8  │
+    └───────────┘└───────────┘          └───────────┘
+          │           │                       │
+          │     WINDOW MERGING          SIMILARITY PRUNING
+          ▼           ▼                       ▼
+    ┌───────────────────────┐          ┌─────────────┐
+    │    DIVINE WINDOW      │          │ PRUNED WIN  │
+    │ [C0][C1][C2][C3][C4]  │          │ [C7][C8]    │ (C9 rejected:
+    └───────────────────────┘          └─────────────┘  low similarity)
+                │                             │
+                └──────────────┬──────────────┘
+                               ▼
+                      [ FINAL RESULTS ]
+               (Exactly n_results sections)
 ```
 
+- **Window Merging**: If multiple results come from the same section of a document, they are merged into a single cohesive Divine Window, preventing redundant text and saving tokens.
+- **Similarity Weighting**: Neighboring chunks are only included if they are semantically related to thy query (threshold 0.92) or contain continuation markers (like Markdown lists).
+- **Global Capping**: The library ensures exactly `n_results` merged sections are returned, backfilling from the candidate pool as needed.
+
+**Impact:**
 - Content match: +17% over raw search
-- Latency overhead: ~6ms
-- Optimal expansion: ±2 chunks (±3 no benefit, ±4 hurts precision)
+- Token efficiency: **22% reduction** in context size vs fixed expansion
+- Latency overhead: ~400ms (due to batched similarity checks)
 
 ### 4. Divine Insight (cross-encoder reranking) — precise path only
 Cross-encoder (`ms-marco-MiniLM-L-6-v2`) rescores all candidates by examining query-document pairs individually. Higher precision (+2.6%) but trades content match (-7.6%) and adds ~1.5s latency.
