@@ -17,20 +17,20 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 
 ### Arcane Metrics Explained
 
-- **The Success of the Scry (Hit Rate@5)**: The probability that the answer thou seekest lies within the first five scrolls returned by the library.
-- **The Oracle's Promptness (MRR)**: Measures how close to the top the most relevant scroll appears. If the Oracle speaks the truth immediately (rank 1), the score is perfect (1.0).
-- **The Quality of the Arrangement (nDCG@5)**: Evaluates not just if the truth was found, but if the most relevant scrolls were placed before the less relevant ones.
+- [**The Success of the Scry (Hit Rate@5)**](GLOSSARY.md#the-success-of-the-scry-hit-ratek): The probability that the answer thou seekest lies within the first five scrolls returned by the library.
+- [**The Oracle's Promptness (MRR)**](GLOSSARY.md#the-oracles-promptness-mrr): Measures how close to the top the most relevant scroll appears. If the Oracle speaks the truth immediately (rank 1), the score is perfect (1.0).
+- [**The Quality of the Arrangement (nDCG@5)**](GLOSSARY.md#the-quality-of-the-tomes-arrangement-ndcgk): Evaluates not just if the truth was found, but if the most relevant scrolls were placed before the less relevant ones.
 
 ### Comparative Audit Results
 
-| Metric | Simple Path | Hybrid Path (Wild Magic) | Precise Path |
+| Metric | Simple Path | Hybrid Path ([Wild Magic](GLOSSARY.md#lexical-matching-bm25)) | Precise Path |
 |--------|------------:|-------------------------:|-------------:|
 | **Overall MRR** | 0.5054 | **0.5424** (+7%) | 0.5046 |
 | **nDCG@5** | 0.5117 | **0.5511** (+8%) | 0.5058 |
 | **Hit Rate@5** | 0.6296 | 0.5741 | 0.6019 |
 | **Avg Latency** | **437ms** | 704ms | 1144ms |
 
-*\* Note: Latency includes Arcane Recall's similarity-weighted pruning (~400ms), which reduces downstream LLM costs by 22%.*
+*\* Note: Latency includes [Arcane Recall's](GLOSSARY.md#arcane-recall) similarity-weighted pruning (~400ms), which reduces downstream LLM costs by 22%.*
 
 ### Domain Performance (MRR / nDCG)
 
@@ -44,25 +44,25 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 
 ## Core Techniques
 
-### Bardic Knowledge: Contextual Chunk Embeddings
+### [Bardic Knowledge](GLOSSARY.md#bardic-knowledge): Contextual Chunk Embeddings
 > *"Bards weave context and lore into their knowledge, enriching every tale with the wisdom of what came before."*
 
 **Implementation:** Document title and description are prefixed to every chunk during ingestion.
 **Analysis:** Provides high precision for isolated chunks by baking global document context into the local embedding.
 
-### Arcane Recall: Chunk Expansion
+### [Arcane Recall](GLOSSARY.md#arcane-recall): Chunk Expansion
 > *"The search finds the spark; the expansion brings the flame."*
 
-**Implementation:** Automatically retrieves ±2 adjacent chunks for every search result.
-**Analysis:** Increases content match rate by 17% with negligible (~6ms) latency impact.
+**Implementation:** Automatically retrieves ±2 adjacent chunks for every search result using [**Arcane Coalescence**](GLOSSARY.md#arcane-coalescence) and [**Scholar's Discernment**](GLOSSARY.md#the-scholars-discernment).
+**Analysis:** Increases content match rate by 17% while reducing context size by 22%.
 
-### Divine Insight: Precise Reranking
+### [Divine Insight](GLOSSARY.md#cross-encoder-reranking): Precise Reranking
 > *"Through divine magic, clerics perceive the true nature of all things."*
 
 **Implementation:** Initial candidates are filtered by `MIN_RELEVANCE_SCORE` (0.75), then re-scored by a cross-encoder (`ms-marco-MiniLM-L-6-v2`).
-**Analysis:** Optimizes for semantic relevance. GPU acceleration makes this high-precision road viable for real-time use.
+**Analysis:** Optimizes for semantic relevance. [**Arcane Attunement**](GLOSSARY.md#arcane-attunement) makes this high-precision road viable for real-time use.
 
-### The Relevance Ward (Thresholding)
+### [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (Thresholding)
 **Threshold:** `0.75`
 **Analysis:** Filters out out-of-domain "noise". Successfully blocked adversarial technical queries (e.g., "quantum photosynthesis") while preserving all legitimate technical matches (>0.84).
 

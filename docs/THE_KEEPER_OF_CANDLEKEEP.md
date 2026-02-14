@@ -356,15 +356,15 @@ For those who seek the science behind the sorcery, here is the mapping of the li
 
 | Spell | Technical Implementation | File Path |
 | :--- | :--- | :--- |
-| **Bardic Knowledge** | Ingestion-time document context prefixing | `src/candlekeep/rag/processor.py` |
-| **Bardic Inspiration** | Result-time metadata re-ranking (boosting) | `src/candlekeep/database/vector_store.py` |
-| **Arcane Recall** | Intelligent contextual expansion | `src/candlekeep/rag/arcane_recall.py` |
-| **Arcane Coalescence** | Window merging of adjacent fragments | `src/candlekeep/rag/arcane_recall.py` |
-| **Scholar's Discernment** | Similarity-weighted context pruning | `src/candlekeep/rag/arcane_recall.py` |
-| **Divine Insight** | Cross-encoder reranking | `src/candlekeep/rag/reranker.py` |
-| **Wild Magic** | Hybrid Search (Vector + BM25 Lexical) | `src/candlekeep/rag/hybrid.py` |
-| **Arcane Attunement** | Model pre-loading at startup | `src/candlekeep/mcp/server.py` |
-| **The Relevance Ward** | Score-based result filtering | `src/candlekeep/rag/router.py` |
+| [**Bardic Knowledge**](GLOSSARY.md#bardic-knowledge) | Ingestion-time document context prefixing | `src/candlekeep/rag/processor.py` |
+| [**Bardic Inspiration**](GLOSSARY.md#bardic-inspiration) | Result-time metadata re-ranking (boosting) | `src/candlekeep/database/vector_store.py` |
+| [**Arcane Recall**](GLOSSARY.md#arcane-recall) | Intelligent contextual expansion | `src/candlekeep/rag/arcane_recall.py` |
+| [**Arcane Coalescence**](GLOSSARY.md#arcane-coalescence) | Window merging of adjacent fragments | `src/candlekeep/rag/arcane_recall.py` |
+| [**Scholar's Discernment**](GLOSSARY.md#the-scholars-discernment) | Similarity-weighted context pruning | `src/candlekeep/rag/arcane_recall.py` |
+| [**Divine Insight**](GLOSSARY.md#cross-encoder-reranking) | Cross-encoder reranking | `src/candlekeep/rag/reranker.py` |
+| [**Wild Magic**](GLOSSARY.md#lexical-matching-bm25) | Hybrid Search (Vector + BM25 Lexical) | `src/candlekeep/rag/hybrid.py` |
+| [**Arcane Attunement**](GLOSSARY.md#arcane-attunement) | Model pre-loading at startup | `src/candlekeep/mcp/server.py` |
+| [**The Relevance Ward**](GLOSSARY.md#the-relevance-ward) | Score-based result filtering | `src/candlekeep/rag/router.py` |
 | **Mirror Image** | Query expansion variations (Research only) | `tests/test_mirror_image.py` |
 | **Flurry of Blows** | Query decomposition into sub-questions | `tests/test_flurry_of_blows.py` |
 | **Illusory Script** | Hypothetical Document Embeddings (HyDE) | `tests/test_illusory_script.py` |
