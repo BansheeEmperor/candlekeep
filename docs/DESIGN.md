@@ -16,7 +16,7 @@ AI agents need access to domain-specific knowledge that isn't in their training 
 
 ### 3.1 Two Search Paths, Not Six
 
-Early designs proposed 6 query types (simple, broad, complex, abstract, context, keyword). Through benchmarking, we found:
+Early designs proposed 6 query types (simple, broad, complex, abstract, context, keyword). Benchmarking showed:
 - `context` was identical to `simple` (±3 expansion gave only +1.3% content over ±2)
 - `complex` was better handled by the agent making multiple searches (55% → 92.5% content)
 - `broad`, `abstract`, `keyword` didn't justify separate paths
@@ -82,7 +82,7 @@ Use cases:
 
 ### 3.2 Agent Decomposes, Tool Searches
 
-We implemented and tested LLM-based query decomposition (Flurry of Blows) inside the search tool. It added 1.1s latency and required LLM API credentials. Meanwhile, the calling agent — already a frontier LLM — can decompose queries better and for free.
+LLM-based query decomposition (Flurry of Blows) was implemented and tested inside the search tool. It added 1.1s latency and required LLM API credentials. Meanwhile, the calling agent — already a frontier LLM — can decompose queries better and for free.
 
 **Decision:** Remove query decomposition from the tool. Tell the agent to make multiple searches. Benchmarked: agent decomposition achieves 92.5% content match vs 55% for single search.
 
