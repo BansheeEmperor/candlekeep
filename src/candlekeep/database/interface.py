@@ -58,3 +58,8 @@ class VectorDatabase(ABC):
     def get_chunks_by_source(self, source: str) -> List[SearchResult]:
         """Get all chunks from a specific source document."""
         pass
+
+    @abstractmethod
+    def get_all_chunks(self) -> List[SearchResult]:
+        """Get all chunks from the database."""
+        pass
