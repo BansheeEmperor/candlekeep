@@ -215,6 +215,41 @@ A minimum relevance threshold of **0.65** filters low-confidence results. This p
 ## 9. Future Work
 
 - HTTPS with ACM certificate when a domain is available
-- Faster cross-encoder or distilled reranking model
 - Caching reranked results for repeated queries
 - Streaming search results for lower perceived latency
+
+### 9.1 Hardware-Accelerated Inference
+
+The precise path latency (~1.5s–3s) is an environment limitation, not a tool limitation. The simple path runs at 22–36ms on any hardware because vector lookup dominates. The cross-encoder, however, runs CPU-only inference through PyTorch, and its latency scales directly with available compute. Users on machines without GPU acceleration will see higher precise path latency.
+
+**Current architecture (CPU-only):**
+- `src/candlekeep/database/embeddings.py` — `SentenceTransformer` loads PyTorch models, infers on CPU
+- `src/candlekeep/rag/reranker.py` — `CrossEncoder` instantiates a new model per call, no caching, CPU-only
+- `pyproject.toml` — `sentence-transformers` pulls in `torch` (CPU wheel)
+
+**Required changes:**
+
+1. **`config.py`** — Add `CANDLEKEEP_DEVICE` setting (`auto`, `cpu`, `mps`, `cuda`, `rocm`). `auto` detects available hardware at startup.
+
+2. **`embeddings.py`** — Pass `device` parameter to `SentenceTransformer()` constructor. The library already supports `device="mps"` (Apple Silicon), `device="cuda"` (Nvidia), and `device="cpu"`.
+
+3. **`reranker.py`** — Two changes:
+   - Cache the `CrossEncoder` instance (currently re-instantiated every call — this alone would improve latency)
+   - Pass `device` parameter to `CrossEncoder()` constructor
+
+4. **`pyproject.toml`** — Add optional dependency groups:
+   - `mlx`: `mlx`, `mlx-lm` (Apple Silicon native, bypasses PyTorch entirely)
+   - `cuda`: `torch` with CUDA index URL
+   - No change needed for MPS — PyTorch already supports it via `device="mps"`
+
+5. **`scripts/setup.sh`** — Detect hardware and suggest the right install command
+
+**MLX path (Apple Silicon):**
+MLX requires replacing `SentenceTransformer` with MLX-native model loading. The `mlx-community` HuggingFace org hosts converted models. This is the most invasive change — it needs an abstraction layer over the embedding interface so both PyTorch and MLX backends can be swapped.
+
+**Estimated impact:**
+- MPS (PyTorch on Apple GPU): ~2x speedup on cross-encoder, minimal code change
+- CUDA: ~5–10x speedup on cross-encoder, minimal code change
+- MLX: ~3–4x speedup, requires embedding abstraction layer
+
+**Lowest-effort win:** Cache the `CrossEncoder` in `reranker.py` and pass `device` from settings. Two files changed, ~10 lines.
