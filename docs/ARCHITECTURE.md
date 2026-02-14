@@ -132,7 +132,7 @@ All queries pass through negation removal before search. Clauses with "without",
 ChromaDB HNSW index finds candidate chunks using cosine similarity against bge-small-en-v1.5 embeddings (384 dimensions). Metadata boosting adds score for title and keyword matches.
 
 ### 3. Arcane Recall (Similarity-Weighted Expansion)
-Every search result undergoes a contextual ritual to expand its vision. Instead of a fixed window, Arcane Recall now uses **Similarity-Weighted Expansion** and **Window Merging** to provide context without bloat.
+Every search result undergoes a contextual ritual to expand its vision. Instead of a fixed window, Arcane Recall now uses **The Scholar's Discernment** and **Arcane Coalescence** to provide context without bloat.
 
 ```
 DOCUMENT SOURCE
@@ -146,7 +146,7 @@ DOCUMENT SOURCE
     │  Chunk 1  ││  Chunk 3  │          │  Chunk 8  │
     └───────────┘└───────────┘          └───────────┘
           │           │                       │
-          │     WINDOW MERGING          SIMILARITY PRUNING
+          │     ARCANE COALESCENCE      SCHOLAR'S DISCERNMENT
           ▼           ▼                       ▼
     ┌───────────────────────┐          ┌─────────────┐
     │    DIVINE WINDOW      │          │ PRUNED WIN  │
@@ -159,8 +159,8 @@ DOCUMENT SOURCE
                (Exactly n_results sections)
 ```
 
-- **Window Merging**: If multiple results come from the same section of a document, they are merged into a single cohesive Divine Window, preventing redundant text and saving tokens.
-- **Similarity Weighting**: Neighboring chunks are only included if they are semantically related to thy query (threshold 0.92) or contain continuation markers (like Markdown lists).
+- **Arcane Coalescence**: If multiple results come from the same section of a document, they are merged into a single cohesive Divine Window, preventing redundant text and saving tokens.
+- **The Scholar's Discernment**: Neighboring chunks are only included if they are semantically related to thy query (threshold 0.92) or contain continuation markers (like Markdown lists).
 - **Global Capping**: The library ensures exactly `n_results` merged sections are returned, backfilling from the candidate pool as needed.
 
 **Impact:**

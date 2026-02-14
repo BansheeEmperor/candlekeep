@@ -34,7 +34,7 @@ A RAG knowledge base server that gives AI agents the power to search, retrieve, 
 ## The Arcane Arts
 
 - **Bardic Knowledge** — Documents are enriched with title and description at ingestion, woven into every embedding
-- **Arcane Recall** — Each search result expands to include ±2 adjacent chunks, returning full sections instead of fragments (+17% content match)
+- **Arcane Recall** — Intelligent expansion using **Scholar's Discernment** and **Arcane Coalescence** to return full sections without token waste (+17% content match, -22% tokens)
 - **Wild Magic** — Hybrid retrieval merging Vector and BM25 (lexical) search, fixing "keyword blindness" for exact identifiers (+47% lexical quality)
 - **Divine Insight** — Cross-encoder reranking for when precision matters more than speed (~1.5s, +2.6% precision)
 - **The Relevance Ward** — Results below a confidence threshold are filtered, so the library says "I don't know" instead of guessing
