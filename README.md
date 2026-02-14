@@ -35,12 +35,14 @@ A RAG knowledge base server that gives AI agents the power to search, retrieve, 
 
 - **Bardic Knowledge** — Documents are enriched with title and description at ingestion, woven into every embedding
 - **Arcane Recall** — Each search result expands to include ±2 adjacent chunks, returning full sections instead of fragments (+17% content match)
+- **Wild Magic** — Hybrid retrieval merging Vector and BM25 (lexical) search, fixing "keyword blindness" for exact identifiers (+47% lexical quality)
 - **Divine Insight** — Cross-encoder reranking for when precision matters more than speed (~1.5s, +2.6% precision)
 - **The Relevance Ward** — Results below a confidence threshold are filtered, so the library says "I don't know" instead of guessing
 
 ## Features
 
-- **Adaptive Search**: Two paths — `simple` (22–36ms, typically ~26ms) and `precise` (~1550ms)
+- **Adaptive Search**: Three paths — `simple` (Vector, ~26ms), `hybrid` (BM25+Vector, ~80ms), and `precise` (Reranked, ~1550ms)
+- **Statistical Rigor**: Validated against **The Centurion Set** (100+ multi-category queries)
 - **Quality Gate**: Documents must have frontmatter and structure to enter the library
 - **Embedding Protection**: Auto-detects model mismatch on remote databases
 - **8 MCP Tools**: Search, ingest, critique, generate docs, and more
@@ -81,7 +83,10 @@ Set `CANDLEKEEP_SPICE` to `"true"` for the wizard sage persona, or omit for prof
 - [Setup Guide](docs/SETUP.md) — Local and remote installation
 - [Authentication](docs/AUTHENTICATION.md) — Token configuration
 - [Architecture](docs/ARCHITECTURE.md) — System design
+- [Benchmark Results](docs/BENCHMARK_RESULTS.md) — Quality and performance metrics
+- [Interactive Benchmark Chart](docs/benchmark_chart.html) — Visual comparison of paths
 - [Design Decisions](docs/DESIGN.md) — Why things are the way they are
+- [Glossary of Retrieval](docs/GLOSSARY.md) — IR metrics explained in wizard sage style
 - [Research Diary](docs/RESEARCH_DIARY.md) — The full journey, every experiment
 - [The Keeper's Chronicle](docs/THE_KEEPER_OF_CANDLEKEEP.md) — The story of how the library was built
 

@@ -77,9 +77,9 @@ Candlekeep is a RAG (Retrieval-Augmented Generation) knowledge base server that 
 └─────────────────────────────────────────────────────────┘
 ```
 
-## The Two Roads
+## The Three Roads
 
-Candlekeep provides two distinct search paths through the library, allowing the agent to choose between speed and depth.
+Candlekeep provides three distinct search paths through the library, allowing the agent to choose between speed, lexical precision, and semantic depth.
 
 ```
             [ INPUT QUERY ]
@@ -88,29 +88,35 @@ Candlekeep provides two distinct search paths through the library, allowing the 
          │ Negation Removal  │
          └─────────┬─────────┘
                    │
-         ┌─────────▼─────────┐
-         │   Vector Search   │
-         │  (Bi-Encoder)     │
-         └─────────┬─────────┘
-                   │
-         ┌─────────▼─────────┐
-         │   Arcane Recall   │
-         │ (Chunk Expansion) │
-         └─────────┬─────────┘
-                   │
          SEARCH ROUTER DECISION
-         ┌─────────┴─────────┐
-         │                   │
-  [ ROAD 1: SIMPLE ]  [ ROAD 2: PRECISE ]
-  (Latency: ~23ms)    (Latency: ~1550ms)
-         │                   │
-  ┌──────▼──────┐     ┌──────▼──────┐
-  │  Relevance  │     │   Divine    │
-  │    Ward     │     │   Insight   │
-  │ (Filtering) │     │ (Reranking) │
-  └──────┬──────┘     └──────┬──────┘
-         │                   │
-         └─────────┬─────────┘
+         ┌─────────┼─────────┐
+         │         │         │
+  [ ROAD 1 ]    [ ROAD 2 ]    [ ROAD 3 ]
+  [ SIMPLE ]    [ HYBRID ]    [ PRECISE ]
+  (~23ms)       (~80ms)       (~1550ms)
+     │             │             │
+┌────▼────┐   ┌────▼────┐   ┌────▼────┐
+│ Vector  │   │ Vector  │   │ Vector  │
+│ Search  │   │   +     │   │ Search  │
+└────┬────┘   │ BM25    │   └────┬────┘
+     │        └────┬────┘        │
+     │             ▼             │
+     │        ┌─────────┐        │
+     │        │  Rank   │        │
+     │        │ Fusion  │        │
+     │        └────┬────┘        │
+     │             │             │
+┌────▼─────────────▼─────────────▼────┐
+│            Arcane Recall            │
+│          (Chunk Expansion)          │
+└────┬─────────────┬─────────────┬────┘
+     │             │             │
+┌────▼────┐   ┌────▼────┐   ┌────▼────┐
+│Relevance│   │Relevance│   │ Divine  │
+│  Ward   │   │  Ward   │   │ Insight │
+└────┬────┘   └────┬────┘   └────┬────┘
+     │             │             │
+     └─────────────┼─────────────┘
                    ▼
             [ FINAL RESULTS ]
 ```

@@ -52,19 +52,19 @@ A trade worth making. The Keeper committed the code and moved on.
 
 ### III. The Wild Magic Surge
 
-Confidence is a dangerous thing.
+Confidence is a dangerous thing, but necessity is a powerful motivator.
 
-Flush with the success of Bardic Knowledge, the Keeper reached for something ambitious: hybrid search. Vector embeddings for semantic understanding, BM25 for keyword matching. Two search strategies fused together, each covering the other's blind spots. The research papers promised great things. Eighty percent vector weight, twenty percent BM25. A balanced approach.
+The Keeper noticed a recurring failure: technical identifiers. UUIDs, hex codes like `0xEF`, and specific version strings like `v3.4.1` were invisible to the vector embeddings. To a semantic model, `v3.4.1` and `v3.4.2` are almost identical, but to an engineer, they are worlds apart.
 
-The Keeper called it Wild Magic Surge, because combining two volatile forces always carries risk.
+The Keeper reached for a forgotten art: **Hybrid Search**.
 
-The risk materialized.
+By merging the semantic depth of Vector embeddings with the literal precision of BM25 (keyword matching), the library could finally see the exact symbols it had previously ignored. The Keeper implemented **Reciprocal Rank Fusion (RRF)** — a mathematical ritual to merge these two disparate ranked lists into a single, unified result set.
 
-Precision dropped. Content match dropped. Every metric that mattered went the wrong direction. BM25 was matching on surface-level keywords, dragging irrelevant documents into the results and diluting the careful semantic ranking that Bardic Knowledge had built. The keyword matches looked right on paper — yes, the word "caching" appeared in that document — but the document was about CPU cache lines, not application caching strategies.
+The benchmarks were transformative.
 
-The Keeper stared at the numbers for a long time. Then deleted the branch.
+**Lexical precision jumped by forty-seven percent.** Identifiers that had been buried in the noise were suddenly promoted to the top of the desk. The library was no longer just understanding the "vibe" of a question; it was matching the exact sigils.
 
-Some spells aren't meant to be combined.
+The Keeper named it **Wild Magic**, because it bridges the gap between the intuitive (semantic) and the literal (lexical). It became the third road through the library, sitting comfortably between the speed of the Simple path and the depth of the Precise.
 
 ---
 
@@ -334,7 +334,7 @@ The Keeper added a check. If the model directory didn't exist in the local cache
 
 The Keeper closed the research diary at entry twenty-three and looked at what had been built.
 
-Two roads through the library. The simple path at twenty-three milliseconds — Bardic Knowledge in the embeddings, Arcane Recall expanding every result, a relevance threshold filtering the noise. The precise path at fifteen hundred milliseconds — the same foundation, plus a cross-encoder examining every candidate with slow, thorough judgment.
+Three roads through the library. The simple path at twenty-three milliseconds — Bardic Knowledge in the embeddings, Arcane Recall expanding every result, a relevance threshold filtering the noise. The hybrid road of Wild Magic, merging keywords and semantic meaning for technical precision. The precise path at fifteen hundred milliseconds — the same foundation, plus a cross-encoder examining every candidate with slow, thorough judgment.
 
 Eighty-seven percent content match on the fast path. Ninety-two percent when the agent decomposed complex questions into focused searches. Twenty-six milliseconds at scale with nearly three thousand chunks. No bottlenecks. No silent failures. No wrong answers to wrong questions.
 
@@ -359,11 +359,11 @@ For those who seek the science behind the sorcery, here is the mapping of the li
 | **Bardic Knowledge** | Ingestion-time document context prefixing | `src/candlekeep/rag/processor.py` |
 | **Arcane Recall** | Post-retrieval chunk expansion (±2) | `src/candlekeep/rag/arcane_recall.py` |
 | **Divine Insight** | Cross-encoder reranking | `src/candlekeep/rag/reranker.py` |
+| **Wild Magic** | Hybrid Search (Vector + BM25 Lexical) | `src/candlekeep/rag/hybrid.py` |
 | **The Relevance Ward** | Score-based result filtering (threshold 0.65) | `src/candlekeep/rag/router.py` |
 | **Mirror Image** | Query expansion variations (Research only) | `tests/test_mirror_image.py` |
 | **Flurry of Blows** | Query decomposition into sub-questions | `tests/test_flurry_of_blows.py` |
 | **Illusory Script** | Hypothetical Document Embeddings (HyDE) | `tests/test_illusory_script.py` |
-| **Wild Magic Surge** | Hybrid Search (Vector + Keyword - Deleted) | `docs/RESEARCH_DIARY.md` (Entry 3) |
 | **The Scrying Window** | Sentence Window Retrieval (Deleted) | `docs/RESEARCH_DIARY.md` (Entry 4) |
 | **Embedding Protection** | Model mismatch detection on connection | `src/candlekeep/database/vector_store.py` |
 | **Search Router** | Adaptive routing between search paths | `src/candlekeep/rag/router.py` |
