@@ -23,6 +23,63 @@ Early designs proposed 6 query types (simple, broad, complex, abstract, context,
 
 **Decision:** Two paths — `simple` (23ms) and `precise` (1.5s). The agent picks.
 
+```
+The Two Roads Through Candlekeep
+═════════════════════════════════
+
+Query arrives
+     │
+     ▼
+┌─────────────────────────────────────────────────┐
+│  Agent chooses path based on query complexity   │
+└─────────────────────────────────────────────────┘
+     │
+     ├──────────────────────┬──────────────────────┐
+     │                      │                      │
+     ▼                      ▼                      ▼
+┌─────────┐          ┌─────────┐          ┌─────────┐
+│ SIMPLE  │          │ PRECISE │          │ AGENT   │
+│  PATH   │          │  PATH   │          │ DECOMP  │
+└─────────┘          └─────────┘          └─────────┘
+     │                      │                      │
+     │                      │                      │
+  ~23ms                  ~1.5s              Multiple
+     │                      │               simple
+     │                      │               searches
+     ▼                      ▼                      │
+┌─────────┐          ┌─────────┐                  │
+│ Vector  │          │ Vector  │                  │
+│ Search  │          │ Search  │                  │
+└─────────┘          └─────────┘                  │
+     │                      │                      │
+     ▼                      ▼                      │
+┌─────────┐          ┌─────────┐                  │
+│ Arcane  │          │ Arcane  │                  │
+│ Recall  │          │ Recall  │                  │
+│  (±2)   │          │  (±2)   │                  │
+└─────────┘          └─────────┘                  │
+     │                      │                      │
+     │                      ▼                      │
+     │               ┌─────────┐                  │
+     │               │ Divine  │                  │
+     │               │ Insight │                  │
+     │               │ Rerank  │                  │
+     │               └─────────┘                  │
+     │                      │                      │
+     ▼                      ▼                      ▼
+┌──────────────────────────────────────────────────┐
+│         Relevance Ward (threshold 0.65)          │
+└──────────────────────────────────────────────────┘
+     │
+     ▼
+  Results to agent
+
+Use cases:
+- Simple: "What's the API endpoint for search?"
+- Precise: "Compare authentication methods and recommend one"
+- Agent decomp: "How do I set up, configure, and deploy?"
+```
+
 ### 3.2 Agent Decomposes, Tool Searches
 
 We implemented and tested LLM-based query decomposition (Flurry of Blows) inside the search tool. It added 1.1s latency and required LLM API credentials. Meanwhile, the calling agent — already a frontier LLM — can decompose queries better and for free.
