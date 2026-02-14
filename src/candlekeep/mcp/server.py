@@ -143,6 +143,7 @@ def search(
         query_type: Controls search strategy. One of:
             - "simple": Direct lookup with expanded context (~23ms)
             - "precise": High accuracy, expands + reranks (~1550ms)
+            - "hybrid": Lexical (BM25) + Vector (Semantic) fusion (~80ms)
 
         For complex multi-part questions, make multiple simple searches
         (one per sub-question) and synthesize the results yourself.

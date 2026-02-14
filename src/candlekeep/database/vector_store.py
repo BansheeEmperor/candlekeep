@@ -72,6 +72,10 @@ class ChromaVectorStore(VectorDatabase):
         if not chunks:
             return 0
 
+        # Invalidate hybrid search cache
+        from candlekeep.rag.hybrid import clear_bm25_cache
+        clear_bm25_cache()
+
         # Delete existing chunks from same sources
         sources = set(c.metadata["source"] for c in chunks)
         for source in sources:
@@ -145,6 +149,9 @@ class ChromaVectorStore(VectorDatabase):
 
     def delete_by_source(self, source: str) -> int:
         """Delete all chunks from a source file."""
+        from candlekeep.rag.hybrid import clear_bm25_cache
+        clear_bm25_cache()
+        
         results = self.collection.get(where={"source": source})
         if results["ids"]:
             self.collection.delete(ids=results["ids"])
@@ -153,6 +160,9 @@ class ChromaVectorStore(VectorDatabase):
 
     def clear(self) -> None:
         """Clear all documents from the collection."""
+        from candlekeep.rag.hybrid import clear_bm25_cache
+        clear_bm25_cache()
+        
         self.client.delete_collection("candlekeep")
         self.collection = self.client.get_or_create_collection(
             name="candlekeep", metadata={"hnsw:space": "cosine"}
@@ -240,6 +250,17 @@ class ChromaVectorStore(VectorDatabase):
     def get_chunks_by_source(self, source: str) -> list[SearchResult]:
         """Get all chunks from a specific source document."""
         results = self.collection.get(where={"source": source})
+        if not results["ids"]:
+            return []
+
+        return [
+            SearchResult(text=doc, metadata=meta, score=1.0, doc_id=doc_id)
+            for doc_id, doc, meta in zip(results["ids"], results["documents"], results["metadatas"])
+        ]
+
+    def get_all_chunks(self) -> list[SearchResult]:
+        """Get all chunks from the database."""
+        results = self.collection.get()
         if not results["ids"]:
             return []
 
