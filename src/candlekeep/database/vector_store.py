@@ -126,21 +126,29 @@ class ChromaVectorStore(VectorDatabase):
             if r.metadata.get("filename", "") not in excluded_files
         ]
 
-        # Re-rank with metadata boosting
+        # Re-rank with metadata boosting (Bardic Inspiration)
         query_terms = set(query.lower().split())
         for r in candidates:
             boost = 0
             
-            # Title matching
+            # Title matching - High priority
             title = r.metadata.get("title", "").lower()
             title_matches = sum(1 for t in query_terms if t in title)
             if title_matches > 0:
-                boost += min(title_matches * 0.1, 0.3)
+                # Up to 0.6 boost for title (significant)
+                boost += min(title_matches * 0.2, 0.6)
             
-            # Keyword matching
+            # Description matching - Medium priority
+            description = r.metadata.get("description", "").lower()
+            desc_matches = sum(1 for t in query_terms if t in description)
+            if desc_matches > 0:
+                boost += min(desc_matches * 0.1, 0.3)
+            
+            # Keyword matching - Medium priority
             keywords = r.metadata.get("keywords", "").lower()
             kw_matches = sum(1 for t in query_terms if t in keywords)
-            boost += min(kw_matches * 0.05, 0.15)
+            if kw_matches > 0:
+                boost += min(kw_matches * 0.1, 0.3)
             
             r.score += boost
 
