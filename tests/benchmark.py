@@ -14,6 +14,7 @@ class BenchmarkQuery:
     expected_sources: List[str]  # Documents that should be retrieved
     expected_content: List[str]  # Key phrases that should appear in results
     category: str | None = None
+    sub_queries: List[str] | None = None # For mocking agent decomposition
 
 
 @dataclass
@@ -51,12 +52,27 @@ class RAGBenchmark:
         
         for q in self.queries:
             start = time.time()
-            search_results = self.search_fn(q.query, n_results)
+            
+            # Execute search (mocking agent decomposition if sub_queries exist)
+            queries_to_run = q.sub_queries if q.sub_queries else [q.query]
+            all_search_results = []
+            
+            for sub_q in queries_to_run:
+                all_search_results.extend(self.search_fn(sub_q, n_results))
+            
             latency = (time.time() - start) * 1000
+            
+            # Deduplicate results by text content or doc_id to avoid double-counting
+            unique_results = []
+            seen_texts = set()
+            for r in all_search_results:
+                if r.text not in seen_texts:
+                    unique_results.append(r)
+                    seen_texts.add(r.text)
             
             # Extract sources from results (normalize to relative paths)
             retrieved_sources = []
-            for r in search_results:
+            for r in unique_results:
                 source = r.metadata.get('source', '')
                 # Normalize to relative path for comparison
                 if 'tests/fixtures' in source:
@@ -67,19 +83,31 @@ class RAGBenchmark:
             expected_sources = [s if not s.startswith('/') else s[s.index('tests/'):] if 'tests/' in s else s 
                               for s in q.expected_sources]
             
-            # Calculate precision: how many retrieved are relevant?
-            relevant_retrieved = sum(1 for s in retrieved_sources if s in expected_sources)
-            precision = relevant_retrieved / len(retrieved_sources) if retrieved_sources else 0
+            # Calculate precision: ratio of relevant chunks to total chunks
+            relevant_chunks_count = sum(1 for s in retrieved_sources if s in expected_sources)
+            if not expected_sources:
+                # Adversarial query: success is finding nothing
+                precision = 1.0 if not retrieved_sources else 0.0
+            else:
+                precision = relevant_chunks_count / len(retrieved_sources) if retrieved_sources else 0
             
-            # Calculate recall: how many relevant were retrieved?
-            recall = relevant_retrieved / len(expected_sources) if expected_sources else 0
+            # Calculate recall: ratio of expected sources found at least once
+            found_sources = set(s for s in retrieved_sources if s in expected_sources)
+            if not expected_sources:
+                recall = 1.0 if not retrieved_sources else 0.0
+            else:
+                recall = len(found_sources) / len(expected_sources)
             
             # Check for expected content
-            all_text = ' '.join([r.text for r in search_results])
-            found_content = [c for c in q.expected_content if c.lower() in all_text.lower()]
+            all_text = ' '.join([r.text for r in unique_results])
+            if not q.expected_content and not expected_sources:
+                # Adversarial success: no content found
+                found_content = []
+            else:
+                found_content = [c for c in q.expected_content if c.lower() in all_text.lower()]
             
             # Get top score
-            top_score = search_results[0].score if search_results else 0.0
+            top_score = unique_results[0].score if unique_results else 0.0
             
             results.append(BenchmarkResult(
                 query=q.query,
@@ -94,6 +122,8 @@ class RAGBenchmark:
                 latency_ms=latency,
                 top_score=top_score
             ))
+            # Tag the result with category from the query
+            results[-1].category = q.category
         
         return results
     
@@ -110,6 +140,19 @@ class RAGBenchmark:
         # F1 score (harmonic mean of precision and recall)
         f1 = 2 * (avg_precision * avg_recall) / (avg_precision + avg_recall) if (avg_precision + avg_recall) > 0 else 0
         
+        # By category (Core vs Agent)
+        by_category = {}
+        categories = set(r.category for r in results if r.category)
+        for cat in categories:
+            cat_results = [r for r in results if r.category == cat]
+            if cat_results:
+                by_category[cat] = {
+                    'count': len(cat_results),
+                    'precision': sum(r.precision for r in cat_results) / len(cat_results),
+                    'recall': sum(r.recall for r in cat_results) / len(cat_results),
+                    'latency_ms': sum(r.latency_ms for r in cat_results) / len(cat_results)
+                }
+
         # By difficulty
         by_difficulty = {}
         for difficulty in ['easy', 'medium', 'hard']:
@@ -122,10 +165,10 @@ class RAGBenchmark:
                     'latency_ms': sum(r.latency_ms for r in diff_results) / len(diff_results)
                 }
         
-        # Content match rate
-        content_matches = sum(len(r.found_content) for r in results)
-        content_expected = sum(len(r.expected_content) for r in results)
-        content_match_rate = content_matches / content_expected if content_expected > 0 else 0
+        # Content match rate (excluding adversarial)
+        content_matches = sum(len(r.found_content) for r in results if r.expected_sources)
+        content_expected = sum(len(r.expected_content) for r in results if r.expected_sources)
+        content_match_rate = content_matches / content_expected if content_expected > 0 else 1.0
         
         return {
             'total_queries': total,
@@ -135,7 +178,8 @@ class RAGBenchmark:
             'avg_latency_ms': avg_latency,
             'avg_top_score': avg_top_score,
             'content_match_rate': content_match_rate,
-            'by_difficulty': by_difficulty
+            'by_difficulty': by_difficulty,
+            'by_category': by_category
         }
     
     def print_report(self, results: List[BenchmarkResult], summary: Dict[str, Any]):
@@ -150,8 +194,13 @@ class RAGBenchmark:
         print(f"  F1 Score:   {summary['f1_score']:.1%}")
         print(f"  Content:    {summary['content_match_rate']:.1%} (expected phrases found)")
         print(f"  Latency:    {summary['avg_latency_ms']:.1f}ms avg")
-        print(f"  Top Score:  {summary['avg_top_score']:.3f} avg")
         
+        if summary['by_category']:
+            print(f"\n🏷️  By Category")
+            for cat, metrics in summary['by_category'].items():
+                print(f"  {cat:10} ({metrics['count']:2} queries): "
+                      f"P={metrics['precision']:.1%} R={metrics['recall']:.1%}")
+
         print(f"\n📈 By Difficulty")
         for diff, metrics in summary['by_difficulty'].items():
             print(f"  {diff.capitalize():8} ({metrics['count']:2} queries): "
