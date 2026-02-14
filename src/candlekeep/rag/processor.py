@@ -26,16 +26,18 @@ class DocumentProcessor:
         base_meta = {"source": str(path), "filename": path.name, "extension": path.suffix}
         base_meta.update(frontmatter)
 
-        # Build context prefix from metadata
-        context_parts = []
-        if "title" in base_meta:
-            context_parts.append(f"Document: {base_meta['title']}")
-        if "description" in base_meta:
-            context_parts.append(f"Description: {base_meta['description']}")
-        
-        context_prefix = ". ".join(context_parts)
-        if context_prefix:
-            context_prefix += ".\n\n"
+        # Build context prefix from metadata (Bardic Knowledge)
+        context_prefix = ""
+        if self.settings.bardic_knowledge:
+            context_parts = []
+            if "title" in base_meta:
+                context_parts.append(f"Document: {base_meta['title']}")
+            if "description" in base_meta:
+                context_parts.append(f"Description: {base_meta['description']}")
+            
+            context_prefix = ". ".join(context_parts)
+            if context_prefix:
+                context_prefix += ".\n\n"
 
         return [
             Chunk(

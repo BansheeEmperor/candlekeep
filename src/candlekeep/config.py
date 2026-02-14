@@ -81,6 +81,9 @@ class Settings:
     # Personality
     spice: bool = field(default_factory=lambda: os.getenv("CANDLEKEEP_SPICE", "false").lower() == "true")
     
+    # Structural Integrity (Bardic Knowledge)
+    bardic_knowledge: bool = field(default_factory=lambda: os.getenv("CANDLEKEEP_BARDIC_KNOWLEDGE", "true").lower() == "true")
+
     # Data directory
     data_dir: Path = field(default_factory=get_data_dir)
 
