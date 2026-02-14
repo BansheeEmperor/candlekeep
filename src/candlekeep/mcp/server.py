@@ -64,6 +64,7 @@ def _background_init():
         _loading = False
         return
     print(f"[candlekeep] ✓ Connected to {_settings.chroma_url}", file=sys.stderr)
+    print(f"[candlekeep] ✓ Device: {_settings.device}", file=sys.stderr)
     _write_access = _verify_write_access()
     if _write_access:
         print("[candlekeep] ✓ Write access enabled", file=sys.stderr)
