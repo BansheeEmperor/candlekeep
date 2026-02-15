@@ -34,11 +34,13 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 
 ### Domain Performance (MRR / nDCG)
 
-| Category | Simple (Vector) | Hybrid (BM25+Vector) | Note |
-|----------|-----------------|----------------------|------|
-| **Lexical** (Identifiers) | 0.42 / 0.44 | **0.53 / 0.55 (+26%)** | Fixing "Keyword Blindness" |
-| **Semantic** (Concepts) | 0.87 / 0.87 | **0.89 / 0.90 (+2%)** | Stable semantic depth |
-| **Adversarial** (Noise) | 1.00 (Block Rate) | 1.00 (Block Rate) | Fully warded |
+| Category | Simple (Vector) | Hybrid (BM25+Vector) | Precise (Reranked) | Note |
+|----------|-----------------|----------------------|--------------------|------|
+| **Lexical** (Identifiers) | 0.42 / 0.44 | **0.53 / 0.55 (+26%)** | 0.42 / 0.42 | Fixing "Keyword Blindness" |
+| **Semantic** (Concepts) | 0.87 / 0.87 | **0.89 / 0.90 (+2%)** | 0.87 / 0.87 | Stable semantic depth |
+| **Adversarial** (Noise) | 0.0 / 0.0 | 0.0 / 0.0 | 0.0 / 0.0 | Warded ¹ |
+
+¹ MRR of 0.0 means no adversarial query surfaced a relevant result in the top position. The hybrid path fully filters adversarial queries via the RRF threshold (Hit Rate@5 = 0.0); simple and precise paths may still return low-relevance results that score above the vector threshold (Hit Rate@5 = 0.40 and 0.33 respectively).
 
 ---
 
@@ -64,7 +66,7 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 
 ### [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (Thresholding)
 **Implementation:** A score-based filter applied to all retrieval results (see [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference)).
-**Analysis:** Filters out out-of-domain "noise". Successfully blocked adversarial technical queries (e.g., "quantum photosynthesis") while preserving legitimate technical matches.
+**Analysis:** Filters out out-of-domain "noise". No adversarial query surfaced a relevant result in the top position (MRR=0.0 across all paths). The hybrid path fully filters adversarial queries; simple and precise paths may still return low-relevance results that score above the vector threshold.
 
 ---
 
