@@ -117,3 +117,24 @@ At the current corpus scale, HNSW non-determinism has negligible impact on ranki
 Benchmark comparisons should exceed 2σ (±1.0% for Hit Rate@5) to be considered significant. For MRR and nDCG@5, any observed difference is meaningful at this corpus scale.
 
 *Measured with `scripts/reproducibility_test.py --runs 5`. Raw data in `tests/results/reproducibility_simple.json`.*
+
+---
+
+## Cold-Start Latency
+
+Cold-start latency measures the time from the initial process spawn until the first search result is returned. This includes Python interpreter startup, module imports (including heavy libraries like PyTorch and SentenceTransformers), database connection, and model loading.
+
+| Metric | Measured Value |
+|--------|----------------|
+| **Avg Cold-Start (Total)** | **5,825 ms** (±41ms) |
+| **Avg Cold-Start (Internal)** | **4,534 ms** (±25ms) |
+
+**Methodology:**
+- **Iterations:** 7
+- **Process:** Parent process spawns a fresh Python process for each iteration.
+- **Query:** Simple search path against a seeded collection (89 docs).
+- **Environment:** CPU-only mode (`CANDLEKEEP_DEVICE=cpu`) to ensure consistency.
+- **Hardware:** AMD Ryzen 7 7800X3D (8-Core), 32GB RAM, Linux (Arch 6.18).
+- **Python:** 3.11.14
+
+*Note: The ~1.3s delta between "Total" and "Internal" represents the overhead of the Python interpreter startup and initial module discovery before the application's timing loop begins.*

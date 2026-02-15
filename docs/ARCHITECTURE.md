@@ -309,6 +309,7 @@ All settings via environment variables (`.env` file):
 | Simple search latency (local) | < 100ms (~57ms measured) |
 | Simple search latency (remote) | ~400ms |
 | Precise search latency | ~175ms (Centurion Set, warm model, Relevance Ward pre-filtering active) |
+| Cold-start latency (process spawn to result) | ~5,825ms (CPU, cold model) |
 | Content match (decomposed) | > 90% (legacy 23-query suite, Diary Entry 20) |
 | Precision (simple) | > 85% |
 | Scale tested | 2,770 chunks, 80 docs |
