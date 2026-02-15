@@ -96,7 +96,7 @@ LLM-based query decomposition (Flurry of Blows) was implemented and tested insid
 
 ### 3.3 [Arcane Recall](GLOSSARY.md#arcane-recall) as Universal Default
 
-Chunk expansion (returning adjacent chunks around each match) improved content match by +17% with minimal latency and zero precision loss. No reason not to apply it to every search.
+Chunk expansion (returning adjacent chunks around each match) improved content match by +17% (15-query legacy suite; see Research Diary Entry 2) with minimal latency and zero precision loss. No reason not to apply it to every search.
 
 **Decision:** Every search path uses Arcane Recall. Optimized with per-document chunk lookup instead of full DB scan.
 
@@ -167,17 +167,17 @@ If a remote ChromaDB was populated with model A and the local config says model 
 | [Wild Magic](GLOSSARY.md#lexical-matching-bm25) (BM25 hybrid) | Higher lexical quality | ✅ Hybrid path |
 | Scrying Window (sentence splitting) | Precision collapse | ❌ Rejected |
 
+*Note: The "Result" column references metrics from the retired 15-query legacy suite (Research Diary Entries 1–8). The current evaluation standard is the [Centurion Set](BENCHMARK_RESULTS.md) (108 queries) which uses MRR, nDCG@5, and Hit Rate@5.*
+
 ## 5. [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference) Validated
 
 | Parameter | Tested Values | Optimal | Rationale |
 |-----------|--------------|---------|-----------|
-| Chunk size | 256, 512, 768, 1024 | 512 | Best content match; [Arcane Recall](GLOSSARY.md#arcane-recall) compensates for size |
+| Chunk size | 256, 512, 768, 1024 | 512 | Best content match on 23-query suite (Entry 21); [Arcane Recall](GLOSSARY.md#arcane-recall) compensates for size |
 | Chunk overlap | 0, 25, 50, 100 | 50 | Benchmarked on Centurion Set (Entry 29). Overlap=25 marginally better (+1.3% MRR) but within noise. 50 retained as standard. |
-| Expansion size | ±1, ±2, ±3, ±4 | ±2 | ±3 no benefit, ±4 hurts precision ² |
-
-² Re-validated on the Centurion Set (108 queries, Entry 28). Retrieval quality is identical across ±1/±2/±3 due to similarity-weighted pruning. ±2 confirmed optimal: sufficient search radius without the latency cost of ±3.
-| Embedding model | minilm, bge-small, nomic | bge-small | Best content, good speed |
-| [The Relevance Ward](GLOSSARY.md#the-relevance-ward) | Configured range | Technical Reference | Clean gap between adversarial and legitimate |
+| Expansion size | ±1, ±2, ±3, ±4 | ±2 | Re-validated on Centurion Set (108 queries, Entry 28). ±3 no benefit, ±4 hurts precision. |
+| Embedding model | minilm, bge-small, nomic | bge-small | Best content match on 23-query suite (Entry 22), good speed |
+| [The Relevance Ward](GLOSSARY.md#the-relevance-ward) | Configured range | Technical Reference | Clean statistical separation between adversarial and legitimate (Entry 16, validated on Centurion Set) |
 
 ## 6. Scalability
 
