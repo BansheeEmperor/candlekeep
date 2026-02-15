@@ -29,20 +29,20 @@
 
 *The great library fortress on the Sword Coast, where all knowledge is preserved.*
 
-A RAG knowledge base server that gives AI agents the power to search, retrieve, and manage technical documentation through the Model Context Protocol. Ask a question, and the library answers — with the right scroll, expanded to full context, in 23 milliseconds.
+A RAG knowledge base server that gives AI agents the power to search, retrieve, and manage technical documentation through the Model Context Protocol. Ask a question, and the library answers — with the right scroll, expanded to full context, in milliseconds.
 
 ## The Arcane Arts
 
 - [**Bardic Knowledge**](docs/GLOSSARY.md#bardic-knowledge) — Documents are enriched with title and description at ingestion, woven into every embedding
-- [**Bardic Inspiration**](docs/GLOSSARY.md#bardic-inspiration) — Result-time metadata boosting that ensures specific technical guides outrank generic content (+10x confidence gap)
-- [**Arcane Recall**](docs/GLOSSARY.md#arcane-recall) — Intelligent expansion using [**Scholar's Discernment**](docs/GLOSSARY.md#the-scholars-discernment) and [**Arcane Coalescence**](docs/GLOSSARY.md#arcane-coalescence) to return full sections without token waste (+17% content match, -22% tokens)
-- [**Wild Magic**](docs/GLOSSARY.md#lexical-matching-bm25) — Hybrid retrieval merging Vector and BM25 (lexical) search, fixing "keyword blindness" for exact identifiers (+47% lexical quality)
-- [**Divine Insight**](docs/GLOSSARY.md#cross-encoder-reranking) — Cross-encoder reranking for when precision matters more than speed (~1.5s, +2.6% precision)
-- [**The Relevance Ward**](docs/GLOSSARY.md#the-relevance-ward) — Results below a confidence threshold are filtered, so the library says "I don't know" instead of guessing
+- [**Bardic Inspiration**](docs/GLOSSARY.md#bardic-inspiration) — Result-time metadata boosting that ensures specific technical guides outrank generic content
+- [**Arcane Recall**](docs/GLOSSARY.md#arcane-recall) — Intelligent expansion using [**Scholar's Discernment**](docs/GLOSSARY.md#the-scholars-discernment) and [**Arcane Coalescence**](docs/GLOSSARY.md#arcane-coalescence) to return full sections without token waste
+- [**Wild Magic**](docs/GLOSSARY.md#lexical-matching-bm25) — Hybrid retrieval merging Vector and BM25 (lexical) search, fixing "keyword blindness" for exact identifiers
+- [**Divine Insight**](docs/GLOSSARY.md#cross-encoder-reranking) — Cross-encoder reranking for when precision matters more than speed
+- [**The Relevance Ward**](docs/GLOSSARY.md#the-relevance-ward) — Results below a [configured threshold](docs/ARCHITECTURE.md#tuned-parameters-reference) are filtered, so the library says "I don't know" instead of guessing
 
 ## Features
 
-- **Adaptive Search**: Three paths — `simple` (Vector, ~26ms), `hybrid` (BM25+Vector, ~80ms), and `precise` (Reranked, ~1550ms)
+- **[Adaptive Search Routing](docs/ARCHITECTURE.md#the-three-roads)**: Three paths — `simple` (Vector), `hybrid` (BM25+Vector), and `precise` (Reranked)
 - **Statistical Rigor**: Validated against **The Centurion Set** (100+ multi-category queries)
 - **Quality Gate**: Documents must have frontmatter and structure to enter the library
 - **Embedding Protection**: Auto-detects model mismatch on remote databases

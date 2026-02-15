@@ -22,7 +22,7 @@ Something had to change.
 
 ---
 
-### II. Bardic Knowledge
+### II. [Bardic Knowledge](GLOSSARY.md#bardic-knowledge)
 
 The idea came at odd hours, the way most ideas do — not in a flash of brilliance but in the slow grind of reading the same chunk of text for the twentieth time and realizing it meant nothing without context.
 
@@ -50,7 +50,7 @@ A trade worth making. The Keeper committed the code and moved on.
 
 ---
 
-### III. The Wild Magic Surge
+### III. The [Wild Magic](GLOSSARY.md#lexical-matching-bm25) Surge
 
 Confidence is a dangerous thing, but necessity is a powerful motivator.
 
@@ -86,7 +86,7 @@ The Keeper deleted this branch too, but slower this time. There was a lesson in 
 
 ---
 
-### V. Divine Insight
+### V. [Divine Insight](GLOSSARY.md#cross-encoder-reranking)
 
 The cross-encoder arrived like a visiting scholar — brilliant, meticulous, and painfully slow.
 
@@ -142,7 +142,7 @@ The Keeper wrote "NOT RECOMMENDED" in the diary and underlined it twice.
 
 ---
 
-### VIII. Arcane Recall
+### VIII. [Arcane Recall](GLOSSARY.md#arcane-recall)
 
 The second technique was humble. No LLM calls. No external services. No network latency. Just a simple observation: the chunks were too small.
 
@@ -226,7 +226,7 @@ Four roads, then. Four words that an agent could speak to choose its path:
 
 *Simple.* The fast road. Seventeen milliseconds. The base search, unadorned. For direct questions with direct answers.
 
-*Context.* The wide road. Thirty-seven milliseconds. Arcane Recall expanding each result into its full section. For questions that need surrounding information — the "why" and "how" that live in the paragraphs around the answer.
+*Context.* The wide road. Thirty-seven milliseconds. [Arcane Recall](GLOSSARY.md#arcane-recall) expanding each result into its full section. For questions that need surrounding information — the "why" and "how" that live in the paragraphs around the answer.
 
 *Complex.* The branching road. Eleven hundred milliseconds. Flurry of Blows decomposing the question into parts, searching each one, merging the results. For questions that are really multiple questions.
 
@@ -316,15 +316,15 @@ The last work was defensive.
 
 The Keeper had noticed that the library answered every question, even the ones it shouldn't. "Quantum entanglement in photosynthesis" returned five results with confident scores, none of them relevant. Vector search has no concept of "I don't know." Every query gets an answer. Every answer has a score. The scores mean nothing when the question has nothing to do with the collection.
 
-The Keeper studied the score distributions. Twenty-three queries, each with a top-result score. The legitimate queries clustered between 0.75 and 1.22. The adversarial query — the quantum entanglement nonsense — scored 0.558. A gap of nearly two-tenths.
+The Keeper studied the score distributions. Twenty-three queries, each with a top-result score. The legitimate queries clustered between 0.847 and 1.22. The adversarial query — the quantum entanglement nonsense — scored 0.709. A gap of nearly one-and-a-half tenths.
 
-A threshold at 0.65. Below that line, the library would return nothing. Above it, results as normal. The Keeper tested it against every query in the benchmark. Zero false negatives. Two true negatives — the adversarial query and a gibberish string both returned empty. The library had learned to say "I don't know."
+A threshold sitting cleanly between adversarial and legitimate scores. Below that line, the library would return nothing. Above it, results as normal. The Keeper tested it against every query in the benchmark. Zero false negatives. Two true negatives — the adversarial query and a gibberish string both returned empty. The library had learned to say "I don't know."
 
-The second ward was subtler. When connecting to a remote database — a remote ChromaDB instance, populated by someone else — there was no guarantee that the embedding model matched. If the remote database held vectors from MiniLM and the local configuration said bge-small, the searches would return results. They would look normal. The scores would be plausible. And every single result would be wrong, because the vector spaces were incompatible.
+The second ward was subtler. When connecting to a remote database — a remote ChromaDB instance, populated by someone else — there was no guarantee that the embedding model matched. If the remote database held vectors from a different model than the local configuration, the searches would return results. They would look normal. The scores would be plausible. And every single result would be wrong, because the vector spaces were incompatible.
 
 The Keeper stored the model name in the collection metadata. On connection, the library checked. If the remote model didn't match the local configuration, it overrode the local setting and logged a warning. No silent failures. No wrong answers dressed in confident scores.
 
-The third ward was the simplest. The embedding models were large — a hundred and thirty megabytes for bge-small alone. If the model wasn't cached locally, the SentenceTransformer library would try to download it. At startup. While the MCP client waited. A thirty-second delay that looked like a hang.
+The third ward was the simplest. The embedding models were large. If the model wasn't cached locally, the SentenceTransformer library would try to download it. At startup. While the MCP client waited. A long delay that looked like a hang.
 
 The Keeper added a check. If the model directory didn't exist in the local cache, exit immediately with a clear message. No downloads at startup. No mysterious delays. Run the setup script first, or don't run at all.
 
@@ -334,11 +334,11 @@ The Keeper added a check. If the model directory didn't exist in the local cache
 
 The Keeper closed the research diary at entry twenty-three and looked at what had been built.
 
-Three roads through the library. The simple path at twenty-three milliseconds — Bardic Knowledge in the embeddings, Arcane Recall expanding every result, a relevance threshold filtering the noise. The hybrid road of Wild Magic, merging keywords and semantic meaning for technical precision. The precise path at fifteen hundred milliseconds — the same foundation, plus a cross-encoder examining every candidate with slow, thorough judgment.
+Three roads through the library. The simple path — [Bardic Knowledge](GLOSSARY.md#bardic-knowledge) in the embeddings, [Arcane Recall](GLOSSARY.md#arcane-recall) expanding every result, and [The Relevance Ward](GLOSSARY.md#the-relevance-ward) filtering the noise. The hybrid road of Wild Magic, merging keywords and semantic meaning for technical precision. The precise path — the same foundation, plus a cross-encoder examining every candidate with slow, thorough judgment.
 
-Eighty-seven percent content match on the fast path. Ninety-two percent when the agent decomposed complex questions into focused searches. Twenty-six milliseconds at scale with nearly three thousand chunks. No bottlenecks. No silent failures. No wrong answers to wrong questions.
+High content match on the fast path. Even higher when the agent decomposed complex questions into focused searches. Low latency at scale. No bottlenecks. No silent failures. No wrong answers to wrong questions.
 
-The fundamentals validated: bge-small for embeddings, five hundred and twelve characters for chunks, plus-or-minus two chunks for expansion. Each tested, each confirmed, each documented.
+The fundamentals validated: optimal chunk size for fragments, similarity-weighted expansion for context. Each tested, each confirmed, each documented.
 
 The Keeper set down the pen. The library stood quiet in the late afternoon, its vector spaces humming with the weight of indexed knowledge. Somewhere in those high-dimensional corridors, the answer to the next question was already waiting.
 
@@ -358,7 +358,7 @@ For those who seek the science behind the sorcery, here is the mapping of the li
 | :--- | :--- | :--- |
 | [**Bardic Knowledge**](GLOSSARY.md#bardic-knowledge) | Ingestion-time document context prefixing | `src/candlekeep/rag/processor.py` |
 | [**Bardic Inspiration**](GLOSSARY.md#bardic-inspiration) | Result-time metadata re-ranking (boosting) | `src/candlekeep/database/vector_store.py` |
-| [**Arcane Recall**](GLOSSARY.md#arcane-recall) | Intelligent contextual expansion | `src/candlekeep/rag/arcane_recall.py` |
+| [**Arcane Recall**](GLOSSARY.md#arcane-recall) | Similarity-Weighted Expansion | `src/candlekeep/rag/arcane_recall.py` |
 | [**Arcane Coalescence**](GLOSSARY.md#arcane-coalescence) | Window merging of adjacent fragments | `src/candlekeep/rag/arcane_recall.py` |
 | [**Scholar's Discernment**](GLOSSARY.md#the-scholars-discernment) | Similarity-weighted context pruning | `src/candlekeep/rag/arcane_recall.py` |
 | [**Divine Insight**](GLOSSARY.md#cross-encoder-reranking) | Cross-encoder reranking | `src/candlekeep/rag/reranker.py` |
