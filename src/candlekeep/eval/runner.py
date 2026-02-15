@@ -82,12 +82,25 @@ class BenchmarkRunner:
     def summarize(self, results: List[EvalResult]) -> Dict[str, Any]:
         if not results:
             return {}
-            
+
+        from candlekeep.eval.statistics import bootstrap_ci
+
+        mrr_scores = [r.rr for r in results]
+        ndcg_scores = [r.ndcg_5 for r in results]
+        hr5_scores = [r.hit_rate_5 for r in results]
+
+        mrr_mean, mrr_lo, mrr_hi = bootstrap_ci(mrr_scores)
+        ndcg_mean, ndcg_lo, ndcg_hi = bootstrap_ci(ndcg_scores)
+        hr5_mean, hr5_lo, hr5_hi = bootstrap_ci(hr5_scores)
+
         summary = {
-            "mrr": sum(r.rr for r in results) / len(results),
-            "avg_ndcg_5": sum(r.ndcg_5 for r in results) / len(results),
+            "mrr": mrr_mean,
+            "mrr_ci": [mrr_lo, mrr_hi],
+            "avg_ndcg_5": ndcg_mean,
+            "avg_ndcg_5_ci": [ndcg_lo, ndcg_hi],
             "avg_hit_rate_1": sum(r.hit_rate_1 for r in results) / len(results),
-            "avg_hit_rate_5": sum(r.hit_rate_5 for r in results) / len(results),
+            "avg_hit_rate_5": hr5_mean,
+            "avg_hit_rate_5_ci": [hr5_lo, hr5_hi],
             "avg_precision_5": sum(r.precision_5 for r in results) / len(results),
             "avg_latency_ms": sum(r.latency_ms for r in results) / len(results),
             "avg_tokens": sum(r.tokens for r in results) / len(results),
