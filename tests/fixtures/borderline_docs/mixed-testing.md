@@ -16,12 +16,16 @@ Use assertion libraries that produce clear failure messages. When a test fails, 
 
 ## Integration Testing
 
-Integration tests verify that components work together. Slower than unit tests. Use test databases.
+Integration tests verify that components work together. Use test databases with known seed data. Reset state between tests to avoid ordering dependencies. Integration tests are slower than unit tests. Run them in CI but not on every keystroke. Focus on critical paths: authentication flows, payment processing, data pipelines.
 
 ## End-to-End Testing
 
-TODO: Add details.
+End-to-end tests validate the full user journey. They are slow and brittle. Use them sparingly for critical flows only. Automate browser tests with tools like Playwright or Cypress. End-to-end tests are important. They catch integration issues. They verify the user experience. They should run in staging environments.
 
 ## Performance Testing
 
-Performance testing is important. Load test your APIs. Use tools like k6 or JMeter. Set baselines and alert on regressions.
+Load test your APIs before launch. Establish baseline metrics under normal load. Test with 2x and 5x expected traffic. Use tools like k6, JMeter, or Locust. Monitor response times, error rates, and resource utilization during tests. Performance testing is important for production readiness.
+
+## Test Data Management
+
+Use factories or builders to create test data. Avoid sharing test data between tests. Clean up test data after each run. Use realistic data shapes but synthetic values. Never use production data in test environments.
