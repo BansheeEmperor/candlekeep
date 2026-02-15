@@ -299,6 +299,16 @@ For each technique, the benchmark measures:
 
 ---
 
+## Future Research: Infrastructure Techniques
+
+### ColBERT / Late-Interaction Models
+Late-interaction retrieval (token-level similarity scoring) could replace or supplement the cross-encoder on the precise path, reducing latency while retaining reranking quality. Requires a custom index not natively supported by ChromaDB. Evaluate if precise-path latency becomes a deployment constraint.
+
+### SPLADE / Learned Sparse Retrieval
+Learned sparse representations could replace the naive BM25 tokenizer (`text.lower().split()`) in the hybrid path with vocabulary-aware term weights. The current BM25 + RRF fusion already addresses "Keyword Blindness" but may underperform on natural language corpora or highly specialized terminology. Evaluate if the hybrid path's lexical matching needs improvement at scale.
+
+---
+
 ## Rejected Techniques
 
 ### Scrying Window: Sentence Window Retrieval ❌
