@@ -1358,3 +1358,75 @@ Overlap is an ingestion-time parameter, so each value required a full re-ingesti
 Overlap=25 is the most efficient choice: best MRR/nDCG ratio with the fewest extra chunks. However, the improvement over overlap=50 is marginal (~1.3% MRR, ~1.6% nDCG). Given that the current default of 50 is a well-understood standard and the gains are within noise for 108 queries, **no change recommended**. The result is documented for future reference.
 
 If a future corpus shows larger sensitivity to overlap, 25 is the value to try first.
+
+---
+
+## Entry 30: Borderline Document Quality Benchmark - 2026-02-15 11:00
+
+### Background
+
+TASK-13: The expansion and threshold sweeps (Entry 28) only tested against well-structured documents that pass the quality gate. This entry tests whether borderline-quality documents — sparse, repetitive, or partially-written — cause the Scholar's Discernment to misbehave.
+
+### Fixture Set
+
+Created 10 borderline documents in `tests/fixtures/borderline_docs/`:
+- 4 sparse: ~100-120 words, exactly 2 headers, thin sections (caching, auth, API, database topics)
+- 3 repetitive: boilerplate-heavy, template-style sections with near-identical phrasing (endpoints, config, error codes)
+- 3 mixed-quality: some sections rich, others stubs with TODOs (monitoring, testing, deployment)
+
+All 10 pass the quality gate. 15 evaluation queries: 5 targeting clean docs, 10 targeting borderline docs.
+
+### Results
+
+#### Clean-only corpus (89 docs, 2859 chunks) — clean queries
+
+| Threshold | MRR | nDCG@5 | Hit Rate@5 | Avg Tokens |
+|-----------|------|--------|------------|------------|
+| 0.85 | 0.7000 | 0.7262 | 0.8000 | 2430 |
+| 0.92 | 0.7000 | 0.7262 | 0.8000 | 1898 |
+| 0.95 | 0.7000 | 0.7262 | 0.8000 | 1321 |
+
+Ranking metrics perfectly stable across all thresholds. Only token volume changes.
+
+#### Borderline-only corpus (10 docs, 47 chunks) — borderline queries
+
+| Threshold | MRR | nDCG@5 | Hit Rate@5 | Avg Tokens |
+|-----------|------|--------|------------|------------|
+| 0.85 | 0.5333 | 0.5631 | 0.6000 | 3045 |
+| 0.92 | 0.5333 | 0.5631 | 0.6000 | 2462 |
+| 0.95 | 0.5333 | 0.5631 | 0.6000 | 1890 |
+
+Ranking also stable. Lower MRR than clean corpus (0.53 vs 0.70) reflects the inherently weaker content. Token volume 30% higher than clean at threshold=0.92 — the Scholar's Discernment expands more on borderline docs because their chunks are more similar to each other (thin content = less semantic differentiation). But this stays under the 50% over-expansion threshold.
+
+#### Mixed corpus (99 docs, 2906 chunks) — clean queries
+
+| Threshold | MRR | nDCG@5 | Hit Rate@5 | Avg Tokens |
+|-----------|------|--------|------------|------------|
+| 0.85 | 0.6667 | 0.7000 | 0.8000 | 2316 |
+| 0.92 | 0.6667 | 0.7000 | 0.8000 | 1673 |
+| 0.95 | 0.6500 | 0.7000 | 0.8000 | 1165 |
+
+**Degradation detected:** MRR drops from 0.7000 (clean-only) to 0.6667 (mixed) at threshold=0.92. That's -4.8%. Hit Rate@5 is unchanged (0.80), so the correct documents are still retrieved — but a borderline doc's chunk is ranking ahead of the clean doc's chunk in one query, pushing the first relevant result from position 1 to position 2.
+
+#### Mixed corpus — borderline queries
+
+Identical results to borderline-only corpus. The presence of clean docs does not affect borderline query performance.
+
+### Analysis
+
+1. The degradation is real but narrow: one query out of five shifts from rank 1 to rank 2. The correct document is still in the top 5 (Hit Rate@5 unchanged). This is a ranking precision issue, not a retrieval failure.
+
+2. The cause: borderline docs on overlapping topics (e.g., sparse-caching.md vs caching.md) produce chunks that are semantically close to the clean doc's chunks. The vector search returns both, and the borderline chunk occasionally scores higher because its shorter, denser text has a tighter embedding match to the query.
+
+3. Token over-expansion on borderline docs is moderate (1.30x at 0.92). The Scholar's Discernment is working — it's not blindly expanding. The 0.92 threshold is appropriate.
+
+4. Tightening the threshold to 0.95 does not fix the ranking issue (MRR drops further to 0.65 in mixed). The problem is at the vector search level, not the expansion level.
+
+### Conclusion
+
+The similarity threshold (0.92) is not the cause of the degradation. The issue is that borderline docs with overlapping topics compete with clean docs at the vector search stage. Possible mitigations (future work, not urgent):
+- Boost scores for documents with richer metadata (more keywords, longer descriptions)
+- Use document quality as a ranking signal in the Relevance Ward
+- Prefer documents with more chunks (proxy for depth) when scores are close
+
+**No parameter changes needed.** The 0.92 threshold is confirmed appropriate even with borderline docs in the corpus. TASK-13 closed.
