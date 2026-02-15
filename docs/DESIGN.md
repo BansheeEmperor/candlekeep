@@ -177,6 +177,8 @@ The following retrieval techniques were out of scope for the initial research ph
 
 - **SPLADE / learned sparse retrieval** — Replaces naive BM25 tokenization with learned term weights, improving vocabulary coverage for technical identifiers. Not evaluated because the hybrid path's BM25 + RRF fusion already resolved "Keyword Blindness" (+26% MRR on lexical queries in the Centurion Set), and SPLADE requires a separate model and index. The strongest candidate for improving the hybrid path if the naive tokenizer becomes a limitation at scale.
 
+- **LLM-generated chunk summaries (Contextual Retrieval)** — Generates a per-chunk context summary via LLM at ingestion time, prepended to each chunk before embedding. Similar to Bardic Knowledge but with richer, LLM-generated context instead of document-level metadata. Not evaluated because the ingestion cost is significant (one LLM call per chunk; ~2,770 calls at current corpus scale) and Bardic Knowledge already provides document-level context enrichment at zero cost. Revisit if content match on the Centurion Set plateaus and ingestion latency is not a constraint.
+
 *Note: Embedding model fine-tuning is a user-side optimization for specific corpora, not an infrastructure change to Candlekeep. Users deploying against specialized domains should consider fine-tuning bge-small on their own query-document pairs. See [SETUP.md](SETUP.md) for embedding model configuration.*
 
 ## 5. [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference) Validated
@@ -213,6 +215,10 @@ The Relevance Ward filters low-confidence results based on a [configured thresho
 - Clear separation with zero false negatives in benchmark testing
 
 **Behavior:** Queries below the threshold return empty results. The library says "I don't know" instead of guessing.
+
+The Ward prevents false negatives (legitimate queries returning empty). It does not guarantee zero results for adversarial queries on the vector-only paths. The hybrid path's BM25 component provides stronger adversarial filtering — see [BENCHMARK_RESULTS.md](BENCHMARK_RESULTS.md) for per-path adversarial Hit Rate.
+
+See [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference) for threshold values and [Threshold Calibration](ARCHITECTURE.md#threshold-calibration) for the recalibration procedure when deploying against a new corpus.
 
 ## 7. Threat Model
 
