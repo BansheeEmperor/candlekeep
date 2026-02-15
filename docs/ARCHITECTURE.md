@@ -179,6 +179,16 @@ These values represent the optimal configuration identified through the Centurio
 | `CHUNK_SIZE` | 512 | Target character count per fragment |
 | `CHUNK_OVERLAP` | 50 | Character overlap between fragments |
 
+### Threshold Calibration
+
+The Relevance Ward thresholds are corpus-dependent heuristics. When deploying against a new corpus, recalibrate as follows:
+
+1. Run the Centurion benchmark (or equivalent adversarial + legitimate query set) against the new corpus.
+2. Record the score distribution for adversarial vs legitimate queries. For the vector path, examine raw cosine similarity scores. For the hybrid path, examine RRF fusion scores.
+3. Set `MIN_RELEVANCE_SCORE` at the midpoint of the gap between the lowest legitimate score and the highest adversarial score. The original calibration (Research Diary, Entry 16) found a clean statistical separation at 0.75.
+4. Set `HYBRID_RELEVANCE_THRESHOLD` based on the RRF score distribution of adversarial queries. The hybrid path's BM25 component naturally suppresses out-of-domain noise, so this threshold is typically much lower than the vector threshold.
+5. If the gap between adversarial and legitimate scores is narrow (< 0.05 for vector, < 0.01 for hybrid), consider increasing the corpus quality or adding domain-specific negative examples to the benchmark set.
+
 ## Scalability
 
 Candlekeep is designed for sub-linear scaling, ensuring that search performance remains stable even as the knowledge base grows by orders of magnitude.
@@ -193,6 +203,15 @@ This efficiency is achieved through the $O(\log N)$ search complexity of ChromaD
 
 ### Stable Precise Path
 The `precise` path latency remains stable regardless of corpus size, as the cross-encoder reranking bottleneck is constrained to a fixed number of top candidates.
+
+### Concurrency Model
+
+Candlekeep is exposed via MCP and could serve multiple agents or sit behind a gateway. Concurrency characteristics vary by path:
+
+1. The simple and hybrid paths are stateless per-request and safe for concurrent reads. Each request gets its own embedding computation and DB query with no shared mutable state.
+2. The precise path runs PyTorch inference through a singleton cross-encoder. Concurrent precise queries serialize on the GIL and the model's forward pass. Under load, precise path latency degrades linearly with concurrency.
+3. Write operations (`ingest`, `delete`, `repopulate`) invalidate the BM25 cache and modify the ChromaDB collection. Concurrent writes are not serialized by Candlekeep — ChromaDB handles collection-level locking, but the quality gate and chunking pipeline run outside that lock.
+4. For multi-agent deployments, use a request queue or rate limiter in front of the MCP server, particularly for the precise path and write operations.
 
 ## Ingestion Pipeline
 
