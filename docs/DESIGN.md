@@ -169,6 +169,16 @@ If a remote ChromaDB was populated with model A and the local config says model 
 
 *Note: The "Result" column references metrics from the retired 15-query legacy suite (Research Diary Entries 1–8). The current evaluation standard is the [Centurion Set](BENCHMARK_RESULTS.md) (108 queries) which uses MRR, nDCG@5, and Hit Rate@5.*
 
+### 4.1 Techniques Not Evaluated
+
+The following retrieval techniques were out of scope for the initial research phase. Both are infrastructure-level changes to Candlekeep's retrieval pipeline.
+
+- **ColBERT / late-interaction models** — Occupies the middle ground between bi-encoder speed and cross-encoder precision. Could reduce precise-path latency while retaining most reranking quality. Not evaluated because ChromaDB does not natively support ColBERT's token-level index, and the current bi-encoder + cross-encoder split already covers the fast/precise tradeoff. Revisit if precise-path latency becomes a deployment blocker.
+
+- **SPLADE / learned sparse retrieval** — Replaces naive BM25 tokenization with learned term weights, improving vocabulary coverage for technical identifiers. Not evaluated because the hybrid path's BM25 + RRF fusion already resolved "Keyword Blindness" (+26% MRR on lexical queries in the Centurion Set), and SPLADE requires a separate model and index. The strongest candidate for improving the hybrid path if the naive tokenizer becomes a limitation at scale.
+
+*Note: Embedding model fine-tuning is a user-side optimization for specific corpora, not an infrastructure change to Candlekeep. Users deploying against specialized domains should consider fine-tuning bge-small on their own query-document pairs. See [SETUP.md](SETUP.md) for embedding model configuration.*
+
 ## 5. [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference) Validated
 
 | Parameter | Tested Values | Optimal | Rationale |
