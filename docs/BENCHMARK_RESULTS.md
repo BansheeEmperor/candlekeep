@@ -25,12 +25,12 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 
 | Metric | Simple Path | Hybrid Path ([Wild Magic](GLOSSARY.md#lexical-matching-bm25)) | Precise Path |
 |--------|------------:|-------------------------:|-------------:|
-| **Overall MRR** | 0.5054 | **0.5424** (+7%) | 0.5046 |
-| **nDCG@5** | 0.5117 | **0.5511** (+8%) | 0.5058 |
-| **Hit Rate@5** | 0.6296 | 0.5741 | 0.6019 |
-| **Avg Latency** | **437ms** | 704ms | 1144ms |
+| **Overall MRR** | 0.4776 (±0.10) | 0.4722 (±0.09) | 0.4691 (±0.10) |
+| **nDCG@5** | 0.4851 (±0.10) | 0.4746 (±0.09) | 0.4746 (±0.10) |
+| **Hit Rate@5** | 0.6019 (±0.09) | 0.7130 (±0.08) | 0.5463 (±0.10) |
+| **Avg Latency** | **57ms** | 82ms | 175ms |
 
-*\* Note: Latency includes [Arcane Recall's](GLOSSARY.md#arcane-recall) similarity-weighted pruning (~400ms), which reduces downstream LLM costs by 22%.*
+*95% bootstrap confidence intervals (n=1000, seed=42) shown as ±half-width. Latency measured on CPU with warm model.*
 
 ### Domain Performance (MRR / nDCG)
 
@@ -90,3 +90,22 @@ The legacy suite achieved 97% precision on a simpler, 15-query set. This has bee
 | **Latency (CPU)** | 18.3ms | 17.4ms | 1499.6ms |
 
 *Note on legacy "Recall" metric: The 15-query suite used a non-standard Recall definition — (total chunks retrieved from relevant documents / number of expected documents) × 100%. This produces values exceeding 100% (e.g., R=470%) when multiple chunks per document are retrieved. This metric has been retired in favor of [Hit Rate@5](GLOSSARY.md#the-success-of-the-scry-hit-ratek) in the Centurion Set.*
+
+---
+
+## Reproducibility
+
+ChromaDB's HNSW index construction is non-deterministic — the same corpus ingested into a fresh collection can produce slightly different nearest-neighbor graphs. To quantify this variance, the Centurion Set was run 5 times with fresh re-ingestions of the full corpus (89 docs, ~2,770 chunks).
+
+| Metric | Mean | Std Dev | Notes |
+|--------|-----:|--------:|-------|
+| **MRR** | 0.4776 | 0.0000 | Perfectly stable across runs |
+| **nDCG@5** | 0.4851 | 0.0000 | Perfectly stable across runs |
+| **Hit Rate@5** | 0.6074 | 0.0051 | 2 of 5 runs at 0.6019, 3 at 0.6111 |
+| **Avg Latency** | 64.8ms | 1.7ms | Consistent |
+
+At the current corpus scale, HNSW non-determinism has negligible impact on ranking metrics. Only Hit Rate@5 shows minor variance (±0.5%), affecting at most 1 query out of 108 per run. MRR and nDCG@5 are perfectly reproducible.
+
+Benchmark comparisons should exceed 2σ (±1.0% for Hit Rate@5) to be considered significant. For MRR and nDCG@5, any observed difference is meaningful at this corpus scale.
+
+*Measured with `scripts/reproducibility_test.py --runs 5`. Raw data in `tests/results/reproducibility_simple.json`.*
