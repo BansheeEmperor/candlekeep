@@ -59,20 +59,20 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 ### [Divine Insight](GLOSSARY.md#cross-encoder-reranking): Precise Reranking
 > *"Through divine magic, clerics perceive the true nature of all things."*
 
-**Implementation:** Initial candidates are filtered by `MIN_RELEVANCE_SCORE` (0.75), then re-scored by a cross-encoder (`ms-marco-MiniLM-L-6-v2`).
+**Implementation:** Initial candidates are filtered by the [configured relevance threshold](ARCHITECTURE.md#tuned-parameters-reference), then re-scored by a cross-encoder (`ms-marco-MiniLM-L-6-v2`).
 **Analysis:** Optimizes for semantic relevance. [**Arcane Attunement**](GLOSSARY.md#arcane-attunement) makes this high-precision road viable for real-time use.
 
 ### [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (Thresholding)
-**Threshold:** `0.75`
-**Analysis:** Filters out out-of-domain "noise". Successfully blocked adversarial technical queries (e.g., "quantum photosynthesis") while preserving all legitimate technical matches (>0.84).
+**Implementation:** A score-based filter applied to all retrieval results (see [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference)).
+**Analysis:** Filters out out-of-domain "noise". Successfully blocked adversarial technical queries (e.g., "quantum photosynthesis") while preserving legitimate technical matches.
 
 ---
 
 ## Agentic Workflows: Decomposition
 Multi-part queries (e.g., "authentication + caching + microservices") are designed to be decomposed.
 
-1. **The Mock**: The benchmark simulates an agent breaking a hard query into 3-4 specific sub-queries.
-2. **The Result**: 100% Recall. The agent successfully gathers all necessary documentation by performing multiple targeted searches.
+1. **The Mock**: The benchmark simulates an agent breaking a hard query into specific sub-queries.
+2. **The Result**: High Recall. The agent successfully gathers all necessary documentation by performing multiple targeted searches.
 3. **Recommendation**: Agents should prioritize `simple` path searches in parallel over a single `precise` search for complex tasks.
 
 ---

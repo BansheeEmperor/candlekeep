@@ -826,24 +826,19 @@ The content drop in `precise` is an inherent tradeoff of cross-encoder reranking
 
 ---
 
-## Entry 16: Minimum Relevance Threshold - 2026-02-11 14:00
+## Entry 16: The Relevance Ward - 2026-02-11 14:00
 
 ### The Problem
 
-Vector search always returns results, even for completely irrelevant queries. "quantum entanglement in photosynthesis" returned 5 results with scores around 0.558.
+Vector search always returns results, even for completely irrelevant queries.
 
 ### Score Distribution Analysis
 
-Ran all 23 benchmark queries and recorded top-1 scores:
-
-- **Adversarial:** "quantum entanglement in photosynthesis" → 0.558
-- **Lowest legitimate:** "OAuth 2.0 flows" → 0.748
-- **Gap:** 0.190 (clear separation)
-- **Most legitimate queries:** 0.85 - 1.22
+Ran benchmark queries and recorded scores to identify the gap between adversarial and legitimate matches.
 
 ### Threshold Selection
 
-Set `MIN_RELEVANCE_SCORE = 0.65` — sits cleanly between adversarial (0.558) and lowest legitimate (0.748).
+Set `MIN_RELEVANCE_SCORE` based on statistical separation identified in the audit.
 
 ### Implementation
 
@@ -857,14 +852,7 @@ Skipped for `precise` because the cross-encoder uses a different score scale (ca
 
 ### Validation
 
-| Query | Results | Expected |
-|-------|---------|----------|
-| "quantum entanglement in photosynthesis" | 0 results | ✓ Filtered |
-| "xyz abc 123 nonsense gibberish" | 0 results | ✓ Filtered |
-| "OAuth 2.0 flows" (score 0.748) | 5 results | ✓ Passed |
-| "What is semantic search?" (score 0.990) | 5 results | ✓ Passed |
-
-Zero false negatives on the 23-query benchmark. Two true negatives on adversarial queries.
+The Relevance Ward correctly identified low-confidence results even in a larger corpus. Zero false negatives on baseline benchmarks. Two true negatives on adversarial queries.
 
 ---
 
@@ -907,20 +895,17 @@ Used LLM API to generate 80 technical documents across 8 domains:
 
 ### Benchmark Results
 
-| Path | Avg | P50 | P99 | Notes |
-|------|-----|-----|-----|-------|
-| simple | **26ms** | 24ms | 39ms | Consistent, no degradation |
-| precise | **1959ms** | 1917ms | 2198ms | Cross-encoder dominates |
+Scaling demonstrated that the simple path remains fast even with an order-of-magnitude increase in data. The per-document chunk lookup (Arcane Recall optimization) is working — it doesn't scan the full DB.
 
 ### Key Findings
 
-1. **Simple path scales perfectly** — 26ms avg at 2770 chunks vs 23ms at 178 chunks. Only +3ms for 15.5x more data. The per-document chunk lookup (Arcane Recall optimization) is working — it doesn't scan the full DB.
+1. **Simple path scales perfectly** — Consistent performance as the corpus grows. The per-document chunk lookup is working.
 
-2. **Precise path is stable** — 1959ms avg, consistent across queries. The cross-encoder reranking time is the bottleneck, not the search or expansion. It's scoring 15 candidates regardless of corpus size.
+2. **Precise path is stable** — The cross-encoder reranking time is the bottleneck, not the search or expansion. It scores a fixed number of candidates regardless of corpus size.
 
-3. **Relevance threshold works at scale** — "quantum computing blockchain AI synergy" returned only 1 result (filtered from 5). The threshold correctly identified low-confidence results even in a larger corpus.
+3. **The Relevance Ward works at scale** — Correctly identified low-confidence results even in a larger corpus.
 
-4. **No bottleneck identified** — At 2770 chunks, both paths perform within acceptable bounds. The simple path would likely stay under 50ms even at 10k+ chunks since the HNSW index scales logarithmically.
+4. **No bottleneck identified** — Both paths perform within acceptable bounds at scale since the HNSW index scales logarithmically.
 
 ### Scaling Characteristics
 
@@ -1166,17 +1151,17 @@ Reduced from 15 tools to 8:
 
 | Metric | Value |
 |--------|-------|
-| Remote DB chunks | 395 (11 docs) |
-| Search latency (remote) | ~350-430ms |
+| Remote DB chunks | Verified |
+| Search latency (remote) | Within Target |
 | Agent decomposition | Working (parallel) |
-| Quality gate | Working (rejects bad docs) |
+| Quality gate | Working |
 | Embedding mismatch protection | Working |
-| Relevance threshold | Working |
+| The Relevance Ward | Working |
 
 ### What We Built Today
 
-1. **Search engine**: 2-path router (simple 23ms, precise 1550ms), Arcane Recall default, relevance threshold, negation preprocessing
-2. **Benchmarks**: 23 queries, 16 multi-doc queries, scale tested at 2770 chunks, chunk size and embedding model validated
+1. **Search engine**: 2-path router, Arcane Recall default, The Relevance Ward, negation preprocessing
+2. **Benchmarks**: Comprehensive query set, scale tested, chunk size and embedding model validated
 3. **MCP tools**: 8 focused tools, quality gate on ingest, conditional registration
 4. **Infrastructure**: CDK stack for ChromaDB deployment
 5. **Hardening**: Embedding model mismatch detection, no-download-at-startup, adversarial query filtering

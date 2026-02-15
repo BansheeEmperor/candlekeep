@@ -111,7 +111,7 @@ semantic_queries = [
     {"query": "creational design patterns", "difficulty": "medium", "expected_sources": ["tests/fixtures/scale_docs/design-patterns-creational.md"], "category": "semantic"},
 ]
 
-# Adversarial/Noise (30%) - Should hit the 0.65 threshold
+# Adversarial/Noise (30%) - Should hit the 0.75 threshold
 adversarial_queries = [
     {"query": "how to bake sourdough in a kubernetes cluster", "difficulty": "easy", "expected_sources": [], "category": "adversarial"},
     {"query": "best brand of hiking boots for Mars", "difficulty": "easy", "expected_sources": [], "category": "adversarial"},
