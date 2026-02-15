@@ -1473,3 +1473,36 @@ HNSW non-determinism is negligible at this corpus scale. MRR and nDCG@5 are perf
 - `src/candlekeep/database/interface.py` — Added `get_stored_embeddings_by_source` abstract method
 - `src/candlekeep/database/vector_store.py` — ChromaDB implementation with `include=["embeddings"]`
 - `src/candlekeep/rag/arcane_recall.py` — Replaced inference call with stored embedding lookup
+
+---
+
+## Entry 32: Cold-Start Latency Benchmark - 2026-02-15 15:30
+
+### Background
+Cold-start latency measures the time from the initial process spawn until the first search result is returned. This is critical for the "one process per agent" MCP model where startup speed impacts the perceived responsiveness of the AI agent.
+
+### Methodology
+- **Iterations:** 7
+- **Process:** Parent process spawns a fresh Python process for each iteration.
+- **Environment:** CPU-only mode (`CANDLEKEEP_DEVICE=cpu`) to bypass GPU/HIP initialization overhead and ensure reproducibility.
+- **Hardware:** AMD Ryzen 7 7800X3D (8-Core), 32GB RAM, Linux (Arch 6.18).
+- **Python:** 3.11.14
+
+### Results (7 Iterations)
+| Metric | Mean | Min | Max | Std Dev |
+|--------|------|-----|-----|---------|
+| **Total (Spawn-to-Result)** | **5,825 ms** | 5,783 ms | 5,885 ms | 41 ms |
+| **Internal (Python-to-Result)** | **4,534 ms** | 4,503 ms | 4,567 ms | 25 ms |
+
+### Analysis
+1. **Startup Overhead:** There is a ~1.3s (1,291ms) delay between process spawn and the first line of application code executing. This is likely due to the Python interpreter's initialization and the discovery of modules in a relatively large virtual environment.
+2. **Application Warmup:** The remaining ~4.5s is spent on heavy imports (`torch`, `transformers`, `sentence_transformers`), establishing the ChromaDB connection, and loading the `bge-small-en-v1.5` model into memory.
+3. **Consistency:** The standard deviation is very low (41ms total, 25ms internal), indicating that the cold-start cost is extremely predictable on this hardware.
+4. **Legacy Comparison:** The legacy baseline figure of 1,849ms (Entry 12) was measured using a different code path (`search_with_preprocessing` via the old router) and is not comparable. The current system is more comprehensive but also heavier due to its advanced routing and expansion logic.
+
+### Research Insight
+While 5.8s is acceptable for many long-running agent sessions, it may be perceived as slow for quick interactive tasks. Future optimization could focus on:
+- **Lazy loading:** Deferring heavy imports like `torch` until the first `precise` query (if only `simple` is used).
+- **Process pooling:** Keeping a warm pool of Candlekeep processes.
+- **Model format:** Moving to ONNX or OpenVINO for faster model loading.
+
