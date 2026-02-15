@@ -41,7 +41,7 @@
 
 ### Arcane Recall
 **Technical Name:** Parent Document Retrieval / Contextual Pruning
-**The Lore:** Returning a single torn page is often useless, but returning an entire chapter is wasteful. Arcane Recall now intelligently expands matching fragments using **Arcane Coalescence** to join overlapping pages and **The Scholar's Discernment** to filter out irrelevant noise, reducing token waste by 22%.
+**The Lore:** Returning a single torn page is often useless, but returning an entire chapter is wasteful. Arcane Recall now intelligently expands matching fragments using [**Arcane Coalescence**](#arcane-coalescence) to join overlapping pages and [**The Scholar's Discernment**](#the-scholars-discernment) to filter out irrelevant noise, significantly reducing token waste.
 
 ### Bardic Knowledge
 **Technical Name:** Contextual Chunk Embeddings
@@ -57,7 +57,7 @@
 
 ### The Scholar's Discernment
 **Technical Name:** Similarity-Weighted Expansion / Contextual Pruning
-**The Lore:** The practice of discarding neighboring text that lacks the semantic resonance required to answer thy query. By only expanding into sections that are truly relevant (threshold 0.92), the library saves tokens without losing its "recall."
+**The Lore:** The practice of discarding neighboring text that lacks the semantic resonance required to answer thy query. By only expanding into sections that are truly relevant (based on a [configured similarity threshold](ARCHITECTURE.md#tuned-parameters-reference)), the library saves tokens without losing its "recall."
 
 ### Arcane Attunement
 **Technical Name:** Model Pre-loading / Lazy Loading Prevention
@@ -65,4 +65,4 @@
 
 ### The Relevance Ward
 **Technical Name:** Cosine Similarity Thresholding
-**The Lore:** A protective barrier that prevents the library from guessing. If no scrolls are found with enough confidence to be considered true, the library remains silent rather than presenting false or irrelevant information.
+**The Lore:** A protective barrier that prevents the library from guessing. If no scrolls are found with enough confidence (as defined by the [relevance threshold](ARCHITECTURE.md#tuned-parameters-reference)) to be considered true, the library remains silent rather than presenting false or irrelevant information.
