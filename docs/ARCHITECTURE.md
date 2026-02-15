@@ -165,7 +165,7 @@ Cross-encoder (`ms-marco-MiniLM-L-6-v2`) rescores all candidates by examining qu
 Results below a configured similarity threshold (see [Tuned Parameters](#tuned-parameters-reference)) are filtered to prevent the AI agent from hallucinating based on low-confidence "junk" matches.
 
 - **Adversarial queries:** Score significantly lower than legitimate ones.
-- **Status:** Zero false negatives on baseline benchmarks.
+- **Status:** Zero false negatives on baseline benchmarks (no legitimate query returns empty results). Adversarial queries are fully filtered on the hybrid path (Hit Rate@5 = 0.0). On simple and precise paths, adversarial queries may return low-relevance results that score above the vector threshold — see BENCHMARK_RESULTS.md footnote 1 for per-path adversarial Hit Rate.
 
 ## Tuned Parameters (Reference)
 
@@ -272,6 +272,8 @@ Complex multi-document queries are the agent's responsibility to decompose. The 
 
 Benchmarked: Agent decomposition achieves significantly higher content match on multi-doc queries compared to a single search. The agent fires searches in parallel and synthesizes across results.
 
+This pattern assumes the calling agent is a frontier-class LLM (e.g., Claude, GPT-4) capable of identifying multi-part queries and issuing parallel searches. For weaker models, integrators should add explicit decomposition instructions to the agent's system prompt or implement a thin wrapper that pre-splits compound queries before calling the search tool.
+
 ## Configuration
 
 All settings via environment variables (`.env` file):
@@ -292,15 +294,17 @@ All settings via environment variables (`.env` file):
 |--------|-------|
 | Simple search latency (local) | < 100ms (~57ms measured) |
 | Simple search latency (remote) | ~400ms |
-| Precise search latency | ~1.5s |
-| Content match (decomposed) | > 90% |
+| Precise search latency | ~175ms (Centurion Set, warm model, Relevance Ward pre-filtering active) |
+| Content match (decomposed) | > 90% (legacy 23-query suite, Diary Entry 20) |
 | Precision (simple) | > 85% |
 | Scale tested | 2,770 chunks, 80 docs |
+
+*Earlier Research Diary entries (12, 15) report precise-path latency of 1.5–1.7s. Those measurements predate the Relevance Ward pre-filtering optimization (Entry 16), which reduces the number of candidates scored by the cross-encoder.*
 
 ## Future Work
 
 - **Multi-Agent Shared Server** — Evaluate whether a single MCP server serving multiple agents (via HTTP/SSE transport) is desirable. Tradeoffs: resource sharing and cache efficiency vs cross-encoder serialization, write contention, and operational complexity of per-agent isolation.
-- **Incremental BM25 Updates** — The hybrid path's BM25 index is rebuilt from scratch after every write. At current corpus scale (~2,770 chunks) this is fast, but it scales linearly. Evaluate incremental add/remove operations on the BM25 index instead of full rebuild, or switch to a library that supports it natively (e.g., `whoosh`, `tantivy`).
+- **Incremental BM25 Updates** — The hybrid path's BM25 index is rebuilt from scratch after every write. At current corpus scale (~2,770 chunks) this is fast, but it scales linearly. Evaluate incremental add/remove operations on the BM25 index instead of full rebuild, or switch to a library that supports it natively (e.g., `whoosh`, `tantivy`). At current corpus scale (~2,770 chunks) the full rebuild is sub-second. At 50k+ chunks, the linear rebuild cost may introduce perceptible latency on the first hybrid query after a write. Measure rebuild time at target corpus size before deploying.
 
 ## File Structure
 
