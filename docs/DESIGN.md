@@ -173,7 +173,9 @@ If a remote ChromaDB was populated with model A and the local config says model 
 |-----------|--------------|---------|-----------|
 | Chunk size | 256, 512, 768, 1024 | 512 | Best content match; [Arcane Recall](GLOSSARY.md#arcane-recall) compensates for size |
 | Chunk overlap | 50 | 50 | Standard, not benchmarked in isolation |
-| Expansion size | ±1, ±2, ±3, ±4 | ±2 | ±3 no benefit, ±4 hurts precision |
+| Expansion size | ±1, ±2, ±3, ±4 | ±2 | ±3 no benefit, ±4 hurts precision ² |
+
+² Validated on the 15-query and 23-query suites. Not re-benchmarked on the full Centurion Set (108 queries). The ±2 default is conservative and unlikely to change, but a full re-validation is recommended if the corpus profile changes significantly.
 | Embedding model | minilm, bge-small, nomic | bge-small | Best content, good speed |
 | [The Relevance Ward](GLOSSARY.md#the-relevance-ward) | Configured range | Technical Reference | Clean gap between adversarial and legitimate |
 
