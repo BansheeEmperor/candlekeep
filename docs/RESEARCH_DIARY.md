@@ -1286,6 +1286,8 @@ Cosine and IP produce identical results. Cosine is slightly faster (99ms vs 107m
 
 4. **No changes needed.** Current defaults (M=16, construction_ef=100, search_ef=10, cosine) are optimal for our use case.
 
+5. **Corpus-size caveat:** This sweep was conducted on the sample corpus (~178 chunks). At this scale, HNSW brute-force-equivalent results occur regardless of parameters. Re-validate at 10k+ chunks where graph connectivity becomes a factor.
+
 ### Skipping Test 4 (Collection Splitting)
 
 Not worth implementing — the corpus isn't large enough for per-category collections to provide a speed benefit, and it adds complexity to the ingestion pipeline.
