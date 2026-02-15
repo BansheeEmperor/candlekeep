@@ -270,9 +270,21 @@ Complex multi-document queries are the agent's responsibility to decompose. The 
 
 > "For complex multi-part questions, make multiple simple searches (one per sub-question) and synthesize the results yourself."
 
-Benchmarked: Agent decomposition achieves significantly higher content match on multi-doc queries compared to a single search. The agent fires searches in parallel and synthesizes across results.
+Benchmarked: Agent decomposition achieves significantly higher content match on multi-doc queries compared to a single search (simulated benchmark, Entry 20; see Entry 25 for qualitative production validation). The agent fires searches in parallel and synthesizes across results.
 
 This pattern assumes the calling agent is a frontier-class LLM (e.g., Claude, GPT-4) capable of identifying multi-part queries and issuing parallel searches. For weaker models, integrators should add explicit decomposition instructions to the agent's system prompt or implement a thin wrapper that pre-splits compound queries before calling the search tool.
+
+## Known Failure Modes
+
+### Agent Misrouting
+
+The agent selects the search path (`simple`, `hybrid`, or `precise`) based on its interpretation of the query. If the agent selects `simple` for a query containing exact technical identifiers where `hybrid` would be more appropriate, retrieval quality degrades silently.
+
+**Measured impact:** On the Centurion Set, lexical queries (containing version numbers, error codes, technical identifiers) show MRR of 0.42 on the simple path vs 0.53 on the hybrid path — a 26% gap. Semantic queries show no meaningful difference between paths.
+
+**When to prefer hybrid:** Queries containing exact identifiers (`bge-small`, `v3.4.1`), error codes (`0xEF`, `ECONNREFUSED`), version strings, or technical terms that must match literally rather than semantically.
+
+**No feedback mechanism:** The system does not signal to the agent whether its path selection was optimal. The agent cannot learn from misroutes within a session. Integrators should include path selection guidance in the agent's system prompt.
 
 ## Configuration
 

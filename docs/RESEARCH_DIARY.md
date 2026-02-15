@@ -974,7 +974,9 @@ These results give us concrete test cases for agent integration:
 
 ---
 
-## Entry 20: Agent Decomposition Benchmark - 2026-02-11 15:37
+## Entry 20: Agent Decomposition Benchmark (Simulated) - 2026-02-11 15:37
+
+*Note: This benchmark uses pre-defined sub-query splits to simulate agent decomposition behavior. It does not reflect real agent query generation. See Entry 25 for qualitative validation with a real agent.*
 
 ### What We Tested
 
