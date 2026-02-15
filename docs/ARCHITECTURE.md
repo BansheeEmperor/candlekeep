@@ -179,6 +179,8 @@ These values represent the optimal configuration identified through the Centurio
 | `CHUNK_SIZE` | 512 | Target character count per fragment |
 | `CHUNK_OVERLAP` | 50 | Character overlap between fragments |
 
+Chunk size, overlap, and expansion parameter sweeps were conducted on the current corpus (~2,770 chunks from ~89 technical documentation files). Performance surfaces were flat across tested ranges (Diary Entries 21, 28, 29), indicating these defaults are robust for similar corpora. For corpora with substantially different document length, structure, or domain, re-run parameter sweeps before deploying. See [Threshold Calibration](#threshold-calibration) for Relevance Ward recalibration guidance.
+
 ### Threshold Calibration
 
 The Relevance Ward thresholds are corpus-dependent heuristics. When deploying against a new corpus, recalibrate as follows:
@@ -311,7 +313,7 @@ All settings via environment variables (`.env` file):
 | Precision (simple) | > 85% |
 | Scale tested | 2,770 chunks, 80 docs |
 
-*Earlier Research Diary entries (12, 15) report precise-path latency of 1.5–1.7s. Those measurements predate the Relevance Ward pre-filtering optimization (Entry 16), which reduces the number of candidates scored by the cross-encoder.*
+*Earlier Research Diary entries (12, 15) report precise-path latency of 1.5–1.7s. The improvement to the current figure (175ms) reflects two concurrent changes: (1) Relevance Ward pre-filtering (Entry 16), which reduces the number of candidates scored by the cross-encoder, and (2) transition from the 23-query suite to the Centurion Set (different query mix and corpus size). The individual contribution of each factor has not been isolated.*
 
 ## Future Work
 

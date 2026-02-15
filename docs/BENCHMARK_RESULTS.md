@@ -34,6 +34,8 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 
 *95% bootstrap confidence intervals (n=1000, seed=42) shown as ±half-width. Latency measured on CPU with warm model.*
 
+*MRR and nDCG@5 differences between paths fall within the 95% confidence intervals and are not statistically significant (e.g., simple MRR 0.4776 vs hybrid 0.4722, delta 0.0054 within ±0.10). Hit Rate@5 is the primary metric for path selection: the hybrid path's advantage (0.7130 vs 0.6019, delta 0.1111) exceeds the 2σ reproducibility threshold (±1.0%).*
+
 ### Domain Performance (MRR / nDCG)
 
 | Category | Simple (Vector) | Hybrid (BM25+Vector) | Precise (Reranked) | Note |
