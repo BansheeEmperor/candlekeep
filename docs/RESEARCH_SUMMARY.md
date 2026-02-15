@@ -4,6 +4,8 @@
 **Researcher:** AI Assistant  
 **Baseline:** Bardic Knowledge (Contextual Embeddings) - P=97.3%, R=470.0%, F1=161.3%, Content=71.7%, Latency=17ms
 
+*Legacy Recall (R) is defined as (total chunks retrieved from relevant documents / expected documents) × 100%. Values exceed 100% when multiple chunks per document are retrieved. This metric is retired; the Centurion Set uses [Hit Rate@5](BENCHMARK_RESULTS.md#arcane-metrics-explained).*
+
 ---
 
 ## Techniques Tested

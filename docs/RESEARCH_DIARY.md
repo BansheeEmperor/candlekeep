@@ -490,6 +490,8 @@ Ready to shift to analysis mode. Key questions to explore:
 - **Pure Baseline (78a12e9):** P=83.3%, R=354.2%, F1=134.9%, Latency=18.3ms
 - **Bardic Knowledge (9739b1e):** P=97.3%, R=470.0%, F1=161.3%, Latency=17.4ms
 
+*Legacy "Recall" (R) is defined as (total chunks retrieved from relevant documents / expected documents) × 100%. Values exceed 100% when multiple chunks per document are retrieved. This metric is retired; the Centurion Set uses Hit Rate@5.*
+
 *Note: The stored `tests/results/legacy_baseline_cold.json` (formerly `baseline.json`) shows different numbers (P=50.7%, Latency=1849ms) because it was a cold-start run using `search_with_preprocessing` rather than the router. The figures above are from the warm-model run at commit 78a12e9.*
 
 ### Success Criteria

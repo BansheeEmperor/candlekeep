@@ -88,3 +88,5 @@ The legacy suite achieved 97% precision on a simpler, 15-query set. This has bee
 |--------|----------------:|--------------:|--------------:|
 | **Precision** | 83.3% | 97.3% | 98.7% |
 | **Latency (CPU)** | 18.3ms | 17.4ms | 1499.6ms |
+
+*Note on legacy "Recall" metric: The 15-query suite used a non-standard Recall definition — (total chunks retrieved from relevant documents / number of expected documents) × 100%. This produces values exceeding 100% (e.g., R=470%) when multiple chunks per document are retrieved. This metric has been retired in favor of [Hit Rate@5](GLOSSARY.md#the-success-of-the-scry-hit-ratek) in the Centurion Set.*
