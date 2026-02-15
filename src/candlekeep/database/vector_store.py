@@ -285,6 +285,20 @@ class ChromaVectorStore(VectorDatabase):
         if hasattr(embeddings, 'tolist'):
             return embeddings.tolist()
         return embeddings
+    def get_stored_embeddings_by_source(self, source: str) -> dict[int, list[float]]:
+        """Get stored embeddings for all chunks from a source document."""
+        results = self.collection.get(
+            where={"source": source},
+            include=["embeddings", "metadatas"]
+        )
+        if not results["ids"]:
+            return {}
+
+        embeddings_map = {}
+        for meta, embedding in zip(results["metadatas"], results["embeddings"]):
+            chunk_idx = meta.get("chunk_index", 0)
+            embeddings_map[chunk_idx] = embedding
+        return embeddings_map
 
     def remove_orphaned(self, existing_sources: set[str]) -> int:
         """Remove chunks whose source files no longer exist."""

@@ -68,3 +68,12 @@ class VectorDatabase(ABC):
     def get_embeddings(self, texts: List[str]) -> List[List[float]]:
         """Get embeddings for a list of texts."""
         pass
+    @abstractmethod
+    def get_stored_embeddings_by_source(self, source: str) -> Dict[int, List[float]]:
+        """Get stored embeddings for all chunks from a source document.
+
+        Returns a dict mapping chunk_index to the embedding vector that was
+        computed at ingestion time. This avoids re-computing embeddings at
+        query time for similarity-weighted expansion.
+        """
+        pass
