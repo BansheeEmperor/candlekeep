@@ -42,12 +42,15 @@ def expand_results(
 
     # 2. Fetch all chunks for the relevant sources once
     chunks_by_source = {}
+    stored_embeddings_by_source = {}
     for source in results_by_source:
         source_chunks = db.get_chunks_by_source(source)
         # Store as {chunk_index: Chunk}
         chunks_by_source[source] = {
             c.metadata.get("chunk_index", 0): c for c in source_chunks
         }
+        # Fetch stored embeddings (computed at ingestion time) — no inference needed
+        stored_embeddings_by_source[source] = db.get_stored_embeddings_by_source(source)
 
     # 3. Process each source and merge windows
     all_windows = []
@@ -60,21 +63,8 @@ def expand_results(
     for source, source_results in results_by_source.items():
         doc_chunks = chunks_by_source[source]
         
-        # COLLECT ALL RELEVANT CHUNKS FOR THIS SOURCE TO BATCH EMBEDDINGS
-        all_potential_indices = set()
-        for res in source_results:
-            idx = res.metadata.get("chunk_index", 0)
-            for offset in range(-expansion_chunks, expansion_chunks + 1):
-                neighbor_idx = idx + offset
-                if neighbor_idx in doc_chunks:
-                    all_potential_indices.add(neighbor_idx)
-        
-        sorted_indices = sorted(list(all_potential_indices))
-        chunk_texts = [doc_chunks[i].text for i in sorted_indices]
-        
-        # Batch fetch embeddings for this document's potential chunks
-        doc_embeddings_list = db.get_embeddings(chunk_texts)
-        doc_embeddings = {idx: doc_embeddings_list[i] for i, idx in enumerate(sorted_indices)}
+        # Use stored embeddings from ChromaDB (no inference needed)
+        doc_embeddings = stored_embeddings_by_source.get(source, {})
 
         # Determine windows for each result in this source
         source_windows = []
