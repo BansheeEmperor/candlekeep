@@ -206,12 +206,22 @@ The `precise` path latency remains stable regardless of corpus size, as the cros
 
 ### Concurrency Model
 
-Candlekeep is exposed via MCP and could serve multiple agents or sit behind a gateway. Concurrency characteristics vary by path:
+Candlekeep uses MCP's **stdio transport**: each AI agent spawns its own MCP server process. This means every server instance handles exactly one agent — there is no concurrent request handling within a single process.
 
-1. The simple and hybrid paths are stateless per-request and safe for concurrent reads. Each request gets its own embedding computation and DB query with no shared mutable state.
-2. The precise path runs PyTorch inference through a singleton cross-encoder. Concurrent precise queries serialize on the GIL and the model's forward pass. Under load, precise path latency degrades linearly with concurrency.
-3. Write operations (`ingest`, `delete`, `repopulate`) invalidate the BM25 cache and modify the ChromaDB collection. Concurrent writes are not serialized by Candlekeep — ChromaDB handles collection-level locking, but the quality gate and chunking pipeline run outside that lock.
-4. For multi-agent deployments, use a request queue or rate limiter in front of the MCP server, particularly for the precise path and write operations.
+**Implications of the single-agent model:**
+
+1. The simple and hybrid paths are stateless per-request. No concurrency guard is needed because only one request is in flight at a time.
+2. The precise path runs PyTorch inference through a singleton cross-encoder. It is single-threaded by design — no concurrency guard is needed in the current stdio deployment.
+3. Write operations (`ingest`, `delete`, `repopulate`) invalidate the BM25 cache and modify the ChromaDB collection. ChromaDB handles its own collection-level locking; the quality gate and chunking pipeline run outside that lock but are safe because only one agent drives the process.
+4. Multiple agents each get their own server process. They share the underlying ChromaDB instance, which handles concurrent access internally.
+
+> **Shared-server deployments (future):** If Candlekeep moves to HTTP/SSE transport serving multiple agents from a single process, add a request queue or semaphore in front of the precise path to prevent cross-encoder serialization from stalling concurrent requests. Write operations would also need explicit serialization at the application layer.
+
+### Security Boundary
+
+| Threat | Mitigation |
+|--------|-----------|
+| Unauthorized MCP client | Not applicable — stdio transport binds one agent to one server process. ChromaDB bearer token is the auth boundary. For shared-server deployments, add per-agent auth at the gateway layer. |
 
 ## Ingestion Pipeline
 
@@ -284,6 +294,10 @@ All settings via environment variables (`.env` file):
 | Content match (decomposed) | > 90% |
 | Precision (simple) | > 85% |
 | Scale tested | 2,770 chunks, 80 docs |
+
+## Future Work
+
+- **Multi-Agent Shared Server** — Evaluate whether a single MCP server serving multiple agents (via HTTP/SSE transport) is desirable. Tradeoffs: resource sharing and cache efficiency vs cross-encoder serialization, write contention, and operational complexity of per-agent isolation.
 
 ## File Structure
 

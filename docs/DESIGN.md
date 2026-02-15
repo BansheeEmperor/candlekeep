@@ -214,6 +214,7 @@ The Relevance Ward filters low-confidence results based on a [configured thresho
 | Bad document quality | [Quality Gate](ARCHITECTURE.md#1-quality-gate) rejects docs without frontmatter/structure |
 | Model download at startup | Exit immediately if model not cached locally |
 | Write to remote DB accidentally | Write tools hidden unless explicitly opted in |
+| Unauthorized MCP client | Not applicable — stdio transport binds one agent to one server process. ChromaDB bearer token is the auth boundary. For shared-server deployments, add per-agent auth at the gateway layer. |
 
 ## 8. Limitations
 
@@ -227,6 +228,7 @@ The Relevance Ward filters low-confidence results based on a [configured thresho
 - HTTPS with ACM certificate when a domain is available
 - Caching reranked results for repeated queries
 - Streaming search results for lower perceived latency
+- **Multi-Agent Shared Server** — Evaluate whether a single MCP server serving multiple agents (via HTTP/SSE transport) is desirable. Tradeoffs: resource sharing and cache efficiency vs cross-encoder serialization, write contention, and operational complexity of per-agent isolation.
 
 ### 9.1 Hardware-Accelerated Inference
 
