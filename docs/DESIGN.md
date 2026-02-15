@@ -231,6 +231,9 @@ See [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference) for threshold
 | Model download at startup | Exit immediately if model not cached locally |
 | Write to remote DB accidentally | Write tools hidden unless explicitly opted in |
 | Unauthorized MCP client | Not applicable — stdio transport binds one agent to one server process. ChromaDB bearer token is the auth boundary. For shared-server deployments, add per-agent auth at the gateway layer. |
+| Prompt injection via ingested documents | Not mitigated — trusted corpus assumption. The quality gate validates document structure but does not scan for adversarial prompt content. Revisit if Candlekeep ingests untrusted user-submitted documents. |
+| Ingestion rate limiting | Not applicable — stdio transport serves a single agent per process. No concurrent ingestion vector exists. Revisit for shared-server (HTTP/SSE) deployments. |
+| Per-document access control | Not applicable — single-agent model with full corpus access. All documents are visible to the connected agent. Revisit if multi-tenant access is required. |
 
 ## 8. Limitations
 
