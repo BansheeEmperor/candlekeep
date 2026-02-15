@@ -23,6 +23,8 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 
 ### Comparative Audit Results
 
+*Results from a single representative run. See [Reproducibility](#reproducibility) for 5-run variance analysis (MRR and nDCG@5 perfectly stable; Hit Rate@5 ±0.5%).*
+
 | Metric | Simple Path | Hybrid Path ([Wild Magic](GLOSSARY.md#lexical-matching-bm25)) | Precise Path |
 |--------|------------:|-------------------------:|-------------:|
 | **Overall MRR** | 0.4776 (±0.10) | 0.4722 (±0.09) | 0.4691 (±0.10) |
@@ -67,6 +69,8 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 ### [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (Thresholding)
 **Implementation:** A score-based filter applied to all retrieval results (see [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference)).
 **Analysis:** Filters out out-of-domain "noise". No adversarial query surfaced a relevant result in the top position (MRR=0.0 across all paths). The hybrid path fully filters adversarial queries; simple and precise paths may still return low-relevance results that score above the vector threshold.
+
+Threshold values and calibration procedure: [ARCHITECTURE.md](ARCHITECTURE.md#tuned-parameters-reference).
 
 ---
 
