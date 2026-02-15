@@ -29,9 +29,9 @@ def search_with_routing(
     Results below MIN_RELEVANCE_SCORE are filtered out.
 
     Stacks:
-        simple  -> Arcane Recall (~23ms)
-        precise -> Arcane Recall + Divine Insight: expanded + reranked (~1550ms)
-        hybrid  -> BM25 + Vector + RRF + Arcane Recall (~80ms)
+        simple  -> Arcane Recall (fast)
+        precise -> Arcane Recall + Divine Insight (high accuracy, slower)
+        hybrid  -> BM25 + Vector + RRF + Arcane Recall (lexical + semantic)
 
     For complex multi-part questions, the agent should decompose into
     multiple simple searches and synthesize the results itself.

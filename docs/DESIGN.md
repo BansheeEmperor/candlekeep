@@ -2,11 +2,11 @@
 
 ## 1. Problem Statement
 
-AI agents need access to domain-specific knowledge that isn't in their training data. Existing solutions either require full document context (expensive, hits token limits) or use naive keyword search (misses semantic meaning). Candlekeep provides a RAG knowledge base that an AI agent can query via MCP, getting relevant document fragments with full section context in sub-50ms (typically ~26ms on a warm model).
+AI agents need access to domain-specific knowledge that isn't in their training data. Existing solutions either require full document context (expensive, hits token limits) or use naive keyword search (misses semantic meaning). Candlekeep provides a RAG knowledge base that an AI agent can query via MCP, getting relevant document fragments with full section context in sub-100ms (typically ~57ms on a warm model with similarity-weighted expansion).
 
 ## 2. Design Goals
 
-1. **Fast default path** — Sub-50ms search latency for interactive agent use
+1. **Fast default path** — Sub-100ms search latency for interactive agent use (typically ~57ms with similarity-weighted expansion)
 2. **High content match** — Return text that actually contains the answer, not just related text
 3. **Agent-native** — The agent controls search strategy, decomposes complex queries, synthesizes results
 4. **Quality enforcement** — Reject poorly structured documents at ingestion time

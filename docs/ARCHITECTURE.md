@@ -195,9 +195,11 @@ Candlekeep is designed for sub-linear scaling, ensuring that search performance 
 
 ### Performance at Scale
 Benchmark results demonstrate that the `simple` search path is highly resilient to corpus growth:
-- **Small Corpus:** ~23ms avg latency
-- **Medium Corpus:** ~26ms avg latency
-- **Scaling Efficiency:** A significant increase in data resulted in only a minor increase in latency.
+- **Small Corpus (9 docs, ~178 chunks):** ~30ms avg latency
+- **Medium Corpus (89 docs, ~2,770 chunks):** ~57ms avg latency
+- **Scaling Efficiency:** A 15× increase in data resulted in less than 2× increase in latency.
+
+*Latency measured on CPU with warm model, similarity-weighted expansion (Scholar's Discernment) active, using stored embeddings from ChromaDB.*
 
 This efficiency is achieved through the $O(\log N)$ search complexity of ChromaDB's HNSW index and Candlekeep's optimized Arcane Recall phase, which performs direct per-document lookups instead of full database scans.
 
@@ -288,7 +290,7 @@ All settings via environment variables (`.env` file):
 
 | Metric | Target Value |
 |--------|-------|
-| Simple search latency (local) | < 30ms |
+| Simple search latency (local) | < 100ms (~57ms measured) |
 | Simple search latency (remote) | ~400ms |
 | Precise search latency | ~1.5s |
 | Content match (decomposed) | > 90% |
