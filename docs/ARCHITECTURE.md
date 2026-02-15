@@ -212,7 +212,7 @@ Candlekeep uses MCP's **stdio transport**: each AI agent spawns its own MCP serv
 
 1. The simple and hybrid paths are stateless per-request. No concurrency guard is needed because only one request is in flight at a time.
 2. The precise path runs PyTorch inference through a singleton cross-encoder. It is single-threaded by design — no concurrency guard is needed in the current stdio deployment.
-3. Write operations (`ingest`, `delete`, `repopulate`) invalidate the BM25 cache and modify the ChromaDB collection. ChromaDB handles its own collection-level locking; the quality gate and chunking pipeline run outside that lock but are safe because only one agent drives the process.
+3. Write operations (`ingest`, `delete`, `repopulate`) invalidate the BM25 cache and modify the ChromaDB collection. The BM25 index is rebuilt synchronously on the next hybrid query — this is intentional in single-agent mode, ensuring freshly ingested documents are immediately searchable via the hybrid path. ChromaDB handles its own collection-level locking; the quality gate and chunking pipeline run outside that lock but are safe because only one agent drives the process.
 4. Multiple agents each get their own server process. They share the underlying ChromaDB instance, which handles concurrent access internally.
 
 > **Shared-server deployments (future):** If Candlekeep moves to HTTP/SSE transport serving multiple agents from a single process, add a request queue or semaphore in front of the precise path to prevent cross-encoder serialization from stalling concurrent requests. Write operations would also need explicit serialization at the application layer.
@@ -298,6 +298,7 @@ All settings via environment variables (`.env` file):
 ## Future Work
 
 - **Multi-Agent Shared Server** — Evaluate whether a single MCP server serving multiple agents (via HTTP/SSE transport) is desirable. Tradeoffs: resource sharing and cache efficiency vs cross-encoder serialization, write contention, and operational complexity of per-agent isolation.
+- **Incremental BM25 Updates** — The hybrid path's BM25 index is rebuilt from scratch after every write. At current corpus scale (~2,770 chunks) this is fast, but it scales linearly. Evaluate incremental add/remove operations on the BM25 index instead of full rebuild, or switch to a library that supports it natively (e.g., `whoosh`, `tantivy`).
 
 ## File Structure
 
