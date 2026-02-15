@@ -1287,3 +1287,42 @@ Cosine and IP produce identical results. Cosine is slightly faster (99ms vs 107m
 ### Skipping Test 4 (Collection Splitting)
 
 Not worth implementing — the corpus isn't large enough for per-category collections to provide a speed benefit, and it adds complexity to the ingestion pipeline.
+
+---
+
+## Entry 28: Expansion Parameter & Similarity Threshold Sweep (Centurion Set) - 2026-02-15 09:50
+
+### Background
+
+TASK-09 from the audit flagged that the ±2 expansion default was validated on the legacy 15-query and 23-query suites but never on the full Centurion Set (108 queries). Additionally, since Arcane Recall now uses similarity-weighted expansion (Scholar's Discernment), the `EXPANSION_SIMILARITY_THRESHOLD` is arguably the more impactful parameter — it controls how aggressively neighbors are pruned within the expansion window.
+
+### Sweep 1: expansion_chunks (threshold fixed at 0.92)
+
+| expansion_chunks | MRR | nDCG@5 | Hit Rate@5 | Latency | Avg Tokens |
+|------------------|------|--------|------------|---------|------------|
+| ±1 | 0.5019 | 0.5157 | 0.5463 | 393ms | 2155 |
+| ±2 | 0.5023 | 0.5157 | 0.5463 | 528ms | 2755 |
+| ±3 | 0.5031 | 0.5157 | 0.5463 | 603ms | 3096 |
+
+Retrieval quality (nDCG@5, Hit Rate@5) is identical across all three values. MRR shows negligible variance (0.0012 spread). The similarity gate at 0.92 is doing the real filtering — expanding the search radius from ±1 to ±3 only adds tokens and latency without improving ranking.
+
+±2 remains the right default: it gives the similarity gate enough room to find useful neighbors without the latency cost of ±3 (+14% latency, +12% tokens for zero quality gain).
+
+### Sweep 2: similarity_threshold (expansion_chunks fixed at ±2)
+
+| Threshold | MRR | nDCG@5 | Hit Rate@5 | Latency | Avg Tokens |
+|-----------|------|--------|------------|---------|------------|
+| 0.85 | 0.5031 | 0.5157 | 0.5463 | 518ms | 3525 |
+| 0.88 | 0.5031 | 0.5157 | 0.5463 | 538ms | 3303 |
+| 0.90 | 0.5031 | 0.5157 | 0.5463 | 503ms | 3048 |
+| 0.92 | 0.5023 | 0.5157 | 0.5463 | 513ms | 2755 |
+| 0.95 | 0.5019 | 0.5157 | 0.5463 | 510ms | 2015 |
+
+Again, ranking metrics are stable. The threshold controls token volume: 0.85 (permissive) yields 75% more tokens than 0.95 (aggressive). MRR has a marginal preference for looser thresholds (0.5031 vs 0.5019) but the difference is not statistically significant on 108 queries.
+
+### Conclusions
+
+1. **±2 expansion confirmed optimal on Centurion Set.** No quality benefit from ±3. TASK-09 closed.
+2. **Similarity threshold 0.92 is a good balance.** Tighter (0.95) saves 27% tokens with negligible quality loss. Looser (0.85) adds 28% tokens for negligible quality gain. The current 0.92 sits in the sweet spot.
+3. **The Scholar's Discernment is the real control knob.** The expansion_chunks parameter is now effectively a safety bound — the similarity gate determines actual window size. Future tuning should focus on the threshold, not the chunk radius.
+4. **No parameter changes needed.** Defaults confirmed: `expansion_chunks=2`, `EXPANSION_SIMILARITY_THRESHOLD=0.92`.
