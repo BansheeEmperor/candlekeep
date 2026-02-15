@@ -1326,3 +1326,35 @@ Again, ranking metrics are stable. The threshold controls token volume: 0.85 (pe
 2. **Similarity threshold 0.92 is a good balance.** Tighter (0.95) saves 27% tokens with negligible quality loss. Looser (0.85) adds 28% tokens for negligible quality gain. The current 0.92 sits in the sweet spot.
 3. **The Scholar's Discernment is the real control knob.** The expansion_chunks parameter is now effectively a safety bound — the similarity gate determines actual window size. Future tuning should focus on the threshold, not the chunk radius.
 4. **No parameter changes needed.** Defaults confirmed: `expansion_chunks=2`, `EXPANSION_SIMILARITY_THRESHOLD=0.92`.
+
+---
+
+## Entry 29: Chunk Overlap Sweep (Centurion Set) - 2026-02-15 10:20
+
+### Background
+
+TASK-10 from the audit flagged that chunk overlap=50 was noted as "Standard, not benchmarked in isolation" in the Tuned Parameters table. Overlap affects Arcane Recall's adjacency logic: more overlap means adjacent chunks share more text, which inflates cosine similarity between neighbors and interacts with the Scholar's Discernment threshold (0.92).
+
+Overlap is an ingestion-time parameter, so each value required a full re-ingestion of the corpus.
+
+### Results
+
+| Overlap | Chunks | MRR | nDCG@5 | Hit Rate@5 | Latency | Avg Tokens |
+|---------|--------|------|--------|------------|---------|------------|
+| 0 | 2795 | 0.5019 | 0.5162 | 0.5463 | 545ms | 2595 |
+| 25 | 2828 | 0.5086 | 0.5239 | 0.5556 | 543ms | 2688 |
+| 50 | 2859 | 0.5023 | 0.5157 | 0.5463 | 530ms | 2757 |
+| 100 | 2961 | 0.5099 | 0.5237 | 0.5556 | 538ms | 2813 |
+
+### Analysis
+
+1. Overlap=25 and overlap=100 both outperform overlap=50 on MRR (+1.3% and +1.5%) and Hit Rate@5 (+1.7% each). The differences are small but consistent across both metrics.
+2. Overlap=0 (no overlap) performs worst on MRR but has comparable nDCG@5 to overlap=50. Zero overlap loses boundary context that helps retrieval.
+3. Overlap=100 produces 3.6% more chunks than overlap=50, adding marginal storage and ingestion cost.
+4. Overlap=25 achieves nearly identical quality to overlap=100 with fewer chunks (2828 vs 2961).
+
+### Conclusion
+
+Overlap=25 is the most efficient choice: best MRR/nDCG ratio with the fewest extra chunks. However, the improvement over overlap=50 is marginal (~1.3% MRR, ~1.6% nDCG). Given that the current default of 50 is a well-understood standard and the gains are within noise for 108 queries, **no change recommended**. The result is documented for future reference.
+
+If a future corpus shows larger sensitivity to overlap, 25 is the value to try first.

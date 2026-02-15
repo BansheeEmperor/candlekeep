@@ -172,7 +172,7 @@ If a remote ChromaDB was populated with model A and the local config says model 
 | Parameter | Tested Values | Optimal | Rationale |
 |-----------|--------------|---------|-----------|
 | Chunk size | 256, 512, 768, 1024 | 512 | Best content match; [Arcane Recall](GLOSSARY.md#arcane-recall) compensates for size |
-| Chunk overlap | 50 | 50 | Standard, not benchmarked in isolation |
+| Chunk overlap | 0, 25, 50, 100 | 50 | Benchmarked on Centurion Set (Entry 29). Overlap=25 marginally better (+1.3% MRR) but within noise. 50 retained as standard. |
 | Expansion size | ±1, ±2, ±3, ±4 | ±2 | ±3 no benefit, ±4 hurts precision ² |
 
 ² Re-validated on the Centurion Set (108 queries, Entry 28). Retrieval quality is identical across ±1/±2/±3 due to similarity-weighted pruning. ±2 confirmed optimal: sufficient search radius without the latency cost of ±3.
