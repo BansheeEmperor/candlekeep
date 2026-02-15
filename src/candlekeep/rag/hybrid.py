@@ -1,7 +1,34 @@
 """Lexical search and rank fusion for hybrid retrieval."""
+import re
 from typing import List
 from rank_bm25 import BM25Okapi
 from candlekeep.database.interface import SearchResult
+
+# Common English stop words — filtered from BM25 tokenization to reduce noise.
+STOP_WORDS = frozenset({
+    "a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for",
+    "of", "with", "by", "from", "is", "are", "was", "were", "be", "been",
+    "being", "have", "has", "had", "do", "does", "did", "will", "would",
+    "could", "should", "may", "might", "shall", "can", "it", "its",
+    "this", "that", "these", "those", "i", "you", "he", "she", "we",
+    "they", "me", "him", "her", "us", "them", "my", "your", "his",
+    "our", "their", "what", "which", "who", "whom", "how", "when",
+    "where", "why", "not", "no", "if", "then", "than", "so", "as",
+    "about", "into", "through", "during", "before", "after", "above",
+    "below", "between", "each", "all", "both", "few", "more", "most",
+    "other", "some", "such", "only", "own", "same", "also", "just",
+    "very", "too", "any",
+})
+
+_WORD_RE = re.compile(r"[a-z0-9]+(?:[._-][a-z0-9]+)*")
+
+
+def _tokenize(text: str) -> List[str]:
+    """Tokenize text for BM25: lowercase, extract words, filter stop words.
+
+    Preserves technical identifiers like 'bge-small', 'v3.4.1', 'ms-marco'.
+    """
+    return [w for w in _WORD_RE.findall(text.lower()) if w not in STOP_WORDS]
 
 
 def reciprocal_rank_fusion(
@@ -47,11 +74,11 @@ class BM25Searcher:
     def __init__(self, chunks: List[SearchResult]):
         self.chunks = chunks
         # Tokenize chunks for BM25
-        self.tokenized_corpus = [doc.text.lower().split() for doc in chunks]
+        self.tokenized_corpus = [_tokenize(doc.text) for doc in chunks]
         self.bm25 = BM25Okapi(self.tokenized_corpus)
         
     def search(self, query: str, n_results: int = 5) -> List[SearchResult]:
-        tokenized_query = query.lower().split()
+        tokenized_query = _tokenize(query)
         scores = self.bm25.get_scores(tokenized_query)
         
         # Get top indices
