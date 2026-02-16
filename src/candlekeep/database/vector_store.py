@@ -71,14 +71,13 @@ class ChromaVectorStore(VectorDatabase):
         if not chunks:
             return 0
 
-        # Invalidate hybrid search cache
-        from candlekeep.rag.hybrid import clear_bm25_cache
-        clear_bm25_cache()
-
-        # Delete existing chunks from same sources
+        # Delete existing chunks from same sources (without touching BM25 cache —
+        # we handle the cache update atomically below).
         sources = set(c.metadata["source"] for c in chunks)
         for source in sources:
-            self.delete_by_source(source)
+            results = self.collection.get(where={"source": source})
+            if results["ids"]:
+                self.collection.delete(ids=results["ids"])
 
         ids = [self._generate_id(c) for c in chunks]
         texts = [c.text for c in chunks]
@@ -86,6 +85,18 @@ class ChromaVectorStore(VectorDatabase):
         metadatas = [{**c.metadata, "collection": collection, "chunk_index": c.chunk_index} for c in chunks]
 
         self.collection.upsert(ids=ids, embeddings=embeddings, documents=texts, metadatas=metadatas)
+
+        # Incrementally update BM25 cache: remove old source chunks, add new ones.
+        # This avoids the full ChromaDB fetch + re-tokenization of clear_bm25_cache().
+        from candlekeep.rag.hybrid import update_bm25_cache
+        from candlekeep.database.interface import SearchResult
+        new_search_results = [
+            SearchResult(text=t, metadata=m, score=1.0, doc_id=doc_id)
+            for doc_id, t, m in zip(ids, texts, metadatas)
+        ]
+        for source in sources:
+            update_bm25_cache(new_search_results, removed_source=source)
+
         return len(chunks)
 
     def search(self, query: str, n_results: int = 5, category: str | None = None) -> list[SearchResult]:
@@ -156,12 +167,12 @@ class ChromaVectorStore(VectorDatabase):
 
     def delete_by_source(self, source: str) -> int:
         """Delete all chunks from a source file."""
-        from candlekeep.rag.hybrid import clear_bm25_cache
-        clear_bm25_cache()
+        from candlekeep.rag.hybrid import remove_from_bm25_cache
         
         results = self.collection.get(where={"source": source})
         if results["ids"]:
             self.collection.delete(ids=results["ids"])
+            remove_from_bm25_cache(source)
             return len(results["ids"])
         return 0
 
