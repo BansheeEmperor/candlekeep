@@ -98,12 +98,11 @@ See [Setup Guide](docs/SETUP.md) for auth configuration and production deploymen
 
 - [Setup Guide](docs/SETUP.md) — Local and remote installation
 - [Authentication](docs/AUTHENTICATION.md) — Token configuration
-- [Architecture](docs/ARCHITECTURE.md) — System design
-- [Benchmark Results](docs/BENCHMARK_RESULTS.md) — Quality and performance metrics
+- [Architecture](docs/ARCHITECTURE.md) — System design and technical reference
+- [Design Decisions & Benchmarks](docs/DESIGN.md) — Why things are the way they are, with measured results
 - [Interactive Benchmark Chart](docs/benchmark_chart.html) — Visual comparison of paths
-- [Design Decisions](docs/DESIGN.md) — Why things are the way they are
 - [Glossary of Retrieval](docs/GLOSSARY.md) — IR metrics explained in wizard sage style
-- [Research Diary](docs/RESEARCH_DIARY.md) — The full journey, every experiment
+- [Research Diary](docs/RESEARCH_DIARY.md) — The full journey, every experiment, archived plans
 - [The Keeper's Chronicle](docs/THE_KEEPER_OF_CANDLEKEEP.md) — The story of how the library was built
 
 ## MCP Tools

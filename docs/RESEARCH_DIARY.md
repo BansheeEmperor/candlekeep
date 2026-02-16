@@ -7,6 +7,37 @@
 
 ---
 
+## Results Overview
+
+*Consolidated from the technique research summary (2026-02-11). For detailed per-entry data, see the diary entries below.*
+
+### Technique Comparison Matrix
+
+| Technique | Precision | Recall | F1 | Content | Latency | Status | Recommendation |
+|-----------|-----------|--------|----|---------|---------| -------|----------------|
+| **Bardic Knowledge** | 97.3% | 470.0% | 161.3% | 71.7% | 17ms | ✅ Baseline | Default |
+| **Arcane Recall** | 97.3% | 470.0% | 161.3% | **88.7%** | 37ms | ✅ Tested | ⭐⭐⭐ Use always |
+| **Flurry of Blows** | **100.0%** | **483.3%** | **165.7%** | 77.4% | 1136ms | ⚠️ Partial | ⚠️ Complex queries only |
+| **Illusory Script** | 94.7% | 456.7% | 156.8% | 83.0% | 3862ms | ⚠️ Partial | ❌ Not recommended |
+| **Mirror Image** | 94.7% | 456.7% | 67.9% | 67.9% | 1177ms | ✅ Tested | ❌ Degrades quality |
+
+*Legacy Recall (R) is defined as (total chunks retrieved from relevant documents / expected documents) × 100%. Values exceed 100% when multiple chunks per document are retrieved. This metric is retired; the Centurion Set uses [Hit Rate@5](GLOSSARY.md#the-success-of-the-scry-hit-ratek).*
+
+### Key Insights
+
+1. **Content vs Retrieval Quality are Independent** — Arcane Recall improves content (+17%) without changing retrieval metrics. Precision/Recall measure "did we find the right chunk?"; Content measures "does the returned text contain expected phrases?"
+2. **Latency is the Limiting Factor** — Only Arcane Recall stays under 100ms. LLM-based techniques add 1–4 seconds. API SDK overhead is significant (415ms even on failure).
+3. **Perfect Precision is Achievable** — Flurry of Blows achieved 100% precision via query decomposition, but at prohibitive latency.
+4. **Expansion Strategies Differ** — Arcane Recall expands post-retrieval, Mirror Image expands the query pre-retrieval, Flurry of Blows decomposes into multiple searches, Illusory Script transforms the query into a hypothetical answer.
+
+### Recommended Stack
+
+- **Tier 1 (Always Use):** Bardic Knowledge + Arcane Recall → P=97.3%, Content=88.7%, Latency=37ms
+- **Tier 2 (Conditional):** Flurry of Blows for complex queries if latency acceptable (+~1100ms)
+- **Tier 3 (Not Recommended):** Illusory Script (too slow), Mirror Image (degrades quality)
+
+---
+
 ## Entry 1: Mirror Image (Multi-Query Retrieval) - 2026-02-11 08:27
 
 ### Implementation
@@ -1634,3 +1665,382 @@ Calibration selected N=3 (27.3 qps) in 1.4s on a 10-core machine (range N=1..5).
 
 ### Files Changed
 - `src/candlekeep/mcp/server.py` — `_estimate_semaphore_value()`, `_calibrate_semaphore()`, updated `_background_init()`
+
+
+---
+
+# Appendix A: Archived Research Plans
+
+*The following plans were executed during the research phase. Their outcomes are recorded in the diary entries above and in [DESIGN.md](DESIGN.md). Preserved here for historical reference.*
+
+---
+
+## A.1 Research Roadmap (v1.1)
+
+**Subject:** Transitioning from Heuristic-Based RAG to Statistical Retrieval Engineering
+
+### Workstream I: Statistical Ground Truth (Evaluation Infrastructure)
+**Problem:** The 23-query benchmark was statistically insignificant.
+**Outcome:** Centurion Set (108 queries) implemented with nDCG@5, MRR, Hit Rate@K. See Entry 28+.
+
+### Workstream II: Lexical Hybridization ("Keyword Blindness" Fix)
+**Problem:** Vector embeddings fail on exact technical identifiers.
+**Outcome:** BM25 + RRF hybrid path implemented. +26% MRR on lexical queries. See DESIGN.md §3.1.
+
+### Workstream III: Contextual Pruning (Arcane Recall Refactor)
+**Problem:** Fixed expansion wastes tokens.
+**Outcome:** Similarity-weighted expansion (Scholar's Discernment) + window merging (Arcane Coalescence). See Entry 28.
+
+### Workstream IV: Latency & Reranking Optimization
+**Problem:** High reranking latency.
+**Outcome:** Singleton pattern, batch inference, hardware acceleration (23.7x speedup on MPS). See DESIGN.md §8.8.
+
+### Workstream V: Structural Integrity (Bardic Knowledge Audit)
+**Problem:** Metadata prefixing "smears" the vector space.
+**Outcome:** Bardic Knowledge retained — discrimination test (5 platform-specific auth docs) showed acceptable separation. Metadata boosting (Bardic Inspiration) added as complementary technique.
+
+### Projected Deliverables (Status)
+1. `candlekeep-bench` CLI → Implemented as `scripts/run_eval.py`
+2. Hybrid Router → Implemented in `src/candlekeep/rag/hybrid.py`
+3. Quantized Reranker → Not pursued; MPS acceleration sufficient for current scale
+
+---
+
+## A.2 RAG Improvements Plan
+
+**Techniques proposed and their outcomes:**
+
+| Technique | Proposed | Outcome | Reference |
+|-----------|----------|---------|-----------|
+| Scrying Window (Sentence Window) | ⭐ Priority | ❌ Rejected: 46.6% precision drop, 106x slower | Entry 8 |
+| Mirror Image (Multi-Query) | Medium | ❌ Rejected: degraded all metrics | Entry 7 |
+| Flurry of Blows (Query Decomposition) | Medium | ⚠️ Conditional: 100% precision but 1136ms | Entry 3, 13 |
+| Arcane Recall (Parent Document) | Low | ✅ Adopted: +17% content, +20ms | Entry 2, 5 |
+| Illusory Script (HyDE) | Low | ❌ Rejected: 3862ms, mixed quality | Entry 4 |
+
+**Current state at plan creation:**
+- ✅ Bardic Knowledge — Contextual Chunk Embeddings (97.3% precision, 17ms)
+- ✅ Divine Insight — Cross-Encoder Reranking (98.7% precision, 1500ms, optional)
+- ❌ Wild Magic Surge — Hybrid Search (BM25) — Initially rejected, later adopted after Centurion Set validation
+- ❌ Scrying Window — Sentence Window Retrieval — Rejected, precision collapse
+
+**Scrying Window rejection data (tested 2026-02-10):**
+- Precision: 97.3% → 50.7% (-46.6%)
+- Content Match: 71.7% → 90.6% (+18.9%)
+- Latency: 17.4ms → 1849ms (106x slower)
+- Success Rate: 100% → 33.3% (-66.7%)
+
+**Reference URLs from original plan:**
+- Sentence Window Retrieval: https://glaforge.dev/posts/2025/02/25/advanced-rag-sentence-window-retrieval/
+- Multi-Query Retrieval: https://arxiv.org/html/2411.13154v1
+- Query Decomposition: https://arxiv.org/html/2507.00355v1
+- HyDE: https://arxiv.org/abs/2212.10496
+
+**Future research techniques not evaluated:**
+- ColBERT / late-interaction models — ChromaDB lacks native support. Revisit if precise-path latency becomes a deployment blocker.
+- SPLADE / learned sparse retrieval — Current BM25 + RRF already resolved Keyword Blindness. Revisit if naive tokenizer becomes a limitation at scale.
+- LLM-generated chunk summaries (Contextual Retrieval) — Ingestion cost too high (~2,770 LLM calls). Revisit if content match plateaus.
+
+---
+
+## A.3 Technique Combinations Plan
+
+**Key findings from combination analysis:**
+
+The plan proposed testing technique combinations across pipeline stages (Ingestion → Query Processing → Retrieval → Post-Processing → Return). The actual system converged on three paths instead of per-query-type routing:
+
+| Proposed Route | Actual Implementation |
+|----------------|----------------------|
+| Simple (Bardic Knowledge only) | `simple` path: Arcane Recall (universal default) |
+| Broad (Mirror Image + Divine Insight) | Not implemented — Mirror Image rejected |
+| Complex (Flurry of Blows + Divine Insight) | Removed — agent decomposes queries instead (Entry 13) |
+| Abstract (Illusory Script + Divine Insight) | Not implemented — Illusory Script rejected |
+| Context (Arcane Recall + Divine Insight) | `precise` path: Arcane Recall + Divine Insight |
+| Keyword (Wild Magic + Divine Insight) | `hybrid` path: BM25 + Vector + Arcane Recall |
+
+**Anti-patterns confirmed:**
+- ❌ Mirror Image + Flurry of Blows — query explosion (15 searches)
+- ❌ HyDE + Mirror Image — redundant query expansion
+- ❌ Bardic Knowledge + Scrying Window — conflicting chunking strategies
+
+**Adaptive routing decision:** Agent-driven (explicit `query_type` parameter) chosen over automatic classification. The agent already understands query intent. See Entry 9.
+
+---
+
+## A.4 Benchmarking Plan
+
+**974-line plan for systematic technique benchmarking. Key parameters preserved:**
+
+### Baseline Reference
+- **Pure Baseline (78a12e9):** P=83.3%, R=354.2%, F1=134.9%, Content=80.5%, Latency=18.3ms
+- **Bardic Knowledge (9739b1e):** P=97.3%, R=470.0%, F1=161.3%, Content=71.7%, Latency=17.4ms
+
+### Latency Tiers (as designed)
+- Tier 1 (Fast): <100ms — Production-ready for all queries
+- Tier 2 (Interactive): 100–500ms — Acceptable delay
+- Tier 3 (Standard): 500–1000ms — Complex queries, batch processing
+- Tier 4 (Extended): 1000–2000ms — High-value queries only, with routing
+- Tier 5 (Batch Only): >2000ms — Not acceptable for interactive use
+
+### Success Criteria
+- Individual techniques: ≥5% improvement in at least one metric, no metric degraded >10%
+- Two-way combinations: ≥10% improvement, outperforms both individual techniques
+- Comparison to Bardic Knowledge: must match/exceed or provide complementary benefits
+
+All phases were executed. Results in diary entries 1–8 (individual techniques), 9–17 (routing and optimization), 18–27 (scale and parameter validation), 28–36 (Centurion Set validation).
+
+---
+
+## A.5 Multi-Agent Shared Server Plan
+
+**Design for HTTP transport mode allowing multiple agents to share a single Candlekeep process.**
+
+### Problem Statement
+Candlekeep runs one MCP server process per agent (stdio transport). Each process loads its own embedding model (~400MB), cross-encoder (~80MB), and BM25 cache. N agents = N× memory for identical models.
+
+### Goals
+1. Add HTTP transport mode where one process serves multiple agents concurrently.
+2. Keep stdio mode as the default.
+3. Handle concurrent reads safely.
+4. Serialize writes to prevent data corruption and BM25 cache races.
+5. Support optional bearer token auth for HTTP mode.
+6. Benchmark cross-encoder behavior under concurrent load before adding throttling.
+7. Minimal changes — RAG pipeline, database layer, and tool logic stay the same.
+
+### Non-Goals
+- Per-agent document isolation / multi-tenancy.
+- Per-agent permission levels (single shared token).
+- Horizontal scaling across multiple Candlekeep processes.
+- OAuth / OIDC / external identity providers.
+
+### Core Design Decisions
+- Dual-mode transport: `CANDLEKEEP_TRANSPORT=stdio` (default) or `http`
+- Optional bearer token auth via `CANDLEKEEP_MCP_TOKEN`
+- Write serialization via `threading.Lock()`
+- Cross-encoder concurrency capped at `Semaphore(3)` — throughput peaks at N=3 on 10-core Apple M2 Pro (10.1 qps direct, 5.3 qps over HTTP). At N=5, GIL contention causes 4x latency increase with no throughput gain.
+- In-memory query counter replaces file-based `metrics.json`
+- TLS via reverse proxy (out of scope for Candlekeep)
+
+### Authentication Design
+- stdio mode: No auth (agent and server share a process boundary).
+- HTTP mode: Bearer token auth, optional. If `CANDLEKEEP_MCP_TOKEN` is set, auth is enforced. If not, the server starts without auth.
+- Token provisioning: operator generates token via `python -c "import secrets; print(secrets.token_urlsafe(32))"`, sets in server `.env`, distributes to agent `mcp.json` configs.
+
+| Deployment | Auth needed? | TLS needed? |
+|------------|:---:|:---:|
+| Localhost, all agents on same machine | No | No |
+| Local network, trusted agents | Recommended | No |
+| Over the internet / untrusted network | Yes | Yes (reverse proxy) |
+
+### Pipeline Stage Breakdown (single request, warm model)
+
+| Stage | CPU | MPS |
+|-------|----:|----:|
+| Query embedding (bge-small) | 23ms | 20ms |
+| ChromaDB vector search | 23ms | 18ms |
+| Arcane Recall (expansion + stored embeddings) | 99ms | 88ms |
+| Cross-encoder (15 candidates) | 326ms | 142ms |
+| Full precise pipeline | 433ms | 232ms |
+
+### Concurrent Throughput Data
+
+**Direct calls (no HTTP overhead, MPS):**
+
+| Concurrency | p50 | p95 | Throughput | Ratio vs baseline |
+|:-:|:-:|:-:|:-:|:-:|
+| 1 | 240ms | 240ms | 4.2 qps | 1.0x |
+| 2 | 168ms | 239ms | 8.4 qps | 1.0x |
+| 3 | 253ms | 298ms | 10.1 qps | 1.3x |
+| 5 | 972ms | 1204ms | 4.2 qps | 5.2x |
+| 8 | 1438ms | 1642ms | 4.9 qps | 7.1x |
+| 10 | 1854ms | 1910ms | 5.2 qps | 8.2x |
+
+**End-to-end HTTP benchmark (CPU):**
+
+| Concurrency | p50 | p95 | Throughput | Ratio vs baseline |
+|:-:|:-:|:-:|:-:|:-:|
+| 1 | 471ms | 471ms | 2.1 qps | 1.0x |
+| 2 | 622ms | 623ms | 3.2 qps | 1.3x |
+| 3 | 811ms | 811ms | 3.7 qps | 1.7x |
+| 5 | 1551ms | 1552ms | 3.2 qps | 3.3x |
+
+**End-to-end HTTP benchmark (MPS):**
+
+| Concurrency | p50 | p95 | Throughput | Ratio vs baseline |
+|:-:|:-:|:-:|:-:|:-:|
+| 1 | 277ms | 277ms | 3.6 qps | 1.0x |
+| 2 | 373ms | 374ms | 5.3 qps | 1.3x |
+| 3 | 567ms | 570ms | 5.3 qps | 2.1x |
+| 5 | 1088ms | 1090ms | 4.6 qps | 3.9x |
+| 10 | 2070ms | 2076ms | 4.8 qps | 7.5x |
+
+### BM25 Cache Staleness
+After a write, the BM25 cache is invalidated. The next hybrid query rebuilds it. If agent A writes while agent B runs a hybrid query, B may use a stale cache. This is acceptable — the vector search component (primary retrieval) always reflects the latest state. BM25 is a supplementary signal.
+
+### Lock Interaction Matrix
+
+| Operation | `_write_lock` | `_reranker_semaphore` | BM25 `_cache_lock` |
+|-----------|:---:|:---:|:---:|
+| `search` (simple) | — | — | — |
+| `search` (hybrid) | — | — | ✓ (read) |
+| `search` (precise) | — | ✓ | — |
+| `ingest` | ✓ | — | ✓ (invalidate) |
+| `delete_document` | ✓ | — | ✓ (invalidate) |
+| `repopulate_database` | ✓ | — | ✓ (invalidate) |
+
+No deadlock risk: no tool acquires more than one of `_write_lock` and `_reranker_semaphore`.
+
+### Risk Assessment
+
+| Risk | Likelihood | Impact | Mitigation |
+|------|-----------|--------|------------|
+| Cross-encoder stalls concurrent requests | Confirmed at N=5 | Medium | `Semaphore(3)` caps at throughput-optimal level |
+| BM25 cache stale after concurrent write | Medium | Low | Vector search always fresh. BM25 supplementary. |
+| Bearer token leaked over plaintext HTTP | Medium (over network) | High | Auth optional. TLS is operator's responsibility. |
+| No auth on localhost | Low | Low | Localhost-only traffic. Acceptable for dev. |
+| Memory pressure from many agents | Low | Medium | Models shared. Per-request allocations small. |
+| FastMCP HTTP transport bugs | Low | High | Pin FastMCP version. Test with multiple clients. |
+
+### Testing Strategy
+1. Smoke test: HTTP mode, one client, all 8 tools.
+2. Auth enabled: 401 without token, 401 with wrong token, success with correct token.
+3. Auth disabled: open access without token.
+4. Concurrent reads: 5 parallel `search` calls (simple path).
+5. Write contention: 2 parallel `ingest` calls, no corruption.
+6. Read-during-write: ingest + search in parallel.
+7. Stdio regression: existing stdio mode works identically.
+
+### Future Considerations
+- Per-agent auth: Map different tokens to agent IDs for fine-grained access control.
+- Rate limiting: Prevent a single agent from monopolizing resources (see A.6).
+- Connection limits: Cap max concurrent MCP sessions.
+- Token rotation: Support multiple valid tokens during rotation window.
+- ASGI workers: For high-throughput deployments, run with `uvicorn --workers N`. Requires `stateless_http=True` in FastMCP. Write lock would need to be cross-process.
+
+### Agent Configuration Examples
+
+See [SETUP.md](SETUP.md) for complete `mcp.json` examples for stdio, HTTP (localhost), HTTP (with auth), and remote server configurations.
+
+**Remote server example (with TLS via reverse proxy):**
+```json
+{
+  "mcpServers": {
+    "candlekeep": {
+      "url": "https://candlekeep.internal.example.com/mcp",
+      "headers": {
+        "Authorization": "Bearer your-mcp-token-here"
+      }
+    }
+  }
+}
+```
+
+---
+
+## A.6 Per-Session Rate Limiting Plan
+
+**Design for per-session rate limiting in HTTP mode.**
+
+### Problem Statement
+In HTTP mode, multiple agents share a single Candlekeep process. The `_reranker_semaphore` and `_write_lock` prevent throughput collapse and data corruption, but they don't enforce fairness between agents. A single agent issuing a sustained burst can monopolize server resources.
+
+### Non-Goals
+- Persistent rate limit state across server restarts.
+- Per-agent identity beyond the MCP session ID.
+- Different rate limits for different authenticated tokens.
+- Rate limiting at the HTTP/network layer (reverse proxy concern).
+
+### Two-Tier System
+- `_search_limiter`: 30 calls / 60s per session (covers all search paths)
+- `_write_limiter`: 5 calls / 60s per session (ingest, delete_document, repopulate_database)
+- Read-only tools (list_documents, get_stats, critique_document, generate_documentation) are NOT rate-limited
+
+### Configuration
+- `CANDLEKEEP_RATE_LIMIT_SEARCH` (default: 30)
+- `CANDLEKEEP_RATE_LIMIT_WRITE` (default: 5)
+- `CANDLEKEEP_RATE_LIMIT_WINDOW` (default: 60 seconds)
+- Setting to `0` disables that limiter
+
+### Session Identification
+Uses FastMCP's `Context.session_id` from the `mcp-session-id` HTTP header. Injected via `CurrentContext()` dependency. No-op in stdio mode.
+
+### Rate Limiter Implementation
+
+Sliding window counter per session:
+
+```python
+class _RateLimiter:
+    """Per-session sliding window rate limiter."""
+
+    def __init__(self, max_calls: int, window_seconds: float):
+        self._max = max_calls
+        self._window = window_seconds
+        self._sessions: dict[str, list[float]] = {}
+        self._lock = threading.Lock()
+
+    def check(self, session_id: str) -> bool:
+        """Return True if the call is allowed, False if rate-limited."""
+        now = time.monotonic()
+        with self._lock:
+            timestamps = self._sessions.get(session_id, [])
+            timestamps = [t for t in timestamps if now - t < self._window]
+            if len(timestamps) >= self._max:
+                self._sessions[session_id] = timestamps
+                return False
+            timestamps.append(now)
+            self._sessions[session_id] = timestamps
+            return True
+
+    def cleanup(self, max_idle_seconds: float = 600.0):
+        """Remove sessions with no activity in the last max_idle_seconds."""
+        now = time.monotonic()
+        with self._lock:
+            stale = [s for s, ts in self._sessions.items()
+                     if not ts or now - ts[-1] > max_idle_seconds]
+            for s in stale:
+                del self._sessions[s]
+```
+
+### Stale Session Cleanup
+Daemon thread runs every 5 minutes, evicts sessions with no activity in last 10 minutes. At 100 concurrent sessions with 30 calls/min each, memory is negligible (~3,000 timestamps).
+
+### Lock Interaction Matrix (Updated with Rate Limiter)
+
+| Operation | `_write_lock` | `_reranker_semaphore` | BM25 `_cache_lock` | `_search_limiter._lock` | `_write_limiter._lock` |
+|-----------|:---:|:---:|:---:|:---:|:---:|
+| `search` (simple) | — | — | — | ✓ | — |
+| `search` (hybrid) | — | — | ✓ (read) | ✓ | — |
+| `search` (precise) | — | ✓ | — | ✓ | — |
+| `ingest` | ✓ | — | ✓ (invalidate) | — | ✓ |
+| `delete_document` | ✓ | — | ✓ (invalidate) | — | ✓ |
+| `repopulate_database` | ✓ | — | ✓ (invalidate) | — | ✓ |
+| `list_documents` | — | — | — | — | — |
+| `get_stats` | — | — | — | — | — |
+
+No tool acquires more than one of `_write_lock`, `_reranker_semaphore`, `_search_limiter._lock`, or `_write_limiter._lock`. The rate limiter lock is always acquired and released before any other lock. No deadlock risk.
+
+### Interaction with Existing Controls
+Rate limiter is complementary to `_reranker_semaphore` (reduces queue depth) and `_write_lock` (rejects excess writes before they reach the lock). Unauthenticated requests are rejected before reaching the limiter.
+
+### Implementation Plan
+1. Phase 1: Core rate limiter (`_RateLimiter` class, guards in tool functions)
+2. Phase 2: Cleanup thread (daemon, 5-minute interval)
+3. Phase 3: Startup logging (rate limit configuration)
+4. Phase 4: Documentation updates
+
+### Testing Strategy
+1. Unit test `_RateLimiter`: verify allow/deny at boundary, window expiry, cleanup of stale sessions.
+2. Integration: HTTP mode, single agent — verify 31st search in 60s returns rate limit message.
+3. Integration: HTTP mode, two agents — verify agent A's rate limit doesn't affect agent B.
+4. Integration: stdio mode — verify rate limiting is skipped.
+5. Integration: limits disabled — set `CANDLEKEEP_RATE_LIMIT_SEARCH=0`, verify unlimited.
+6. Regression: existing benchmark suite passes unchanged.
+
+### Risk Assessment
+
+| Risk | Likelihood | Impact | Mitigation |
+|------|-----------|--------|------------|
+| `Context.session_id` unavailable | Low | High | Guard with try/except. Fall back to no rate limiting. |
+| Legitimate agent hits rate limit | Low | Medium | Default 30/min is generous. Configurable via env var. |
+| Clock skew with `time.monotonic()` | None | None | `monotonic()` immune to wall-clock adjustments. |
+| Memory growth from many sessions | Low | Low | Cleanup thread evicts stale sessions every 5 minutes. |
