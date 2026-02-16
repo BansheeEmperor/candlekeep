@@ -108,7 +108,66 @@ Should show: `✓ Connected to http://your-server...`
 
 ## MCP Client Integration
 
-Add to your MCP client configuration (e.g., Claude Desktop `claude_desktop_config.json`):
+HTTP mode is the recommended transport, even for single-agent local use. The server loads models once at startup (~6s), then every agent connection gets immediate access (~230ms first query). It also shares memory (one copy of models vs N copies in stdio), the BM25 cache, and the ChromaDB connection across all agents.
+
+### HTTP mode (recommended)
+
+A single Candlekeep process serves one or more agents. The operator starts the server; agents connect over HTTP.
+
+**Start the server:**
+
+```bash
+# Localhost, no auth
+CANDLEKEEP_TRANSPORT=http CANDLEKEEP_HTTP_PORT=8111 candlekeep
+
+# With auth (recommended for non-localhost)
+CANDLEKEEP_TRANSPORT=http CANDLEKEEP_MCP_TOKEN=your-token CANDLEKEEP_HTTP_PORT=8111 candlekeep
+```
+
+**Generate a token:**
+
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+
+**Agent-side config (no auth):**
+
+```json
+{
+  "mcpServers": {
+    "candlekeep": {
+      "url": "http://localhost:8111/mcp"
+    }
+  }
+}
+```
+
+**Agent-side config (with auth):**
+
+```json
+{
+  "mcpServers": {
+    "candlekeep": {
+      "url": "http://localhost:8111/mcp",
+      "headers": {
+        "Authorization": "Bearer your-token-here"
+      }
+    }
+  }
+}
+```
+
+**Production (ASGI):**
+
+```bash
+CANDLEKEEP_MCP_TOKEN=your-token uvicorn candlekeep.mcp.server:app --host 0.0.0.0 --port 8111
+```
+
+FastMCP does not support HTTPS natively. For deployments where the server is not on the same host as the agents, TLS termination via a reverse proxy is the accepted approach. Configuration of the reverse proxy is out of scope for Candlekeep.
+
+### stdio mode
+
+Each agent spawns its own Candlekeep process. Simpler setup (no server to manage), but each agent pays ~6s cold-start and loads its own copy of the models into memory.
 
 ```json
 {

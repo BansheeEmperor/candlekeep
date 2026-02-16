@@ -62,7 +62,22 @@ candlekeep               # Open the gates
 
 ### MCP Client Integration
 
-Add to your MCP client configuration (e.g., Claude Desktop `claude_desktop_config.json`):
+**HTTP mode (recommended)** — one server, multiple agents. Models loaded once, shared memory, no cold-start per agent (~230ms first query vs ~6s in stdio mode):
+```bash
+# Start the server once
+CANDLEKEEP_TRANSPORT=http CANDLEKEEP_HTTP_PORT=8111 candlekeep
+```
+```json
+{
+  "mcpServers": {
+    "candlekeep": {
+      "url": "http://localhost:8111/mcp"
+    }
+  }
+}
+```
+
+**stdio mode** — each agent spawns its own server process. Simpler setup, but each agent pays ~6s cold-start and loads its own copy of the models:
 ```json
 {
   "mcpServers": {
@@ -77,7 +92,7 @@ Add to your MCP client configuration (e.g., Claude Desktop `claude_desktop_confi
 }
 ```
 
-Set `CANDLEKEEP_SPICE` to `"true"` for the wizard sage persona, or omit for professional mode.
+See [Setup Guide](docs/SETUP.md) for auth configuration and production deployment.
 
 ## The Tomes (Documentation)
 

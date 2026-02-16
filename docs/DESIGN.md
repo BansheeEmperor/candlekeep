@@ -230,10 +230,10 @@ See [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference) for threshold
 | Bad document quality | [Quality Gate](ARCHITECTURE.md#1-quality-gate) rejects docs without frontmatter/structure |
 | Model download at startup | Exit immediately if model not cached locally |
 | Write to remote DB accidentally | Write tools hidden unless explicitly opted in |
-| Unauthorized MCP client | Not applicable — stdio transport binds one agent to one server process. ChromaDB bearer token is the auth boundary. For shared-server deployments, add per-agent auth at the gateway layer. |
+| Unauthorized MCP client | stdio: not applicable (one agent per process). HTTP: optional bearer token auth via `CANDLEKEEP_MCP_TOKEN`. TLS via reverse proxy is the operator's responsibility for non-localhost deployments. |
 | Prompt injection via ingested documents | Not mitigated — trusted corpus assumption. The quality gate validates document structure but does not scan for adversarial prompt content. Revisit if Candlekeep ingests untrusted user-submitted documents. |
-| Ingestion rate limiting | Not applicable — stdio transport serves a single agent per process. No concurrent ingestion vector exists. Revisit for shared-server (HTTP/SSE) deployments. |
-| Per-document access control | Not applicable — single-agent model with full corpus access. All documents are visible to the connected agent. Revisit if multi-tenant access is required. |
+| Ingestion rate limiting | stdio: not applicable (single agent). HTTP: write operations serialized via `_write_lock`. |
+| Per-document access control | Not applicable — all agents see the full corpus. Revisit if multi-tenant access is required. |
 
 ## 8. Limitations
 
@@ -244,10 +244,9 @@ See [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference) for threshold
 
 ## 9. Future Work
 
-- HTTPS with ACM certificate when a domain is available
 - Caching reranked results for repeated queries
 - Streaming search results for lower perceived latency
-- **Multi-Agent Shared Server** — Evaluate whether a single MCP server serving multiple agents (via HTTP/SSE transport) is desirable. Tradeoffs: resource sharing and cache efficiency vs cross-encoder serialization, write contention, and operational complexity of per-agent isolation.
+- **Per-agent auth** — Map different tokens to agent IDs for fine-grained access control in HTTP mode.
 
 ### 9.1 Hardware-Accelerated Inference
 

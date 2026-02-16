@@ -14,7 +14,7 @@ Candlekeep is a RAG (Retrieval-Augmented Generation) knowledge base server that 
 │  • Decomposes complex queries into multiple searches    │
 │  • Synthesizes results across searches                  │
 └────────────────────────────┬────────────────────────────┘
-                             │ MCP Protocol (stdio)
+                             │ MCP Protocol (stdio or HTTP)
 ┌────────────────────────────▼────────────────────────────┐
 │                  Candlekeep MCP Server                  │
 │                                                         │
@@ -210,22 +210,82 @@ The `precise` path latency remains stable regardless of corpus size, as the cros
 
 ### Concurrency Model
 
-Candlekeep uses MCP's **stdio transport**: each AI agent spawns its own MCP server process. This means every server instance handles exactly one agent — there is no concurrent request handling within a single process.
+Candlekeep supports two transport modes. HTTP mode is recommended even for single-agent local use:
 
-**Implications of the single-agent model:**
+- Cold-start: the server loads models once (~6s), then every agent gets immediate access (~230ms first query). In stdio mode, each agent pays the full ~6s cold-start.
+- Memory: stdio with N agents loads N copies of the embedding model (~400MB) and cross-encoder (~80MB). HTTP mode loads one copy.
+- BM25 cache: each stdio process rebuilds the BM25 index from scratch on the first hybrid query. HTTP mode builds it once, shared across agents.
+- ChromaDB connections: N stdio processes = N persistent connections. HTTP mode = 1.
 
-1. The simple and hybrid paths are stateless per-request. No concurrency guard is needed because only one request is in flight at a time.
-2. The precise path runs PyTorch inference through a singleton cross-encoder. It is single-threaded by design — no concurrency guard is needed in the current stdio deployment.
-3. Write operations (`ingest`, `delete`, `repopulate`) invalidate the BM25 cache and modify the ChromaDB collection. The BM25 index is rebuilt synchronously on the next hybrid query — this is intentional in single-agent mode, ensuring freshly ingested documents are immediately searchable via the hybrid path. ChromaDB handles its own collection-level locking; the quality gate and chunking pipeline run outside that lock but are safe because only one agent drives the process.
-4. Multiple agents each get their own server process. They share the underlying ChromaDB instance, which handles concurrent access internally.
+**HTTP mode (recommended):** A single Candlekeep process serves one or more agents via `mcp.run(transport="http")`. The operator starts the server independently; agents connect over HTTP. Models, caches, and the ChromaDB connection are shared across all agents.
 
-> **Shared-server deployments (future):** If Candlekeep moves to HTTP/SSE transport serving multiple agents from a single process, add a request queue or semaphore in front of the precise path to prevent cross-encoder serialization from stalling concurrent requests. Write operations would also need explicit serialization at the application layer.
+**stdio mode:** Each AI agent spawns its own MCP server process via `mcp.run()`. One agent per process. All concurrency guards are uncontended. Each process loads its own models and pays cold-start latency independently.
+
+```
+stdio mode:                          HTTP mode:
+┌─────────┐   ┌──────────────┐       ┌─────────┐
+│ Agent A │──▶│ Candlekeep A │       │ Agent A │──┐
+└─────────┘   └──────────────┘       └─────────┘  │
+┌─────────┐   ┌──────────────┐       ┌─────────┐  │  ┌──────────────┐
+│ Agent B │──▶│ Candlekeep B │       │ Agent B │──┼─▶│ Candlekeep   │
+└─────────┘   └──────────────┘       └─────────┘  │  │ (shared)     │
+┌─────────┐   ┌──────────────┐       ┌─────────┐  │  └──────────────┘
+│ Agent C │──▶│ Candlekeep C │       │ Agent C │──┘
+└─────────┘   └──────────────┘       └─────────┘
+  3 processes, 3× model memory         1 process, 1× model memory
+```
+
+**Concurrency controls in HTTP mode:**
+
+| Control | Scope | Purpose |
+|---------|-------|---------|
+| `_write_lock` (`threading.Lock`) | Write tools (ingest, delete, repopulate) | Prevents concurrent writes from corrupting ChromaDB state or racing on BM25 cache invalidation. |
+| `_reranker_semaphore` (`threading.Semaphore(3)`) | Precise-path search | Caps concurrent cross-encoder inference at the throughput-optimal level. See [Precise Path Concurrency](#precise-path-concurrency) for benchmark data. |
+| BM25 `_cache_lock` (`threading.Lock`) | Hybrid-path BM25 cache | Existing lock, protects cache reads/rebuilds. |
+
+Read operations (simple search, hybrid search, list_documents, get_stats) run without locks against ChromaDB, which handles its own collection-level consistency.
+
+**BM25 cache staleness:** After a write, the BM25 cache is invalidated. The next hybrid query rebuilds it. Under concurrent load, an agent may briefly use a stale BM25 cache if another agent writes between cache invalidation and rebuild. This is acceptable — the vector search component (primary retrieval) always reflects the latest state. BM25 is a supplementary signal.
+
+### Precise Path Concurrency
+
+The precise path runs the full pipeline (embedding → vector search → Arcane Recall → Relevance Ward → cross-encoder) in a single thread. Under concurrent load, GIL contention between CPU-bound stages (PyTorch inference, numpy cosine similarity) limits throughput.
+
+**Benchmark host:** Apple M2 Pro, 10 cores, 32 GB RAM. Corpus: 2,770 chunks, 80 documents.
+
+**Pipeline stage breakdown (single request):**
+
+| Stage | CPU | MPS |
+|-------|----:|----:|
+| Query embedding (bge-small) | 23ms | 20ms |
+| ChromaDB vector search | 23ms | 18ms |
+| Arcane Recall (expansion + stored embeddings) | 99ms | 88ms |
+| Cross-encoder (15 candidates) | 326ms | 142ms |
+| Full precise pipeline | 433ms | 232ms |
+
+**Concurrent throughput (direct calls, MPS):**
+
+| Concurrency | p50 | p95 | Throughput |
+|:-:|:-:|:-:|:-:|
+| 1 | 240ms | 240ms | 4.2 qps |
+| 2 | 168ms | 239ms | 8.4 qps |
+| 3 | 253ms | 298ms | 10.1 qps |
+| 5 | 972ms | 1204ms | 4.2 qps |
+| 8 | 1438ms | 1642ms | 4.9 qps |
+| 10 | 1854ms | 1910ms | 5.2 qps |
+
+Throughput peaks at N=3 (10.1 qps). At N=5, CPU-bound stages fight for the GIL and throughput collapses. `Semaphore(3)` caps precise-path concurrency at the optimal level. Requests beyond 3 queue instead of degrading all in-flight requests.
+
+This value was tuned on Apple M2 Pro (10 cores). On hosts with fewer cores, `Semaphore(2)` may be more appropriate. Re-run `scripts/benchmark_concurrent.py` on the target hardware to calibrate.
 
 ### Security Boundary
 
 | Threat | Mitigation |
 |--------|-----------|
-| Unauthorized MCP client | Not applicable — stdio transport binds one agent to one server process. ChromaDB bearer token is the auth boundary. For shared-server deployments, add per-agent auth at the gateway layer. |
+| Unauthorized MCP client (stdio) | Not applicable — stdio transport binds one agent to one server process. |
+| Unauthorized MCP client (HTTP) | Optional bearer token auth via `CANDLEKEEP_MCP_TOKEN`. If set, agents must present the token in the `Authorization` header. |
+| Bearer token over plaintext HTTP | Acceptable on localhost. For non-localhost deployments, TLS via reverse proxy is the operator's responsibility. |
+| Unauthorized ChromaDB access | Bearer token auth via `CHROMA_AUTH_TOKEN`. |
 
 ## Ingestion Pipeline
 
@@ -295,12 +355,16 @@ All settings via environment variables (`.env` file):
 | Variable | Default | Purpose |
 |----------|---------|---------|
 | CHROMA_URL | http://localhost:8000 | ChromaDB endpoint |
-| CHROMA_AUTH_TOKEN | (empty) | Bearer token for auth |
+| CHROMA_AUTH_TOKEN | (empty) | Bearer token for ChromaDB auth |
 | CANDLEKEEP_EMBEDDING | bge-small | Embedding model (minilm, bge-small, nomic) |
 | CANDLEKEEP_CHUNK_SIZE | 512 | Chunk size in characters |
 | CANDLEKEEP_CHUNK_OVERLAP | 50 | Overlap between chunks |
 | CANDLEKEEP_SPICE | false | Wizard persona mode |
 | CANDLEKEEP_REMOTE_WRITE | false | Allow writes on remote DB |
+| CANDLEKEEP_TRANSPORT | stdio | Transport mode: `stdio` or `http` |
+| CANDLEKEEP_HTTP_HOST | 127.0.0.1 | HTTP bind address (HTTP mode only) |
+| CANDLEKEEP_HTTP_PORT | 8111 | HTTP port (HTTP mode only) |
+| CANDLEKEEP_MCP_TOKEN | (empty) | Bearer token for MCP auth (HTTP mode, optional) |
 
 ## Performance Characteristics
 
@@ -318,8 +382,9 @@ All settings via environment variables (`.env` file):
 
 ## Future Work
 
-- **Multi-Agent Shared Server** — Evaluate whether a single MCP server serving multiple agents (via HTTP/SSE transport) is desirable. Tradeoffs: resource sharing and cache efficiency vs cross-encoder serialization, write contention, and operational complexity of per-agent isolation.
 - **Incremental BM25 Updates** — The hybrid path's BM25 index is rebuilt from scratch after every write. At current corpus scale (~2,770 chunks) this is fast, but it scales linearly. Evaluate incremental add/remove operations on the BM25 index instead of full rebuild, or switch to a library that supports it natively (e.g., `whoosh`, `tantivy`). At current corpus scale (~2,770 chunks) the full rebuild is sub-second. At 50k+ chunks, the linear rebuild cost may introduce perceptible latency on the first hybrid query after a write. Measure rebuild time at target corpus size before deploying.
+- **Per-agent auth** — Map different tokens to agent IDs. Filter tool visibility per agent (read-only agents).
+- **Rate limiting** — Prevent a single agent from monopolizing the cross-encoder in HTTP mode.
 
 ## File Structure
 
