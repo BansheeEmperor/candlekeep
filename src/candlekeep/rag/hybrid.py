@@ -69,15 +69,52 @@ def reciprocal_rank_fusion(
 
 
 class BM25Searcher:
-    """In-memory BM25 index for lexical retrieval."""
+    """In-memory BM25 index for lexical retrieval.
+
+    Supports incremental updates: add/remove chunks without re-fetching
+    the full corpus from ChromaDB. The tokenized corpus is cached in memory;
+    only the BM25Okapi IDF statistics are recomputed on mutation (O(N)
+    arithmetic over pre-tokenized data, no network I/O or re-tokenization).
+    """
     
     def __init__(self, chunks: List[SearchResult]):
-        self.chunks = chunks
-        # Tokenize chunks for BM25
-        self.tokenized_corpus = [_tokenize(doc.text) for doc in chunks]
-        self.bm25 = BM25Okapi(self.tokenized_corpus)
-        
+        self.chunks = list(chunks)
+        self.tokenized_corpus = [_tokenize(doc.text) for doc in self.chunks]
+        self.bm25 = BM25Okapi(self.tokenized_corpus) if self.tokenized_corpus else None
+
+    def _rebuild_bm25(self):
+        """Rebuild BM25Okapi from the cached tokenized corpus (no I/O)."""
+        if self.tokenized_corpus:
+            self.bm25 = BM25Okapi(self.tokenized_corpus)
+        else:
+            self.bm25 = None
+
+    def add_chunks(self, new_chunks: List[SearchResult]):
+        """Add chunks incrementally. Tokenizes only the new chunks, then
+        rebuilds BM25 IDF over the full (cached) tokenized corpus."""
+        for chunk in new_chunks:
+            self.chunks.append(chunk)
+            self.tokenized_corpus.append(_tokenize(chunk.text))
+        self._rebuild_bm25()
+
+    def remove_by_source(self, source: str):
+        """Remove all chunks from a source. Rebuilds BM25 IDF over the
+        remaining cached tokenized corpus."""
+        indices_to_remove = [
+            i for i, c in enumerate(self.chunks)
+            if c.metadata.get("source", "") == source
+        ]
+        if not indices_to_remove:
+            return
+        # Remove in reverse order to preserve indices
+        for i in reversed(indices_to_remove):
+            del self.chunks[i]
+            del self.tokenized_corpus[i]
+        self._rebuild_bm25()
+
     def search(self, query: str, n_results: int = 5) -> List[SearchResult]:
+        if not self.bm25:
+            return []
         tokenized_query = _tokenize(query)
         scores = self.bm25.get_scores(tokenized_query)
         
@@ -103,7 +140,7 @@ class BM25Searcher:
 
 
 # Global cache for BM25 searcher to avoid rebuilding on every query
-_bm25_cache = None
+_bm25_cache: BM25Searcher | None = None
 _cache_lock = __import__("threading").Lock()
 
 def get_bm25_searcher(db) -> BM25Searcher:
@@ -117,10 +154,48 @@ def get_bm25_searcher(db) -> BM25Searcher:
 
 
 def clear_bm25_cache():
-    """Invalidate the BM25 searcher cache."""
+    """Full invalidation — forces rebuild from ChromaDB on next query.
+
+    Use only for repopulate_database. For add/delete operations, prefer
+    update_bm25_cache / remove_from_bm25_cache to avoid the ChromaDB
+    round-trip.
+    """
     global _bm25_cache
     with _cache_lock:
         _bm25_cache = None
+
+
+def update_bm25_cache(new_chunks: List[SearchResult], removed_source: str | None = None):
+    """Incrementally update the BM25 cache after a write operation.
+
+    Avoids the full ChromaDB fetch + re-tokenization of clear_bm25_cache().
+    The BM25Okapi IDF statistics are recomputed over the in-memory tokenized
+    corpus — this is O(N) arithmetic, not O(N) network I/O + tokenization.
+
+    Args:
+        new_chunks: Chunks that were just added (already ingested into ChromaDB).
+        removed_source: Source path that was deleted before adding new_chunks
+                        (the ingest flow deletes old chunks then adds new ones).
+    """
+    global _bm25_cache
+    with _cache_lock:
+        if _bm25_cache is None:
+            # Cache hasn't been built yet (no hybrid query has run).
+            # Don't build it now — let the next hybrid query do the full init.
+            return
+        if removed_source:
+            _bm25_cache.remove_by_source(removed_source)
+        if new_chunks:
+            _bm25_cache.add_chunks(new_chunks)
+
+
+def remove_from_bm25_cache(source: str):
+    """Remove a source from the BM25 cache after a delete operation."""
+    global _bm25_cache
+    with _cache_lock:
+        if _bm25_cache is None:
+            return
+        _bm25_cache.remove_by_source(source)
 
 
 def hybrid_search(
