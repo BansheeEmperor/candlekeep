@@ -17,6 +17,28 @@ _loading = True
 _read_access = False
 _write_access = False
 
+# Concurrency controls (safe in both stdio and HTTP modes)
+_write_lock = threading.Lock()
+_reranker_semaphore = threading.Semaphore(3)  # Cap concurrent precise-path queries (see benchmark results)
+
+
+class _QueryCounter:
+    """Thread-safe in-memory query counter. Replaces file-based metrics."""
+    def __init__(self):
+        self._count = 0
+        self._lock = threading.Lock()
+
+    def increment(self):
+        with self._lock:
+            self._count += 1
+
+    @property
+    def count(self):
+        return self._count
+
+
+_query_counter = _QueryCounter()
+
 
 def get_store():
     global _store
@@ -28,7 +50,6 @@ def get_store():
 def get_processor():
     global _processor
     if _processor is None:
-        _processor = DocumentProcessor(_settings)
         _processor = DocumentProcessor(_settings)
     return _processor
 
@@ -117,7 +138,24 @@ else:
 
 Use this server for searching technical documentation and managing document collections."""
 
-mcp = FastMCP("candlekeep", instructions=instructions)
+
+def _create_mcp() -> FastMCP:
+    """Create the FastMCP instance with optional auth for HTTP mode."""
+    if _settings.transport == "http" and _settings.mcp_token:
+        from fastmcp.server.auth import StaticTokenVerifier
+        auth = StaticTokenVerifier(
+            tokens={_settings.mcp_token: {"client_id": "candlekeep-agent", "scopes": []}}
+        )
+        print("[candlekeep] ✓ Bearer token auth enabled", file=sys.stderr)
+        return FastMCP("candlekeep", instructions=instructions, auth=auth)
+    
+    if _settings.transport == "http":
+        print("[candlekeep] ⚠ No auth configured (set CANDLEKEEP_MCP_TOKEN to enable)", file=sys.stderr)
+    
+    return FastMCP("candlekeep", instructions=instructions)
+
+
+mcp = _create_mcp()
 
 
 def _check_ready() -> str | None:
@@ -159,8 +197,12 @@ def search(
         return msg
 
     from candlekeep.rag.router import search_with_routing
-    results = search_with_routing(get_store(), query, n_results, category, query_type=query_type)
-    get_store().record_query()
+    if query_type == "precise":
+        with _reranker_semaphore:
+            results = search_with_routing(get_store(), query, n_results, category, query_type=query_type)
+    else:
+        results = search_with_routing(get_store(), query, n_results, category, query_type=query_type)
+    _query_counter.increment()
 
     if not results:
         return "No results found."
@@ -195,6 +237,10 @@ def get_stats() -> str:
         return msg
 
     stats = get_store().get_stats()
+    queries = _query_counter.count
+    tokens_per_query = stats['tokens_per_query']
+    tokens_saved = queries * (stats['estimated_tokens'] - tokens_per_query)
+
     return f"""**Knowledge Base Statistics**
 - Total chunks: {stats['total_chunks']}
 - Total documents: {stats['total_documents']}
@@ -203,12 +249,12 @@ def get_stats() -> str:
 - Estimated tokens: {stats['estimated_tokens']:,}
 
 **Context Efficiency**
-- Tokens per query: ~{stats['tokens_per_query']:,} (5 chunks)
+- Tokens per query: ~{tokens_per_query:,} (5 chunks)
 - Savings ratio: {stats['context_savings_ratio']:.0f}x smaller per query
 
-**Usage**
-- Total queries: {stats['total_queries']}
-- Tokens saved: ~{stats['tokens_saved']:,}"""
+**Usage (this session)**
+- Total queries: {queries}
+- Tokens saved: ~{tokens_saved:,}"""
 
 
 @mcp.tool
@@ -306,7 +352,7 @@ Each document must have frontmatter and section headers for proper chunking."""
 
 
 # ============================================================
-# WRITE TOOLS
+# WRITE TOOLS (serialized with _write_lock)
 # ============================================================
 
 @mcp.tool
@@ -323,34 +369,35 @@ def ingest(path: str) -> str:
     if msg := _check_ready():
         return msg
 
-    try:
-        p = Path(path)
-        if not p.exists():
-            return f"Error: Path not found: {path}"
+    with _write_lock:
+        try:
+            p = Path(path)
+            if not p.exists():
+                return f"Error: Path not found: {path}"
 
-        # Quality gate for individual files
-        if p.is_file() and p.suffix in (".md", ".txt", ".rst"):
-            issues = check_document_quality(p)
-            if issues:
-                msg = f"❌ Document rejected — {len(issues)} quality issue(s):\n"
-                msg += "\n".join(f"  - {i}" for i in issues)
-                msg += "\n\nFix these issues or use critique_document() to review first."
-                return msg
+            # Quality gate for individual files
+            if p.is_file() and p.suffix in (".md", ".txt", ".rst"):
+                issues = check_document_quality(p)
+                if issues:
+                    msg = f"❌ Document rejected — {len(issues)} quality issue(s):\n"
+                    msg += "\n".join(f"  - {i}" for i in issues)
+                    msg += "\n\nFix these issues or use critique_document() to review first."
+                    return msg
 
-        if p.is_file():
-            chunks = get_processor().process(p)
-        else:
-            chunks = get_processor().process_directory(p)
+            if p.is_file():
+                chunks = get_processor().process(p)
+            else:
+                chunks = get_processor().process_directory(p)
 
-        if not chunks:
-            return "No content found to ingest."
+            if not chunks:
+                return "No content found to ingest."
 
-        count = get_store().add_documents(chunks, collection="default")
-        return f"✓ Ingested {count} chunks from {path}"
-    except chromadb.errors.AuthorizationError as e:
-        return f"❌ Write permission denied: {e}"
-    except Exception as e:
-        return f"❌ Error: {e}"
+            count = get_store().add_documents(chunks, collection="default")
+            return f"✓ Ingested {count} chunks from {path}"
+        except chromadb.errors.AuthorizationError as e:
+            return f"❌ Write permission denied: {e}"
+        except Exception as e:
+            return f"❌ Error: {e}"
 
 @mcp.tool
 def delete_document(source: str) -> str:
@@ -358,15 +405,16 @@ def delete_document(source: str) -> str:
     if msg := _check_ready():
         return msg
 
-    try:
-        count = get_store().delete_by_source(source)
-        if count:
-            return f"✓ Deleted {count} chunks from {source}"
-        return f"No chunks found for {source}"
-    except chromadb.errors.AuthorizationError as e:
-        return f"❌ Write permission denied: {e}"
-    except Exception as e:
-        return f"❌ Error: {e}"
+    with _write_lock:
+        try:
+            count = get_store().delete_by_source(source)
+            if count:
+                return f"✓ Deleted {count} chunks from {source}"
+            return f"No chunks found for {source}"
+        except chromadb.errors.AuthorizationError as e:
+            return f"❌ Write permission denied: {e}"
+        except Exception as e:
+            return f"❌ Error: {e}"
 
 @mcp.tool
 def repopulate_database() -> str:
@@ -377,18 +425,27 @@ def repopulate_database() -> str:
     if msg := _check_ready():
         return msg
 
-    try:
-        get_store().clear()
-        return "✓ Database cleared. Use ingest() to add documents."
-    except chromadb.errors.AuthorizationError as e:
-        return f"❌ Write permission denied: {e}"
-    except Exception as e:
-        return f"❌ Error: {e}"
+    with _write_lock:
+        try:
+            get_store().clear()
+            return "✓ Database cleared. Use ingest() to add documents."
+        except chromadb.errors.AuthorizationError as e:
+            return f"❌ Write permission denied: {e}"
+        except Exception as e:
+            return f"❌ Error: {e}"
+
+
+# ASGI entrypoint for production deployments (uvicorn candlekeep.mcp.server:app)
+app = mcp.http_app()
 
 
 def main():
     """Entry point for candlekeep command."""
-    mcp.run()
+    if _settings.transport == "http":
+        print(f"[candlekeep] 🌐 Starting HTTP server on {_settings.http_host}:{_settings.http_port}", file=sys.stderr)
+        mcp.run(transport="http", host=_settings.http_host, port=_settings.http_port)
+    else:
+        mcp.run()
 
 
 if __name__ == "__main__":

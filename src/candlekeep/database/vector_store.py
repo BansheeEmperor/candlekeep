@@ -1,6 +1,5 @@
 """ChromaDB vector store with authentication support."""
 import hashlib
-import json
 import sys
 from pathlib import Path
 import chromadb
@@ -210,9 +209,6 @@ class ChromaVectorStore(VectorDatabase):
         
         tokens_per_query = (5 * self.settings.chunk_size) // 4
         
-        metrics = self._load_metrics()
-        tokens_saved = metrics.get("queries", 0) * (estimated_tokens - tokens_per_query)
-        
         return {
             "total_chunks": count,
             "total_documents": len(docs),
@@ -222,27 +218,7 @@ class ChromaVectorStore(VectorDatabase):
             "estimated_tokens": estimated_tokens,
             "tokens_per_query": tokens_per_query,
             "context_savings_ratio": estimated_tokens / tokens_per_query if tokens_per_query else 0,
-            "total_queries": metrics.get("queries", 0),
-            "tokens_saved": tokens_saved,
         }
-
-    def _load_metrics(self) -> dict:
-        """Load usage metrics from file."""
-        metrics_file = self.settings.data_dir / "metrics.json"
-        if metrics_file.exists():
-            return json.loads(metrics_file.read_text())
-        return {"queries": 0}
-
-    def _save_metrics(self, metrics: dict):
-        """Save usage metrics to file."""
-        metrics_file = self.settings.data_dir / "metrics.json"
-        metrics_file.write_text(json.dumps(metrics))
-
-    def record_query(self):
-        """Record a search query for metrics."""
-        metrics = self._load_metrics()
-        metrics["queries"] = metrics.get("queries", 0) + 1
-        self._save_metrics(metrics)
 
     def get_by_entity(self, entity: str, n_results: int = 10) -> list[SearchResult]:
         """Search documents containing an entity."""

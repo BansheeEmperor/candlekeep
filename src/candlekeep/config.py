@@ -84,6 +84,12 @@ class Settings:
     # Structural Integrity (Bardic Knowledge)
     bardic_knowledge: bool = field(default_factory=lambda: os.getenv("CANDLEKEEP_BARDIC_KNOWLEDGE", "true").lower() == "true")
 
+    # Transport settings (multi-agent HTTP mode)
+    transport: str = field(default_factory=lambda: os.getenv("CANDLEKEEP_TRANSPORT", "stdio"))
+    http_host: str = field(default_factory=lambda: os.getenv("CANDLEKEEP_HTTP_HOST", "127.0.0.1"))
+    http_port: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_HTTP_PORT", "8111")))
+    mcp_token: str = field(default_factory=lambda: os.getenv("CANDLEKEEP_MCP_TOKEN", ""))
+
     # Data directory
     data_dir: Path = field(default_factory=get_data_dir)
 
