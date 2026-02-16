@@ -162,10 +162,18 @@ DOCUMENT SOURCE
 Cross-encoder (`ms-marco-MiniLM-L-6-v2`) rescores all candidates by examining query-document pairs individually. Higher precision but trades content match and adds latency.
 
 ### 5. [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (Filtering)
-Results below a configured similarity threshold (see [Tuned Parameters](#tuned-parameters-reference)) are filtered to prevent the AI agent from hallucinating based on low-confidence "junk" matches.
+Results below a configured threshold are filtered to prevent the AI agent from hallucinating based on low-confidence "junk" matches. The Ward operates on all three paths, each with its own score scale:
 
-- **Adversarial queries:** Score significantly lower than legitimate ones.
-- **Status:** Zero false negatives on baseline benchmarks (no legitimate query returns empty results). Adversarial queries are fully filtered on the hybrid path (Hit Rate@5 = 0.0). On simple and precise paths, adversarial queries may return low-relevance results that score above the vector threshold — see BENCHMARK_RESULTS.md footnote 1 for per-path adversarial Hit Rate.
+| Path | Threshold | Score Type |
+|------|-----------|------------|
+| simple | `MIN_RELEVANCE_SCORE` (0.75) | Vector cosine similarity |
+| hybrid | `HYBRID_RELEVANCE_THRESHOLD` (0.03) | RRF fusion score |
+| precise (pre-reranking) | `MIN_RELEVANCE_SCORE` (0.75) | Vector cosine similarity |
+| precise (post-reranking) | `MIN_RERANKER_SCORE` (-10.0) | Cross-encoder logits |
+
+- **Adversarial queries:** Score significantly lower than legitimate ones across all paths.
+- **Status:** Zero false negatives on all paths (no legitimate query returns empty results). The hybrid path fully filters adversarial queries (Hit Rate@5 = 0.0). The precise path's post-reranking Ward filters 54% of adversarial queries that pass the pre-reranking vector Ward; the remaining adversarial results score deeply negative (-1.8 to -10.0). The simple path relies solely on the vector threshold.
+- **Calibration:** Run `scripts/analyze_reranker_scores.py` on a new corpus to recalibrate `MIN_RERANKER_SCORE`. See [Threshold Calibration](#threshold-calibration) for the vector and hybrid thresholds.
 
 ## Tuned Parameters (Reference)
 
@@ -175,6 +183,7 @@ These values represent the optimal configuration identified through the Centurio
 |-----------|---------------|---------|
 | `MIN_RELEVANCE_SCORE` | 0.75 | The Relevance Ward threshold (vector) |
 | `HYBRID_RELEVANCE_THRESHOLD` | 0.03 | The Relevance Ward threshold (hybrid RRF) |
+| `MIN_RERANKER_SCORE` | -10.0 | The Relevance Ward threshold (precise, post-reranking) |
 | `EXPANSION_SIMILARITY_THRESHOLD` | 0.92 | Scholar's Discernment (8% similarity gap) |
 | `CHUNK_SIZE` | 512 | Target character count per fragment |
 | `CHUNK_OVERLAP` | 50 | Character overlap between fragments |
@@ -245,7 +254,7 @@ stdio mode:                          HTTP mode:
 
 Read operations (simple search, hybrid search, list_documents, get_stats) run without locks against ChromaDB, which handles its own collection-level consistency.
 
-**BM25 cache staleness:** After a write, the BM25 cache is invalidated. The next hybrid query rebuilds it. Under concurrent load, an agent may briefly use a stale BM25 cache if another agent writes between cache invalidation and rebuild. This is acceptable — the vector search component (primary retrieval) always reflects the latest state. BM25 is a supplementary signal.
+**BM25 cache updates:** After a write, the BM25 cache is updated incrementally — old chunks for the affected source are removed and new chunks are added to the in-memory tokenized corpus, then BM25Okapi IDF statistics are recomputed. This avoids the ChromaDB round-trip and re-tokenization of a full cache rebuild. The IDF recomputation is O(N) arithmetic over pre-tokenized data, which is a constant-factor improvement over the previous approach (O(N) network fetch + O(N) tokenization + O(N) IDF). At 2,770 chunks the difference is small; at 50k+ chunks the network fetch elimination becomes significant. Full cache invalidation (`clear_bm25_cache`) is used only for `repopulate_database`. True O(k) incremental IDF updates would require switching to a library with native support (e.g., `whoosh`, `tantivy`).
 
 ### Precise Path Concurrency
 
@@ -255,13 +264,15 @@ The precise path runs the full pipeline (embedding → vector search → Arcane 
 
 **Pipeline stage breakdown (single request):**
 
-| Stage | CPU | MPS |
+| Stage | CPU (float64) | MPS |
 |-------|----:|----:|
 | Query embedding (bge-small) | 23ms | 20ms |
 | ChromaDB vector search | 23ms | 18ms |
 | Arcane Recall (expansion + stored embeddings) | 99ms | 88ms |
-| Cross-encoder (15 candidates) | 326ms | 142ms |
-| Full precise pipeline | 433ms | 232ms |
+| Cross-encoder (15 candidates) | ~780ms | 142ms |
+| Full precise pipeline | ~920ms | 232ms |
+
+*CPU cross-encoder runs in float64 to work around a torch ≥2.10 NaN regression (see Research Diary Entry 33). MPS is unaffected and remains in float32.*
 
 **Concurrent throughput (direct calls, MPS):**
 
@@ -372,17 +383,17 @@ All settings via environment variables (`.env` file):
 |--------|-------|
 | Simple search latency (local) | < 100ms (~57ms measured) |
 | Simple search latency (remote) | ~400ms |
-| Precise search latency | ~175ms (Centurion Set, warm model, Relevance Ward pre-filtering active) |
+| Precise search latency | ~920ms CPU / ~230ms MPS (Centurion Set, warm model, float64 on CPU) |
 | Cold-start latency (process spawn to result) | ~5,825ms (CPU, cold model) |
 | Content match (decomposed) | > 90% (legacy 23-query suite, Diary Entry 20) |
 | Precision (simple) | > 85% |
 | Scale tested | 2,770 chunks, 80 docs |
 
-*Earlier Research Diary entries (12, 15) report precise-path latency of 1.5–1.7s. The improvement to the current figure (175ms) reflects two concurrent changes: (1) Relevance Ward pre-filtering (Entry 16), which reduces the number of candidates scored by the cross-encoder, and (2) transition from the 23-query suite to the Centurion Set (different query mix and corpus size). The individual contribution of each factor has not been isolated.*
+*Earlier Research Diary entries (12, 15) report precise-path latency of 1.5–1.7s. Entry 33 introduced a float64 workaround for a torch ≥2.10 NaN regression on CPU, which increases CPU latency to ~920ms. On MPS (Apple Silicon GPU), the precise path runs at ~230ms. The Relevance Ward pre-filtering (Entry 16) reduces the number of candidates scored by the cross-encoder, partially offsetting the float64 overhead.*
 
 ## Future Work
 
-- **Incremental BM25 Updates** — The hybrid path's BM25 index is rebuilt from scratch after every write. At current corpus scale (~2,770 chunks) this is fast, but it scales linearly. Evaluate incremental add/remove operations on the BM25 index instead of full rebuild, or switch to a library that supports it natively (e.g., `whoosh`, `tantivy`). At current corpus scale (~2,770 chunks) the full rebuild is sub-second. At 50k+ chunks, the linear rebuild cost may introduce perceptible latency on the first hybrid query after a write. Measure rebuild time at target corpus size before deploying.
+- **HNSW parameter validation at scale** — `scripts/sweep_hnsw.py` generates a 10k+ chunk corpus and sweeps `search_ef` values. Run on target hardware to validate that HNSW defaults remain optimal beyond the tested 2,770-chunk corpus. At 100k+ vectors, `search_ef` > 10 may improve recall.
 - **Per-agent auth** — Map different tokens to agent IDs. Filter tool visibility per agent (read-only agents).
 - **Rate limiting** — Prevent a single agent from monopolizing the cross-encoder in HTTP mode.
 

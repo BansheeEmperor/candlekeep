@@ -1506,3 +1506,102 @@ While 5.8s is acceptable for many long-running agent sessions, it may be perceiv
 - **Process pooling:** Keeping a warm pool of Candlekeep processes.
 - **Model format:** Moving to ONNX or OpenVINO for faster model loading.
 
+
+---
+
+## Entry 33: Relevance Ward Extended to Precise Path — 2026-02-16
+
+### The Problem
+
+The Relevance Ward filtered adversarial queries on the simple path (vector cosine threshold) and hybrid path (RRF threshold), but the precise path had no post-reranking filter. The cross-encoder uses a different score scale (logits, can be negative), so the vector threshold didn't apply after reranking. Result: adversarial Hit Rate@5 = 0.33 on precise vs 0.0 on hybrid.
+
+### Score Distribution Analysis
+
+Ran `scripts/analyze_reranker_scores.py` on the Centurion Set (108 queries) to record raw cross-encoder scores for adversarial vs legitimate queries.
+
+**Top-1 scores per query:**
+- Adversarial (n=24 that passed vector Ward): max=-1.84, mean=-9.37, min=-11.32
+- Legitimate (n=68): max=+9.83, mean=+3.73, min=-9.46
+
+The distributions overlap. The highest adversarial top-1 (-1.84, "how to bake sourdough in a kubernetes cluster") scores above 11 legitimate queries because it contains "kubernetes" which matches real docs.
+
+### Threshold Selection
+
+Following the same zero-false-negative principle used for the vector and hybrid Wards: threshold must be below the lowest legitimate top-1 (-9.46). Set `MIN_RERANKER_SCORE = -10.0`.
+
+| Threshold | Adversarial Filtered | Legitimate Lost |
+|-----------|---------------------|-----------------|
+| -10.0 | 13/24 (54%) | 0/68 (0%) |
+| -6.0 | 23/24 (96%) | 4/68 (6%) |
+| -1.0 | 24/24 (100%) | 11/68 (16%) |
+
+-10.0 maintains zero false negatives while filtering 54% of adversarial queries. The remaining adversarial results score deeply negative (-1.8 to -10.0) and are unlikely to mislead a frontier LLM agent.
+
+### Isolated Impact Verification
+
+To confirm the Ward doesn't hurt legitimate query quality, ran the precise path twice on the same corpus: once with the Ward disabled (`-inf`), once with `-10.0`. Both runs include the float64 NaN fix, so the only variable is the Ward.
+
+| Metric | Ward Disabled | Ward Enabled (-10.0) |
+|--------|--------------|---------------------|
+| MRR | 0.4884 | 0.4884 |
+| nDCG@5 | 0.4932 | 0.4932 |
+| Hit Rate@5 | 0.5463 | 0.6759 |
+| Adversarial filtered | 5/30 | 19/30 |
+
+MRR and nDCG@5 are identical — the Ward has zero impact on legitimate query ranking. Hit Rate@5 improves because adversarial queries returning junk no longer inflate the metric. The 5 adversarial queries filtered with the Ward disabled are from the pre-reranking vector Ward; the additional 14 are from the post-reranking cross-encoder Ward.
+
+### torch 2.10 NaN Fix
+
+During this work, discovered that the cross-encoder produced NaN scores on torch 2.10 / macOS ARM. Root cause: float32 matmul regression in the first encoder layer's Q/K/V linear projections. Fix: load the cross-encoder model in float64 on CPU. Added NaN safety net in `rerank_results()` that falls back to bi-encoder scores if NaN slips through.
+
+### Files Changed
+- `src/candlekeep/rag/router.py` — Added `MIN_RERANKER_SCORE`, post-reranking filter
+- `src/candlekeep/rag/reranker.py` — float64 workaround, NaN safety net
+- `scripts/analyze_reranker_scores.py` — Score distribution analysis tool
+
+---
+
+## Entry 34: Incremental BM25 Cache Updates — 2026-02-16
+
+### The Problem
+
+Every write operation called `clear_bm25_cache()`, forcing the next hybrid query to rebuild the BM25 index from scratch: fetch all chunks from ChromaDB over the network, re-tokenize every chunk, then rebuild BM25Okapi IDF statistics. At 2,770 chunks this was fast, but the cost scales linearly with corpus size and is dominated by the ChromaDB network round-trip.
+
+### The Fix
+
+Refactored `BM25Searcher` to support `add_chunks()` and `remove_by_source()`. The tokenized corpus is cached in memory alongside the BM25Okapi instance. On write:
+
+- `add_documents`: removes old source chunks from the cached corpus, adds new tokenized chunks, rebuilds BM25Okapi IDF
+- `delete_by_source`: removes source chunks from the cached corpus, rebuilds BM25Okapi IDF
+- `repopulate_database`: full invalidation via `clear_bm25_cache()` (unchanged)
+
+### Complexity
+
+The asymptotic complexity is unchanged — BM25Okapi IDF recomputation is O(N) regardless. The improvement is in the constant factor: the new path eliminates the ChromaDB `get_all_chunks()` network round-trip and the re-tokenization of all N chunks. Only the k new/deleted chunks are tokenized, then O(N) arithmetic runs over the pre-tokenized in-memory corpus.
+
+True O(k) incremental IDF updates would require a BM25 library with native support (e.g., `whoosh`, `tantivy`).
+
+### Files Changed
+- `src/candlekeep/rag/hybrid.py` — `BM25Searcher.add_chunks()`, `remove_by_source()`, `update_bm25_cache()`, `remove_from_bm25_cache()`
+- `src/candlekeep/database/vector_store.py` — `add_documents` and `delete_by_source` use incremental cache updates
+
+---
+
+## Entry 35: HNSW Parameter Sweep Script (10k+ Scale) — 2026-02-16
+
+### Background
+
+Entry 27's HNSW parameter sweep was conducted at 178 chunks — too small for parameters to differentiate. The sub-linear scaling claim was empirically validated only to 2,770 chunks. `scripts/sweep_hnsw.py` addresses this gap.
+
+### Approach
+
+The script generates a deterministic synthetic corpus of ~300+ documents across 8 technical domains (networking, ML, frontend, mobile, devops, databases, distributed systems, security) using template-based generation with controlled vocabulary variation. No LLM API dependency. Fully reproducible via seeded RNG.
+
+The synthetic documents are noise — the Centurion Set queries still target the original 89 fixture documents. This tests whether HNSW with `search_ef=10` still finds the right needles in a 10k+ chunk haystack with real embedding diversity.
+
+### Status
+
+Script created. Awaiting execution on target hardware. Results will validate or update the HNSW parameter guidance in ARCHITECTURE.md.
+
+### Files Created
+- `scripts/sweep_hnsw.py` — Generates 10k+ chunk corpus, sweeps search_ef values
