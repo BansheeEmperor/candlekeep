@@ -90,6 +90,11 @@ class Settings:
     http_port: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_HTTP_PORT", "8111")))
     mcp_token: str = field(default_factory=lambda: os.getenv("CANDLEKEEP_MCP_TOKEN", ""))
 
+    # Rate limiting (HTTP mode only, per MCP session)
+    rate_limit_search: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_RATE_LIMIT_SEARCH", "30")))
+    rate_limit_write: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_RATE_LIMIT_WRITE", "5")))
+    rate_limit_window: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_RATE_LIMIT_WINDOW", "60")))
+
     # Data directory
     data_dir: Path = field(default_factory=get_data_dir)
 
