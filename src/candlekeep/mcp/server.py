@@ -19,7 +19,22 @@ _write_access = False
 
 # Concurrency controls (safe in both stdio and HTTP modes)
 _write_lock = threading.Lock()
-_reranker_semaphore = threading.Semaphore(3)  # Cap concurrent precise-path queries (see benchmark results)
+
+def _estimate_semaphore_value() -> int:
+    """Estimate optimal precise-path concurrency from CPU core count.
+
+    The cross-encoder is CPU-bound and GIL-contended. Benchmarks on a
+    10-core Apple M2 Pro show throughput peaks at N=3 (~cores/3). This
+    heuristic generalizes that ratio.
+
+    Used immediately for stdio mode (no boot cost). HTTP mode refines
+    this via _calibrate_semaphore() during background init.
+    """
+    import os
+    cores = os.cpu_count() or 4
+    return max(1, cores // 3)
+
+_reranker_semaphore = threading.Semaphore(_estimate_semaphore_value())
 
 
 class _QueryCounter:
@@ -77,6 +92,62 @@ def _verify_write_access() -> bool:
         return False
 
 
+def _calibrate_semaphore():
+    """Calibrate the precise-path semaphore by measuring cross-encoder throughput.
+
+    Tests concurrency levels from 1 up to cores//2 (scaled to hardware),
+    picks the N with the highest throughput. Stops early when throughput
+    drops. Runs during HTTP-mode background init after models are warm.
+    """
+    import os
+    import time
+    import concurrent.futures
+    global _reranker_semaphore
+
+    from candlekeep.rag.reranker import rerank_results
+    from candlekeep.database.interface import SearchResult
+
+    dummy_results = [
+        SearchResult(text=f"Test document number {i} about technical topics.",
+                     metadata={}, score=0.8, doc_id=f"doc{i}")
+        for i in range(10)
+    ]
+    device = _settings.device
+
+    def _run_one():
+        rerank_results("test query about systems", dummy_results, top_k=5, device=device)
+
+    # Warm the code path
+    _run_one()
+
+    cores = os.cpu_count() or 4
+    max_n = max(2, cores // 2)  # e.g. 4 cores → test up to 2, 10 cores → up to 5, 64 cores → up to 32
+    candidates = [n for n in range(1, max_n + 1)]
+
+    best_n = _estimate_semaphore_value()
+    best_throughput = 0.0
+
+    for n in candidates:
+        start = time.perf_counter()
+        with concurrent.futures.ThreadPoolExecutor(max_workers=n) as pool:
+            futures = [pool.submit(_run_one) for _ in range(n)]
+            concurrent.futures.wait(futures)
+        elapsed = time.perf_counter() - start
+        throughput = n / elapsed
+
+        if throughput > best_throughput:
+            best_throughput = throughput
+            best_n = n
+
+        # If throughput dropped, further concurrency won't help
+        if n > 1 and throughput < best_throughput * 0.8:
+            break
+
+    _reranker_semaphore = threading.Semaphore(best_n)
+    print(f"[candlekeep] ✓ Precise-path concurrency: {best_n} "
+          f"({best_throughput:.1f} qps)", file=sys.stderr)
+
+
 def _background_init():
     global _loading, _read_access, _write_access
     _read_access = _verify_read_access()
@@ -97,6 +168,14 @@ def _background_init():
     get_store().embedder.get_model()
     from candlekeep.rag.reranker import warm_up
     warm_up(_settings.device)
+
+    # Calibrate precise-path concurrency (HTTP mode only — stdio is uncontended)
+    if _settings.transport == "http":
+        try:
+            _calibrate_semaphore()
+        except Exception as e:
+            print(f"[candlekeep] ⚠ Semaphore calibration failed, using default: {e}",
+                  file=sys.stderr)
     
     get_store()
     _loading = False

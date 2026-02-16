@@ -249,7 +249,7 @@ stdio mode:                          HTTP mode:
 | Control | Scope | Purpose |
 |---------|-------|---------|
 | `_write_lock` (`threading.Lock`) | Write tools (ingest, delete, repopulate) | Prevents concurrent writes from corrupting ChromaDB state or racing on BM25 cache invalidation. |
-| `_reranker_semaphore` (`threading.Semaphore(3)`) | Precise-path search | Caps concurrent cross-encoder inference at the throughput-optimal level. See [Precise Path Concurrency](#precise-path-concurrency) for benchmark data. |
+| `_reranker_semaphore` (`threading.Semaphore`) | Precise-path search | Caps concurrent cross-encoder inference at the throughput-optimal level. Value set by hardware: HTTP mode runs a calibration benchmark at startup (tests N=1 up to cores/2, picks peak throughput); stdio mode uses a core-count heuristic (`cores // 3`). See [Precise Path Concurrency](#precise-path-concurrency). |
 | BM25 `_cache_lock` (`threading.Lock`) | Hybrid-path BM25 cache | Existing lock, protects cache reads/rebuilds. |
 
 Read operations (simple search, hybrid search, list_documents, get_stats) run without locks against ChromaDB, which handles its own collection-level consistency.
@@ -285,9 +285,11 @@ The precise path runs the full pipeline (embedding → vector search → Arcane 
 | 8 | 1438ms | 1642ms | 4.9 qps |
 | 10 | 1854ms | 1910ms | 5.2 qps |
 
-Throughput peaks at N=3 (10.1 qps). At N=5, CPU-bound stages fight for the GIL and throughput collapses. `Semaphore(3)` caps precise-path concurrency at the optimal level. Requests beyond 3 queue instead of degrading all in-flight requests.
+Throughput peaks at N=3 (10.1 qps). At N=5, CPU-bound stages fight for the GIL and throughput collapses. Requests beyond the optimal N queue instead of degrading all in-flight requests.
 
-This value was tuned on Apple M2 Pro (10 cores). On hosts with fewer cores, `Semaphore(2)` may be more appropriate. Re-run `scripts/benchmark_concurrent.py` on the target hardware to calibrate.
+**Automatic calibration (HTTP mode):** At startup, after models are warm, the server fires concurrent cross-encoder calls at N=1 up to N=cores/2 and picks the N with the highest throughput. Stops early when throughput drops. On a 10-core machine (range N=1..5) this takes ~1.4s. The calibration result is logged (e.g., `✓ Precise-path concurrency: 3 (27.3 qps)`).
+
+**Heuristic fallback (stdio mode):** stdio is one-agent-per-process, so the semaphore is typically uncontended. The value is set from CPU core count (`cores // 3`) to avoid any boot-time cost. `scripts/benchmark_concurrent.py` can still be used for manual validation.
 
 ### Security Boundary
 
