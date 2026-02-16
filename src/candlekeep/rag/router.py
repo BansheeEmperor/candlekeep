@@ -15,6 +15,17 @@ MIN_RELEVANCE_SCORE = 0.75
 # In production with 1M+ chunks, this threshold may require recalibration.
 HYBRID_RELEVANCE_THRESHOLD = 0.03
 
+# The Relevance Ward for the precise path (post-reranking).
+# Cross-encoder scores are logits (can be negative). Based on Centurion Set
+# score distribution analysis: highest adversarial top-1 = -1.84, lowest
+# legitimate top-1 = -9.46. Threshold set at -10.0 to maintain zero false
+# negatives (no legitimate query filtered). Filters 54% of adversarial
+# queries that pass the pre-reranking vector Ward. The remaining adversarial
+# results score deeply negative (-1.8 to -10.0) and are unlikely to mislead
+# a frontier LLM agent.
+# Recalibrate with scripts/analyze_reranker_scores.py on new corpora.
+MIN_RERANKER_SCORE = -10.0
+
 
 def search_with_routing(
     db: VectorDatabase,
@@ -26,7 +37,10 @@ def search_with_routing(
     """Route search to optimal technique stack based on query type.
 
     All paths use Arcane Recall (±2 chunk expansion) by default.
-    Results below MIN_RELEVANCE_SCORE are filtered out.
+    The Relevance Ward filters low-confidence results on all paths:
+      - simple/precise: MIN_RELEVANCE_SCORE (vector cosine similarity)
+      - precise (post-reranking): MIN_RERANKER_SCORE (cross-encoder logits)
+      - hybrid: HYBRID_RELEVANCE_THRESHOLD (RRF fusion scores)
 
     Stacks:
         simple  -> Arcane Recall (fast)
@@ -50,6 +64,9 @@ def search_with_routing(
         
         if results:
             results = rerank_results(processed, results, top_k=n_results, device=device)
+            # The Relevance Ward (post-reranking): filter results where the
+            # cross-encoder score indicates low relevance.
+            results = [r for r in results if r.score >= MIN_RERANKER_SCORE]
     elif query_type == "hybrid":
         from candlekeep.rag.hybrid import hybrid_search
         results = hybrid_search(db, processed, n_results, category=category)
