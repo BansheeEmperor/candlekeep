@@ -1,4 +1,8 @@
 """Reranking module for improving search relevance."""
+import math
+import sys
+
+import torch
 from sentence_transformers import CrossEncoder
 from candlekeep.database.interface import SearchResult
 
@@ -7,18 +11,27 @@ _cross_encoder_key: str | None = None
 
 
 def _get_cross_encoder(model_name: str, device: str = "cpu") -> CrossEncoder:
-    """Get or create cached CrossEncoder instance."""
+    """Get or create cached CrossEncoder instance.
+
+    On CPU, loads the model in float64 to work around a torch ≥2.10
+    regression where float32 matmul produces NaN on certain platforms
+    (macOS ARM confirmed). GPU paths are unaffected.
+    """
     global _cross_encoder, _cross_encoder_key
     key = f"{model_name}:{device}"
     if _cross_encoder is None or _cross_encoder_key != key:
         try:
             _cross_encoder = CrossEncoder(model_name, device=device, local_files_only=True)
         except Exception:
-            # Fallback for when local_files_only fails or is not supported by older versions
-            import sys
             print(f"[candlekeep] ❌ Cross-encoder '{model_name}' not found locally. "
                   f"Run ./scripts/setup.sh", file=sys.stderr)
             sys.exit(1)
+
+        # Workaround: torch ≥2.10 float32 matmul NaN on CPU (macOS ARM).
+        # Promote to float64 on CPU where the issue manifests.
+        if device == "cpu":
+            _cross_encoder.model = _cross_encoder.model.to(torch.float64)
+
         _cross_encoder_key = key
     return _cross_encoder
 
@@ -45,10 +58,17 @@ def rerank_results(
 
     reranked = []
     for result, score in zip(results, scores):
+        s = float(score)
+        if math.isnan(s):
+            # Safety net: if NaN slips through despite float64 workaround,
+            # preserve the original bi-encoder score so the result isn't lost.
+            print(f"[candlekeep] ⚠ Cross-encoder returned NaN for query, "
+                  f"falling back to bi-encoder score", file=sys.stderr)
+            s = result.score
         reranked.append(SearchResult(
             text=result.text,
             metadata=result.metadata,
-            score=float(score),
+            score=s,
             doc_id=result.doc_id
         ))
 
