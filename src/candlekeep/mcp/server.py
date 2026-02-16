@@ -1,8 +1,11 @@
 """Candlekeep MCP Server with authentication and conditional tool registration."""
 import sys
+import time
 import threading
 from pathlib import Path
 from fastmcp import FastMCP
+from fastmcp.server.context import Context
+from fastmcp.dependencies import CurrentContext
 import chromadb.errors
 
 from candlekeep.config import Settings
@@ -53,6 +56,83 @@ class _QueryCounter:
 
 
 _query_counter = _QueryCounter()
+
+
+# --- Per-session rate limiting (HTTP mode only) ---
+
+class _RateLimiter:
+    """Per-session sliding window rate limiter.
+
+    Tracks call timestamps per MCP session ID. A call is allowed if the
+    number of calls within the sliding window is below the configured max.
+    Setting max_calls=0 disables the limiter (all calls allowed).
+    """
+
+    def __init__(self, max_calls: int, window_seconds: float):
+        self._max = max_calls
+        self._window = window_seconds
+        self._sessions: dict[str, list[float]] = {}
+        self._lock = threading.Lock()
+
+    @property
+    def enabled(self) -> bool:
+        return self._max > 0
+
+    def check(self, session_id: str) -> bool:
+        """Return True if the call is allowed, False if rate-limited."""
+        if not self.enabled:
+            return True
+        now = time.monotonic()
+        with self._lock:
+            timestamps = self._sessions.get(session_id, [])
+            timestamps = [t for t in timestamps if now - t < self._window]
+            if len(timestamps) >= self._max:
+                self._sessions[session_id] = timestamps
+                return False
+            timestamps.append(now)
+            self._sessions[session_id] = timestamps
+            return True
+
+    def cleanup(self, max_idle_seconds: float = 600.0):
+        """Remove sessions with no activity in the last max_idle_seconds."""
+        now = time.monotonic()
+        with self._lock:
+            stale = [s for s, ts in self._sessions.items()
+                     if not ts or now - ts[-1] > max_idle_seconds]
+            for s in stale:
+                del self._sessions[s]
+
+
+_search_limiter = _RateLimiter(_settings.rate_limit_search, _settings.rate_limit_window)
+_write_limiter = _RateLimiter(_settings.rate_limit_write, _settings.rate_limit_window)
+
+
+def _rate_check(limiter: _RateLimiter, ctx: Context) -> str | None:
+    """Check rate limit for the current session. Returns error message or None."""
+    if _settings.transport != "http":
+        return None
+    if not limiter.enabled:
+        return None
+    try:
+        session_id = ctx.session_id
+    except Exception:
+        # session_id unavailable (e.g. during init) — allow the call
+        return None
+    if not limiter.check(session_id):
+        return "⚠ Rate limit exceeded. Try again shortly."
+    return None
+
+
+def _rate_limit_cleanup_loop():
+    """Periodically evict stale session entries from rate limiters."""
+    while True:
+        time.sleep(300)
+        _search_limiter.cleanup()
+        _write_limiter.cleanup()
+
+
+if _settings.transport == "http":
+    threading.Thread(target=_rate_limit_cleanup_loop, daemon=True).start()
 
 
 def get_store():
@@ -176,6 +256,15 @@ def _background_init():
         except Exception as e:
             print(f"[candlekeep] ⚠ Semaphore calibration failed, using default: {e}",
                   file=sys.stderr)
+
+        # Log rate limit configuration
+        if _search_limiter.enabled or _write_limiter.enabled:
+            print(f"[candlekeep] ✓ Rate limits: "
+                  f"{_settings.rate_limit_search} search/{_settings.rate_limit_window}s, "
+                  f"{_settings.rate_limit_write} write/{_settings.rate_limit_window}s "
+                  f"(per session)", file=sys.stderr)
+        else:
+            print("[candlekeep] ⚠ Rate limiting disabled", file=sys.stderr)
     
     get_store()
     _loading = False
@@ -255,6 +344,7 @@ def search(
     n_results: int = 5,
     category: str | None = None,
     query_type: str = "simple",
+    ctx: Context = CurrentContext(),
 ) -> str:
     """Search knowledge base for relevant documents.
 
@@ -273,6 +363,8 @@ def search(
         (one per sub-question) and synthesize the results yourself.
     """
     if msg := _check_ready():
+        return msg
+    if msg := _rate_check(_search_limiter, ctx):
         return msg
 
     from candlekeep.rag.router import search_with_routing
@@ -435,7 +527,7 @@ Each document must have frontmatter and section headers for proper chunking."""
 # ============================================================
 
 @mcp.tool
-def ingest(path: str) -> str:
+def ingest(path: str, ctx: Context = CurrentContext()) -> str:
     """Ingest a file or directory into the knowledge base.
 
     Validates document quality before ingestion. Documents must have:
@@ -446,6 +538,8 @@ def ingest(path: str) -> str:
     Supports: txt, md, pdf, rst, json, yaml files.
     """
     if msg := _check_ready():
+        return msg
+    if msg := _rate_check(_write_limiter, ctx):
         return msg
 
     with _write_lock:
@@ -479,9 +573,11 @@ def ingest(path: str) -> str:
             return f"❌ Error: {e}"
 
 @mcp.tool
-def delete_document(source: str) -> str:
+def delete_document(source: str, ctx: Context = CurrentContext()) -> str:
     """Delete all chunks from a source file."""
     if msg := _check_ready():
+        return msg
+    if msg := _rate_check(_write_limiter, ctx):
         return msg
 
     with _write_lock:
@@ -496,12 +592,14 @@ def delete_document(source: str) -> str:
             return f"❌ Error: {e}"
 
 @mcp.tool
-def repopulate_database() -> str:
+def repopulate_database(ctx: Context = CurrentContext()) -> str:
     """Clear and rebuild the entire database.
 
     WARNING: This deletes all existing data.
     """
     if msg := _check_ready():
+        return msg
+    if msg := _rate_check(_write_limiter, ctx):
         return msg
 
     with _write_lock:

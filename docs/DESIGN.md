@@ -233,7 +233,8 @@ See [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference) for threshold
 | Write to remote DB accidentally | Write tools hidden unless explicitly opted in |
 | Unauthorized MCP client | stdio: not applicable (one agent per process). HTTP: optional bearer token auth via `CANDLEKEEP_MCP_TOKEN`. TLS via reverse proxy is the operator's responsibility for non-localhost deployments. |
 | Prompt injection via ingested documents | Not mitigated — trusted corpus assumption. The quality gate validates document structure but does not scan for adversarial prompt content. Revisit if Candlekeep ingests untrusted user-submitted documents. |
-| Ingestion rate limiting | stdio: not applicable (single agent). HTTP: write operations serialized via `_write_lock`. |
+| Ingestion rate limiting | stdio: not applicable (single agent). HTTP: per-session sliding window (`CANDLEKEEP_RATE_LIMIT_WRITE`, default 5/60s) rejects excess calls before they reach the write lock. |
+| Search rate limiting | stdio: not applicable. HTTP: per-session sliding window (`CANDLEKEEP_RATE_LIMIT_SEARCH`, default 30/60s) prevents a single agent from monopolizing the cross-encoder queue. |
 | Per-document access control | Not applicable — all agents see the full corpus. Revisit if multi-tenant access is required. |
 
 ## 8. Benchmark Results

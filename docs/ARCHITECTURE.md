@@ -251,6 +251,8 @@ stdio mode:                          HTTP mode:
 | `_write_lock` (`threading.Lock`) | Write tools (ingest, delete, repopulate) | Prevents concurrent writes from corrupting ChromaDB state or racing on BM25 cache invalidation. |
 | `_reranker_semaphore` (`threading.Semaphore`) | Precise-path search | Caps concurrent cross-encoder inference at the throughput-optimal level. Value set by hardware: HTTP mode runs a calibration benchmark at startup (tests N=1 up to cores/2, picks peak throughput); stdio mode uses a core-count heuristic (`cores // 3`). See [Precise Path Concurrency](#precise-path-concurrency). |
 | BM25 `_cache_lock` (`threading.Lock`) | Hybrid-path BM25 cache | Existing lock, protects cache reads/rebuilds. |
+| `_search_limiter` (`_RateLimiter`) | `search` tool (all paths) | Per-session sliding window. Rejects calls exceeding `CANDLEKEEP_RATE_LIMIT_SEARCH` per `CANDLEKEEP_RATE_LIMIT_WINDOW` seconds. HTTP mode only; no-op in stdio. |
+| `_write_limiter` (`_RateLimiter`) | Write tools (ingest, delete, repopulate) | Per-session sliding window. Rejects calls exceeding `CANDLEKEEP_RATE_LIMIT_WRITE` per `CANDLEKEEP_RATE_LIMIT_WINDOW` seconds. HTTP mode only; no-op in stdio. |
 
 Read operations (simple search, hybrid search, list_documents, get_stats) run without locks against ChromaDB, which handles its own collection-level consistency.
 
@@ -378,6 +380,9 @@ All settings via environment variables (`.env` file):
 | CANDLEKEEP_HTTP_HOST | 127.0.0.1 | HTTP bind address (HTTP mode only) |
 | CANDLEKEEP_HTTP_PORT | 8111 | HTTP port (HTTP mode only) |
 | CANDLEKEEP_MCP_TOKEN | (empty) | Bearer token for MCP auth (HTTP mode, optional) |
+| CANDLEKEEP_RATE_LIMIT_SEARCH | 30 | Max search calls per session per window (HTTP mode, 0=disabled) |
+| CANDLEKEEP_RATE_LIMIT_WRITE | 5 | Max write calls per session per window (HTTP mode, 0=disabled) |
+| CANDLEKEEP_RATE_LIMIT_WINDOW | 60 | Rate limit window in seconds (HTTP mode) |
 
 ## Performance Characteristics
 
@@ -397,7 +402,6 @@ All settings via environment variables (`.env` file):
 
 - **HNSW parameter validation at scale** — `scripts/sweep_hnsw.py` generates a 10k+ chunk corpus and sweeps `search_ef` values. Run on target hardware to validate that HNSW defaults remain optimal beyond the tested 2,770-chunk corpus. At 100k+ vectors, `search_ef` > 10 may improve recall.
 - **Per-agent auth** — Map different tokens to agent IDs. Filter tool visibility per agent (read-only agents).
-- **Rate limiting** — Prevent a single agent from monopolizing the cross-encoder in HTTP mode.
 
 ## File Structure
 
