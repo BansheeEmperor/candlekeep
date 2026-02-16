@@ -73,7 +73,7 @@ Query arrives
      │                      │                      │                      │
      ▼                      ▼                      ▼                      ▼
 ┌──────────────────────────────────────────────────────────────────────────┐
-│      The Relevance Ward (simple/hybrid only)                             │
+│      The Relevance Ward (all paths)                                      │
 └──────────────────────────────────────────────────────────────────────────┘
      │
      ▼
@@ -189,7 +189,8 @@ The following retrieval techniques were out of scope for the initial research ph
 | Chunk overlap | 0, 25, 50, 100 | 50 | Benchmarked on Centurion Set (Entry 29). Overlap=25 marginally better (+1.3% MRR) but within noise. 50 retained as standard. |
 | Expansion size | ±1, ±2, ±3, ±4 | ±2 | Re-validated on Centurion Set (108 queries, Entry 28). ±3 no benefit, ±4 hurts precision. |
 | Embedding model | minilm, bge-small, nomic | bge-small | Best content match on 23-query suite (Entry 22), good speed |
-| [The Relevance Ward](GLOSSARY.md#the-relevance-ward) | Configured range | Technical Reference | Clean statistical separation between adversarial and legitimate (Entry 16, validated on Centurion Set) |
+| [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (vector) | Configured range | Technical Reference | Clean statistical separation between adversarial and legitimate (Entry 16, validated on Centurion Set) |
+| [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (reranker) | -10.0 | Technical Reference | Zero false negatives, filters 70% of adversarial queries on precise path (Entry 33) |
 
 ## 6. Scalability
 
@@ -216,7 +217,7 @@ The Relevance Ward filters low-confidence results based on a [configured thresho
 
 **Behavior:** Queries below the threshold return empty results. The library says "I don't know" instead of guessing.
 
-The Ward prevents false negatives (legitimate queries returning empty). It does not guarantee zero results for adversarial queries on the vector-only paths. The hybrid path's BM25 component provides stronger adversarial filtering — see [BENCHMARK_RESULTS.md](BENCHMARK_RESULTS.md) for per-path adversarial Hit Rate.
+The Ward prevents false negatives (legitimate queries returning empty). It does not guarantee zero results for all adversarial queries — the simple path relies solely on the vector threshold, and the precise path's post-reranking Ward filters 70% of adversarial queries (the remaining 30% contain technical terms that genuinely match corpus documents). The hybrid path's BM25 component provides the strongest adversarial filtering — see [BENCHMARK_RESULTS.md](BENCHMARK_RESULTS.md) for per-path adversarial filtering rates.
 
 See [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference) for threshold values and [Threshold Calibration](ARCHITECTURE.md#threshold-calibration) for the recalibration procedure when deploying against a new corpus.
 
@@ -238,7 +239,7 @@ See [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference) for threshold
 ## 8. Limitations
 
 - **Single embedding model per collection** — Switching models requires full re-ingestion
-- **Cross-encoder latency** — Precise path is CPU-bound, capped by host hardware.
+- **Cross-encoder latency** — Precise path is CPU-bound, capped by host hardware. On CPU, the cross-encoder runs in float64 (torch ≥2.10 NaN workaround), adding ~2.5x latency vs float32. MPS/CUDA paths are unaffected.
 - **No incremental ingestion** — Re-ingesting a file replaces all its chunks (by design, prevents duplicates)
 - **Agent-dependent decomposition** — Multi-doc query quality depends on the agent splitting queries correctly
 

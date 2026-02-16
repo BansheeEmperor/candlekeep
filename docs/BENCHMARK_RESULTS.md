@@ -27,14 +27,16 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 
 | Metric | Simple Path | Hybrid Path ([Wild Magic](GLOSSARY.md#lexical-matching-bm25)) | Precise Path |
 |--------|------------:|-------------------------:|-------------:|
-| **Overall MRR** | 0.4776 (±0.10) | 0.4722 (±0.09) | 0.4691 (±0.10) |
-| **nDCG@5** | 0.4851 (±0.10) | 0.4746 (±0.09) | 0.4746 (±0.10) |
-| **Hit Rate@5** | 0.6019 (±0.09) | 0.7130 (±0.08) | 0.5463 (±0.10) |
-| **Avg Latency** | **57ms** | 82ms | 175ms |
+| **Overall MRR** | 0.4776 (±0.10) | 0.4722 (±0.09) | 0.4884 (±0.10) |
+| **nDCG@5** | 0.4851 (±0.10) | 0.4746 (±0.09) | 0.4932 (±0.10) |
+| **Hit Rate@5** | 0.6019 (±0.09) | 0.7130 (±0.08) | 0.6759 (±0.09) |
+| **Avg Latency** | **57ms** | 82ms | 921ms |
 
 *95% bootstrap confidence intervals (n=1000, seed=42) shown as ±half-width. Latency measured on CPU with warm model.*
 
-*MRR and nDCG@5 differences between paths fall within the 95% confidence intervals and are not statistically significant (e.g., simple MRR 0.4776 vs hybrid 0.4722, delta 0.0054 within ±0.10). Hit Rate@5 is the primary metric for path selection: the hybrid path's advantage (0.7130 vs 0.6019, delta 0.1111) exceeds the 2σ reproducibility threshold (±1.0%).*
+*Precise path numbers updated after fixing a torch 2.10 float32 NaN regression that produced invalid cross-encoder scores on macOS ARM (see Research Diary Entry 33). Previous figures (MRR 0.4691, Hit Rate@5 0.5463) reflected arbitrary reranking from NaN scores. The post-reranking Relevance Ward (`MIN_RERANKER_SCORE = -10.0`) was verified to have zero impact on legitimate query MRR/nDCG — it only filters adversarial results.*
+
+*MRR and nDCG@5 differences between paths fall within the 95% confidence intervals and are not statistically significant. Hit Rate@5 is the primary metric for path selection: the hybrid path's advantage (0.7130 vs 0.6019 simple, delta 0.1111) exceeds the 2σ reproducibility threshold (±1.0%).*
 
 ### Domain Performance (MRR / nDCG)
 
@@ -44,7 +46,7 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 | **Semantic** (Concepts) | 0.87 / 0.87 | **0.89 / 0.90 (+2%)** | 0.87 / 0.87 | Stable semantic depth |
 | **Adversarial** (Noise) | 0.0 / 0.0 | 0.0 / 0.0 | 0.0 / 0.0 | Warded ¹ |
 
-¹ MRR of 0.0 means no adversarial query surfaced a relevant result in the top position. The hybrid path fully filters adversarial queries via the RRF threshold (Hit Rate@5 = 0.0); simple and precise paths may still return low-relevance results that score above the vector threshold (Hit Rate@5 = 0.40 and 0.33 respectively).
+¹ MRR of 0.0 means no adversarial query surfaced a relevant result in the top position. The hybrid path fully filters adversarial queries via the RRF threshold (Hit Rate@5 = 0.0). The precise path filters 70% of adversarial queries via the combined pre-reranking vector Ward and post-reranking cross-encoder Ward (`MIN_RERANKER_SCORE`); the remaining 30% contain technical terms that genuinely match corpus documents. The simple path relies solely on the vector threshold (Hit Rate@5 = 0.40).
 
 ---
 
@@ -70,7 +72,7 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 
 ### [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (Thresholding)
 **Implementation:** A score-based filter applied to all retrieval results (see [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference)).
-**Analysis:** Filters out out-of-domain "noise". No adversarial query surfaced a relevant result in the top position (MRR=0.0 across all paths). The hybrid path fully filters adversarial queries; simple and precise paths may still return low-relevance results that score above the vector threshold.
+**Analysis:** Filters out out-of-domain "noise". No adversarial query surfaced a relevant result in the top position (MRR=0.0 across all paths). The hybrid path fully filters adversarial queries. The precise path filters 70% via the combined vector and cross-encoder Wards. The simple path relies on the vector threshold alone.
 
 Threshold values and calibration procedure: [ARCHITECTURE.md](ARCHITECTURE.md#tuned-parameters-reference).
 
