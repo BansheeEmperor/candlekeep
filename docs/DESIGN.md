@@ -190,7 +190,7 @@ The following retrieval techniques were out of scope for the initial research ph
 | Expansion size | ±1, ±2, ±3, ±4 | ±2 | Re-validated on Centurion Set (108 queries, Entry 28). ±3 no benefit, ±4 hurts precision. |
 | Embedding model | minilm, bge-small, nomic | bge-small | Best content match on 23-query suite (Entry 22), good speed |
 | [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (vector) | Configured range | Technical Reference | Clean statistical separation between adversarial and legitimate (Entry 16, validated on Centurion Set) |
-| [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (reranker) | -10.0 | Technical Reference | Zero false negatives, filters 70% of adversarial queries on precise path (Entry 33) |
+| [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (reranker) | -10.0 | Technical Reference | Zero false negatives, filters 70% of all adversarial queries on precise path (54% from post-reranking Ward alone; Entry 33) |
 
 ## 6. Scalability
 
@@ -217,7 +217,7 @@ The Relevance Ward filters low-confidence results based on a [configured thresho
 
 **Behavior:** Queries below the threshold return empty results. The library says "I don't know" instead of guessing.
 
-The Ward prevents false negatives (legitimate queries returning empty). It does not guarantee zero results for all adversarial queries — the simple path relies solely on the vector threshold, and the precise path's post-reranking Ward filters 70% of adversarial queries (the remaining 30% contain technical terms that genuinely match corpus documents). The hybrid path's BM25 component provides the strongest adversarial filtering — see [§8.2](#82-the-centurion-set-the-high-audit) for per-path adversarial filtering rates.
+The Ward prevents false negatives (legitimate queries returning empty). It does not guarantee zero results for all adversarial queries — the simple path relies solely on the vector threshold, and the precise path's combined Wards (pre-reranking vector + post-reranking cross-encoder) filter 70% of all adversarial queries (the remaining 30% contain technical terms that genuinely match corpus documents). The hybrid path's BM25 component provides the strongest adversarial filtering — see [§8.2](#82-the-centurion-set-the-high-audit) for per-path adversarial filtering rates.
 
 See [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference) for threshold values and [Threshold Calibration](ARCHITECTURE.md#threshold-calibration) for the recalibration procedure when deploying against a new corpus.
 
@@ -309,7 +309,7 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 
 #### [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (Thresholding)
 **Implementation:** A score-based filter applied to all retrieval results (see [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference)).
-**Analysis:** Filters out out-of-domain "noise". No adversarial query surfaced a relevant result in the top position (MRR=0.0 across all paths). The hybrid path fully filters adversarial queries. The precise path filters 70% via the combined vector and cross-encoder Wards. The simple path relies on the vector threshold alone.
+**Analysis:** Filters out out-of-domain "noise". No adversarial query surfaced a relevant result in the top position (MRR=0.0 across all paths). The hybrid path fully filters adversarial queries. The precise path filters 70% of all adversarial queries via the combined vector and cross-encoder Wards (54% from the post-reranking Ward alone). The simple path relies on the vector threshold alone.
 
 Threshold values and calibration procedure: [ARCHITECTURE.md](ARCHITECTURE.md#tuned-parameters-reference).
 
