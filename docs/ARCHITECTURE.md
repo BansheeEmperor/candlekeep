@@ -361,7 +361,7 @@ The agent selects the search path (`simple`, `hybrid`, or `precise`) based on it
 
 **When to prefer hybrid:** Queries containing exact identifiers (`bge-small`, `v3.4.1`), error codes (`0xEF`, `ECONNREFUSED`), version strings, or technical terms that must match literally rather than semantically.
 
-**No feedback mechanism:** The system does not signal to the agent whether its path selection was optimal. The agent cannot learn from misroutes within a session. Integrators should include path selection guidance in the agent's system prompt.
+**No feedback mechanism:** The system does not signal to the agent whether its path selection was optimal. The agent cannot learn from misroutes within a session. Integrators should include path selection guidance in the agent's system prompt. The search tool description includes explicit examples of when to use each path — see the `query_type` parameter documentation in `mcp/server.py`.
 
 ## Configuration
 

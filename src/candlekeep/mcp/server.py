@@ -355,9 +355,17 @@ def search(
         n_results: Number of results to return (default: 5)
         category: Optional category filter
         query_type: Controls search strategy. One of:
-            - "simple": Fast lookup with expanded context (default)
-            - "precise": High accuracy, expands + reranks (slower)
-            - "hybrid": Lexical (BM25) + Vector (Semantic) fusion
+            - "simple": Fast semantic lookup (~57ms). Best for conceptual
+              questions like "how does caching work?" or "explain auth flow".
+            - "hybrid": Lexical + semantic fusion (~82ms). USE THIS when
+              your query contains terms that must match literally rather
+              than semantically — exact names, version strings, error codes,
+              CLI flags, config keys, package names, or any specific
+              technical identifier (e.g. "ECONNREFUSED", "--max-retries",
+              "bge-small-en-v1.5").
+            - "precise": Semantic reranking (~920ms). Best for comparative
+              or analytical questions where ranking quality matters more
+              than speed — e.g. "compare OAuth2 and SAML for mobile apps".
 
         For complex multi-part questions, make multiple simple searches
         (one per sub-question) and synthesize the results yourself.
