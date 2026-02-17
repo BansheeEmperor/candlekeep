@@ -182,6 +182,10 @@ class ChromaVectorStore(VectorDatabase):
         clear_bm25_cache()
         
         self.client.delete_collection("candlekeep")
+        # Brief pause to let ChromaDB finish cleaning up the deleted
+        # collection's HNSW index before creating a new one.
+        import time
+        time.sleep(0.5)
         self.collection = self.client.get_or_create_collection(
             name="candlekeep", metadata={"hnsw:space": "cosine"}
         )
