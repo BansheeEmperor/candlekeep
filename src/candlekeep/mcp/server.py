@@ -522,9 +522,10 @@ def critique_document(path: str) -> str:
 
 @mcp.tool
 def generate_documentation(directory_path: str) -> str:
-    """Analyze a project directory and prompt you to create structured documentation.
+    """Analyze a project directory and return a structured documentation plan.
 
-    Scans the directory, samples key files, and returns a documentation request.
+    Validates the path exists and returns a two-phase prompt: survey first,
+    then deep-dive documentation. The agent does all file exploration itself.
     Write the docs as markdown with YAML frontmatter, then use ingest() to add them.
     """
     if msg := _check_ready():
@@ -533,45 +534,111 @@ def generate_documentation(directory_path: str) -> str:
     p = Path(directory_path)
     if not p.exists():
         return f"Error: Path not found: {directory_path}"
-
-    files = list(p.rglob("*"))
-    code_files = [f for f in files if f.is_file() and f.suffix in {
-        ".py", ".js", ".ts", ".java", ".c", ".h", ".cpp", ".go", ".rs",
-        ".sh", ".md", ".txt", ".yaml", ".yml", ".json", ".toml"
-    }]
-
-    samples = []
-    for pf in ["README.md", "readme.md", "pyproject.toml", "package.json", "Cargo.toml"]:
-        for f in code_files:
-            if f.name == pf:
-                content = f.read_text(encoding="utf-8", errors="replace")[:2000]
-                samples.append(f"=== {f.name} ===\n{content}\n")
-                break
-
-    file_tree = "\n".join(str(f.relative_to(p)) for f in code_files[:100])
+    if not p.is_dir():
+        return f"Error: Not a directory: {directory_path}"
 
     return f"""**PROJECT DOCUMENTATION REQUEST**
 
-Generate documentation for: **{directory_path}**
+Target directory: **{directory_path}**
 
-### Directory Structure (first 100 files)
-```
-{file_tree}
-```
-
-### Key Files
-{chr(10).join(samples[:5])}
+Work in two phases: survey the project first, then write documentation.
 
 ---
 
-**YOUR TASK:**
+## PHASE 1 — SURVEY
 
-1. Analyze the project structure and identify main components
-2. Create documentation files with YAML frontmatter (title, description, keywords, category, tags)
-3. Cover: overview, architecture, setup, usage, API reference
-4. Save as markdown files, then use ingest() to add to knowledge base
+Build a mental model of the project before writing anything.
 
-Each document must have frontmatter and section headers for proper chunking."""
+1. **Explore the directory tree.** Get the top-level structure and identify
+   key directories (src, lib, docs, tests, config, scripts, etc.).
+
+2. **Read high-signal files first.** Look for (case-insensitive):
+   - README files (any extension: .md, .rst, .txt, or none)
+   - Project manifests (pyproject.toml, package.json, Cargo.toml, go.mod, pom.xml)
+   - Existing documentation directories (docs/, doc/, wiki/)
+   - Architecture or design documents (ARCHITECTURE, DESIGN, ADR, RFC)
+   - Entry points (main.py, index.ts, cmd/, __main__.py, App.java)
+   - Configuration files (Dockerfile, Makefile, CI configs)
+
+3. **Identify the key sections of the codebase:**
+   - What is the public API or interface surface?
+   - What are the core modules/packages and how do they relate?
+   - What external dependencies does it rely on?
+   - What configuration or environment does it need?
+   - Are there patterns (MVC, plugin architecture, event-driven, etc.)?
+
+4. **Summarize your findings** before moving to Phase 2. List:
+   - Project type and primary language(s)
+   - Core components and their responsibilities
+   - Data flow or request lifecycle
+   - Anything unclear that needs deeper reading
+
+---
+
+## PHASE 2 — DEEP DIVE & DOCUMENTATION
+
+Now read deeper into the key sections you identified and write documentation.
+
+**For each document you create:**
+
+1. Deep-dive into the relevant source files — read implementations, not just
+   signatures. Understand the why, not just the what.
+2. Write the document as markdown with YAML frontmatter.
+3. Use `critique_document(path)` to verify it passes the quality gate.
+4. Use `ingest(path)` to add it to the knowledge base.
+
+**Suggested documents** (adapt based on what you found in Phase 1):
+- Project Overview — what it does, who it's for, key concepts
+- Architecture — components, data flow, design decisions
+- Setup & Installation — prerequisites, steps, configuration
+- Usage Guide — workflows, examples, CLI commands
+- API Reference — public interfaces, parameters, return types
+
+---
+
+## QUALITY GATE
+
+ingest() will reject documents that fail these checks:
+
+- **YAML frontmatter required** — must start with `---` and include:
+  title, description, keywords, category, tags
+- **At least 2 markdown headers** (## or ###)
+- **Between 100 and 10,000 words**
+- **No unclosed code blocks** (matched ``` pairs)
+
+Frontmatter template:
+```yaml
+---
+title: "Component Name"
+description: "One-line summary of what this covers"
+keywords:
+  - term1
+  - term2
+  - term3
+category: "overview | architecture | setup | api | guide"
+tags:
+  - relevant-tag
+---
+```
+
+## RAG OPTIMIZATION TIPS
+
+The system splits documents at markdown headers (## or ###). If a section
+exceeds {_settings.chunk_size} characters it gets sub-chunked with
+{_settings.chunk_overlap}-char overlap. The title and description from
+frontmatter are prepended to every chunk for context. Write with that in mind:
+
+- Use descriptive headers — "## Authentication Flow" not "## Overview"
+- Keep sections under ~{_settings.chunk_size} chars when possible so each
+  header-delimited section stays as one chunk
+- Make sections self-contained; a chunk should make sense without the
+  surrounding document
+- Front-load key terms and concepts in each section — embeddings weight
+  early tokens more heavily
+- Include concrete examples, code snippets, and parameter names
+- Avoid vague sections that just reference other sections
+- The frontmatter title and description appear in every chunk, so make
+  them keyword-rich and specific"""
 
 
 # ============================================================
