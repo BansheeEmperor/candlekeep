@@ -348,6 +348,17 @@ def _create_mcp() -> FastMCP:
             tokens={_settings.mcp_token: {"client_id": "candlekeep-agent", "scopes": []}}
         )
         print("[candlekeep] ✓ Bearer token auth enabled", file=sys.stderr)
+
+        # Warn if token auth is active on a non-localhost bind address
+        bind = _settings.http_host
+        if bind not in ("127.0.0.1", "localhost", "::1"):
+            print(
+                f"[candlekeep] ⚠ Token auth is active but HTTP host is {bind}. "
+                "Token will be transmitted in plaintext. Use a TLS-terminating "
+                "reverse proxy for non-localhost deployments.",
+                file=sys.stderr,
+            )
+
         return FastMCP("candlekeep", instructions=instructions, auth=auth)
     
     if _settings.transport == "http":

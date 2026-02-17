@@ -231,7 +231,7 @@ See [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference) for threshold
 | Bad document quality | [Quality Gate](ARCHITECTURE.md#1-quality-gate) rejects docs without frontmatter/structure |
 | Model download at startup | Exit immediately if model not cached locally |
 | Write to remote DB accidentally | Write tools hidden unless explicitly opted in |
-| Unauthorized MCP client | stdio: not applicable (one agent per process). HTTP: optional bearer token auth via `CANDLEKEEP_MCP_TOKEN`. TLS via reverse proxy is the operator's responsibility for non-localhost deployments. |
+| Unauthorized MCP client | stdio: not applicable (one agent per process). HTTP: optional bearer token auth via `CANDLEKEEP_MCP_TOKEN`. The server warns at startup if token auth is active on a non-localhost bind address, since the token travels in plaintext. TLS via reverse proxy is the operator's responsibility for non-localhost deployments. |
 | Prompt injection via ingested documents | Not mitigated — trusted corpus assumption. The quality gate validates document structure but does not scan for adversarial prompt content. Revisit if Candlekeep ingests untrusted user-submitted documents. |
 | Ingestion rate limiting | stdio: not applicable (single agent). HTTP: per-session sliding window (`CANDLEKEEP_RATE_LIMIT_WRITE`, default 5/60s) rejects excess calls before they reach the write lock. |
 | Search rate limiting | stdio: not applicable. HTTP: per-session sliding window (`CANDLEKEEP_RATE_LIMIT_SEARCH`, default 30/60s) prevents a single agent from monopolizing the cross-encoder queue. |

@@ -299,7 +299,7 @@ Throughput peaks at N=3 (10.1 qps). At N=5, CPU-bound stages fight for the GIL a
 |--------|-----------|
 | Unauthorized MCP client (stdio) | Not applicable — stdio transport binds one agent to one server process. |
 | Unauthorized MCP client (HTTP) | Optional bearer token auth via `CANDLEKEEP_MCP_TOKEN`. If set, agents must present the token in the `Authorization` header. |
-| Bearer token over plaintext HTTP | Acceptable on localhost. For non-localhost deployments, TLS via reverse proxy is the operator's responsibility. |
+| Bearer token over plaintext HTTP | Acceptable on localhost. For non-localhost deployments, TLS via reverse proxy is the operator's responsibility. The server logs a warning at startup if token auth is active on a non-localhost bind address. |
 | Unauthorized ChromaDB access | Bearer token auth via `CHROMA_AUTH_TOKEN`. |
 
 ## Ingestion Pipeline
