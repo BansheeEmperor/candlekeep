@@ -1745,6 +1745,84 @@ The "agent decomposes" architecture is validated with real agent behavior. Decom
 
 ---
 
+## Entry 38: Cross-Domain Parameter Validation — 2026-02-17
+
+### Background
+
+M1 from the technical audit flagged that all parameter sweeps (chunk size, overlap, expansion threshold) were conducted on a single corpus type — 89 software engineering documents. Flat performance surfaces could be artifacts of corpus homogeneity rather than genuine parameter insensitivity.
+
+### Methodology
+
+Generated 4 additional corpora via a frontier LLM, each targeting a genuinely different domain:
+
+| Corpus | Domain | Docs | Words | Avg words/doc |
+|--------|--------|:----:|------:|:-------------:|
+| Original | Software engineering | 89 | 136,898 | 1,538 |
+| Legal | Contract law, torts, regulation | 90 | 88,412 | 983 |
+| Medical | Clinical medicine, pharmacology | 91 | 72,286 | 795 |
+| API Reference | REST API endpoints | 95 | 48,200 | 508 |
+| Narrative | History, geography, cooking, nature | 89 | 83,740 | 941 |
+
+Each corpus has a Centurion-scale eval suite (107-108 queries: ~48 semantic, ~30 lexical, ~30 adversarial) targeting 54-57 unique documents.
+
+Sweeps used `chromadb.PersistentClient` with temp directories for isolation — the HTTP server crashed under rapid collection lifecycle operations (see production fix in `vector_store.py:clear()`).
+
+### Results
+
+#### Chunk Size (256, 512, 768, 1024)
+
+| Corpus | MRR Range | Max Delta | HR@5 Range |
+|--------|:---------:|:---------:|:----------:|
+| Original | 0.539–0.565 | 0.025 | 0.565–0.602 |
+| Legal | 0.695–0.699 | 0.005 | 0.710–0.720 |
+| Medical | 0.710–0.715 | 0.005 | 0.722 (flat) |
+| API Ref | 0.633–0.640 | 0.008 | 0.657–0.667 |
+| Narrative | 0.693–0.715 | 0.022 | 0.704–0.722 |
+
+#### Chunk Overlap (0, 25, 50, 100)
+
+| Corpus | MRR Range | Max Delta | HR@5 Range |
+|--------|:---------:|:---------:|:----------:|
+| Original | 0.549–0.556 | 0.008 | 0.593–0.602 |
+| Legal | 0.687–0.696 | 0.009 | 0.710 (flat) |
+| Medical | 0.710–0.711 | 0.000 | 0.722 (flat) |
+| API Ref | 0.633–0.642 | 0.009 | 0.657–0.667 |
+| Narrative | 0.707–0.715 | 0.009 | 0.713–0.722 |
+
+#### Expansion Similarity Threshold (0.85–0.95)
+
+| Corpus | MRR Range | Max Delta | Token Range |
+|--------|:---------:|:---------:|:-----------:|
+| Original | 0.552–0.553 | 0.001 | 1,848–3,364 |
+| Legal | 0.696 (flat) | 0.000 | 2,135–2,984 |
+| Medical | 0.710 (flat) | 0.000 | 1,719–2,570 |
+| API Ref | 0.634–0.639 | 0.005 | 1,199–1,700 |
+| Narrative | 0.715 (flat) | 0.000 | 1,786–2,618 |
+
+### Analysis
+
+1. All three parameters show less than 2.5% MRR variation across all tested values and all five corpora. The flat surfaces observed on the original software engineering corpus are not artifacts of corpus homogeneity — they hold cross-domain.
+
+2. Chunk size shows the most variation (up to 2.5% on original, 2.2% on narrative) but no single value is consistently best across corpora. 512 is never the worst choice.
+
+3. Overlap is genuinely insensitive — under 1% MRR spread for every corpus. Arcane Recall's expansion compensates for overlap differences.
+
+4. The expansion threshold controls only token volume, not ranking quality. Moving from 0.85 to 0.95 cuts tokens by ~40% with zero MRR impact on 4 of 5 corpora (0.5% on API ref).
+
+5. The API reference corpus (short docs, many headers, code-heavy) shows the most parameter sensitivity overall, but still under 1% MRR for any single parameter.
+
+### Conclusion
+
+Current defaults (chunk_size=512, overlap=50, threshold=0.92) are **cross-domain validated**. No parameter change is needed for deploying against legal, medical, API reference, or narrative corpora. M1 closed.
+
+### Files Created
+- `tests/fixtures/cross_domain/` — 4 corpora (365 docs total) with eval suites
+- `tests/results/cross_domain_sweep.json` — Raw sweep results
+- `docs/cross_domain_sweep_chart.html` — Visual comparison charts
+
+
+---
+
 # Appendix A: Archived Research Plans
 
 *The following plans were executed during the research phase. Their outcomes are recorded in the diary entries above and in [DESIGN.md](DESIGN.md). Preserved here for historical reference.*

@@ -1,0 +1,810 @@
+{
+  "corpus": "api_ref",
+  "description": "Centurion-scale eval suite for api_ref",
+  "queries": [
+    {
+      "query": "Experiment management interface",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/a-b-testing-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Permissions and access control",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/access-control-list-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Validate and standardize addresses",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/address-validation-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Incident and notification management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/alert-management-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Insights and data visualization",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/analytics-reporting-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Customize and manage application settings",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/app-configuration-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Schedule and manage appointments",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/appointment-booking-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Track and review user actions",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/audit-log-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Maintain a history of changes",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/audit-trail-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Restore data from backups",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/backup-and-restore-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Bulk data processing workflows",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/batch-processing-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Expenditure monitoring and notifications",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/budget-alert-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Manage caching and invalidation",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/cache-management-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Controlled feature rollout strategies",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/canary-release-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Digital certificate lifecycle management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/certificate-management-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "software version history and updates",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/changelog-and-version-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "manage and configure cluster resources",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/cluster-management-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "user feedback and discussion platform",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/comment-and-review-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "regulatory compliance and audit reporting",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/compliance-reporting-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "security and vulnerability assessments",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/compliance-scan-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "application settings and preferences management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/configuration-management-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "container image hosting and distribution",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/container-registry-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "inappropriate content detection and filtering",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/content-moderation-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "budget tracking and expense management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/cost-management-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "promotional offers and discounts management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/coupon-and-promotion-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "application error reporting and diagnostics",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/crash-reporting-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "foreign exchange rates and conversions",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/currency-exchange-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "customer inquiries and support resolution",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/customer-support-ticket-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "data sensitivity and confidentiality categorization",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/data-classification-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "data backup and migration services",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/data-export-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Retrieve information about database management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/database-instance-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Explore the API for creating and configuring deep links",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/deep-link-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Find details on deploying and managing applications",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/deployment-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Integrate device registration functionality into your application",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/device-registration-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Manage DNS configurations and settings",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/dns-management-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Implement secure document signing capabilities",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/document-signing-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Leverage the email delivery service API",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/email-delivery-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Manage encryption keys for your application",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/encryption-key-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Integrate error tracking and monitoring capabilities",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/error-tracking-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Implement feature flag management in your application",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/feature-flag-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Leverage file storage and management APIs",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/file-storage-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Configure and manage firewall rules for your application",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/firewall-rules-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Integrate geolocation mapping capabilities into your application",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/geolocation-mapping-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Retrieve health check status information",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/health-check-status-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Implement identity verification functionality",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/identity-verification-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "visual media processing service",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/image-processing-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "scan and extract data from images",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/image-scanning-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "report and manage security events",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/incident-api.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "a/b-testing",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/a-b-testing-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "access control list",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/access-control-list-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "address validation",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/address-validation-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "alert management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/alert-management-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "analytics reporting",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/analytics-reporting-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "app configuration",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/app-configuration-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "appointment booking",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/appointment-booking-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "changelog-and-version-api",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/changelog-and-version-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "cluster management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/cluster-management-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "comment and review",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/comment-and-review-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "compliance reporting",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/compliance-reporting-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "compliance scan",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/compliance-scan-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "configuration management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/configuration-management-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "container registry",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/container-registry-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "database instance",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/database-instance-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "deep link api",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/deep-link-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "deployment management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/deployment-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "device registration",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/device-registration-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "dns configuration",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/dns-management-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "document signing",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/document-signing-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "email delivery service",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/email-delivery-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "image-processing-api",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/image-processing-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "image-scanning",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/image-scanning-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "incident-api",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/incident-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "inventory-management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/inventory-management-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "load-balancer",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/load-balancer-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "log-ingestion",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/log-ingestion-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "metric-collection",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/metric-collection-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "performance-monitoring-api",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/performance-monitoring-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "policy-engine-api",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/api_ref_docs/policy-engine-api.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "how to bake French baguette properly",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "wrongful termination severance obligations",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "warfarin INR monitoring therapeutic range",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "coral reef symbiotic relationships zooxanthellae",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Roman road construction via munita layers",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "sepsis surviving sepsis campaign bundles",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "estate planning irrevocable trust probate",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "glacier formation moraine till deposits",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "atrial fibrillation rate control amiodarone",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "ancient Egyptian pyramid construction ramps",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "breach of contract statute of limitations",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "butterfly metamorphosis hormonal cascade",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Japanese tea ceremony matcha preparation",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Chapter 7 bankruptcy automatic stay creditor",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Silk Road ancient trade routes caravans",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "hypertension ACE inhibitor lisinopril dosing",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "medieval castle keep curtain wall moat",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "wine terroir soil climate grape variety",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "non-compete agreement geographic scope",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "sourdough starter feeding hydration ratio",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Viking navigation sun stone polarization",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "pneumonia CURB-65 severity scoring",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "olive oil cold press extraction grading",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "securities regulation insider trading",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Polynesian wayfinding star compass Pacific",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "diabetes A1c hemoglobin glycated target",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "French cheese aging cave affinage",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "workers compensation benefits eligibility",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "coral reef bleaching restoration methods",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "tort negligence duty of care elements",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    }
+  ]
+}

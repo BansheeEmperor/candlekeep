@@ -1,0 +1,802 @@
+{
+  "corpus": "legal",
+  "description": "Centurion-scale eval suite for legal",
+  "queries": [
+    {
+      "query": "requirements for accommodating individuals with disabilities",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/ada-accommodation-requirements.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "legal procedures and regulations for adoption",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/adoption-law-and-procedures.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "laws and compliance for preventing money laundering",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/anti-money-laundering-compliance.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "illegal price fixing and collusion between competitors",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/antitrust-price-fixing.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "differences between arbitration and mediation as dispute resolution methods",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/arbitration-vs-mediation.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Renting commercial property terms",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/commercial-lease-agreements.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Mechanics lien construction law",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/construction-mechanics-liens.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Regulations governing consumer credit",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/consumer-credit-regulation.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Legal protections for product warranties",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/consumer-warranty-rights.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Elements required to form a contract",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/contract-formation-elements.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Permitted uses of copyrighted material",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/copyright-fair-use-doctrine.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Choosing the right business entity for taxes",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/corporate-tax-entity-selection.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "UDRP domain name dispute resolution",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/domain-name-disputes-udrp.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Protections against double jeopardy",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/double-jeopardy-protections.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Easements and rights of way in property law",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/easement-and-right-of-way.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Eminent domain and fair compensation",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/eminent-domain-and-just-compensation.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Policies for foreign workers' employment",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/employment-based-immigration-visas.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Allegations of unfair treatment in the workplace",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/employment-discrimination-claims.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Hazardous waste regulations and liability",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/environmental-liability-under-cercla.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Retirement plan compliance and administration",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/erisa-pension-regulations.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Transferring assets through legal instruments",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/estate-planning-with-trusts.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Admissibility standards for expert testimony",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/expert-witness-daubert-standards.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Regulations on international trade and commerce",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/export-control-regulations.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Requests for release from unlawful detention",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/habeas-corpus-petitions.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Disputes between homeowners and their associations",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/homeowners-association-disputes.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Claims for asylum by immigrants",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/immigration-asylum-claims.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Allegations of insurance companies acting in bad faith",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/insurance-bad-faith-claims.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Regulations and tariffs governing international trade",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/international-trade-tariffs.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Methods for collecting court-ordered payments",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/judgment-collection-methods.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Legal issues involving minors in the justice system",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/juvenile-justice-system.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Lemon law claims for defective vehicles",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/lemon-law-vehicle-claims.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Legal disputes over maritime cargo transportation",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/maritime-cargo-claims.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Standards for proving medical malpractice",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/medical-malpractice-standards.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Regulations governing workplace safety practices",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/osha-workplace-safety-standards.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Conditions and terms for parole and probation",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/parole-and-probation-conditions.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Procedures for dissolving a partnership",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/partnership-dissolution-procedures.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Licensing and royalty agreements for patents",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/patent-licensing-and-royalties.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Determining personal jurisdiction in legal cases",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/personal-jurisdiction-analysis.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Procedures and guidelines for plea bargaining",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/plea-bargaining-procedures.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Liability for privacy breaches and data leaks",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/privacy-and-data-breach-liability.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "guidelines for criminal sentencing",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/sentencing-guidelines-overview.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "enforcing settlement agreements in court",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/settlement-agreement-enforcement.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "procedures for small claims lawsuits",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/small-claims-court-procedures.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "penalties for destroying evidence",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/spoliation-of-evidence-sanctions.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "time limits for filing different types of claims",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/statute-of-limitations-by-claim-type.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "standards for granting summary judgment",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/summary-judgment-standards.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "compliance with Title IX in education",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/title-ix-education-compliance.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "ADA",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/ada-accommodation-requirements.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "adoption",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/adoption-law-and-procedures.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "money laundering",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/anti-money-laundering-compliance.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "antitrust price fixing",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/antitrust-price-fixing.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "arbitration vs mediation",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/arbitration-vs-mediation.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "attorney-client privilege",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/attorney-client-privilege-scope.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "bail and pretrial release",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/bail-and-pretrial-release.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Fair debt collection practices act",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/debt-collection-fair-practices.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Defamation and libel law",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/defamation-and-libel-law.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Deportation defense strategies",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/deportation-defense-strategies.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Divorce and property division",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/divorce-and-property-division.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "UDRP domain name disputes",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/domain-name-disputes-udrp.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Commercial lease agreements",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/commercial-lease-agreements.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Construction mechanics liens",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/construction-mechanics-liens.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "CERCLA",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/environmental-liability-under-cercla.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "ERISA",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/erisa-pension-regulations.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Daubert",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/expert-witness-daubert-standards.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "FMLA",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/fmla-leave-entitlements.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "FCPA",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/foreign-corrupt-practices-act.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Franchise disclosure",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/franchise-disclosure-requirements.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Garnishment procedures",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/garnishment-and-attachment-procedures.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Habeas Corpus Petitions",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/habeas-corpus-petitions.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Homeowners Association Disputes",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/homeowners-association-disputes.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Immigration Asylum Claims",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/immigration-asylum-claims.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Insurance Bad Faith Claims",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/insurance-bad-faith-claims.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "International Trade Tariffs",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/international-trade-tariffs.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Judgment Collection Methods",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/judgment-collection-methods.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Juvenile Justice System",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/juvenile-justice-system.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "OSHA",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/osha-workplace-safety-standards.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Parole and probation",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/legal_docs/parole-and-probation-conditions.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "how to configure nginx reverse proxy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Python async await tutorial for beginners",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "sepsis qSOFA score clinical criteria",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "sourdough bread fermentation temperature",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "coral reef bleaching restoration methods",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "machine learning gradient descent optimization",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "REST API pagination cursor offset",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Viking longship navigation techniques",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "insulin dosing diabetic ketoacidosis",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "chocolate tempering crystallization process",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Kubernetes pod autoscaling HPA metrics",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Docker container networking bridge mode",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "medieval castle curtain wall architecture",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "OAuth 2.0 token refresh flow",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Silk Road ancient trade routes spices",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "database sharding consistent hashing",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "webhook retry exponential backoff",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "sourdough starter feeding hydration ratio",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Polynesian star compass wayfinding Pacific",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Renaissance painting techniques Florence",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "TCP three-way handshake SYN ACK",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "warfarin INR monitoring therapeutic range",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Japanese tea ceremony matcha preparation",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "GraphQL schema stitching federation",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Amazon rainforest biodiversity canopy layers",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Redis cache eviction LRU policy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "ancient Egyptian pyramid construction ramps",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "pneumonia CURB-65 severity scoring",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "bonsai cultivation pruning techniques",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Terraform state management remote backend",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    }
+  ]
+}

@@ -1,0 +1,810 @@
+{
+  "corpus": "narrative",
+  "description": "Centurion-scale eval suite for narrative",
+  "queries": [
+    {
+      "query": "high-altitude plant communities",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/alpine-meadow-ecology.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "tropical rainforest biodiversity",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/amazon-rainforest-ecology.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "ancient Hellenic philosophical traditions",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/ancient-greek-philosophy.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Roman culinary heritage",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/ancient-roman-cuisine.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "integrated aquatic farming systems",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/aquaponics-systems.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "melting Arctic permafrost",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/arctic-permafrost-thawing.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "apiculture for novices",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/beekeeping-for-beginners.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "avian migratory patterns",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/bird-migration-patterns.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "miniaturized tree cultivation",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/bonsai-cultivation-techniques.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "microbial fermentation of bread",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/bread-fermentation-science.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "lepidopteran metamorphosis",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/butterfly-metamorphosis.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "wax-based illumination crafting",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/candle-making-techniques.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "dairy maturation in subterranean environments",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/cheese-aging-and-cave-ripening.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "cacao bean processing",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/chocolate-bean-to-bar-process.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "global coffee cultivation regions",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/coffee-growing-regions.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Techniques for converting organic waste",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/composting-methods.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Exploring the diversity of marine ecosystems",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/coral-reef-ecosystems.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Investigating the hidden depths of the ocean",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/deep-ocean-exploration.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Adaptations of plants and animals in deserts",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/desert-adaptations-flora-fauna.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Understanding the science behind earthquake prediction",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/earthquake-geology-and-prediction.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Unraveling the architectural marvels of ancient Egypt",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/egyptian-pyramid-construction.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Coastal ecosystems and the influence of tides",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/estuary-ecology-and-tides.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Chronicling the impact of notable volcanic eruptions",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/famous-volcanic-eruptions.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Exploring the culinary traditions of French bread",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/french-bread-baking-traditions.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "The formation and retreat of glaciers over time",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/glacier-formation-and-retreat.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Preserving the ecological wonders of the Great Barrier Reef",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/great-barrier-reef-ecology.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Traditional medicinal practices using herbs and plants",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/herbal-medicine-traditions.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Tracing the evolution of architectural design",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-architecture-styles.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Chronicling the fascinating history of astronomical study",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-astronomy.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Examining the engineering marvels of bridges throughout history",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-bridges-engineering.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "the history and development of maps",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-cartography.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "the origins and evolution of monetary systems",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-coinage-and-currency.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "the historical techniques and craftsmanship of glassmaking",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-glassmaking.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "the progression of irrigation methods throughout history",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-irrigation-systems.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "the story of how libraries have evolved",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-libraries.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "the historical development of cartographic projections",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-mapmaking-projections.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "the ancient roots of modern medical practices",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-medicine-ancient-world.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "the history of navigation tools and instruments",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-navigation-instruments.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "the fascinating history of paper production",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-paper-making.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "the evolution of postal systems throughout history",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-postal-systems.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "the remarkable story of the printing press",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-printing.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "the historical significance of maritime spice routes",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-spice-routes-maritime.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "the woven history of textiles and weaving",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-textiles-and-weaving.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "the enduring legacy of the Olympic Games",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-the-olympic-games.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "the captivating history of the global spice trade",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-the-spice-trade.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "history of time measurement techniques",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-timekeeping.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "traditional methods of pasta preparation",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/italian-pasta-making.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "ecological role of kelp forests",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/kelp-forest-ecosystems.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "alpine-meadow-ecology.md",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/alpine-meadow-ecology.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "amazon-rainforest-ecology.md",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/amazon-rainforest-ecology.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "ancient-greek-philosophy.md",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/ancient-greek-philosophy.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "ancient-roman-cuisine.md",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/ancient-roman-cuisine.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "aquaponics-systems.md",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/aquaponics-systems.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "arctic-permafrost-thawing.md",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/arctic-permafrost-thawing.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "beekeeping-for-beginners.md",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/beekeeping-for-beginners.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "composting-methods",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/composting-methods.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "coral reef",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/coral-reef-ecosystems.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "deep ocean exploration",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/deep-ocean-exploration.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "desert flora and fauna",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/desert-adaptations-flora-fauna.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "earthquake geology",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/earthquake-geology-and-prediction.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Egyptian pyramids",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/egyptian-pyramid-construction.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "estuary ecology",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/estuary-ecology-and-tides.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "history-of-cartography",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-cartography.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "coinage and currency",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-coinage-and-currency.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "glassmaking",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-glassmaking.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "irrigation systems",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-irrigation-systems.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "libraries",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-libraries.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "mapmaking projections",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-mapmaking-projections.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "ancient medicine",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-medicine-ancient-world.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "history-of-timekeeping",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/history-of-timekeeping.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "italian pasta making",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/italian-pasta-making.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "japanese tea ceremony",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/japanese-tea-ceremony.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "medieval castle architecture",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/medieval-castle-architecture.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "miso production traditional methods",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/miso-production-traditional-methods.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "monsoon weather systems",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/monsoon-weather-systems.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "origami mathematics and art",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/origami-mathematics-and-art.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "peatland",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/peatland-carbon-storage.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "polynesian wayfinding",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/narrative_docs/polynesian-wayfinding.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Kubernetes pod autoscaling HPA metrics",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "SQL injection parameterized queries prevention",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "warfarin DOAC anticoagulant reversal agent",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "breach of contract statute of limitations",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "GET /users REST API endpoint pagination",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Chapter 7 bankruptcy automatic stay creditor",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "sepsis qSOFA SOFA organ dysfunction score",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "OAuth token introspection revocation endpoint",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "diabetic ketoacidosis insulin protocol DKA",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "429 Too Many Requests rate limiting API",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Docker container networking bridge mode",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "non-compete agreement enforceability scope",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "atrial fibrillation rate control amiodarone",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "webhook retry exponential backoff configuration",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "securities regulation insider trading SEC",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Redis cache eviction LRU policy TTL",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "workers compensation benefits eligibility",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "GraphQL schema stitching federation gateway",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "pneumonia CURB-65 severity scoring antibiotic",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Terraform state management remote backend",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "trademark registration process USPTO filing",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "hypertension ACE inhibitor lisinopril dosing",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "DNS CNAME record zone delegation TTL",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "estate planning irrevocable trust probate",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "database sharding consistent hashing partition",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Chapter 11 bankruptcy reorganization creditor",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "insulin pump continuous glucose monitoring",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "REST API versioning backward compatibility",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "tort negligence duty of care elements",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "TCP three-way handshake SYN ACK sequence",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    }
+  ]
+}
