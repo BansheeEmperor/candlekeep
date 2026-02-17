@@ -1,0 +1,810 @@
+{
+  "corpus": "medical",
+  "description": "Centurion-scale eval suite for medical",
+  "queries": [
+    {
+      "query": "classification of sudden kidney dysfunction",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/acute-kidney-injury-classification.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "protocol for managing heart attack",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/acute-myocardial-infarction-protocol.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "treatment strategies for pancreatic inflammation",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/acute-pancreatitis-management.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "evaluating and managing stroke patients",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/acute-stroke-assessment-and-treatment.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "screening adolescents for depression",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/adolescent-depression-screening.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "recommended vaccines for adults",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/adult-immunization-schedule.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "documenting patients' end-of-life wishes",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/advance-directive-documentation.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "hyperactive behavior in children",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/attention-deficit-hyperactivity-disorder.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "screening for autism spectrum disorders",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/autism-spectrum-screening.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "guidelines for blood product administration",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/blood-transfusion-guidelines.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "recommendations for breast cancer screening",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/breast-cancer-screening-guidelines.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "interactions between cardiac medications",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/cardiac-drug-interactions.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "diagnosing celiac disease",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/celiac-disease-diagnosis.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "cervical cancer screening with HPV",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/cervical-cancer-hpv-screening.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "recommended childhood immunization schedule",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/childhood-vaccination-schedule.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "stages of chronic kidney disease",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/chronic-kidney-disease-staging.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "assessing nutritional status in clinical settings",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/clinical-nutrition-assessment.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "informed consent for clinical trials",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/clinical-trial-informed-consent.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "colorectal cancer screening guidelines",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/colorectal-cancer-screening.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "treating community-acquired pneumonia",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/community-acquired-pneumonia-treatment.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "managing COPD exacerbations",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/copd-exacerbation-management.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "diagnosing deep vein thrombosis",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/deep-vein-thrombosis-diagnosis.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Altered mental status assessment and management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/delirium-assessment-and-management.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Cognitive impairment diagnosis and care plan",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/dementia-assessment-and-care.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Mood disorder treatment protocol",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/depression-treatment-algorithm.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Diabetic acidosis emergency management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/diabetic-ketoacidosis-protocol.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Fluid and electrolyte balance restoration",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/electrolyte-imbalance-correction.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Terminal illness care planning",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/end-of-life-care-planning.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Neurological seizure types and classification",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/epilepsy-seizure-classification.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Integrating research evidence into clinical practice",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/evidence-based-medicine-principles.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Preventing falls in older adults",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/fall-prevention-in-elderly.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Medication management in the elderly",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/geriatric-polypharmacy-review.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Gestational diabetes treatment guidelines",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/gestational-diabetes-management.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Acute gout flare intervention",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/gout-acute-flare-management.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Heart failure classification and therapeutic management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/heart-failure-classification-and-treatment.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Antiretroviral regimens for HIV treatment",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/hiv-antiretroviral-therapy.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Hypertension diagnosis and pharmacological management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/hypertension-diagnosis-and-treatment.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Recognize and manage low blood sugar",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/hypoglycemia-recognition-and-treatment.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Proper hand hygiene techniques for infection prevention",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/infection-control-hand-hygiene.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Therapeutic options for inflammatory bowel conditions",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/inflammatory-bowel-disease-therapy.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Cognitive-behavioral approach to treating sleep disturbances",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/insomnia-cognitive-behavioral-therapy.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Diagnostic workup for iron deficiency anemia",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/iron-deficiency-anemia-workup.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Interpreting results of liver function tests",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/liver-function-test-interpretation.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Clinical approach to low back pain management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/low-back-pain-clinical-approach.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "LDCT screening for early detection of lung cancer",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/lung-cancer-screening-ldct.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Processes involved in medication reconciliation",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/medication-reconciliation-process.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Staging and treatment options for melanoma",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/melanoma-staging-and-treatment.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Screening for mental health conditions in primary care",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/mental-health-screening-primary-care.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "reporting adverse drug reactions",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/adverse-drug-reaction-reporting.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "protocol for managing alcohol withdrawal",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/alcohol-withdrawal-protocol.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "emergency response to anaphylaxis",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/anaphylaxis-emergency-protocol.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "anticoagulant medications: warfarin and DOACs",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/anticoagulant-therapy-warfarin-doacs.md"
+      ],
+      "category": "lexical",
+      "difficulty": "hard"
+    },
+    {
+      "query": "principles of antimicrobial stewardship",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/antimicrobial-stewardship.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "managing anxiety disorders",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/anxiety-disorder-management.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "stepwise approach to asthma treatment",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/asthma-stepwise-management.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "rate vs rhythm control in atrial fibrillation",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/atrial-fibrillation-rate-vs-rhythm-control.md"
+      ],
+      "category": "lexical",
+      "difficulty": "hard"
+    },
+    {
+      "query": "ADHD",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/attention-deficit-hyperactivity-disorder.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "autism spectrum",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/autism-spectrum-screening.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "blood transfusion",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/blood-transfusion-guidelines.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "breast cancer screening",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/breast-cancer-screening-guidelines.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "cardiac drug interactions",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/cardiac-drug-interactions.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "celiac disease",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/celiac-disease-diagnosis.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "HPV screening",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/cervical-cancer-hpv-screening.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "delirium",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/delirium-assessment-and-management.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "dementia",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/dementia-assessment-and-care.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "depression treatment algorithm",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/depression-treatment-algorithm.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "diabetic ketoacidosis",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/diabetic-ketoacidosis-protocol.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "electrolyte imbalance",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/electrolyte-imbalance-correction.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "end of life care",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/end-of-life-care-planning.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "epilepsy seizure classification",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/epilepsy-seizure-classification.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "hypoglycemia",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/hypoglycemia-recognition-and-treatment.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "hand hygiene",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/infection-control-hand-hygiene.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "inflammatory bowel disease",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/inflammatory-bowel-disease-therapy.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "insomnia cognitive behavioral therapy",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/insomnia-cognitive-behavioral-therapy.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "iron deficiency anemia",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/iron-deficiency-anemia-workup.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "liver function test",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/liver-function-test-interpretation.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "low back pain",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/low-back-pain-clinical-approach.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "opioid use disorder",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/medical_docs/opioid-use-disorder-treatment.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "breach of contract compensatory damages",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Docker container networking bridge mode",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "medieval castle curtain wall architecture",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "OAuth 2.0 token refresh flow",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Silk Road ancient trade routes spices",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "non-compete agreement enforceability scope",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "webhook retry exponential backoff",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "sourdough starter feeding hydration ratio",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Chapter 11 bankruptcy reorganization creditor",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Polynesian star compass wayfinding Pacific",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Kubernetes pod autoscaling HPA metrics",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Python list comprehension generator expression",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "French baguette baking steam injection",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "REST API rate limiting 429 status",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "coral reef symbiotic zooxanthellae bleaching",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Roman road construction via munita layers",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "estate planning irrevocable trust probate",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "glacier formation moraine till deposits",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "ancient Egyptian pyramid construction ramps",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "GraphQL schema federation gateway",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Japanese tea ceremony chanoyu philosophy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "trademark registration process USPTO",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Viking navigation sun stone polarization",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Redis cache eviction LRU policy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "wine terroir soil climate grape variety",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Terraform state management remote backend",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "butterfly metamorphosis hormonal cascade",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "securities regulation insider trading",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "olive oil cold press extraction grading",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "DNS CNAME record zone delegation",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    }
+  ]
+}

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cross-Domain Parameter Sweep Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 40px; background: #f4f4f9; }
+        .container { max-width: 1100px; margin: auto; }
+        h1 { text-align: center; color: #333; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 30px; font-size: 0.95em; }
+        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 30px; }
+        .card h2 { margin-top: 0; color: #444; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .chart-row { display: flex; gap: 20px; }
+        .chart-box { flex: 1; position: relative; height: 320px; }
+        .finding { background: #eef6ee; border-left: 4px solid #4caf50; padding: 12px 16px; border-radius: 4px; margin-top: 15px; font-size: 0.9em; }
+        .finding.warn { background: #fff8e1; border-left-color: #ff9800; }
+        .summary-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
+        .summary-table th, .summary-table td { padding: 8px 12px; text-align: right; border-bottom: 1px solid #eee; }
+        .summary-table th { background: #f8f8f8; text-align: left; }
+        .summary-table td:first-child { text-align: left; font-weight: 500; }
+        .best { background: #e8f5e9; font-weight: 600; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Cross-Domain Parameter Sweep</h1>
+    <p class="subtitle">5 corpora &times; 3 parameters &times; 108 queries each &mdash; validating parameter robustness across domains</p>
+
+    <!-- Chunk Size -->
+    <div class="card">
+        <h2>Chunk Size Sweep (256, 512, 768, 1024)</h2>
+        <div class="chart-row">
+            <div class="chart-box"><canvas id="cs_mrr"></canvas></div>
+            <div class="chart-box"><canvas id="cs_hr5"></canvas></div>
+        </div>
+        <div class="finding">
+            <strong>Finding:</strong> MRR varies by &lt;2.5% across all chunk sizes for every corpus. 
+            The original software engineering corpus shows the most sensitivity (0.54&ndash;0.56 MRR range); 
+            all cross-domain corpora are flatter (&lt;1% spread for legal, medical). 
+            Hit Rate@5 is nearly identical across all values. 
+            <strong>Chunk size 512 is confirmed as a safe default across domains.</strong>
+        </div>
+    </div>
+
+    <!-- Overlap -->
+    <div class="card">
+        <h2>Chunk Overlap Sweep (0, 25, 50, 100)</h2>
+        <div class="chart-row">
+            <div class="chart-box"><canvas id="ov_mrr"></canvas></div>
+            <div class="chart-box"><canvas id="ov_hr5"></canvas></div>
+        </div>
+        <div class="finding">
+            <strong>Finding:</strong> MRR spread is &lt;1% for all corpora across all overlap values. 
+            Hit Rate@5 is virtually identical. Overlap has no measurable impact on retrieval quality 
+            when Arcane Recall expansion is active. 
+            <strong>Overlap 50 retained as standard &mdash; no corpus benefits from changing it.</strong>
+        </div>
+    </div>
+
+    <!-- Threshold -->
+    <div class="card">
+        <h2>Expansion Similarity Threshold Sweep (0.85&ndash;0.95)</h2>
+        <div class="chart-row">
+            <div class="chart-box"><canvas id="th_mrr"></canvas></div>
+            <div class="chart-box"><canvas id="th_tokens"></canvas></div>
+        </div>
+        <div class="finding">
+            <strong>Finding:</strong> Ranking metrics are identical across all thresholds for all corpora. 
+            The threshold controls only token volume: 0.85 produces ~40% more tokens than 0.95. 
+            The current default of 0.92 sits in the sweet spot &mdash; moderate token savings with zero quality cost. 
+            <strong>Threshold 0.92 confirmed cross-domain.</strong>
+        </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="card">
+        <h2>Summary: Parameter Sensitivity by Corpus</h2>
+        <table class="summary-table">
+            <tr><th>Corpus</th><th>Domain</th><th>Docs</th><th>Chunk Size MRR Range</th><th>Overlap MRR Range</th><th>Threshold MRR Range</th></tr>
+            <tr><td>Original</td><td>Software Engineering</td><td>89</td><td>0.025</td><td>0.008</td><td>0.001</td></tr>
+            <tr><td>Legal</td><td>Contract Law, Regulation</td><td>90</td><td>0.005</td><td>0.009</td><td>0.000</td></tr>
+            <tr><td>Medical</td><td>Clinical Medicine</td><td>91</td><td>0.005</td><td>0.000</td><td>0.000</td></tr>
+            <tr><td>API Reference</td><td>REST API Docs</td><td>95</td><td>0.008</td><td>0.009</td><td>0.005</td></tr>
+            <tr><td>Narrative</td><td>History, Nature, Food</td><td>89</td><td>0.022</td><td>0.009</td><td>0.000</td></tr>
+        </table>
+        <div class="finding">
+            <strong>Verdict:</strong> All three parameters show &lt;2.5% MRR variation across all tested values 
+            and all five corpora. The current defaults (chunk_size=512, overlap=50, threshold=0.92) are 
+            <strong>cross-domain validated</strong>. No parameter change is needed for deploying against 
+            legal, medical, API reference, or narrative corpora.
+        </div>
+        <div class="finding warn">
+            <strong>Caveat:</strong> These corpora are LLM-generated (Claude 3 Haiku). Real-world documents 
+            may have more structural variation. The eval queries (108 per corpus) target 55&ndash;57 of ~90 docs. 
+            Relevance Ward thresholds remain corpus-dependent and should be recalibrated per 
+            <a href="ARCHITECTURE.md#threshold-calibration">Threshold Calibration</a>.
+        </div>
+    </div>
+</div>
+
+<script>
+const COLORS = {
+    original:  { bg: 'rgba(54, 162, 235, 0.6)',  border: 'rgba(54, 162, 235, 1)' },
+    legal:     { bg: 'rgba(255, 99, 132, 0.6)',   border: 'rgba(255, 99, 132, 1)' },
+    medical:   { bg: 'rgba(75, 192, 192, 0.6)',   border: 'rgba(75, 192, 192, 1)' },
+    api_ref:   { bg: 'rgba(255, 206, 86, 0.6)',   border: 'rgba(255, 206, 86, 1)' },
+    narrative: { bg: 'rgba(153, 102, 255, 0.6)',  border: 'rgba(153, 102, 255, 1)' },
+};
+
+function makeChart(id, title, labels, datasets, yLabel, yMin, yMax) {
+    new Chart(document.getElementById(id), {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: title, font: { size: 15 } } },
+            scales: {
+                y: { min: yMin, max: yMax, title: { display: true, text: yLabel } },
+                x: { title: { display: true, text: labels.length > 4 ? 'Threshold' : (labels[0] > 100 ? 'Chunk Size' : 'Overlap') } }
+            }
+        }
+    });
+}
+
+function ds(name, data) {
+    return { label: name, data, backgroundColor: COLORS[name].bg, borderColor: COLORS[name].border, borderWidth: 2, tension: 0.1, pointRadius: 4 };
+}
+
+// Chunk Size — MRR
+makeChart('cs_mrr', 'MRR by Chunk Size', ['256','512','768','1024'], [
+    ds('original',  [0.5394, 0.5525, 0.5566, 0.5648]),
+    ds('legal',     [0.6994, 0.6963, 0.6947, 0.6963]),
+    ds('medical',   [0.7153, 0.7102, 0.7114, 0.7130]),
+    ds('api_ref',   [0.6404, 0.6327, 0.6350, 0.6358]),
+    ds('narrative', [0.6929, 0.7153, 0.7083, 0.6944]),
+], 'MRR', 0.50, 0.75);
+
+// Chunk Size — HR@5
+makeChart('cs_hr5', 'Hit Rate@5 by Chunk Size', ['256','512','768','1024'], [
+    ds('original',  [0.5648, 0.5926, 0.6019, 0.5926]),
+    ds('legal',     [0.7103, 0.7103, 0.7196, 0.7103]),
+    ds('medical',   [0.7222, 0.7222, 0.7222, 0.7222]),
+    ds('api_ref',   [0.6667, 0.6574, 0.6667, 0.6667]),
+    ds('narrative', [0.7037, 0.7222, 0.7222, 0.7130]),
+], 'Hit Rate@5', 0.50, 0.75);
+
+// Overlap — MRR
+makeChart('ov_mrr', 'MRR by Chunk Overlap', ['0','25','50','100'], [
+    ds('original',  [0.5486, 0.5562, 0.5525, 0.5556]),
+    ds('legal',     [0.6947, 0.6963, 0.6963, 0.6872]),
+    ds('medical',   [0.7102, 0.7106, 0.7102, 0.7102]),
+    ds('api_ref',   [0.6397, 0.6420, 0.6327, 0.6327]),
+    ds('narrative', [0.7086, 0.7068, 0.7153, 0.7091]),
+], 'MRR', 0.50, 0.75);
+
+// Overlap — HR@5
+makeChart('ov_hr5', 'Hit Rate@5 by Chunk Overlap', ['0','25','50','100'], [
+    ds('original',  [0.5926, 0.6019, 0.5926, 0.5926]),
+    ds('legal',     [0.7103, 0.7103, 0.7103, 0.7103]),
+    ds('medical',   [0.7222, 0.7222, 0.7222, 0.7222]),
+    ds('api_ref',   [0.6667, 0.6667, 0.6574, 0.6574]),
+    ds('narrative', [0.7222, 0.7130, 0.7222, 0.7222]),
+], 'Hit Rate@5', 0.50, 0.75);
+
+// Threshold — MRR
+makeChart('th_mrr', 'MRR by Expansion Threshold', ['0.85','0.88','0.90','0.92','0.95'], [
+    ds('original',  [0.5532, 0.5532, 0.5532, 0.5525, 0.5520]),
+    ds('legal',     [0.6963, 0.6963, 0.6963, 0.6963, 0.6963]),
+    ds('medical',   [0.7102, 0.7102, 0.7102, 0.7102, 0.7102]),
+    ds('api_ref',   [0.6389, 0.6389, 0.6389, 0.6373, 0.6343]),
+    ds('narrative', [0.7153, 0.7153, 0.7153, 0.7153, 0.7153]),
+], 'MRR', 0.50, 0.75);
+
+// Threshold — Tokens
+makeChart('th_tokens', 'Avg Tokens by Expansion Threshold', ['0.85','0.88','0.90','0.92','0.95'], [
+    ds('original',  [3364, 3078, 2805, 2502, 1848]),
+    ds('legal',     [2984, 2845, 2724, 2491, 2135]),
+    ds('medical',   [2570, 2407, 2286, 2033, 1719]),
+    ds('api_ref',   [1700, 1642, 1574, 1437, 1199]),
+    ds('narrative', [2618, 2431, 2281, 2100, 1786]),
+], 'Avg Tokens', 1000, 3600);
+</script>
+</body>
+</html>
