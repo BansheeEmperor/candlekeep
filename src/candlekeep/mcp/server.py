@@ -23,6 +23,39 @@ _write_access = False
 # Concurrency controls (safe in both stdio and HTTP modes)
 _write_lock = threading.Lock()
 
+# Timeout for write lock acquisition in HTTP mode. If another write is
+# in progress (e.g. a long repopulate_database), fail fast instead of
+# queuing indefinitely. stdio mode uses blocking acquire (single agent).
+_WRITE_LOCK_TIMEOUT = 10.0  # seconds
+
+
+class _WriteLockTimeout(Exception):
+    """Raised when the write lock cannot be acquired within the timeout."""
+    pass
+
+
+class _write_guard:
+    """Context manager that acquires _write_lock with a timeout in HTTP mode."""
+
+    def __enter__(self):
+        if _settings.transport == "http":
+            acquired = _write_lock.acquire(timeout=_WRITE_LOCK_TIMEOUT)
+            if not acquired:
+                raise _WriteLockTimeout(
+                    "⚠ Server busy — another write operation (ingest, delete, "
+                    "or repopulate) is currently running and holds the write lock. "
+                    f"Could not acquire it within {_WRITE_LOCK_TIMEOUT:.0f}s. "
+                    "Retry after a short delay, or check if a repopulate_database "
+                    "call is in progress (these can take minutes on large corpora)."
+                )
+        else:
+            _write_lock.acquire()
+        return self
+
+    def __exit__(self, *exc):
+        _write_lock.release()
+        return False
+
 def _estimate_semaphore_value() -> int:
     """Estimate optimal precise-path concurrency from CPU core count.
 
@@ -531,7 +564,7 @@ Each document must have frontmatter and section headers for proper chunking."""
 
 
 # ============================================================
-# WRITE TOOLS (serialized with _write_lock)
+# WRITE TOOLS (serialized with _write_guard — timeout in HTTP mode)
 # ============================================================
 
 @mcp.tool
@@ -550,8 +583,8 @@ def ingest(path: str, ctx: Context = CurrentContext()) -> str:
     if msg := _rate_check(_write_limiter, ctx):
         return msg
 
-    with _write_lock:
-        try:
+    try:
+        with _write_guard():
             p = Path(path)
             if not p.exists():
                 return f"Error: Path not found: {path}"
@@ -575,10 +608,12 @@ def ingest(path: str, ctx: Context = CurrentContext()) -> str:
 
             count = get_store().add_documents(chunks, collection="default")
             return f"✓ Ingested {count} chunks from {path}"
-        except chromadb.errors.AuthorizationError as e:
-            return f"❌ Write permission denied: {e}"
-        except Exception as e:
-            return f"❌ Error: {e}"
+    except _WriteLockTimeout as e:
+        return str(e)
+    except chromadb.errors.AuthorizationError as e:
+        return f"❌ Write permission denied: {e}"
+    except Exception as e:
+        return f"❌ Error: {e}"
 
 @mcp.tool
 def delete_document(source: str, ctx: Context = CurrentContext()) -> str:
@@ -588,16 +623,18 @@ def delete_document(source: str, ctx: Context = CurrentContext()) -> str:
     if msg := _rate_check(_write_limiter, ctx):
         return msg
 
-    with _write_lock:
-        try:
+    try:
+        with _write_guard():
             count = get_store().delete_by_source(source)
             if count:
                 return f"✓ Deleted {count} chunks from {source}"
             return f"No chunks found for {source}"
-        except chromadb.errors.AuthorizationError as e:
-            return f"❌ Write permission denied: {e}"
-        except Exception as e:
-            return f"❌ Error: {e}"
+    except _WriteLockTimeout as e:
+        return str(e)
+    except chromadb.errors.AuthorizationError as e:
+        return f"❌ Write permission denied: {e}"
+    except Exception as e:
+        return f"❌ Error: {e}"
 
 @mcp.tool
 def repopulate_database(ctx: Context = CurrentContext()) -> str:
@@ -610,14 +647,16 @@ def repopulate_database(ctx: Context = CurrentContext()) -> str:
     if msg := _rate_check(_write_limiter, ctx):
         return msg
 
-    with _write_lock:
-        try:
+    try:
+        with _write_guard():
             get_store().clear()
             return "✓ Database cleared. Use ingest() to add documents."
-        except chromadb.errors.AuthorizationError as e:
-            return f"❌ Write permission denied: {e}"
-        except Exception as e:
-            return f"❌ Error: {e}"
+    except _WriteLockTimeout as e:
+        return str(e)
+    except chromadb.errors.AuthorizationError as e:
+        return f"❌ Write permission denied: {e}"
+    except Exception as e:
+        return f"❌ Error: {e}"
 
 
 # ASGI entrypoint for production deployments (uvicorn candlekeep.mcp.server:app)
