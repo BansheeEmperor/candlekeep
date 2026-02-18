@@ -1,0 +1,778 @@
+{
+  "corpus": "alternating",
+  "description": "Centurion Set remapped to alternating-section corpus",
+  "queries": [
+    {
+      "query": "What is semantic search?",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-semantic-search.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "vector database",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-vector-databases.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "REST API design",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-api-design.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "database normalization",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-database-design.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "HTTP/2 vs HTTP/3 performance",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-http2-http3.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "PostgreSQL 15 internals",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-postgresql-internals.md"
+      ],
+      "category": "lexical",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Apache Kafka 3.0 features",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-apache-kafka.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "TLS 1.3 handshake process",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-tls-ssl.md"
+      ],
+      "category": "lexical",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Kubernetes v1.24 removal of dockershim",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-kubernetes-architecture.md"
+      ],
+      "category": "lexical",
+      "difficulty": "hard"
+    },
+    {
+      "query": "gRPC over HTTP/2",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-grpc-protocol.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Redis 7.0 Multi-part AOF",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-redis-data-structures.md"
+      ],
+      "category": "lexical",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Elasticsearch 8.x security changes",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-elasticsearch-basics.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "OWASP Top 10 2021",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-owasp-top-10.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "TCP/IP layer 4",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-tcp-ip-fundamentals.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "IPv6 address format",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-cloud-networking.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "UUID v4 generation",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-data-serialization.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "0xEF hex code",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-cryptography-basics.md"
+      ],
+      "category": "lexical",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Python 3.10 match statement",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-functional-programming.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "ISO 27001 compliance",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-compliance-frameworks.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "SOC2 Type II audit",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-compliance-frameworks.md"
+      ],
+      "category": "lexical",
+      "difficulty": "hard"
+    },
+    {
+      "query": "JWT RS256 signing",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-authentication.md"
+      ],
+      "category": "lexical",
+      "difficulty": "hard"
+    },
+    {
+      "query": "OAuth 2.0 PKCE flow",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-authentication.md"
+      ],
+      "category": "lexical",
+      "difficulty": "hard"
+    },
+    {
+      "query": "RAID 6 configurations",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-database-backup-recovery.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "SQL-92 standards",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-sql-query-optimization.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "POSIX thread management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-linux-process-management.md"
+      ],
+      "category": "lexical",
+      "difficulty": "hard"
+    },
+    {
+      "query": "systemd unit files",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-systemd-services.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "EXT4 filesystem limits",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-linux-filesystem.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "YAML 1.2 syntax",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-configuration-management.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Docker Compose v2",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-container-fundamentals.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "AWS IAM policies",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-api-security.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "how to implement chaos engineering",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-chaos-engineering.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "benefits of event-driven architecture",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-event-driven-architecture.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "serverless vs containers",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-serverless-architecture.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "microservices data consistency",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-microservices.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "data lakehouse architecture",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-data-lake-architecture.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "zero trust security principles",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-zero-trust-architecture.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "continuous integration best practices",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-ci-cd-pipelines.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "database sharding strategies",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-database-sharding.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "load balancing algorithms",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-load-balancing.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "content delivery network optimization",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-cdn-architecture.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "service mesh advantages",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-service-mesh.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "infrastructure as code tools",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-infrastructure-as-code.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "monitoring vs observability",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-monitoring-observability.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "auto scaling in the cloud",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-auto-scaling.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "disaster recovery planning",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-disaster-recovery.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "api gateway patterns",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-api-gateway-patterns.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "cloud storage options",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-cloud-storage-options.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "data serialization formats",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-data-serialization.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "message queue patterns",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-event-driven-architecture.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "functional programming concepts",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-functional-programming.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "linux memory management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-linux-memory-management.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "dns resolution process",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-dns-resolution.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "connection pooling benefits",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-connection-pooling.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "cryptography basics",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-cryptography-basics.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "distributed transactions",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-concurrency-patterns.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "container security hardening",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-container-security.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "well architected framework",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-well-architected-framework.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "cost optimization strategies",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-cost-optimization.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "incident response steps",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-incident-response.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "multi-region deployment",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-multi-region-deployment.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "ssh configuration security",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-ssh-configuration.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "vpn tunneling protocols",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-vpn-tunneling.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "websocket protocol overview",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-websocket-protocol.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "helm charts fundamentals",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-helm-charts.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "linux process management",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-linux-process-management.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "network troubleshooting tools",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-network-troubleshooting.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "database replication types",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-database-replication.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "nosql design patterns",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-nosql-patterns.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "sql query optimization",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-sql-query-optimization.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "data pipeline design",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-data-pipeline-design.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "testing strategies for software",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-testing-strategies.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "dependency injection benefits",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-dependency-injection.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "behavioral design patterns",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-design-patterns-behavioral.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "creational design patterns",
+      "expected_sources": [
+        "tests/fixtures/cross_domain/alternating_docs/alt-design-patterns-creational.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "how to bake sourdough in a kubernetes cluster",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "best brand of hiking boots for Mars",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "quantum entanglement in photosynthesis",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "the secret to eternal life according to python docs",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "where did I leave my keys",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "recipe for disaster in distributed systems",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "blue whales vs sperm whales",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "history of the Roman Empire",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "how to play the banjo",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "why is the sky blue",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "symptoms of a cold",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "movie recommendations for tonight",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "stock market predictions for 2026",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "philosophy of mind and AI",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "meaning of life 42",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "how to win friends and influence people",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "yoga for beginners",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "best coffee shops in London",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "gardening tips for summer",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "how to repair a flat tire",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "history of the internet",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "space travel in the future",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "the art of war summary",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "meditation techniques",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "learning a new language fast",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "climate change impacts",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "renewable energy sources",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "healthy eating habits",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "travel tips for Japan",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "basics of photography",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    }
+  ]
+}
