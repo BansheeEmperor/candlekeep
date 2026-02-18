@@ -1,0 +1,74 @@
+{
+  "original_current": {
+    "corpus": "original",
+    "strategy": "current",
+    "chunks": 2859,
+    "queries": 108,
+    "mrr": 0.5524691358024691,
+    "ndcg_5": 0.5643925515959187,
+    "hit_rate_5": 0.5925925925925926,
+    "avg_latency_ms": 43.61436543641267,
+    "avg_tokens": 2502.8055555555557,
+    "elapsed_s": 4.7
+  },
+  "original_no_break": {
+    "corpus": "original",
+    "strategy": "no_break",
+    "chunks": 2859,
+    "queries": 108,
+    "mrr": 0.5550925925925926,
+    "ndcg_5": 0.5690221812255484,
+    "hit_rate_5": 0.6018518518518519,
+    "avg_latency_ms": 44.676575395796036,
+    "avg_tokens": 2722.935185185185,
+    "elapsed_s": 4.9
+  },
+  "original_skip_135": {
+    "corpus": "original",
+    "strategy": "skip_135",
+    "chunks": 2859,
+    "queries": 108,
+    "mrr": 0.5578703703703703,
+    "ndcg_5": 0.5690221812255484,
+    "hit_rate_5": 0.6018518518518519,
+    "avg_latency_ms": 45.425355434417725,
+    "avg_tokens": 3291.537037037037,
+    "elapsed_s": 4.9
+  },
+  "alternating_current": {
+    "corpus": "alternating",
+    "strategy": "current",
+    "chunks": 1184,
+    "queries": 104,
+    "mrr": 0.5903846153846154,
+    "ndcg_5": 0.6056950275934446,
+    "hit_rate_5": 0.6442307692307693,
+    "avg_latency_ms": 39.36722645392785,
+    "avg_tokens": 1424.201923076923,
+    "elapsed_s": 4.1
+  },
+  "alternating_no_break": {
+    "corpus": "alternating",
+    "strategy": "no_break",
+    "chunks": 1184,
+    "queries": 104,
+    "mrr": 0.5919871794871795,
+    "ndcg_5": 0.6056950275934446,
+    "hit_rate_5": 0.6442307692307693,
+    "avg_latency_ms": 40.818769198197586,
+    "avg_tokens": 1532.7403846153845,
+    "elapsed_s": 4.3
+  },
+  "alternating_skip_135": {
+    "corpus": "alternating",
+    "strategy": "skip_135",
+    "chunks": 1184,
+    "queries": 104,
+    "mrr": 0.594871794871795,
+    "ndcg_5": 0.6098361483441503,
+    "hit_rate_5": 0.6538461538461539,
+    "avg_latency_ms": 42.84060001373291,
+    "avg_tokens": 1831.8461538461538,
+    "elapsed_s": 4.5
+  }
+}

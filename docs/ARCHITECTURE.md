@@ -150,7 +150,7 @@ DOCUMENT SOURCE
 ```
 
 - [**Arcane Coalescence**](GLOSSARY.md#arcane-coalescence): If multiple results come from the same section of a document, they are merged into a single cohesive Divine Window, preventing redundant text and saving tokens.
-- [**The Scholar's Discernment**](GLOSSARY.md#the-scholars-discernment): Neighboring chunks are only included if they are semantically related to thy query (based on a similarity threshold) or contain continuation markers (like Markdown lists).
+- [**The Scholar's Discernment**](GLOSSARY.md#the-scholars-discernment): Neighboring chunks are only included if they are semantically related to thy query (based on a similarity threshold) or contain continuation markers (like Markdown lists). Expansion stops in a direction when a neighbor fails the similarity check — benchmarked against skip-ahead alternatives (Research Diary Entry 41) and confirmed as the correct tradeoff (< 1% quality gain vs 29-32% token increase from skip-ahead).
 - **Global Capping**: The library ensures exactly `n_results` merged sections are returned, backfilling from the candidate pool as needed.
 
 **Impact:**
@@ -182,12 +182,15 @@ These values represent the optimal configuration identified through the Centurio
 
 | Parameter | Current Value | Purpose |
 |-----------|---------------|---------|
-| `MIN_RELEVANCE_SCORE` | 0.75 | The Relevance Ward threshold (vector) |
+| `MIN_RELEVANCE_SCORE` | 0.75 | The Relevance Ward threshold (vector, non-lexical queries) |
+| `MIN_RELEVANCE_SCORE` (lexical) | 0.65 | The Relevance Ward threshold (vector, lexical queries — adaptive) |
 | `HYBRID_RELEVANCE_THRESHOLD` | 0.03 | The Relevance Ward threshold (hybrid RRF) |
 | `MIN_RERANKER_SCORE` | -10.0 | The Relevance Ward threshold (precise, post-reranking) |
 | `EXPANSION_SIMILARITY_THRESHOLD` | 0.92 | Scholar's Discernment (8% similarity gap) |
 | `CHUNK_SIZE` | 512 | Target character count per fragment |
 | `CHUNK_OVERLAP` | 50 | Character overlap between fragments |
+
+The vector Ward uses an adaptive threshold: queries detected as lexical (version numbers, acronyms, technical identifiers) use a relaxed threshold of 0.65 to avoid filtering legitimate results that score in the 0.67–0.75 range. Non-lexical queries retain the 0.75 threshold. Cross-domain validation (Diary Entry 40) confirmed zero regressions on non-lexical queries and zero new adversarial leaks across legal, medical, and narrative corpora. See [DESIGN.md §8.10](DESIGN.md#810-adaptive-relevance-ward) for the full analysis.
 
 Chunk size, overlap, and expansion parameter sweeps were conducted on the current corpus (~2,770 chunks from ~89 technical documentation files). Performance surfaces were flat across tested ranges (Diary Entries 21, 28, 29), indicating these defaults are robust for similar corpora. Cross-domain validation (Diary Entry 38) confirmed these results hold across legal, medical, API reference, and narrative corpora — MRR varies by less than 2.5% across all parameter values for all five corpus types. See [cross-domain sweep charts](cross_domain_sweep_chart.html) for visual comparison. For corpora with substantially different document length, structure, or domain, re-run parameter sweeps before deploying. See [Threshold Calibration](#threshold-calibration) for Relevance Ward recalibration guidance.
 
@@ -200,6 +203,7 @@ The Relevance Ward thresholds are corpus-dependent heuristics. When deploying ag
 3. Set `MIN_RELEVANCE_SCORE` at the midpoint of the gap between the lowest legitimate score and the highest adversarial score. The original calibration (Research Diary, Entry 16) found a clean statistical separation at 0.75.
 4. Set `HYBRID_RELEVANCE_THRESHOLD` based on the RRF score distribution of adversarial queries. The hybrid path's BM25 component naturally suppresses out-of-domain noise, so this threshold is typically much lower than the vector threshold.
 5. If the gap between adversarial and legitimate scores is narrow (< 0.05 for vector, < 0.01 for hybrid), consider increasing the corpus quality or adding domain-specific negative examples to the benchmark set.
+6. For the adaptive lexical threshold, check whether lexical queries on the new corpus produce scores in the gap between the relaxed (0.65) and standard (0.75) thresholds. If the new corpus has no lexical queries in this band, the adaptive behavior is a no-op. If it does, verify the heuristic detector fires correctly on the new domain's lexical patterns. See Research Diary Entry 40 for the cross-domain validation methodology.
 
 ## Scalability
 
