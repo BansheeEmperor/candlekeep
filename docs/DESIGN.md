@@ -236,6 +236,7 @@ See [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference) for threshold
 | Ingestion rate limiting | stdio: not applicable (single agent). HTTP: per-session sliding window (`CANDLEKEEP_RATE_LIMIT_WRITE`, default 5/60s) rejects excess calls before they reach the write lock. |
 | Search rate limiting | stdio: not applicable. HTTP: per-session sliding window (`CANDLEKEEP_RATE_LIMIT_SEARCH`, default 30/60s) prevents a single agent from monopolizing the cross-encoder queue. |
 | Per-document access control | Not applicable — all agents see the full corpus. Revisit if multi-tenant access is required. |
+| Cross-worker write race (multi-worker) | Accepted tradeoff. Each uvicorn worker has its own write lock; concurrent writes from different workers are not serialized. ChromaDB handles collection-level consistency internally. BM25 caches may be stale across workers after a write — vector search (primary path) is always fresh. See [ARCHITECTURE.md § Multi-Worker Deployment](ARCHITECTURE.md#multi-worker-deployment). |
 
 ## 8. Benchmark Results
 
@@ -394,12 +395,47 @@ The precise path cross-encoder ran CPU-only PyTorch inference, taking ~3s per qu
 
 **MLX Evaluation:** MLX native inference was benchmarked against MPS for the bi-encoder (bge-small). MLX is 1.8x faster for embeddings (1.2ms vs 2.1ms per query), but the absolute gain is ~4ms on a 21ms operation. The cross-encoder (the actual bottleneck) has no MLX equivalent. ROI does not justify the integration cost.
 
+### 8.9 Metric Tradeoffs: Hit Rate vs MRR
+
+The advanced pipeline intentionally optimizes for Hit Rate@1 (right answer first) and Precision (fraction of results that are relevant) over MRR (ranking quality across the top-5 list). This is the correct optimization target for an AI agent that reads the top result and acts on it.
+
+Benchmarking the full pipeline against a basic vector search baseline (Entry 39) shows the tradeoff across all three paths:
+
+| Path | Hit Rate@1 Δ | Precision@5 Δ | MRR Δ | Latency |
+|------|:------------:|:-------------:|:-----:|--------:|
+| simple | +3.7% | +0.9% | -7.4% | 47ms |
+| hybrid | +29.6% ✓ | +26.7% ✓ | -11.1% | 63ms |
+| precise | +27.8% ✓ | +3.4% | -6.3% | 897ms |
+
+Two mechanisms cause the MRR drop:
+
+1. **Arcane Recall expansion** reshuffles rankings. A document at position 1 in basic search may shift to position 2 after expansion merges windows from multiple sources. MRR penalizes this heavily (1.0 → 0.5), but the agent receives better context.
+
+2. **The Relevance Ward** filters borderline results entirely. Queries with scores in the 0.67–0.75 range return zero results instead of low-confidence matches. This is addressed by the adaptive Ward (§8.10).
+
+*Benchmark: `scripts/benchmark_advanced_vs_basic.py`. Data: Research Diary Entries 39–40.*
+
+### 8.10 Adaptive Relevance Ward
+
+The Relevance Ward at 0.75 filters 5 legitimate lexical queries on the technical corpus (scores 0.67–0.70). These are specific queries like "OWASP Top 10 2021", "SQL-92 standards", and "YAML 1.2 syntax" where vector similarity scores fall just below the threshold.
+
+**Solution:** Detect lexical queries via heuristic (version numbers, acronyms, technical identifiers) and relax the threshold from 0.75 → 0.65 for those queries only.
+
+**Results on the technical corpus:**
+- Lexical queries (n=28): MRR +16.3%, Hit Rate@5 +33.3%
+- Non-lexical queries (n=80): zero change
+
+**Cross-domain validation** (legal, medical, narrative corpora) confirmed the adaptive approach produces zero regressions on non-lexical queries and zero new adversarial leaks across all domains. A blanket threshold reduction to 0.65 causes 1 adversarial leak on legal and 1 precision regression on narrative — the adaptive approach avoids both.
+
+*Data: Research Diary Entry 40. Threshold calibration guidance: [ARCHITECTURE.md](ARCHITECTURE.md#tuned-parameters-reference).*
+
 ## 9. Limitations
 
 - **Single embedding model per collection** — Switching models requires full re-ingestion
 - **Cross-encoder latency** — Precise path is CPU-bound, capped by host hardware. On CPU, the cross-encoder runs in float64 (torch ≥2.10 NaN workaround), adding ~2.5x latency vs float32. MPS/CUDA paths are unaffected.
 - **No incremental ingestion** — Re-ingesting a file replaces all its chunks (by design, prevents duplicates)
 - **Agent-dependent decomposition** — Multi-doc query quality depends on the agent splitting queries correctly
+- **Per-worker state in multi-worker mode** — Write locks, BM25 caches, and rate limiters are per-process. Concurrent writes from different workers are not serialized. Vector search is always consistent (ChromaDB handles this), but BM25 caches may be stale across workers after a write. See [ARCHITECTURE.md § Multi-Worker Deployment](ARCHITECTURE.md#multi-worker-deployment) for the full tradeoff analysis.
 
 ## 10. Future Work
 

@@ -224,19 +224,23 @@ The `precise` path latency remains stable regardless of corpus size, as the cros
 
 ### Concurrency Model
 
-Candlekeep supports two transport modes. HTTP mode is recommended even for single-agent local use:
+Candlekeep supports two transport modes with three deployment configurations:
 
 - Cold-start: the server loads models once (~6s), then every agent gets immediate access (~230ms first query). In stdio mode, each agent pays the full ~6s cold-start.
-- Memory: stdio with N agents loads N copies of the embedding model (~400MB) and cross-encoder (~80MB). HTTP mode loads one copy.
-- BM25 cache: each stdio process rebuilds the BM25 index from scratch on the first hybrid query. HTTP mode builds it once, shared across agents.
-- ChromaDB connections: N stdio processes = N persistent connections. HTTP mode = 1.
-
-**HTTP mode (recommended):** A single Candlekeep process serves one or more agents via `mcp.run(transport="http")`. The operator starts the server independently; agents connect over HTTP. Models, caches, and the ChromaDB connection are shared across all agents.
+- Memory: stdio with N agents loads N copies of the embedding model (~400MB) and cross-encoder (~80MB). HTTP mode loads one copy per worker.
+- BM25 cache: each stdio process rebuilds the BM25 index from scratch on the first hybrid query. HTTP mode builds it once per worker, shared across agents on that worker.
+- ChromaDB connections: N stdio processes = N persistent connections. HTTP mode = 1 per worker.
 
 **stdio mode:** Each AI agent spawns its own MCP server process via `mcp.run()`. One agent per process. All concurrency guards are uncontended. Each process loads its own models and pays cold-start latency independently.
 
+**HTTP single-worker mode:** A single Candlekeep process serves one or more agents via `mcp.run(transport="http")`. The operator starts the server independently; agents connect over HTTP. Models, caches, and the ChromaDB connection are shared across all agents. Suitable for up to ~10 concurrent agents.
+
+**HTTP multi-worker mode (recommended):** Multiple Candlekeep workers behind uvicorn serve agents concurrently. Each worker is an independent process with its own models, caches, and concurrency controls. The OS distributes incoming connections across workers. Suitable for 10–100+ concurrent agents. See [Multi-Worker Deployment](#multi-worker-deployment).
+
+Even for small deployments (2–5 agents), HTTP mode via uvicorn is recommended over stdio. The benefits — shared model memory, no per-agent cold-start, connection multiplexing — apply at any scale. Use `--workers 1` for small pools and increase as needed.
+
 ```
-stdio mode:                          HTTP mode:
+stdio mode:                          HTTP mode (single worker):
 ┌─────────┐   ┌──────────────┐       ┌─────────┐
 │ Agent A │──▶│ Candlekeep A │       │ Agent A │──┐
 └─────────┘   └──────────────┘       └─────────┘  │
@@ -247,6 +251,22 @@ stdio mode:                          HTTP mode:
 │ Agent C │──▶│ Candlekeep C │       │ Agent C │──┘
 └─────────┘   └──────────────┘       └─────────┘
   3 processes, 3× model memory         1 process, 1× model memory
+
+
+HTTP mode (multi-worker, recommended):
+┌─────────┐
+│ Agent A │──┐
+└─────────┘  │
+┌─────────┐  │  ┌─────────┐  ┌──────────────┐
+│ Agent B │──┼─▶│ uvicorn │─▶│ Worker 1     │──▶ ChromaDB
+└─────────┘  │  │ (load   │  ├──────────────┤
+┌─────────┐  │  │ balance)│  │ Worker 2     │──▶ ChromaDB
+│ Agent C │──┤  └─────────┘  ├──────────────┤
+└─────────┘  │               │ Worker 3     │──▶ ChromaDB
+┌─────────┐  │               ├──────────────┤
+│ Agent D │──┘               │ Worker 4     │──▶ ChromaDB
+└─────────┘                  └──────────────┘
+  N agents, W× model memory, N/W agents per event loop
 ```
 
 **Concurrency controls in HTTP mode:**
@@ -297,6 +317,46 @@ Throughput peaks at N=3 (10.1 qps). At N=5, CPU-bound stages fight for the GIL a
 **Automatic calibration (HTTP mode):** At startup, after models are warm, the server fires concurrent cross-encoder calls at N=1 up to N=cores/2 and picks the N with the highest throughput. Stops early when throughput drops. On a 10-core machine (range N=1..5) this takes ~1.4s. The calibration result is logged (e.g., `✓ Precise-path concurrency: 3 (27.3 qps)`).
 
 **Heuristic fallback (stdio mode):** stdio is one-agent-per-process, so the semaphore is typically uncontended. The value is set from CPU core count (`cores // 3`) to avoid any boot-time cost. `scripts/benchmark_concurrent.py` can still be used for manual validation.
+
+### Multi-Worker Deployment
+
+For deployments serving more than ~10 concurrent agents, run Candlekeep behind uvicorn with multiple workers. This eliminates the single-event-loop bottleneck that causes latency degradation at scale.
+
+**Quick start:**
+```bash
+CANDLEKEEP_TRANSPORT=http \
+uvicorn candlekeep.mcp.server:app \
+  --host 127.0.0.1 --port 8111 \
+  --workers 4
+```
+
+The ASGI entrypoint (`candlekeep.mcp.server:app`) uses `stateless_http=True`, which makes each MCP request independent — no per-session state on the server. This is required for multi-worker mode, where consecutive requests from the same agent may land on different workers.
+
+**Benchmark results (25 concurrent agents, 82 docs / 2,630 chunks, CPU):**
+
+| Config | p50 | p95 | p99 | Throughput | Improvement |
+|--------|----:|----:|----:|:----------:|:-----------:|
+| 1 worker | 705ms | 1502ms | 2041ms | 10.6 qps | baseline |
+| 4 workers | **7ms** | **123ms** | **211ms** | **15.7 qps** | **100× p50** |
+
+At 50 concurrent agents, 4 workers maintain p50=6ms and p95=104ms at 30.5 qps — the system is not saturated. The bottleneck in single-worker mode is the Python asyncio event loop serializing concurrent SSE streams, not the RAG pipeline or ChromaDB.
+
+*Benchmark: `scripts/benchmark_scale.py --agents 25 --duration 300`. Data: Research Diary Entry 42.*
+
+**Choosing worker count:** Start with `--workers 4`. Each worker loads its own embedding model (~400MB) and cross-encoder (~80MB), so memory scales linearly: 4 workers ≈ 2GB model memory. Increase workers if p95 latency exceeds your target under peak load. Decrease if memory is constrained.
+
+**Per-process state tradeoffs:**
+
+Each worker is an independent OS process. The following in-process state is NOT shared across workers:
+
+| State | Impact | Severity |
+|-------|--------|----------|
+| `_write_lock` | Two workers can write simultaneously. ChromaDB handles its own collection-level consistency, so data corruption is unlikely. Concurrent writes to the same source file could produce duplicate chunks until the next re-ingestion. | Low — agents write infrequently. |
+| `_reranker_semaphore` | Each worker independently caps cross-encoder concurrency. With W workers × N permits each, total concurrent cross-encoder calls = W×N, which may exceed the hardware-optimal level. | Low — GIL contention within each worker naturally throttles this. |
+| BM25 cache | After a write on worker A, workers B/C/D have stale BM25 caches until their next cache rebuild (triggered by the first hybrid query after the cache is invalidated, or by a write on that worker). Vector search (the primary retrieval path) always reflects the latest ChromaDB state. | Low — BM25 is a supplementary signal. Staleness is bounded. |
+| `_RateLimiter` | Per-session rate limits are tracked per-worker. An agent whose requests are distributed across workers gets W× the intended rate limit. | Low — rate limits are a fairness mechanism, not a security boundary. |
+
+For read-heavy workloads (the typical agent pattern), these tradeoffs are acceptable. Writes are infrequent, and the vector search path is always consistent. If write serialization across workers becomes necessary, replace `threading.Lock` with `fcntl.flock` on a shared lockfile — this requires no external dependencies.
 
 ### Security Boundary
 

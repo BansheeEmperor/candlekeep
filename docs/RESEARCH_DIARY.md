@@ -2065,6 +2065,81 @@ The directional break is the correct design. Neither removing the break nor exte
 
 ---
 
+## Entry 42: Organization-Scale Concurrent Agent Benchmark — 2026-02-18
+
+### Background
+
+The existing concurrent benchmark (`scripts/benchmark_concurrent.py`) tested only the precise path in isolation. No benchmark simulated realistic mixed-path agent traffic at organization scale (10–50+ concurrent agents). Without this data, the scaling ceiling of a single Candlekeep process was unknown, and the case for multi-worker deployment was speculative.
+
+### Methodology
+
+Built `scripts/benchmark_scale.py` — simulates N agents, each issuing bursts of 3 search calls (simple 50%, hybrid 40%, precise 10% — matching real agent distribution from Entry 37) with 2–8 second idle periods between bursts. Agents are staggered at startup. Measures per-path latency (p50/p95/p99), throughput, error rate, and 5-second timeline buckets.
+
+Tested against the HTTP-mode Candlekeep server with the full 82-doc corpus (~2,630 chunks). Rate limiting disabled for the benchmark.
+
+### Phase 1: Single-Worker Scaling (built-in server)
+
+5-minute runs per agent count.
+
+| Agents | p50 | p95 | p99 | QPS | Errors |
+|:------:|----:|----:|----:|----:|:------:|
+| 5 | 127ms | 344ms | 453ms | 2.8 | 0 |
+| 10 | 167ms | 452ms | 676ms | 5.4 | 0 |
+| 25 | 806ms | 1,520ms | 2,384ms | 9.7 | 0 |
+| 50 | 3,069ms | 4,742ms | 5,586ms | 10.2 | 0 |
+
+Degradation ratio (p95@50 / p50@5): 37.3×. All three search paths degrade uniformly — simple (3,075ms), hybrid (3,009ms), and precise (3,294ms) show nearly identical p50 at 50 agents. The cross-encoder is NOT the bottleneck. The bottleneck is the single Python asyncio event loop serializing concurrent SSE streams.
+
+### Phase 2: Connection Reuse Experiment
+
+Tested whether creating a new MCP client per call (new TCP connection) vs reusing a persistent client per agent explains the degradation. 25 agents, 5-minute runs.
+
+| Mode | p50 | p95 | p99 | QPS |
+|------|----:|----:|----:|----:|
+| New conn/call | 768ms | 1,581ms | 1,998ms | 9.7 |
+| Persistent | 699ms | 1,586ms | 1,933ms | 10.3 |
+
+Connection reuse shaves ~10% off p50 but has zero impact on p95/p99. The tail latency is unchanged. Connection setup overhead is not the primary bottleneck.
+
+### Phase 3: Multi-Worker Deployment (uvicorn)
+
+The ASGI entrypoint (`candlekeep.mcp.server:app`) uses `stateless_http=True` to enable multi-worker mode. Each request is independent — no per-session state on the server.
+
+Tested with `uvicorn --workers W` at 25 and 50 agents, 60-second runs, persistent connections.
+
+| Workers | Agents | p50 | p95 | p99 | QPS | Errors |
+|:-------:|:------:|----:|----:|----:|----:|:------:|
+| 1 | 25 | 705ms | 1,502ms | 2,041ms | 10.6 | 0 |
+| 4 | 25 | **7ms** | **123ms** | **211ms** | **15.7** | 0 |
+| 4 | 50 | **6ms** | **104ms** | **215ms** | **30.5** | 1 |
+
+4 workers reduced p50 by 100× (705ms → 7ms) and p95 by 12× (1,502ms → 123ms). At 50 agents, the system is not saturated — latency is identical to 25 agents, and throughput doubles linearly.
+
+### Analysis
+
+1. The single-worker bottleneck is the Python asyncio event loop, not the RAG pipeline. All search paths degrade uniformly because they all compete for the same event loop to dispatch HTTP responses. The cross-encoder, Arcane Recall, and ChromaDB are not the limiting factors at this scale.
+
+2. Multi-worker deployment eliminates the bottleneck by giving each worker its own event loop. uvicorn's pre-fork model distributes incoming connections across workers at the OS level.
+
+3. Connection reuse provides a marginal improvement (~10% p50) and should be recommended but is not sufficient on its own.
+
+4. Per-process state (write lock, BM25 cache, reranker semaphore, rate limiter) is not shared across workers. For read-heavy workloads this is acceptable — vector search is always consistent via ChromaDB, and BM25 is a supplementary signal. Write serialization across workers can be added via `fcntl.flock` if needed.
+
+### Conclusion
+
+Single-worker HTTP mode is suitable for up to ~10 concurrent agents. Beyond that, `uvicorn --workers N` is the recommended deployment. Even for small agent pools (2–5 agents), uvicorn is recommended over the built-in server for its superior connection handling. The `stateless_http=True` flag on the ASGI app is required for multi-worker compatibility.
+
+### Files Created
+- `scripts/benchmark_scale.py` — Organization-scale benchmark with `--agents`, `--reuse-connections`, `--with-writes` flags
+- `tests/results/scale_benchmark.json` — Single-worker scaling data (5/10/25/50 agents)
+- `tests/results/scale_persistent.json` — Connection reuse comparison
+- `tests/results/scale_uvicorn_w1.json` — uvicorn 1-worker baseline
+- `tests/results/scale_uvicorn_w4.json` — uvicorn 4-worker results (25 agents)
+- `tests/results/scale_uvicorn_w4_50.json` — uvicorn 4-worker results (50 agents)
+
+
+---
+
 # Appendix A: Archived Research Plans
 
 *The following plans were executed during the research phase. Their outcomes are recorded in the diary entries above and in [DESIGN.md](DESIGN.md). Preserved here for historical reference.*
