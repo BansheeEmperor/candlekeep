@@ -157,6 +157,7 @@ DOCUMENT SOURCE
 - Content match: significantly improved over raw search
 - Token efficiency: reduced context size vs fixed expansion
 - Latency overhead: minimal (due to batched similarity checks)
+- **Scaling note:** Expansion computes cosine similarity for each neighbor of each result. At the default `n_results=5`, this is ~20 similarity checks (5 results × ±2 neighbors). At `n_results=20`, it's ~80 checks. The server logs a warning when `n_results > 10`.
 
 ### 4. [Divine Insight](GLOSSARY.md#cross-encoder-reranking) (cross-encoder reranking) — precise path only
 Cross-encoder (`ms-marco-MiniLM-L-6-v2`) rescores all candidates by examining query-document pairs individually. Higher precision but trades content match and adds latency.

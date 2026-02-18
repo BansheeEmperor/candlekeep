@@ -184,6 +184,15 @@ def search_with_arcane_recall(
     expansion_chunks: int = 2
 ) -> List[SearchResult]:
     """Search with parent document expansion."""
+    if n_results > 10:
+        import sys
+        print(
+            f"[candlekeep] ⚠ n_results={n_results} — Arcane Recall computes "
+            f"cosine similarity for each neighbor of each result. At high "
+            f"n_results, expansion latency scales linearly. See "
+            f"ARCHITECTURE.md § Arcane Recall for details.",
+            file=sys.stderr,
+        )
     # Pass query to expand_results for similarity-weighted pruning
     results = db.search(query, n_results=n_results * 2)
     return expand_results(db, results, n_results, expansion_chunks, query=query)
