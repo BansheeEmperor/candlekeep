@@ -738,7 +738,9 @@ def repopulate_database(ctx: Context = CurrentContext()) -> str:
 
 
 # ASGI entrypoint for production deployments (uvicorn candlekeep.mcp.server:app)
-app = mcp.http_app()
+# stateless_http=True enables multi-worker deployment (uvicorn --workers N)
+# by removing per-session state. Each request is independent.
+app = mcp.http_app(stateless_http=True)
 
 
 def main():
