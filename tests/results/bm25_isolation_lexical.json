@@ -1,0 +1,838 @@
+{
+  "config": {
+    "subset": "lexical only",
+    "n_queries": 30
+  },
+  "results": [
+    {
+      "label": "simple (full)",
+      "mrr": 0.4694444444444444,
+      "mrr_ci": [
+        0.30277777777777776,
+        0.6417361111111111
+      ],
+      "ndcg_5": 0.48538687705482836,
+      "hit_rate_5": 0.5333333333333333,
+      "precision_5": 0.38944444444444454,
+      "avg_latency_ms": 450.0811179478963,
+      "n_queries": 30,
+      "per_query": [
+        {
+          "query": "HTTP/2 vs HTTP/3 performance",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/http2-http3.md"
+          ]
+        },
+        {
+          "query": "PostgreSQL 15 internals",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/postgresql-internals.md"
+          ]
+        },
+        {
+          "query": "Apache Kafka 3.0 features",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/apache-kafka.md"
+          ]
+        },
+        {
+          "query": "TLS 1.3 handshake process",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/tls-ssl.md",
+            "tests/fixtures/scale_docs/websocket-protocol.md",
+            "tests/fixtures/scale_docs/service-mesh.md"
+          ]
+        },
+        {
+          "query": "Kubernetes v1.24 removal of dockershim",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/kubernetes-architecture.md",
+            "tests/fixtures/scale_docs/kubernetes-architecture.md"
+          ]
+        },
+        {
+          "query": "gRPC over HTTP/2",
+          "mrr": 0.5,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/http2-http3.md",
+            "tests/fixtures/scale_docs/grpc-protocol.md",
+            "tests/fixtures/scale_docs/grpc-protocol.md"
+          ]
+        },
+        {
+          "query": "Redis 7.0 Multi-part AOF",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/redis-data-structures.md",
+            "tests/fixtures/scale_docs/container-security.md",
+            "tests/fixtures/scale_docs/helm-charts.md"
+          ]
+        },
+        {
+          "query": "Elasticsearch 8.x security changes",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/scale_docs/security-audit-checklist.md",
+            "tests/fixtures/sample_docs/authentication.md"
+          ]
+        },
+        {
+          "query": "OWASP Top 10 2021",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/owasp-top-10.md"
+          ]
+        },
+        {
+          "query": "AVX-512 vector instructions",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/vector-databases.md",
+            "tests/fixtures/scale_docs/design-patterns-behavioral.md"
+          ]
+        },
+        {
+          "query": "TCP/IP layer 4",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/tcp-ip-fundamentals.md"
+          ]
+        },
+        {
+          "query": "IPv6 address format",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "UUID v4 generation",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/container-security.md",
+            "tests/fixtures/scale_docs/data-pipeline-design.md"
+          ]
+        },
+        {
+          "query": "0xEF hex code",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/error-handling-patterns.md"
+          ]
+        },
+        {
+          "query": "Python 3.10 match statement",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/functional-programming.md"
+          ]
+        },
+        {
+          "query": "ISO 27001 compliance",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/compliance-frameworks.md"
+          ]
+        },
+        {
+          "query": "SOC2 Type II audit",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/security-audit-checklist.md"
+          ]
+        },
+        {
+          "query": "BGE-small-en-v1.5 model",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/data-warehouse-modeling.md",
+            "tests/fixtures/scale_docs/container-security.md"
+          ]
+        },
+        {
+          "query": "ChromaDB v0.4.0",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/vector-databases.md",
+            "tests/fixtures/scale_docs/container-security.md",
+            "tests/fixtures/scale_docs/container-security.md"
+          ]
+        },
+        {
+          "query": "MS-MARCO MiniLM L-6-v2",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "JWT RS256 signing",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/scale_docs/api-security.md"
+          ]
+        },
+        {
+          "query": "OAuth 2.0 PKCE flow",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/scale_docs/api-security.md"
+          ]
+        },
+        {
+          "query": "RAID 6 configurations",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-filesystem.md",
+            "tests/fixtures/scale_docs/cloud-design-patterns.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md"
+          ]
+        },
+        {
+          "query": "SQL-92 standards",
+          "mrr": 0.3333333333333333,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/database-design.md",
+            "tests/fixtures/scale_docs/monitoring-observability.md",
+            "tests/fixtures/scale_docs/sql-query-optimization.md"
+          ]
+        },
+        {
+          "query": "POSIX thread management",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-memory-management.md",
+            "tests/fixtures/scale_docs/concurrency-patterns.md",
+            "tests/fixtures/scale_docs/concurrency-patterns.md"
+          ]
+        },
+        {
+          "query": "systemd unit files",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/systemd-services.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md"
+          ]
+        },
+        {
+          "query": "EXT4 filesystem limits",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-filesystem.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md"
+          ]
+        },
+        {
+          "query": "YAML 1.2 syntax",
+          "mrr": 0.25,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/zero-trust-architecture.md",
+            "tests/fixtures/scale_docs/helm-charts.md",
+            "tests/fixtures/scale_docs/api-gateway-patterns.md"
+          ]
+        },
+        {
+          "query": "Docker Compose v2",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/container-fundamentals.md",
+            "tests/fixtures/scale_docs/container-security.md",
+            "tests/fixtures/scale_docs/container-fundamentals.md"
+          ]
+        },
+        {
+          "query": "AWS IAM policies",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/well-architected-framework.md",
+            "tests/fixtures/scale_docs/serverless-architecture.md",
+            "tests/fixtures/scale_docs/well-architected-framework.md"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "bm25-only",
+      "mrr": 0.49,
+      "mrr_ci": [
+        0.31666666666666665,
+        0.6666666666666666
+      ],
+      "ndcg_5": 0.502053543721495,
+      "hit_rate_5": 0.5333333333333333,
+      "precision_5": 0.38333333333333336,
+      "avg_latency_ms": 37.09709644317627,
+      "n_queries": 30,
+      "per_query": [
+        {
+          "query": "HTTP/2 vs HTTP/3 performance",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/http2-http3.md",
+            "tests/fixtures/scale_docs/http2-http3.md"
+          ]
+        },
+        {
+          "query": "PostgreSQL 15 internals",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/postgresql-internals.md"
+          ]
+        },
+        {
+          "query": "Apache Kafka 3.0 features",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/apache-kafka.md",
+            "tests/fixtures/scale_docs/apache-kafka.md"
+          ]
+        },
+        {
+          "query": "TLS 1.3 handshake process",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/tls-ssl.md"
+          ]
+        },
+        {
+          "query": "Kubernetes v1.24 removal of dockershim",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/kubernetes-architecture.md",
+            "tests/fixtures/scale_docs/kubernetes-architecture.md",
+            "tests/fixtures/scale_docs/kubernetes-architecture.md"
+          ]
+        },
+        {
+          "query": "gRPC over HTTP/2",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/grpc-protocol.md",
+            "tests/fixtures/scale_docs/http2-http3.md",
+            "tests/fixtures/sample_docs/microservices.md"
+          ]
+        },
+        {
+          "query": "Redis 7.0 Multi-part AOF",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/redis-data-structures.md",
+            "tests/fixtures/scale_docs/redis-data-structures.md",
+            "tests/fixtures/scale_docs/redis-data-structures.md"
+          ]
+        },
+        {
+          "query": "Elasticsearch 8.x security changes",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/elasticsearch-basics.md",
+            "tests/fixtures/scale_docs/elasticsearch-basics.md",
+            "tests/fixtures/scale_docs/elasticsearch-basics.md"
+          ]
+        },
+        {
+          "query": "OWASP Top 10 2021",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/owasp-top-10.md",
+            "tests/fixtures/scale_docs/owasp-top-10.md",
+            "tests/fixtures/sample_docs/semantic-search.md"
+          ]
+        },
+        {
+          "query": "AVX-512 vector instructions",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/vector-databases.md",
+            "tests/fixtures/sample_docs/semantic-search.md",
+            "tests/fixtures/scale_docs/incident-response.md"
+          ]
+        },
+        {
+          "query": "TCP/IP layer 4",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/tcp-ip-fundamentals.md",
+            "tests/fixtures/scale_docs/load-balancing.md",
+            "tests/fixtures/scale_docs/load-balancing.md"
+          ]
+        },
+        {
+          "query": "IPv6 address format",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/dns-resolution.md",
+            "tests/fixtures/scale_docs/data-serialization.md",
+            "tests/fixtures/scale_docs/tcp-ip-fundamentals.md"
+          ]
+        },
+        {
+          "query": "UUID v4 generation",
+          "mrr": 0.2,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-filesystem.md",
+            "tests/fixtures/sample_docs/document-processing.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md"
+          ]
+        },
+        {
+          "query": "0xEF hex code",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/scale_docs/shell-scripting.md",
+            "tests/fixtures/scale_docs/ci-cd-pipelines.md"
+          ]
+        },
+        {
+          "query": "Python 3.10 match statement",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/owasp-top-10.md",
+            "tests/fixtures/scale_docs/elasticsearch-basics.md",
+            "tests/fixtures/scale_docs/connection-pooling.md"
+          ]
+        },
+        {
+          "query": "ISO 27001 compliance",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/compliance-frameworks.md",
+            "tests/fixtures/scale_docs/compliance-frameworks.md"
+          ]
+        },
+        {
+          "query": "SOC2 Type II audit",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/security-audit-checklist.md",
+            "tests/fixtures/scale_docs/security-audit-checklist.md",
+            "tests/fixtures/scale_docs/security-audit-checklist.md"
+          ]
+        },
+        {
+          "query": "BGE-small-en-v1.5 model",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/event-driven-architecture.md",
+            "tests/fixtures/scale_docs/tcp-ip-fundamentals.md",
+            "tests/fixtures/scale_docs/concurrency-patterns.md"
+          ]
+        },
+        {
+          "query": "ChromaDB v0.4.0",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/vector-databases.md"
+          ]
+        },
+        {
+          "query": "MS-MARCO MiniLM L-6-v2",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "JWT RS256 signing",
+          "mrr": 0.5,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-gateway-patterns.md",
+            "tests/fixtures/sample_docs/authentication.md",
+            "tests/fixtures/scale_docs/api-security.md"
+          ]
+        },
+        {
+          "query": "OAuth 2.0 PKCE flow",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/scale_docs/api-gateway-patterns.md"
+          ]
+        },
+        {
+          "query": "RAID 6 configurations",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/websocket-protocol.md",
+            "tests/fixtures/scale_docs/disaster-recovery.md",
+            "tests/fixtures/scale_docs/cloud-networking.md"
+          ]
+        },
+        {
+          "query": "SQL-92 standards",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/compliance-frameworks.md",
+            "tests/fixtures/scale_docs/security-audit-checklist.md",
+            "tests/fixtures/scale_docs/compliance-frameworks.md"
+          ]
+        },
+        {
+          "query": "POSIX thread management",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/concurrency-patterns.md",
+            "tests/fixtures/scale_docs/concurrency-patterns.md",
+            "tests/fixtures/scale_docs/concurrency-patterns.md"
+          ]
+        },
+        {
+          "query": "systemd unit files",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/systemd-services.md"
+          ]
+        },
+        {
+          "query": "EXT4 filesystem limits",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-filesystem.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md"
+          ]
+        },
+        {
+          "query": "YAML 1.2 syntax",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/functional-programming.md",
+            "tests/fixtures/scale_docs/tls-ssl.md",
+            "tests/fixtures/scale_docs/linux-logging.md"
+          ]
+        },
+        {
+          "query": "Docker Compose v2",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/container-fundamentals.md",
+            "tests/fixtures/sample_docs/api-design.md",
+            "tests/fixtures/scale_docs/service-mesh.md"
+          ]
+        },
+        {
+          "query": "AWS IAM policies",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/secrets-management.md",
+            "tests/fixtures/scale_docs/secrets-management.md",
+            "tests/fixtures/scale_docs/well-architected-framework.md"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "hybrid (full)",
+      "mrr": 0.36666666666666664,
+      "mrr_ci": [
+        0.2,
+        0.5333333333333333
+      ],
+      "ndcg_5": 0.36666666666666664,
+      "hit_rate_5": 0.36666666666666664,
+      "precision_5": 0.3555555555555555,
+      "avg_latency_ms": 725.016721089681,
+      "n_queries": 30,
+      "per_query": [
+        {
+          "query": "HTTP/2 vs HTTP/3 performance",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/http2-http3.md"
+          ]
+        },
+        {
+          "query": "PostgreSQL 15 internals",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/postgresql-internals.md"
+          ]
+        },
+        {
+          "query": "Apache Kafka 3.0 features",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/apache-kafka.md"
+          ]
+        },
+        {
+          "query": "TLS 1.3 handshake process",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/tls-ssl.md"
+          ]
+        },
+        {
+          "query": "Kubernetes v1.24 removal of dockershim",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "gRPC over HTTP/2",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/http2-http3.md"
+          ]
+        },
+        {
+          "query": "Redis 7.0 Multi-part AOF",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/redis-data-structures.md"
+          ]
+        },
+        {
+          "query": "Elasticsearch 8.x security changes",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "OWASP Top 10 2021",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/owasp-top-10.md",
+            "tests/fixtures/scale_docs/elasticsearch-basics.md",
+            "tests/fixtures/scale_docs/owasp-top-10.md"
+          ]
+        },
+        {
+          "query": "AVX-512 vector instructions",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/vector-databases.md"
+          ]
+        },
+        {
+          "query": "TCP/IP layer 4",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/tcp-ip-fundamentals.md"
+          ]
+        },
+        {
+          "query": "IPv6 address format",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/data-serialization.md",
+            "tests/fixtures/scale_docs/dns-resolution.md"
+          ]
+        },
+        {
+          "query": "UUID v4 generation",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/testing-strategies.md"
+          ]
+        },
+        {
+          "query": "0xEF hex code",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "Python 3.10 match statement",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/elasticsearch-basics.md"
+          ]
+        },
+        {
+          "query": "ISO 27001 compliance",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/compliance-frameworks.md"
+          ]
+        },
+        {
+          "query": "SOC2 Type II audit",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "BGE-small-en-v1.5 model",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "ChromaDB v0.4.0",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/vector-databases.md"
+          ]
+        },
+        {
+          "query": "MS-MARCO MiniLM L-6-v2",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "JWT RS256 signing",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-security.md"
+          ]
+        },
+        {
+          "query": "OAuth 2.0 PKCE flow",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-security.md"
+          ]
+        },
+        {
+          "query": "RAID 6 configurations",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "SQL-92 standards",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "POSIX thread management",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "systemd unit files",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/systemd-services.md"
+          ]
+        },
+        {
+          "query": "EXT4 filesystem limits",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-filesystem.md"
+          ]
+        },
+        {
+          "query": "YAML 1.2 syntax",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "Docker Compose v2",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/container-fundamentals.md"
+          ]
+        },
+        {
+          "query": "AWS IAM policies",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/well-architected-framework.md"
+          ]
+        }
+      ]
+    }
+  ],
+  "attribution": {
+    "vector_mrr": 0.4694444444444444,
+    "bm25_mrr": 0.49,
+    "hybrid_mrr": 0.36666666666666664,
+    "total_gain": -0.10277777777777775,
+    "bm25_contribution": 0.020555555555555605,
+    "fusion_contribution": -0.12333333333333335
+  }
+}
