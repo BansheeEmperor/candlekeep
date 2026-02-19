@@ -1840,6 +1840,8 @@ Per-metric deltas computed with bootstrap 95% CIs and paired permutation tests (
 
 Uses `chromadb.PersistentClient` for isolation from the HTTP server.
 
+*Note: The "Basic" baseline MRR (0.5207) differs from the Centurion Set simple-path MRR reported in §8.2 (0.4776) because this benchmark uses a separate `PersistentClient` in a temporary directory — a fresh ChromaDB collection with its own HNSW index. HNSW index construction is non-deterministic, and the advanced pipeline (Arcane Recall expansion, Relevance Ward filtering) amplifies small ranking differences. Both figures are valid for their respective comparisons; they should not be compared across benchmarks.*
+
 ### Results
 
 #### Simple Path
