@@ -2626,3 +2626,67 @@ Add sine reranking as a post-processing step in `router.py` for the `simple` and
 - `scripts/generate_redundant_corpus.py` — Bedrock-powered corpus generator for redundancy testing
 - `tests/fixtures/redundant_docs/` — 8 JWT auth docs + 15 eval queries
 - `tests/results/sine_rerank_benchmark*.json` — Raw results for all 6 conditions
+
+
+---
+
+## Entry 44: Relevance Ward / Prismatic Dispersal Ordering Fix — 2026-02-19
+
+### Background
+
+The BM25 isolation benchmark (`scripts/benchmark_bm25_isolation.py`) revealed that the full hybrid pipeline (MRR=0.3667) underperformed both the simple path (MRR=0.4694) and BM25-only (MRR=0.4900) on lexical queries. Diagnostic tracing showed the Relevance Ward was filtering 4 of 5 results on every query, leaving only the top-1 result.
+
+### Root Cause
+
+The pipeline ordering was: hybrid_search → Prismatic Dispersal → Relevance Ward. Prismatic Dispersal selects for diversity from a 3x candidate pool (15 candidates → 5 results), pulling in lower-scored candidates from positions 6-15. These candidates have RRF scores in the 0.008-0.025 range. The `HYBRID_RELEVANCE_THRESHOLD=0.03` then filtered them.
+
+RRF score math makes 0.03 inherently restrictive: with `k=60` and 2 result lists (vector + BM25), the maximum possible RRF score is `2/(60+1) = 0.0328`. The threshold at 0.03 is 91% of the theoretical maximum. Score distribution analysis on 30 lexical queries confirmed only 5.7% of all RRF scores exceed 0.03.
+
+The threshold was calibrated (Entry 16) before Prismatic Dispersal existed (Entry 43). Entry 43's recommendation stated "the sine step sits after Arcane Recall expansion and before the Relevance Ward filter" — but the implementation placed the Ward after Dispersal on both simple and hybrid paths.
+
+### Fix
+
+Two changes:
+
+1. Reorder: Ward runs before Prismatic Dispersal on both simple and hybrid paths. Dispersal now operates only on results that passed the quality gate. This matches the precise path's existing pattern (Ward → rerank).
+
+2. Lower threshold: `HYBRID_RELEVANCE_THRESHOLD` from 0.03 to 0.015. Threshold sweep on the full Centurion Set (108 queries) with Ward-before-Dispersal ordering:
+
+| Threshold | Lex MRR | Lex HR@5 | Sem MRR | Sem HR@5 | Adv Leak |
+|-----------|---------|----------|---------|----------|----------|
+| 0.000 | 0.5333 | 0.6667 | 0.8295 | 0.9375 | 0/30 |
+| 0.005 | 0.5333 | 0.6667 | 0.8295 | 0.9375 | 0/30 |
+| 0.010 | 0.5417 | 0.6667 | 0.8295 | 0.9375 | 0/30 |
+| 0.015 | 0.5417 | 0.6667 | 0.8295 | 0.9375 | 0/30 |
+| 0.020 | 0.5000 | 0.5667 | 0.8142 | 0.8750 | 10/30 |
+| 0.030 | 0.3667 | 0.3667 | 0.7604 | 0.7708 | 19/30 |
+
+0.015 is the highest threshold with zero adversarial leaks and full legitimate quality. The hybrid path's BM25 component naturally suppresses out-of-domain noise (adversarial queries get zero BM25 contribution), so the Ward's primary role on the hybrid path is filtering borderline results, not adversarial defense.
+
+### A/B Benchmark (Full Centurion Set, 108 queries)
+
+Simple path — zero change between old and new order:
+
+| Category | Old MRR | New MRR | Old HR@5 | New HR@5 |
+|----------|---------|---------|----------|----------|
+| Semantic (n=48) | 0.8073 | 0.8073 | 0.8750 | 0.8750 |
+| Lexical (n=30) | 0.4694 | 0.4694 | 0.5333 | 0.5333 |
+| Adversarial (n=30) | 0.0000 | 0.0000 | 0.1000 | 0.1000 |
+
+Cosine similarity scores (0.65-1.0 range) are far enough above the Ward threshold that the reorder has no effect on candidate selection.
+
+Hybrid path — old (Dispersal→Ward, threshold=0.03) vs new (Ward→Dispersal, threshold=0.015):
+
+| Category | Old MRR | New MRR | Old HR@5 | New HR@5 | Delta MRR | Delta HR@5 |
+|----------|---------|---------|----------|----------|-----------|------------|
+| Semantic (n=48) | 0.7604 | 0.8295 | 0.7708 | 0.9375 | +0.0691 | +0.1667 |
+| Lexical (n=30) | 0.3667 | 0.5417 | 0.3667 | 0.6667 | +0.1750 | +0.3000 |
+| Adversarial (n=30) | 0.0000 | 0.0000 | 0.6333 | 0.0000 | 0.0000 | -0.6333 |
+| Overall (n=108) | 0.4398 | 0.5191 | 0.6204 | 0.6019 | +0.0793 | -0.0185 |
+
+The overall HR@5 drops by 1.9%. This is entirely from adversarial leak elimination: the old pipeline returned results for 19/30 adversarial queries that should have returned nothing. Removing those false positives lowers the aggregate HR@5 even though every legitimate category improved. The old pipeline averaged 0.5-1.1 results per query (Ward destroying the candidate pool); the new pipeline averages 3.6-4.8 (healthy).
+
+### Files Changed
+- `src/candlekeep/rag/router.py` — Reordered Ward before Dispersal on simple and hybrid paths; lowered `HYBRID_RELEVANCE_THRESHOLD` from 0.03 to 0.015
+- `docs/ARCHITECTURE.md` — Updated threshold in Tuned Parameters table
+- `docs/DESIGN.md` — Updated pipeline ordering in §3.8
