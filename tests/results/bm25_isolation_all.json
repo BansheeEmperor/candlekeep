@@ -1,0 +1,2119 @@
+{
+  "config": {
+    "subset": "all (non-adversarial)",
+    "n_queries": 78
+  },
+  "results": [
+    {
+      "label": "simple (full)",
+      "mrr": 0.6762820512820513,
+      "mrr_ci": [
+        0.5694177350427352,
+        0.7745726495726496
+      ],
+      "ndcg_5": 0.6929985792482448,
+      "hit_rate_5": 0.7435897435897436,
+      "precision_5": 0.4792735042735043,
+      "avg_latency_ms": 306.039327230209,
+      "n_queries": 78,
+      "per_query": [
+        {
+          "query": "What is semantic search?",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/semantic-search.md",
+            "tests/fixtures/scale_docs/sql-query-optimization.md",
+            "tests/fixtures/sample_docs/vector-databases.md"
+          ]
+        },
+        {
+          "query": "vector database",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/vector-databases.md",
+            "tests/fixtures/scale_docs/database-sharding.md",
+            "tests/fixtures/sample_docs/database-design.md"
+          ]
+        },
+        {
+          "query": "REST API design",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/api-design.md",
+            "tests/fixtures/scale_docs/api-gateway-patterns.md",
+            "tests/fixtures/scale_docs/api-security.md"
+          ]
+        },
+        {
+          "query": "database normalization",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/database-design.md",
+            "tests/fixtures/sample_docs/vector-databases.md",
+            "tests/fixtures/scale_docs/database-migrations.md"
+          ]
+        },
+        {
+          "query": "HTTP/2 vs HTTP/3 performance",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/http2-http3.md"
+          ]
+        },
+        {
+          "query": "PostgreSQL 15 internals",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/postgresql-internals.md"
+          ]
+        },
+        {
+          "query": "Apache Kafka 3.0 features",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/apache-kafka.md"
+          ]
+        },
+        {
+          "query": "TLS 1.3 handshake process",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/tls-ssl.md",
+            "tests/fixtures/scale_docs/websocket-protocol.md",
+            "tests/fixtures/scale_docs/service-mesh.md"
+          ]
+        },
+        {
+          "query": "Kubernetes v1.24 removal of dockershim",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/kubernetes-architecture.md",
+            "tests/fixtures/scale_docs/kubernetes-architecture.md"
+          ]
+        },
+        {
+          "query": "gRPC over HTTP/2",
+          "mrr": 0.5,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/http2-http3.md",
+            "tests/fixtures/scale_docs/grpc-protocol.md",
+            "tests/fixtures/scale_docs/grpc-protocol.md"
+          ]
+        },
+        {
+          "query": "Redis 7.0 Multi-part AOF",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/redis-data-structures.md",
+            "tests/fixtures/scale_docs/container-security.md",
+            "tests/fixtures/scale_docs/helm-charts.md"
+          ]
+        },
+        {
+          "query": "Elasticsearch 8.x security changes",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/scale_docs/security-audit-checklist.md",
+            "tests/fixtures/sample_docs/authentication.md"
+          ]
+        },
+        {
+          "query": "OWASP Top 10 2021",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/owasp-top-10.md"
+          ]
+        },
+        {
+          "query": "AVX-512 vector instructions",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/vector-databases.md",
+            "tests/fixtures/scale_docs/design-patterns-behavioral.md"
+          ]
+        },
+        {
+          "query": "TCP/IP layer 4",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/tcp-ip-fundamentals.md"
+          ]
+        },
+        {
+          "query": "IPv6 address format",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "UUID v4 generation",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/container-security.md",
+            "tests/fixtures/scale_docs/data-pipeline-design.md"
+          ]
+        },
+        {
+          "query": "0xEF hex code",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/error-handling-patterns.md"
+          ]
+        },
+        {
+          "query": "Python 3.10 match statement",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/functional-programming.md"
+          ]
+        },
+        {
+          "query": "ISO 27001 compliance",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/compliance-frameworks.md"
+          ]
+        },
+        {
+          "query": "SOC2 Type II audit",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/security-audit-checklist.md"
+          ]
+        },
+        {
+          "query": "BGE-small-en-v1.5 model",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/data-warehouse-modeling.md",
+            "tests/fixtures/scale_docs/container-security.md"
+          ]
+        },
+        {
+          "query": "ChromaDB v0.4.0",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/vector-databases.md",
+            "tests/fixtures/scale_docs/container-security.md",
+            "tests/fixtures/scale_docs/container-security.md"
+          ]
+        },
+        {
+          "query": "MS-MARCO MiniLM L-6-v2",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "JWT RS256 signing",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/scale_docs/api-security.md"
+          ]
+        },
+        {
+          "query": "OAuth 2.0 PKCE flow",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/scale_docs/api-security.md"
+          ]
+        },
+        {
+          "query": "RAID 6 configurations",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-filesystem.md",
+            "tests/fixtures/scale_docs/cloud-design-patterns.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md"
+          ]
+        },
+        {
+          "query": "SQL-92 standards",
+          "mrr": 0.3333333333333333,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/database-design.md",
+            "tests/fixtures/scale_docs/monitoring-observability.md",
+            "tests/fixtures/scale_docs/sql-query-optimization.md"
+          ]
+        },
+        {
+          "query": "POSIX thread management",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-memory-management.md",
+            "tests/fixtures/scale_docs/concurrency-patterns.md",
+            "tests/fixtures/scale_docs/concurrency-patterns.md"
+          ]
+        },
+        {
+          "query": "systemd unit files",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/systemd-services.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md"
+          ]
+        },
+        {
+          "query": "EXT4 filesystem limits",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-filesystem.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md"
+          ]
+        },
+        {
+          "query": "YAML 1.2 syntax",
+          "mrr": 0.25,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/zero-trust-architecture.md",
+            "tests/fixtures/scale_docs/helm-charts.md",
+            "tests/fixtures/scale_docs/api-gateway-patterns.md"
+          ]
+        },
+        {
+          "query": "Docker Compose v2",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/container-fundamentals.md",
+            "tests/fixtures/scale_docs/container-security.md",
+            "tests/fixtures/scale_docs/container-fundamentals.md"
+          ]
+        },
+        {
+          "query": "AWS IAM policies",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/well-architected-framework.md",
+            "tests/fixtures/scale_docs/serverless-architecture.md",
+            "tests/fixtures/scale_docs/well-architected-framework.md"
+          ]
+        },
+        {
+          "query": "how to implement chaos engineering",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/chaos-engineering.md",
+            "tests/fixtures/scale_docs/design-patterns-structural.md",
+            "tests/fixtures/scale_docs/design-patterns-behavioral.md"
+          ]
+        },
+        {
+          "query": "benefits of event-driven architecture",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/event-driven-architecture.md",
+            "tests/fixtures/scale_docs/event-driven-architecture.md",
+            "tests/fixtures/scale_docs/event-driven-architecture.md"
+          ]
+        },
+        {
+          "query": "serverless vs containers",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/serverless-architecture.md",
+            "tests/fixtures/scale_docs/dependency-injection.md",
+            "tests/fixtures/scale_docs/dependency-injection.md"
+          ]
+        },
+        {
+          "query": "microservices data consistency",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/microservices.md",
+            "tests/fixtures/scale_docs/database-replication.md",
+            "tests/fixtures/scale_docs/data-pipeline-design.md"
+          ]
+        },
+        {
+          "query": "data lakehouse architecture",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/data-lake-architecture.md"
+          ]
+        },
+        {
+          "query": "zero trust security principles",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/security-audit-checklist.md",
+            "tests/fixtures/scale_docs/firewall-rules.md",
+            "tests/fixtures/scale_docs/network-security-hardening.md"
+          ]
+        },
+        {
+          "query": "continuous integration best practices",
+          "mrr": 0.25,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/testing-strategies.md",
+            "tests/fixtures/sample_docs/microservices.md",
+            "tests/fixtures/scale_docs/data-pipeline-design.md"
+          ]
+        },
+        {
+          "query": "database sharding strategies",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/database-sharding.md",
+            "tests/fixtures/sample_docs/vector-databases.md",
+            "tests/fixtures/sample_docs/database-design.md"
+          ]
+        },
+        {
+          "query": "load balancing algorithms",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/load-balancing.md"
+          ]
+        },
+        {
+          "query": "content delivery network optimization",
+          "mrr": 0.25,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/cost-optimization.md",
+            "tests/fixtures/scale_docs/network-troubleshooting.md",
+            "tests/fixtures/scale_docs/network-security-hardening.md"
+          ]
+        },
+        {
+          "query": "service mesh advantages",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/service-mesh.md",
+            "tests/fixtures/sample_docs/microservices.md",
+            "tests/fixtures/scale_docs/service-mesh.md"
+          ]
+        },
+        {
+          "query": "infrastructure as code tools",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/infrastructure-as-code.md",
+            "tests/fixtures/scale_docs/security-audit-checklist.md",
+            "tests/fixtures/scale_docs/infrastructure-as-code.md"
+          ]
+        },
+        {
+          "query": "monitoring vs observability",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/monitoring-observability.md",
+            "tests/fixtures/scale_docs/monitoring-observability.md",
+            "tests/fixtures/scale_docs/monitoring-observability.md"
+          ]
+        },
+        {
+          "query": "auto scaling in the cloud",
+          "mrr": 0.3333333333333333,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/cost-optimization.md",
+            "tests/fixtures/scale_docs/migration-strategies.md",
+            "tests/fixtures/scale_docs/auto-scaling.md"
+          ]
+        },
+        {
+          "query": "disaster recovery planning",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/disaster-recovery.md",
+            "tests/fixtures/scale_docs/disaster-recovery.md"
+          ]
+        },
+        {
+          "query": "api gateway patterns",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-gateway-patterns.md",
+            "tests/fixtures/scale_docs/api-gateway-patterns.md"
+          ]
+        },
+        {
+          "query": "cloud storage options",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/cost-optimization.md",
+            "tests/fixtures/scale_docs/cloud-design-patterns.md",
+            "tests/fixtures/scale_docs/migration-strategies.md"
+          ]
+        },
+        {
+          "query": "data serialization formats",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/data-serialization.md"
+          ]
+        },
+        {
+          "query": "message queue patterns",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/cloud-design-patterns.md",
+            "tests/fixtures/scale_docs/error-handling-patterns.md",
+            "tests/fixtures/scale_docs/design-patterns-behavioral.md"
+          ]
+        },
+        {
+          "query": "functional programming concepts",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/functional-programming.md",
+            "tests/fixtures/sample_docs/vector-databases.md",
+            "tests/fixtures/scale_docs/design-patterns-creational.md"
+          ]
+        },
+        {
+          "query": "linux memory management",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-memory-management.md",
+            "tests/fixtures/scale_docs/linux-performance-tuning.md",
+            "tests/fixtures/scale_docs/linux-performance-tuning.md"
+          ]
+        },
+        {
+          "query": "dns resolution process",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/dns-resolution.md",
+            "tests/fixtures/scale_docs/multi-region-deployment.md"
+          ]
+        },
+        {
+          "query": "connection pooling benefits",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/connection-pooling.md",
+            "tests/fixtures/scale_docs/tls-ssl.md",
+            "tests/fixtures/scale_docs/load-balancing.md"
+          ]
+        },
+        {
+          "query": "cryptography basics",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/cryptography-basics.md"
+          ]
+        },
+        {
+          "query": "distributed transactions",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/monitoring-observability.md",
+            "tests/fixtures/sample_docs/microservices.md"
+          ]
+        },
+        {
+          "query": "container security hardening",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/network-security-hardening.md",
+            "tests/fixtures/scale_docs/security-audit-checklist.md"
+          ]
+        },
+        {
+          "query": "well architected framework",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/well-architected-framework.md",
+            "tests/fixtures/scale_docs/well-architected-framework.md",
+            "tests/fixtures/scale_docs/well-architected-framework.md"
+          ]
+        },
+        {
+          "query": "cost optimization strategies",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/cost-optimization.md",
+            "tests/fixtures/scale_docs/sql-query-optimization.md",
+            "tests/fixtures/scale_docs/sql-query-optimization.md"
+          ]
+        },
+        {
+          "query": "incident response steps",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/incident-response.md"
+          ]
+        },
+        {
+          "query": "multi-region deployment",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/multi-region-deployment.md"
+          ]
+        },
+        {
+          "query": "ssh configuration security",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/ssh-configuration.md",
+            "tests/fixtures/scale_docs/network-security-hardening.md",
+            "tests/fixtures/scale_docs/firewall-rules.md"
+          ]
+        },
+        {
+          "query": "vpn tunneling protocols",
+          "mrr": 0.3333333333333333,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/ssh-configuration.md",
+            "tests/fixtures/scale_docs/http2-http3.md",
+            "tests/fixtures/scale_docs/vpn-tunneling.md"
+          ]
+        },
+        {
+          "query": "websocket protocol overview",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/websocket-protocol.md",
+            "tests/fixtures/scale_docs/tcp-ip-fundamentals.md",
+            "tests/fixtures/scale_docs/tcp-ip-fundamentals.md"
+          ]
+        },
+        {
+          "query": "helm charts fundamentals",
+          "mrr": 0.5,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/container-fundamentals.md",
+            "tests/fixtures/scale_docs/helm-charts.md"
+          ]
+        },
+        {
+          "query": "linux process management",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-process-management.md",
+            "tests/fixtures/scale_docs/linux-performance-tuning.md",
+            "tests/fixtures/scale_docs/package-management.md"
+          ]
+        },
+        {
+          "query": "network troubleshooting tools",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/network-troubleshooting.md",
+            "tests/fixtures/scale_docs/network-troubleshooting.md",
+            "tests/fixtures/scale_docs/network-troubleshooting.md"
+          ]
+        },
+        {
+          "query": "database replication types",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/database-replication.md",
+            "tests/fixtures/scale_docs/database-replication.md"
+          ]
+        },
+        {
+          "query": "nosql design patterns",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/nosql-patterns.md"
+          ]
+        },
+        {
+          "query": "sql query optimization",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/sql-query-optimization.md"
+          ]
+        },
+        {
+          "query": "data pipeline design",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/data-pipeline-design.md"
+          ]
+        },
+        {
+          "query": "testing strategies for software",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/testing-strategies.md",
+            "tests/fixtures/sample_docs/caching.md",
+            "tests/fixtures/sample_docs/caching.md"
+          ]
+        },
+        {
+          "query": "dependency injection benefits",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/dependency-injection.md",
+            "tests/fixtures/scale_docs/chaos-engineering.md"
+          ]
+        },
+        {
+          "query": "behavioral design patterns",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/design-patterns-behavioral.md",
+            "tests/fixtures/scale_docs/design-patterns-behavioral.md",
+            "tests/fixtures/scale_docs/design-patterns-behavioral.md"
+          ]
+        },
+        {
+          "query": "creational design patterns",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/design-patterns-creational.md"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "bm25-only",
+      "mrr": 0.7358974358974358,
+      "mrr_ci": [
+        0.6358653846153847,
+        0.825673076923077
+      ],
+      "ndcg_5": 0.7479647228153047,
+      "hit_rate_5": 0.782051282051282,
+      "precision_5": 0.5891025641025641,
+      "avg_latency_ms": 27.666752155010517,
+      "n_queries": 78,
+      "per_query": [
+        {
+          "query": "What is semantic search?",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/semantic-search.md",
+            "tests/fixtures/sample_docs/vector-databases.md",
+            "tests/fixtures/sample_docs/document-processing.md"
+          ]
+        },
+        {
+          "query": "vector database",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/vector-databases.md",
+            "tests/fixtures/sample_docs/semantic-search.md",
+            "tests/fixtures/scale_docs/cryptography-basics.md"
+          ]
+        },
+        {
+          "query": "REST API design",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/api-design.md",
+            "tests/fixtures/sample_docs/microservices.md",
+            "tests/fixtures/scale_docs/api-gateway-patterns.md"
+          ]
+        },
+        {
+          "query": "database normalization",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/database-design.md",
+            "tests/fixtures/scale_docs/postgresql-internals.md",
+            "tests/fixtures/scale_docs/data-pipeline-design.md"
+          ]
+        },
+        {
+          "query": "HTTP/2 vs HTTP/3 performance",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/http2-http3.md",
+            "tests/fixtures/scale_docs/http2-http3.md"
+          ]
+        },
+        {
+          "query": "PostgreSQL 15 internals",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/postgresql-internals.md"
+          ]
+        },
+        {
+          "query": "Apache Kafka 3.0 features",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/apache-kafka.md",
+            "tests/fixtures/scale_docs/apache-kafka.md"
+          ]
+        },
+        {
+          "query": "TLS 1.3 handshake process",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/tls-ssl.md"
+          ]
+        },
+        {
+          "query": "Kubernetes v1.24 removal of dockershim",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/kubernetes-architecture.md",
+            "tests/fixtures/scale_docs/kubernetes-architecture.md",
+            "tests/fixtures/scale_docs/kubernetes-architecture.md"
+          ]
+        },
+        {
+          "query": "gRPC over HTTP/2",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/grpc-protocol.md",
+            "tests/fixtures/scale_docs/http2-http3.md",
+            "tests/fixtures/sample_docs/microservices.md"
+          ]
+        },
+        {
+          "query": "Redis 7.0 Multi-part AOF",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/redis-data-structures.md",
+            "tests/fixtures/scale_docs/redis-data-structures.md",
+            "tests/fixtures/scale_docs/redis-data-structures.md"
+          ]
+        },
+        {
+          "query": "Elasticsearch 8.x security changes",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/elasticsearch-basics.md",
+            "tests/fixtures/scale_docs/elasticsearch-basics.md",
+            "tests/fixtures/scale_docs/elasticsearch-basics.md"
+          ]
+        },
+        {
+          "query": "OWASP Top 10 2021",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/owasp-top-10.md",
+            "tests/fixtures/scale_docs/owasp-top-10.md",
+            "tests/fixtures/sample_docs/semantic-search.md"
+          ]
+        },
+        {
+          "query": "AVX-512 vector instructions",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/vector-databases.md",
+            "tests/fixtures/sample_docs/semantic-search.md",
+            "tests/fixtures/scale_docs/incident-response.md"
+          ]
+        },
+        {
+          "query": "TCP/IP layer 4",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/tcp-ip-fundamentals.md",
+            "tests/fixtures/scale_docs/load-balancing.md",
+            "tests/fixtures/scale_docs/load-balancing.md"
+          ]
+        },
+        {
+          "query": "IPv6 address format",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/dns-resolution.md",
+            "tests/fixtures/scale_docs/data-serialization.md",
+            "tests/fixtures/scale_docs/tcp-ip-fundamentals.md"
+          ]
+        },
+        {
+          "query": "UUID v4 generation",
+          "mrr": 0.2,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-filesystem.md",
+            "tests/fixtures/sample_docs/document-processing.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md"
+          ]
+        },
+        {
+          "query": "0xEF hex code",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/scale_docs/shell-scripting.md",
+            "tests/fixtures/scale_docs/ci-cd-pipelines.md"
+          ]
+        },
+        {
+          "query": "Python 3.10 match statement",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/owasp-top-10.md",
+            "tests/fixtures/scale_docs/elasticsearch-basics.md",
+            "tests/fixtures/scale_docs/connection-pooling.md"
+          ]
+        },
+        {
+          "query": "ISO 27001 compliance",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/compliance-frameworks.md",
+            "tests/fixtures/scale_docs/compliance-frameworks.md"
+          ]
+        },
+        {
+          "query": "SOC2 Type II audit",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/security-audit-checklist.md",
+            "tests/fixtures/scale_docs/security-audit-checklist.md",
+            "tests/fixtures/scale_docs/security-audit-checklist.md"
+          ]
+        },
+        {
+          "query": "BGE-small-en-v1.5 model",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/event-driven-architecture.md",
+            "tests/fixtures/scale_docs/tcp-ip-fundamentals.md",
+            "tests/fixtures/scale_docs/concurrency-patterns.md"
+          ]
+        },
+        {
+          "query": "ChromaDB v0.4.0",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/vector-databases.md"
+          ]
+        },
+        {
+          "query": "MS-MARCO MiniLM L-6-v2",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "JWT RS256 signing",
+          "mrr": 0.5,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-gateway-patterns.md",
+            "tests/fixtures/sample_docs/authentication.md",
+            "tests/fixtures/scale_docs/api-security.md"
+          ]
+        },
+        {
+          "query": "OAuth 2.0 PKCE flow",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/scale_docs/api-gateway-patterns.md"
+          ]
+        },
+        {
+          "query": "RAID 6 configurations",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/websocket-protocol.md",
+            "tests/fixtures/scale_docs/disaster-recovery.md",
+            "tests/fixtures/scale_docs/cloud-networking.md"
+          ]
+        },
+        {
+          "query": "SQL-92 standards",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/compliance-frameworks.md",
+            "tests/fixtures/scale_docs/security-audit-checklist.md",
+            "tests/fixtures/scale_docs/compliance-frameworks.md"
+          ]
+        },
+        {
+          "query": "POSIX thread management",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/concurrency-patterns.md",
+            "tests/fixtures/scale_docs/concurrency-patterns.md",
+            "tests/fixtures/scale_docs/concurrency-patterns.md"
+          ]
+        },
+        {
+          "query": "systemd unit files",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/systemd-services.md"
+          ]
+        },
+        {
+          "query": "EXT4 filesystem limits",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-filesystem.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md"
+          ]
+        },
+        {
+          "query": "YAML 1.2 syntax",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/functional-programming.md",
+            "tests/fixtures/scale_docs/tls-ssl.md",
+            "tests/fixtures/scale_docs/linux-logging.md"
+          ]
+        },
+        {
+          "query": "Docker Compose v2",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/container-fundamentals.md",
+            "tests/fixtures/sample_docs/api-design.md",
+            "tests/fixtures/scale_docs/service-mesh.md"
+          ]
+        },
+        {
+          "query": "AWS IAM policies",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/secrets-management.md",
+            "tests/fixtures/scale_docs/secrets-management.md",
+            "tests/fixtures/scale_docs/well-architected-framework.md"
+          ]
+        },
+        {
+          "query": "how to implement chaos engineering",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/chaos-engineering.md"
+          ]
+        },
+        {
+          "query": "benefits of event-driven architecture",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/event-driven-architecture.md",
+            "tests/fixtures/scale_docs/event-driven-architecture.md",
+            "tests/fixtures/scale_docs/event-driven-architecture.md"
+          ]
+        },
+        {
+          "query": "serverless vs containers",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/serverless-architecture.md",
+            "tests/fixtures/scale_docs/serverless-architecture.md",
+            "tests/fixtures/scale_docs/serverless-architecture.md"
+          ]
+        },
+        {
+          "query": "microservices data consistency",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/microservices.md",
+            "tests/fixtures/scale_docs/event-driven-architecture.md",
+            "tests/fixtures/scale_docs/data-warehouse-modeling.md"
+          ]
+        },
+        {
+          "query": "data lakehouse architecture",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/data-lake-architecture.md"
+          ]
+        },
+        {
+          "query": "zero trust security principles",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/zero-trust-architecture.md",
+            "tests/fixtures/scale_docs/zero-trust-architecture.md",
+            "tests/fixtures/scale_docs/zero-trust-architecture.md"
+          ]
+        },
+        {
+          "query": "continuous integration best practices",
+          "mrr": 0.5,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/microservices.md",
+            "tests/fixtures/scale_docs/ci-cd-pipelines.md",
+            "tests/fixtures/scale_docs/api-security.md"
+          ]
+        },
+        {
+          "query": "database sharding strategies",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/database-sharding.md"
+          ]
+        },
+        {
+          "query": "load balancing algorithms",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/load-balancing.md",
+            "tests/fixtures/scale_docs/load-balancing.md"
+          ]
+        },
+        {
+          "query": "content delivery network optimization",
+          "mrr": 0.5,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/network-security-hardening.md",
+            "tests/fixtures/scale_docs/cdn-architecture.md",
+            "tests/fixtures/scale_docs/cdn-architecture.md"
+          ]
+        },
+        {
+          "query": "service mesh advantages",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/service-mesh.md",
+            "tests/fixtures/scale_docs/service-mesh.md"
+          ]
+        },
+        {
+          "query": "infrastructure as code tools",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/infrastructure-as-code.md",
+            "tests/fixtures/scale_docs/infrastructure-as-code.md",
+            "tests/fixtures/scale_docs/infrastructure-as-code.md"
+          ]
+        },
+        {
+          "query": "monitoring vs observability",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/monitoring-observability.md",
+            "tests/fixtures/scale_docs/monitoring-observability.md"
+          ]
+        },
+        {
+          "query": "auto scaling in the cloud",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/cost-optimization.md",
+            "tests/fixtures/scale_docs/well-architected-framework.md",
+            "tests/fixtures/scale_docs/well-architected-framework.md"
+          ]
+        },
+        {
+          "query": "disaster recovery planning",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/disaster-recovery.md",
+            "tests/fixtures/scale_docs/database-replication.md",
+            "tests/fixtures/scale_docs/disaster-recovery.md"
+          ]
+        },
+        {
+          "query": "api gateway patterns",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-gateway-patterns.md",
+            "tests/fixtures/scale_docs/api-gateway-patterns.md"
+          ]
+        },
+        {
+          "query": "cloud storage options",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/cloud-storage-options.md",
+            "tests/fixtures/scale_docs/cloud-storage-options.md",
+            "tests/fixtures/scale_docs/cost-optimization.md"
+          ]
+        },
+        {
+          "query": "data serialization formats",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/data-serialization.md"
+          ]
+        },
+        {
+          "query": "message queue patterns",
+          "mrr": 0.2,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/microservices.md",
+            "tests/fixtures/scale_docs/error-handling-patterns.md",
+            "tests/fixtures/scale_docs/cloud-design-patterns.md"
+          ]
+        },
+        {
+          "query": "functional programming concepts",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/functional-programming.md"
+          ]
+        },
+        {
+          "query": "linux memory management",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-memory-management.md"
+          ]
+        },
+        {
+          "query": "dns resolution process",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/dns-resolution.md"
+          ]
+        },
+        {
+          "query": "connection pooling benefits",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/connection-pooling.md"
+          ]
+        },
+        {
+          "query": "cryptography basics",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/cryptography-basics.md"
+          ]
+        },
+        {
+          "query": "distributed transactions",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/microservices.md",
+            "tests/fixtures/scale_docs/event-driven-architecture.md",
+            "tests/fixtures/scale_docs/zero-trust-architecture.md"
+          ]
+        },
+        {
+          "query": "container security hardening",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/container-security.md",
+            "tests/fixtures/scale_docs/network-security-hardening.md",
+            "tests/fixtures/scale_docs/security-audit-checklist.md"
+          ]
+        },
+        {
+          "query": "well architected framework",
+          "mrr": 0.5,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/stream-processing.md",
+            "tests/fixtures/scale_docs/well-architected-framework.md",
+            "tests/fixtures/scale_docs/well-architected-framework.md"
+          ]
+        },
+        {
+          "query": "cost optimization strategies",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/cost-optimization.md",
+            "tests/fixtures/scale_docs/serverless-architecture.md",
+            "tests/fixtures/scale_docs/serverless-architecture.md"
+          ]
+        },
+        {
+          "query": "incident response steps",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/incident-response.md",
+            "tests/fixtures/scale_docs/incident-response.md",
+            "tests/fixtures/scale_docs/incident-response.md"
+          ]
+        },
+        {
+          "query": "multi-region deployment",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/multi-region-deployment.md",
+            "tests/fixtures/scale_docs/multi-region-deployment.md"
+          ]
+        },
+        {
+          "query": "ssh configuration security",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/ssh-configuration.md",
+            "tests/fixtures/scale_docs/security-audit-checklist.md"
+          ]
+        },
+        {
+          "query": "vpn tunneling protocols",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/vpn-tunneling.md",
+            "tests/fixtures/scale_docs/ssh-configuration.md",
+            "tests/fixtures/scale_docs/http2-http3.md"
+          ]
+        },
+        {
+          "query": "websocket protocol overview",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/websocket-protocol.md"
+          ]
+        },
+        {
+          "query": "helm charts fundamentals",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/helm-charts.md",
+            "tests/fixtures/scale_docs/helm-charts.md",
+            "tests/fixtures/scale_docs/helm-charts.md"
+          ]
+        },
+        {
+          "query": "linux process management",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-process-management.md",
+            "tests/fixtures/scale_docs/linux-memory-management.md",
+            "tests/fixtures/scale_docs/linux-performance-tuning.md"
+          ]
+        },
+        {
+          "query": "network troubleshooting tools",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/network-troubleshooting.md",
+            "tests/fixtures/scale_docs/network-troubleshooting.md",
+            "tests/fixtures/scale_docs/network-troubleshooting.md"
+          ]
+        },
+        {
+          "query": "database replication types",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/database-replication.md",
+            "tests/fixtures/scale_docs/database-replication.md",
+            "tests/fixtures/scale_docs/database-replication.md"
+          ]
+        },
+        {
+          "query": "nosql design patterns",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/nosql-patterns.md"
+          ]
+        },
+        {
+          "query": "sql query optimization",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/sql-query-optimization.md"
+          ]
+        },
+        {
+          "query": "data pipeline design",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/data-pipeline-design.md",
+            "tests/fixtures/scale_docs/data-pipeline-design.md",
+            "tests/fixtures/scale_docs/data-pipeline-design.md"
+          ]
+        },
+        {
+          "query": "testing strategies for software",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/testing-strategies.md",
+            "tests/fixtures/scale_docs/testing-strategies.md"
+          ]
+        },
+        {
+          "query": "dependency injection benefits",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/dependency-injection.md"
+          ]
+        },
+        {
+          "query": "behavioral design patterns",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/design-patterns-behavioral.md",
+            "tests/fixtures/scale_docs/design-patterns-behavioral.md"
+          ]
+        },
+        {
+          "query": "creational design patterns",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/design-patterns-creational.md"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "hybrid (full)",
+      "mrr": 0.6089743589743589,
+      "mrr_ci": [
+        0.5,
+        0.7115384615384616
+      ],
+      "ndcg_5": 0.6106529455586084,
+      "hit_rate_5": 0.6153846153846154,
+      "precision_5": 0.5982905982905983,
+      "avg_latency_ms": 667.8504943847656,
+      "n_queries": 78,
+      "per_query": [
+        {
+          "query": "What is semantic search?",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/semantic-search.md"
+          ]
+        },
+        {
+          "query": "vector database",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/vector-databases.md"
+          ]
+        },
+        {
+          "query": "REST API design",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/api-design.md",
+            "tests/fixtures/scale_docs/api-gateway-patterns.md"
+          ]
+        },
+        {
+          "query": "database normalization",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/database-design.md"
+          ]
+        },
+        {
+          "query": "HTTP/2 vs HTTP/3 performance",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/http2-http3.md"
+          ]
+        },
+        {
+          "query": "PostgreSQL 15 internals",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/postgresql-internals.md"
+          ]
+        },
+        {
+          "query": "Apache Kafka 3.0 features",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/apache-kafka.md"
+          ]
+        },
+        {
+          "query": "TLS 1.3 handshake process",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/tls-ssl.md"
+          ]
+        },
+        {
+          "query": "Kubernetes v1.24 removal of dockershim",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "gRPC over HTTP/2",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/http2-http3.md"
+          ]
+        },
+        {
+          "query": "Redis 7.0 Multi-part AOF",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/redis-data-structures.md"
+          ]
+        },
+        {
+          "query": "Elasticsearch 8.x security changes",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "OWASP Top 10 2021",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/owasp-top-10.md",
+            "tests/fixtures/scale_docs/elasticsearch-basics.md",
+            "tests/fixtures/scale_docs/owasp-top-10.md"
+          ]
+        },
+        {
+          "query": "AVX-512 vector instructions",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/vector-databases.md"
+          ]
+        },
+        {
+          "query": "TCP/IP layer 4",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/tcp-ip-fundamentals.md"
+          ]
+        },
+        {
+          "query": "IPv6 address format",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/data-serialization.md",
+            "tests/fixtures/scale_docs/dns-resolution.md"
+          ]
+        },
+        {
+          "query": "UUID v4 generation",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/testing-strategies.md"
+          ]
+        },
+        {
+          "query": "0xEF hex code",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "Python 3.10 match statement",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/elasticsearch-basics.md"
+          ]
+        },
+        {
+          "query": "ISO 27001 compliance",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/compliance-frameworks.md"
+          ]
+        },
+        {
+          "query": "SOC2 Type II audit",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "BGE-small-en-v1.5 model",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "ChromaDB v0.4.0",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/vector-databases.md"
+          ]
+        },
+        {
+          "query": "MS-MARCO MiniLM L-6-v2",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "JWT RS256 signing",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-security.md"
+          ]
+        },
+        {
+          "query": "OAuth 2.0 PKCE flow",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-security.md"
+          ]
+        },
+        {
+          "query": "RAID 6 configurations",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "SQL-92 standards",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "POSIX thread management",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "systemd unit files",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/systemd-services.md"
+          ]
+        },
+        {
+          "query": "EXT4 filesystem limits",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-filesystem.md"
+          ]
+        },
+        {
+          "query": "YAML 1.2 syntax",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "Docker Compose v2",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/container-fundamentals.md"
+          ]
+        },
+        {
+          "query": "AWS IAM policies",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/well-architected-framework.md"
+          ]
+        },
+        {
+          "query": "how to implement chaos engineering",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/chaos-engineering.md"
+          ]
+        },
+        {
+          "query": "benefits of event-driven architecture",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/event-driven-architecture.md"
+          ]
+        },
+        {
+          "query": "serverless vs containers",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/serverless-architecture.md"
+          ]
+        },
+        {
+          "query": "microservices data consistency",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/microservices.md"
+          ]
+        },
+        {
+          "query": "data lakehouse architecture",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/data-lake-architecture.md"
+          ]
+        },
+        {
+          "query": "zero trust security principles",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "continuous integration best practices",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/microservices.md",
+            "tests/fixtures/scale_docs/testing-strategies.md"
+          ]
+        },
+        {
+          "query": "database sharding strategies",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/database-sharding.md"
+          ]
+        },
+        {
+          "query": "load balancing algorithms",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/load-balancing.md"
+          ]
+        },
+        {
+          "query": "content delivery network optimization",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/network-security-hardening.md"
+          ]
+        },
+        {
+          "query": "service mesh advantages",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/service-mesh.md"
+          ]
+        },
+        {
+          "query": "infrastructure as code tools",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/infrastructure-as-code.md"
+          ]
+        },
+        {
+          "query": "monitoring vs observability",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/monitoring-observability.md"
+          ]
+        },
+        {
+          "query": "auto scaling in the cloud",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/cost-optimization.md"
+          ]
+        },
+        {
+          "query": "disaster recovery planning",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/disaster-recovery.md"
+          ]
+        },
+        {
+          "query": "api gateway patterns",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-gateway-patterns.md"
+          ]
+        },
+        {
+          "query": "cloud storage options",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/cost-optimization.md"
+          ]
+        },
+        {
+          "query": "data serialization formats",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/data-serialization.md"
+          ]
+        },
+        {
+          "query": "message queue patterns",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/cloud-design-patterns.md",
+            "tests/fixtures/scale_docs/error-handling-patterns.md"
+          ]
+        },
+        {
+          "query": "functional programming concepts",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/functional-programming.md"
+          ]
+        },
+        {
+          "query": "linux memory management",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-memory-management.md"
+          ]
+        },
+        {
+          "query": "dns resolution process",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/dns-resolution.md"
+          ]
+        },
+        {
+          "query": "connection pooling benefits",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/connection-pooling.md"
+          ]
+        },
+        {
+          "query": "cryptography basics",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/cryptography-basics.md"
+          ]
+        },
+        {
+          "query": "distributed transactions",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/sample_docs/microservices.md",
+            "tests/fixtures/scale_docs/monitoring-observability.md"
+          ]
+        },
+        {
+          "query": "container security hardening",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/network-security-hardening.md",
+            "tests/fixtures/scale_docs/security-audit-checklist.md"
+          ]
+        },
+        {
+          "query": "well architected framework",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "cost optimization strategies",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/cost-optimization.md"
+          ]
+        },
+        {
+          "query": "incident response steps",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/incident-response.md"
+          ]
+        },
+        {
+          "query": "multi-region deployment",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/multi-region-deployment.md"
+          ]
+        },
+        {
+          "query": "ssh configuration security",
+          "mrr": 0.5,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/scale_docs/ssh-configuration.md"
+          ]
+        },
+        {
+          "query": "vpn tunneling protocols",
+          "mrr": 0.0,
+          "hr5": 0.0,
+          "retrieved_sources": []
+        },
+        {
+          "query": "websocket protocol overview",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/websocket-protocol.md"
+          ]
+        },
+        {
+          "query": "helm charts fundamentals",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/helm-charts.md",
+            "tests/fixtures/scale_docs/helm-charts.md"
+          ]
+        },
+        {
+          "query": "linux process management",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/linux-process-management.md"
+          ]
+        },
+        {
+          "query": "network troubleshooting tools",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/network-troubleshooting.md"
+          ]
+        },
+        {
+          "query": "database replication types",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/database-replication.md"
+          ]
+        },
+        {
+          "query": "nosql design patterns",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/nosql-patterns.md"
+          ]
+        },
+        {
+          "query": "sql query optimization",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/sql-query-optimization.md"
+          ]
+        },
+        {
+          "query": "data pipeline design",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/data-pipeline-design.md"
+          ]
+        },
+        {
+          "query": "testing strategies for software",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/testing-strategies.md"
+          ]
+        },
+        {
+          "query": "dependency injection benefits",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/dependency-injection.md"
+          ]
+        },
+        {
+          "query": "behavioral design patterns",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/design-patterns-behavioral.md"
+          ]
+        },
+        {
+          "query": "creational design patterns",
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/design-patterns-creational.md"
+          ]
+        }
+      ]
+    }
+  ],
+  "attribution": {
+    "vector_mrr": 0.6762820512820513,
+    "bm25_mrr": 0.7358974358974358,
+    "hybrid_mrr": 0.6089743589743589,
+    "total_gain": -0.0673076923076924,
+    "bm25_contribution": 0.059615384615384515,
+    "fusion_contribution": -0.12692307692307692
+  }
+}
