@@ -153,6 +153,25 @@ If a remote ChromaDB was populated with model A and the local config says model 
 
 **Decision:** Store model name in collection metadata. On connect, detect mismatch, override local config, log warning. Also: refuse to download models at startup (exit immediately if not cached locally).
 
+### 3.8 Sine-Distance Diversity Reranking (Simple & Hybrid Paths)
+
+Returning k results ordered purely by relevance risks redundancy — multiple chunks saying the same thing from different parts of the corpus. This wastes the agent's context window without adding information.
+
+Sine distance (`sin(θ) = √(1 - cos²(θ))`) measures orthogonality between vectors: 0 for identical, 1 for maximally different. Applied as a post-retrieval step, it reorders positions 2–k to penalize chunks that are too similar to already-selected results while preserving the top-1 (highest relevance) result.
+
+**Decision:** Add sine reranking after Arcane Recall on the `simple` and `hybrid` paths. Not on `precise` — the cross-encoder already provides implicit diversity.
+
+- **Simple path**: Iterative strategy, λ=0.2 (more diversity weight). Trades 0.4% MRR for +15% ILD.
+- **Hybrid path**: Centroid strategy, λ=0.3. Improves both MRR (+2.4%) and ILD (+19.1%) — no tradeoff.
+
+The hybrid path benefits most because RRF fusion produces more inter-result redundancy than either bi-encoder or cross-encoder alone.
+
+Latency: sub-millisecond (<0.5ms). The sine step computes at most k·n dot products where k=5 and n=15.
+
+Context efficiency: on the hybrid path, sine@k=3 matches baseline@k=5 MRR at 60% context budget — the agent gets equivalent answer quality from 3 results instead of 5. Hit Rate drops by only 0.9% (1 query out of 108). For agents operating under tight context windows, this means 40% less noise fed to the LLM without losing information.
+
+*Data: Research Diary Entry 43. Benchmark: `scripts/benchmark_sine_rerank.py`.*
+
 ## 4. Techniques Evaluated
 
 | Technique | Result | Status |

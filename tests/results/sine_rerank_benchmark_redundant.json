@@ -1,0 +1,1818 @@
+{
+  "\u03bb0.2_baseline-k5": {
+    "summary": {
+      "label": "\u03bb0.2_baseline-k5",
+      "mrr": 0.8666666666666667,
+      "mrr_ci": [
+        0.6666666666666666,
+        1.0
+      ],
+      "ndcg_5": 0.7334764471957601,
+      "hit_rate_5": 0.8666666666666667,
+      "precision_5": 0.4000000000000001,
+      "ild": 0.16056964981371918,
+      "ild_ci": [
+        0.15134010069179452,
+        0.16938977522037707
+      ],
+      "avg_latency_ms": 0.0050385793050130205,
+      "avg_e2e_latency_ms": 717.5371328989664,
+      "avg_sine_computations": 0.0,
+      "n_queries": 15,
+      "by_difficulty": {
+        "easy": {
+          "mrr": 0.8,
+          "ndcg_5": 0.8,
+          "hit_rate_5": 0.8,
+          "ild": 0.16725474080764852,
+          "count": 5
+        },
+        "medium": {
+          "mrr": 0.8,
+          "ndcg_5": 0.7065735963827292,
+          "hit_rate_5": 0.8,
+          "ild": 0.16521200830557095,
+          "count": 5
+        },
+        "hard": {
+          "mrr": 1.0,
+          "ndcg_5": 0.6938557452045512,
+          "hit_rate_5": 1.0,
+          "ild": 0.14924220032793806,
+          "count": 5
+        }
+      }
+    },
+    "details": [
+      {
+        "query": "how to generate a JWT token with jsonwebtoken in Node.js",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.17022760339559864,
+        "latency_ms": 0.00095367431640625,
+        "e2e_latency_ms": 1052.7429580688477,
+        "sine_computations": 0
+      },
+      {
+        "query": "JWT header payload signature base64 encoding structure",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.18701892141210755,
+        "latency_ms": 0.010013580322265625,
+        "e2e_latency_ms": 945.4116821289062,
+        "sine_computations": 0
+      },
+      {
+        "query": "jwt malformed error invalid signature debugging",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.16121352519896473,
+        "latency_ms": 0.008821487426757812,
+        "e2e_latency_ms": 1280.1170349121094,
+        "sine_computations": 0
+      },
+      {
+        "query": "replacing express-session middleware with JWT token validation",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6,
+        "ild": 0.13459701358948184,
+        "latency_ms": 0.0059604644775390625,
+        "e2e_latency_ms": 670.3810691833496,
+        "sine_computations": 0
+      },
+      {
+        "query": "where to store JWT tokens securely localStorage vs httpOnly cookies",
+        "difficulty": "easy",
+        "mrr": 0.0,
+        "ndcg_5": 0.0,
+        "hit_rate_5": 0.0,
+        "precision_5": 0.0,
+        "ild": 0.1832166404420899,
+        "latency_ms": 0.006198883056640625,
+        "e2e_latency_ms": 601.0589599609375,
+        "sine_computations": 0
+      },
+      {
+        "query": "JWT token expiry handling and refresh token rotation",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.4,
+        "ild": 0.16433198324817608,
+        "latency_ms": 0.0050067901611328125,
+        "e2e_latency_ms": 715.5380249023438,
+        "sine_computations": 0
+      },
+      {
+        "query": "validating JWT claims and signature verification in middleware",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 0.9197207891481876,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.4,
+        "ild": 0.16495171898551084,
+        "latency_ms": 0.0050067901611328125,
+        "e2e_latency_ms": 804.8970699310303,
+        "sine_computations": 0
+      },
+      {
+        "query": "HS256 vs RS256 signing algorithm for JWT tokens",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6,
+        "ild": 0.19134204255693482,
+        "latency_ms": 0.0050067901611328125,
+        "e2e_latency_ms": 1244.8670864105225,
+        "sine_computations": 0
+      },
+      {
+        "query": "protecting API routes with Bearer token authorization header",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 0.6131471927654584,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.15979988377725168,
+        "latency_ms": 0.005245208740234375,
+        "e2e_latency_ms": 622.5991249084473,
+        "sine_computations": 0
+      },
+      {
+        "query": "how to revoke JWT tokens before they expire",
+        "difficulty": "medium",
+        "mrr": 0.0,
+        "ndcg_5": 0.0,
+        "hit_rate_5": 0.0,
+        "precision_5": 0.0,
+        "ild": 0.1456344129599814,
+        "latency_ms": 0.00476837158203125,
+        "e2e_latency_ms": 537.3587608337402,
+        "sine_computations": 0
+      },
+      {
+        "query": "JWT authentication setup with token refresh and secure storage best practices",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.46927872602275644,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.15697163807823486,
+        "latency_ms": 0.0040531158447265625,
+        "e2e_latency_ms": 356.9190502166748,
+        "sine_computations": 0
+      },
+      {
+        "query": "debugging JWT token expired errors in API middleware with proper validation",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.15724657232323397,
+        "latency_ms": 0.0030994415283203125,
+        "e2e_latency_ms": 585.7882499694824,
+        "sine_computations": 0
+      },
+      {
+        "query": "JWT token propagation and validation across microservices with API gateway",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.7653606369886217,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6666666666666666,
+        "ild": 0.1619173808532002,
+        "latency_ms": 0.0057220458984375,
+        "e2e_latency_ms": 436.539888381958,
+        "sine_computations": 0
+      },
+      {
+        "query": "migrating session auth to JWT with role-based access control claims",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.7653606369886217,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.14235313101194558,
+        "latency_ms": 0.00286102294921875,
+        "e2e_latency_ms": 276.95322036743164,
+        "sine_computations": 0
+      },
+      {
+        "query": "JWT security vulnerabilities none algorithm attack and token sidejacking prevention",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.46927872602275644,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.12772227937307568,
+        "latency_ms": 0.00286102294921875,
+        "e2e_latency_ms": 631.8848133087158,
+        "sine_computations": 0
+      }
+    ]
+  },
+  "\u03bb0.2_sine-anchor": {
+    "summary": {
+      "label": "\u03bb0.2_sine-anchor",
+      "mrr": 0.8666666666666667,
+      "mrr_ci": [
+        0.6666666666666666,
+        1.0
+      ],
+      "ndcg_5": 0.7334764471957601,
+      "hit_rate_5": 0.8666666666666667,
+      "precision_5": 0.4000000000000001,
+      "ild": 0.16056964981371918,
+      "ild_ci": [
+        0.15134010069179452,
+        0.16938977522037707
+      ],
+      "avg_latency_ms": 0.057315826416015625,
+      "avg_e2e_latency_ms": 710.4440530141195,
+      "avg_sine_computations": 4.933333333333334,
+      "n_queries": 15,
+      "by_difficulty": {
+        "easy": {
+          "mrr": 0.8,
+          "ndcg_5": 0.8,
+          "hit_rate_5": 0.8,
+          "ild": 0.16725474080764852,
+          "count": 5
+        },
+        "medium": {
+          "mrr": 0.8,
+          "ndcg_5": 0.7065735963827292,
+          "hit_rate_5": 0.8,
+          "ild": 0.16521200830557095,
+          "count": 5
+        },
+        "hard": {
+          "mrr": 1.0,
+          "ndcg_5": 0.6938557452045512,
+          "hit_rate_5": 1.0,
+          "ild": 0.14924220032793806,
+          "count": 5
+        }
+      }
+    },
+    "details": [
+      {
+        "query": "how to generate a JWT token with jsonwebtoken in Node.js",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.17022760339559864,
+        "latency_ms": 0.08797645568847656,
+        "e2e_latency_ms": 1105.4980754852295,
+        "sine_computations": 8
+      },
+      {
+        "query": "JWT header payload signature base64 encoding structure",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.18701892141210755,
+        "latency_ms": 0.06699562072753906,
+        "e2e_latency_ms": 946.1581707000732,
+        "sine_computations": 7
+      },
+      {
+        "query": "jwt malformed error invalid signature debugging",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.16121352519896473,
+        "latency_ms": 0.07390975952148438,
+        "e2e_latency_ms": 1196.5219974517822,
+        "sine_computations": 9
+      },
+      {
+        "query": "replacing express-session middleware with JWT token validation",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6,
+        "ild": 0.13459701358948184,
+        "latency_ms": 0.05698204040527344,
+        "e2e_latency_ms": 711.4887237548828,
+        "sine_computations": 5
+      },
+      {
+        "query": "where to store JWT tokens securely localStorage vs httpOnly cookies",
+        "difficulty": "easy",
+        "mrr": 0.0,
+        "ndcg_5": 0.0,
+        "hit_rate_5": 0.0,
+        "precision_5": 0.0,
+        "ild": 0.1832166404420899,
+        "latency_ms": 0.052928924560546875,
+        "e2e_latency_ms": 602.0951271057129,
+        "sine_computations": 4
+      },
+      {
+        "query": "JWT token expiry handling and refresh token rotation",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.4,
+        "ild": 0.16433198324817608,
+        "latency_ms": 0.06198883056640625,
+        "e2e_latency_ms": 710.197925567627,
+        "sine_computations": 5
+      },
+      {
+        "query": "validating JWT claims and signature verification in middleware",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 0.9197207891481876,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.4,
+        "ild": 0.16495171898551084,
+        "latency_ms": 0.06198883056640625,
+        "e2e_latency_ms": 796.9770431518555,
+        "sine_computations": 6
+      },
+      {
+        "query": "HS256 vs RS256 signing algorithm for JWT tokens",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6,
+        "ild": 0.19134204255693482,
+        "latency_ms": 0.080108642578125,
+        "e2e_latency_ms": 1170.3410148620605,
+        "sine_computations": 10
+      },
+      {
+        "query": "protecting API routes with Bearer token authorization header",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 0.6131471927654584,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.15979988377725168,
+        "latency_ms": 0.051975250244140625,
+        "e2e_latency_ms": 613.2416725158691,
+        "sine_computations": 4
+      },
+      {
+        "query": "how to revoke JWT tokens before they expire",
+        "difficulty": "medium",
+        "mrr": 0.0,
+        "ndcg_5": 0.0,
+        "hit_rate_5": 0.0,
+        "precision_5": 0.0,
+        "ild": 0.1456344129599814,
+        "latency_ms": 0.04410743713378906,
+        "e2e_latency_ms": 542.7570343017578,
+        "sine_computations": 3
+      },
+      {
+        "query": "JWT authentication setup with token refresh and secure storage best practices",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.46927872602275644,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.15697163807823486,
+        "latency_ms": 0.04673004150390625,
+        "e2e_latency_ms": 363.54565620422363,
+        "sine_computations": 2
+      },
+      {
+        "query": "debugging JWT token expired errors in API middleware with proper validation",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.15724657232323397,
+        "latency_ms": 0.050067901611328125,
+        "e2e_latency_ms": 676.6130924224854,
+        "sine_computations": 4
+      },
+      {
+        "query": "JWT token propagation and validation across microservices with API gateway",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.7653606369886217,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6666666666666666,
+        "ild": 0.1619173808532002,
+        "latency_ms": 0.041961669921875,
+        "e2e_latency_ms": 366.3172721862793,
+        "sine_computations": 2
+      },
+      {
+        "query": "migrating session auth to JWT with role-based access control claims",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.7653606369886217,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.14235313101194558,
+        "latency_ms": 0.03409385681152344,
+        "e2e_latency_ms": 269.0539360046387,
+        "sine_computations": 1
+      },
+      {
+        "query": "JWT security vulnerabilities none algorithm attack and token sidejacking prevention",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.46927872602275644,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.12772227937307568,
+        "latency_ms": 0.04792213439941406,
+        "e2e_latency_ms": 585.8540534973145,
+        "sine_computations": 4
+      }
+    ]
+  },
+  "\u03bb0.2_sine-iter": {
+    "summary": {
+      "label": "\u03bb0.2_sine-iter",
+      "mrr": 0.8666666666666667,
+      "mrr_ci": [
+        0.6666666666666666,
+        1.0
+      ],
+      "ndcg_5": 0.7334764471957601,
+      "hit_rate_5": 0.8666666666666667,
+      "precision_5": 0.4000000000000001,
+      "ild": 0.16641635320606188,
+      "ild_ci": [
+        0.15690520178794842,
+        0.17624957849959638
+      ],
+      "avg_latency_ms": 0.1762231190999349,
+      "avg_e2e_latency_ms": 703.9818286895752,
+      "avg_sine_computations": 14.666666666666666,
+      "n_queries": 15,
+      "by_difficulty": {
+        "easy": {
+          "mrr": 0.8,
+          "ndcg_5": 0.8,
+          "hit_rate_5": 0.8,
+          "ild": 0.17646484612788332,
+          "count": 5
+        },
+        "medium": {
+          "mrr": 0.8,
+          "ndcg_5": 0.7065735963827292,
+          "hit_rate_5": 0.8,
+          "ild": 0.17354201316236417,
+          "count": 5
+        },
+        "hard": {
+          "mrr": 1.0,
+          "ndcg_5": 0.6938557452045512,
+          "hit_rate_5": 1.0,
+          "ild": 0.14924220032793806,
+          "count": 5
+        }
+      }
+    },
+    "details": [
+      {
+        "query": "how to generate a JWT token with jsonwebtoken in Node.js",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.17022760339559864,
+        "latency_ms": 0.2849102020263672,
+        "e2e_latency_ms": 1060.3089332580566,
+        "sine_computations": 30
+      },
+      {
+        "query": "JWT header payload signature base64 encoding structure",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.19646959892443241,
+        "latency_ms": 0.23794174194335938,
+        "e2e_latency_ms": 965.8529758453369,
+        "sine_computations": 25
+      },
+      {
+        "query": "jwt malformed error invalid signature debugging",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.16850146598345597,
+        "latency_ms": 0.32401084899902344,
+        "e2e_latency_ms": 1154.1509628295898,
+        "sine_computations": 35
+      },
+      {
+        "query": "replacing express-session middleware with JWT token validation",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6,
+        "ild": 0.1639089218938397,
+        "latency_ms": 0.15997886657714844,
+        "e2e_latency_ms": 689.9659633636475,
+        "sine_computations": 15
+      },
+      {
+        "query": "where to store JWT tokens securely localStorage vs httpOnly cookies",
+        "difficulty": "easy",
+        "mrr": 0.0,
+        "ndcg_5": 0.0,
+        "hit_rate_5": 0.0,
+        "precision_5": 0.0,
+        "ild": 0.1832166404420899,
+        "latency_ms": 0.12803077697753906,
+        "e2e_latency_ms": 630.0079822540283,
+        "sine_computations": 10
+      },
+      {
+        "query": "JWT token expiry handling and refresh token rotation",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 0.9197207891481876,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.4,
+        "ild": 0.1822745776421199,
+        "latency_ms": 0.3857612609863281,
+        "e2e_latency_ms": 819.4019794464111,
+        "sine_computations": 15
+      },
+      {
+        "query": "validating JWT claims and signature verification in middleware",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.4,
+        "ild": 0.188659148875533,
+        "latency_ms": 0.2028942108154297,
+        "e2e_latency_ms": 808.258056640625,
+        "sine_computations": 20
+      },
+      {
+        "query": "HS256 vs RS256 signing algorithm for JWT tokens",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6,
+        "ild": 0.19134204255693485,
+        "latency_ms": 0.3561973571777344,
+        "e2e_latency_ms": 1194.6420669555664,
+        "sine_computations": 40
+      },
+      {
+        "query": "protecting API routes with Bearer token authorization header",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 0.6131471927654584,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.15979988377725168,
+        "latency_ms": 0.12087821960449219,
+        "e2e_latency_ms": 577.9876708984375,
+        "sine_computations": 10
+      },
+      {
+        "query": "how to revoke JWT tokens before they expire",
+        "difficulty": "medium",
+        "mrr": 0.0,
+        "ndcg_5": 0.0,
+        "hit_rate_5": 0.0,
+        "precision_5": 0.0,
+        "ild": 0.1456344129599814,
+        "latency_ms": 0.07891654968261719,
+        "e2e_latency_ms": 504.3759346008301,
+        "sine_computations": 5
+      },
+      {
+        "query": "JWT authentication setup with token refresh and secure storage best practices",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.46927872602275644,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.15697163807823486,
+        "latency_ms": 0.04792213439941406,
+        "e2e_latency_ms": 359.18593406677246,
+        "sine_computations": 0
+      },
+      {
+        "query": "debugging JWT token expired errors in API middleware with proper validation",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.15724657232323397,
+        "latency_ms": 0.11491775512695312,
+        "e2e_latency_ms": 589.7688865661621,
+        "sine_computations": 10
+      },
+      {
+        "query": "JWT token propagation and validation across microservices with API gateway",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.7653606369886217,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6666666666666666,
+        "ild": 0.1619173808532002,
+        "latency_ms": 0.051021575927734375,
+        "e2e_latency_ms": 362.8549575805664,
+        "sine_computations": 0
+      },
+      {
+        "query": "migrating session auth to JWT with role-based access control claims",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.7653606369886217,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.14235313101194558,
+        "latency_ms": 0.031948089599609375,
+        "e2e_latency_ms": 264.7428512573242,
+        "sine_computations": -5
+      },
+      {
+        "query": "JWT security vulnerabilities none algorithm attack and token sidejacking prevention",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.46927872602275644,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.12772227937307568,
+        "latency_ms": 0.11801719665527344,
+        "e2e_latency_ms": 578.2222747802734,
+        "sine_computations": 10
+      }
+    ]
+  },
+  "\u03bb0.2_sine-centroid": {
+    "summary": {
+      "label": "\u03bb0.2_sine-centroid",
+      "mrr": 0.8666666666666667,
+      "mrr_ci": [
+        0.6666666666666666,
+        1.0
+      ],
+      "ndcg_5": 0.7334764471957601,
+      "hit_rate_5": 0.8666666666666667,
+      "precision_5": 0.4000000000000001,
+      "ild": 0.16434913270302912,
+      "ild_ci": [
+        0.15588263262692392,
+        0.17313088855301248
+      ],
+      "avg_latency_ms": 0.11720657348632812,
+      "avg_e2e_latency_ms": 698.5164483388265,
+      "avg_sine_computations": 14.666666666666666,
+      "n_queries": 15,
+      "by_difficulty": {
+        "easy": {
+          "mrr": 0.8,
+          "ndcg_5": 0.8,
+          "hit_rate_5": 0.8,
+          "ild": 0.1731171224685201,
+          "count": 5
+        },
+        "medium": {
+          "mrr": 0.8,
+          "ndcg_5": 0.7065735963827292,
+          "hit_rate_5": 0.8,
+          "ild": 0.17068807531262914,
+          "count": 5
+        },
+        "hard": {
+          "mrr": 1.0,
+          "ndcg_5": 0.6938557452045512,
+          "hit_rate_5": 1.0,
+          "ild": 0.14924220032793806,
+          "count": 5
+        }
+      }
+    },
+    "details": [
+      {
+        "query": "how to generate a JWT token with jsonwebtoken in Node.js",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.17022760339559864,
+        "latency_ms": 0.17189979553222656,
+        "e2e_latency_ms": 1067.8682327270508,
+        "sine_computations": 30
+      },
+      {
+        "query": "JWT header payload signature base64 encoding structure",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.18701892141210755,
+        "latency_ms": 0.15282630920410156,
+        "e2e_latency_ms": 932.7869415283203,
+        "sine_computations": 25
+      },
+      {
+        "query": "jwt malformed error invalid signature debugging",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.16121352519896473,
+        "latency_ms": 0.18095970153808594,
+        "e2e_latency_ms": 1206.1131000518799,
+        "sine_computations": 35
+      },
+      {
+        "query": "replacing express-session middleware with JWT token validation",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6,
+        "ild": 0.1639089218938397,
+        "latency_ms": 0.1480579376220703,
+        "e2e_latency_ms": 691.431999206543,
+        "sine_computations": 15
+      },
+      {
+        "query": "where to store JWT tokens securely localStorage vs httpOnly cookies",
+        "difficulty": "easy",
+        "mrr": 0.0,
+        "ndcg_5": 0.0,
+        "hit_rate_5": 0.0,
+        "precision_5": 0.0,
+        "ild": 0.1832166404420899,
+        "latency_ms": 0.10085105895996094,
+        "e2e_latency_ms": 611.3789081573486,
+        "sine_computations": 10
+      },
+      {
+        "query": "JWT token expiry handling and refresh token rotation",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 0.9197207891481876,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.4,
+        "ild": 0.17558549617720232,
+        "latency_ms": 0.12087821960449219,
+        "e2e_latency_ms": 715.55495262146,
+        "sine_computations": 15
+      },
+      {
+        "query": "validating JWT claims and signature verification in middleware",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.4,
+        "ild": 0.1810785410917755,
+        "latency_ms": 0.13899803161621094,
+        "e2e_latency_ms": 814.3680095672607,
+        "sine_computations": 20
+      },
+      {
+        "query": "HS256 vs RS256 signing algorithm for JWT tokens",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6,
+        "ild": 0.19134204255693485,
+        "latency_ms": 0.19621849060058594,
+        "e2e_latency_ms": 1160.7270240783691,
+        "sine_computations": 40
+      },
+      {
+        "query": "protecting API routes with Bearer token authorization header",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 0.6131471927654584,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.15979988377725168,
+        "latency_ms": 0.10800361633300781,
+        "e2e_latency_ms": 582.4790000915527,
+        "sine_computations": 10
+      },
+      {
+        "query": "how to revoke JWT tokens before they expire",
+        "difficulty": "medium",
+        "mrr": 0.0,
+        "ndcg_5": 0.0,
+        "hit_rate_5": 0.0,
+        "precision_5": 0.0,
+        "ild": 0.1456344129599814,
+        "latency_ms": 0.07796287536621094,
+        "e2e_latency_ms": 502.349853515625,
+        "sine_computations": 5
+      },
+      {
+        "query": "JWT authentication setup with token refresh and secure storage best practices",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.46927872602275644,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.15697163807823486,
+        "latency_ms": 0.06079673767089844,
+        "e2e_latency_ms": 365.39697647094727,
+        "sine_computations": 0
+      },
+      {
+        "query": "debugging JWT token expired errors in API middleware with proper validation",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.15724657232323397,
+        "latency_ms": 0.09489059448242188,
+        "e2e_latency_ms": 593.1968688964844,
+        "sine_computations": 10
+      },
+      {
+        "query": "JWT token propagation and validation across microservices with API gateway",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.7653606369886217,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6666666666666666,
+        "ild": 0.1619173808532002,
+        "latency_ms": 0.06389617919921875,
+        "e2e_latency_ms": 352.7789115905762,
+        "sine_computations": 0
+      },
+      {
+        "query": "migrating session auth to JWT with role-based access control claims",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.7653606369886217,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.14235313101194558,
+        "latency_ms": 0.04792213439941406,
+        "e2e_latency_ms": 271.467924118042,
+        "sine_computations": -5
+      },
+      {
+        "query": "JWT security vulnerabilities none algorithm attack and token sidejacking prevention",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.46927872602275644,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.12772227937307568,
+        "latency_ms": 0.09393692016601562,
+        "e2e_latency_ms": 609.8480224609375,
+        "sine_computations": 10
+      }
+    ]
+  },
+  "ctx_baseline-k5": {
+    "summary": {
+      "label": "ctx_baseline-k5",
+      "mrr": 0.8666666666666667,
+      "mrr_ci": [
+        0.6666666666666666,
+        1.0
+      ],
+      "ndcg_5": 0.7334764471957601,
+      "hit_rate_5": 0.8666666666666667,
+      "precision_5": 0.4000000000000001,
+      "ild": 0.16056964981371918,
+      "ild_ci": [
+        0.15134010069179452,
+        0.16938977522037707
+      ],
+      "avg_latency_ms": 0.004514058430989583,
+      "avg_e2e_latency_ms": 711.8388811747233,
+      "avg_sine_computations": 0.0,
+      "n_queries": 15,
+      "by_difficulty": {
+        "easy": {
+          "mrr": 0.8,
+          "ndcg_5": 0.8,
+          "hit_rate_5": 0.8,
+          "ild": 0.16725474080764852,
+          "count": 5
+        },
+        "medium": {
+          "mrr": 0.8,
+          "ndcg_5": 0.7065735963827292,
+          "hit_rate_5": 0.8,
+          "ild": 0.16521200830557095,
+          "count": 5
+        },
+        "hard": {
+          "mrr": 1.0,
+          "ndcg_5": 0.6938557452045512,
+          "hit_rate_5": 1.0,
+          "ild": 0.14924220032793806,
+          "count": 5
+        }
+      }
+    },
+    "details": [
+      {
+        "query": "how to generate a JWT token with jsonwebtoken in Node.js",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.17022760339559864,
+        "latency_ms": 0.0,
+        "e2e_latency_ms": 1016.7810916900635,
+        "sine_computations": 0
+      },
+      {
+        "query": "JWT header payload signature base64 encoding structure",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.18701892141210755,
+        "latency_ms": 0.005245208740234375,
+        "e2e_latency_ms": 966.9351577758789,
+        "sine_computations": 0
+      },
+      {
+        "query": "jwt malformed error invalid signature debugging",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.16121352519896473,
+        "latency_ms": 0.0057220458984375,
+        "e2e_latency_ms": 1137.026071548462,
+        "sine_computations": 0
+      },
+      {
+        "query": "replacing express-session middleware with JWT token validation",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6,
+        "ild": 0.13459701358948184,
+        "latency_ms": 0.0050067901611328125,
+        "e2e_latency_ms": 715.6951427459717,
+        "sine_computations": 0
+      },
+      {
+        "query": "where to store JWT tokens securely localStorage vs httpOnly cookies",
+        "difficulty": "easy",
+        "mrr": 0.0,
+        "ndcg_5": 0.0,
+        "hit_rate_5": 0.0,
+        "precision_5": 0.0,
+        "ild": 0.1832166404420899,
+        "latency_ms": 0.00476837158203125,
+        "e2e_latency_ms": 604.9909591674805,
+        "sine_computations": 0
+      },
+      {
+        "query": "JWT token expiry handling and refresh token rotation",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.4,
+        "ild": 0.16433198324817608,
+        "latency_ms": 0.0069141387939453125,
+        "e2e_latency_ms": 722.3100662231445,
+        "sine_computations": 0
+      },
+      {
+        "query": "validating JWT claims and signature verification in middleware",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 0.9197207891481876,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.4,
+        "ild": 0.16495171898551084,
+        "latency_ms": 0.0050067901611328125,
+        "e2e_latency_ms": 856.389045715332,
+        "sine_computations": 0
+      },
+      {
+        "query": "HS256 vs RS256 signing algorithm for JWT tokens",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6,
+        "ild": 0.19134204255693482,
+        "latency_ms": 0.0050067901611328125,
+        "e2e_latency_ms": 1207.934856414795,
+        "sine_computations": 0
+      },
+      {
+        "query": "protecting API routes with Bearer token authorization header",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 0.6131471927654584,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.15979988377725168,
+        "latency_ms": 0.00476837158203125,
+        "e2e_latency_ms": 669.8160171508789,
+        "sine_computations": 0
+      },
+      {
+        "query": "how to revoke JWT tokens before they expire",
+        "difficulty": "medium",
+        "mrr": 0.0,
+        "ndcg_5": 0.0,
+        "hit_rate_5": 0.0,
+        "precision_5": 0.0,
+        "ild": 0.1456344129599814,
+        "latency_ms": 0.006198883056640625,
+        "e2e_latency_ms": 511.5988254547119,
+        "sine_computations": 0
+      },
+      {
+        "query": "JWT authentication setup with token refresh and secure storage best practices",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.46927872602275644,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.15697163807823486,
+        "latency_ms": 0.0040531158447265625,
+        "e2e_latency_ms": 373.9309310913086,
+        "sine_computations": 0
+      },
+      {
+        "query": "debugging JWT token expired errors in API middleware with proper validation",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.15724657232323397,
+        "latency_ms": 0.0030994415283203125,
+        "e2e_latency_ms": 675.8830547332764,
+        "sine_computations": 0
+      },
+      {
+        "query": "JWT token propagation and validation across microservices with API gateway",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.7653606369886217,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6666666666666666,
+        "ild": 0.1619173808532002,
+        "latency_ms": 0.0040531158447265625,
+        "e2e_latency_ms": 373.89492988586426,
+        "sine_computations": 0
+      },
+      {
+        "query": "migrating session auth to JWT with role-based access control claims",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.7653606369886217,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.14235313101194558,
+        "latency_ms": 0.00476837158203125,
+        "e2e_latency_ms": 266.41392707824707,
+        "sine_computations": 0
+      },
+      {
+        "query": "JWT security vulnerabilities none algorithm attack and token sidejacking prevention",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.46927872602275644,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.2,
+        "ild": 0.12772227937307568,
+        "latency_ms": 0.0030994415283203125,
+        "e2e_latency_ms": 577.9831409454346,
+        "sine_computations": 0
+      }
+    ]
+  },
+  "ctx_baseline-k3": {
+    "summary": {
+      "label": "ctx_baseline-k3",
+      "mrr": 0.8666666666666667,
+      "mrr_ci": [
+        0.6666666666666666,
+        1.0
+      ],
+      "ndcg_5": 0.6973955832361529,
+      "hit_rate_5": 0.8666666666666667,
+      "precision_5": 0.5111111111111111,
+      "ild": 0.14586711407877798,
+      "ild_ci": [
+        0.12809191027955955,
+        0.16067674918091374
+      ],
+      "avg_latency_ms": 0.0029087066650390625,
+      "avg_e2e_latency_ms": 698.7281958262125,
+      "avg_sine_computations": 0.0,
+      "n_queries": 15,
+      "by_difficulty": {
+        "easy": {
+          "mrr": 0.8,
+          "ndcg_5": 0.8,
+          "hit_rate_5": 0.8,
+          "ild": 0.1451342315807746,
+          "count": 5
+        },
+        "medium": {
+          "mrr": 0.8,
+          "ndcg_5": 0.6452588771061833,
+          "hit_rate_5": 0.8,
+          "ild": 0.14851687843270198,
+          "count": 5
+        },
+        "hard": {
+          "mrr": 1.0,
+          "ndcg_5": 0.6469278726022756,
+          "hit_rate_5": 1.0,
+          "ild": 0.14395023222285735,
+          "count": 5
+        }
+      }
+    },
+    "details": [
+      {
+        "query": "how to generate a JWT token with jsonwebtoken in Node.js",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.16849867034895924,
+        "latency_ms": 0.00095367431640625,
+        "e2e_latency_ms": 1055.4869174957275,
+        "sine_computations": 0
+      },
+      {
+        "query": "JWT header payload signature base64 encoding structure",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.1886554772013406,
+        "latency_ms": 0.003814697265625,
+        "e2e_latency_ms": 911.2708568572998,
+        "sine_computations": 0
+      },
+      {
+        "query": "jwt malformed error invalid signature debugging",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.14997737561900418,
+        "latency_ms": 0.0021457672119140625,
+        "e2e_latency_ms": 1133.6679458618164,
+        "sine_computations": 0
+      },
+      {
+        "query": "replacing express-session middleware with JWT token validation",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.055540476357445,
+        "latency_ms": 0.0030994415283203125,
+        "e2e_latency_ms": 689.6843910217285,
+        "sine_computations": 0
+      },
+      {
+        "query": "where to store JWT tokens securely localStorage vs httpOnly cookies",
+        "difficulty": "easy",
+        "mrr": 0.0,
+        "ndcg_5": 0.0,
+        "hit_rate_5": 0.0,
+        "precision_5": 0.0,
+        "ild": 0.1629991583771241,
+        "latency_ms": 0.0030994415283203125,
+        "e2e_latency_ms": 586.3151550292969,
+        "sine_computations": 0
+      },
+      {
+        "query": "JWT token expiry handling and refresh token rotation",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6666666666666666,
+        "ild": 0.15400302952629732,
+        "latency_ms": 0.0040531158447265625,
+        "e2e_latency_ms": 701.5700340270996,
+        "sine_computations": 0
+      },
+      {
+        "query": "validating JWT claims and signature verification in middleware",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 0.6131471927654584,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.10707746916892828,
+        "latency_ms": 0.003814697265625,
+        "e2e_latency_ms": 890.40207862854,
+        "sine_computations": 0
+      },
+      {
+        "query": "HS256 vs RS256 signing algorithm for JWT tokens",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.16039840237571276,
+        "latency_ms": 0.0021457672119140625,
+        "e2e_latency_ms": 1177.6182651519775,
+        "sine_computations": 0
+      },
+      {
+        "query": "protecting API routes with Bearer token authorization header",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 0.6131471927654584,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.1771735388562097,
+        "latency_ms": 0.0040531158447265625,
+        "e2e_latency_ms": 557.3940277099609,
+        "sine_computations": 0
+      },
+      {
+        "query": "how to revoke JWT tokens before they expire",
+        "difficulty": "medium",
+        "mrr": 0.0,
+        "ndcg_5": 0.0,
+        "hit_rate_5": 0.0,
+        "precision_5": 0.0,
+        "ild": 0.14393195223636193,
+        "latency_ms": 0.00286102294921875,
+        "e2e_latency_ms": 483.5329055786133,
+        "sine_computations": 0
+      },
+      {
+        "query": "JWT authentication setup with token refresh and secure storage best practices",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.46927872602275644,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.15697163807823486,
+        "latency_ms": 0.0030994415283203125,
+        "e2e_latency_ms": 349.46608543395996,
+        "sine_computations": 0
+      },
+      {
+        "query": "debugging JWT token expired errors in API middleware with proper validation",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.7653606369886217,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.1472982121049927,
+        "latency_ms": 0.0040531158447265625,
+        "e2e_latency_ms": 606.8770885467529,
+        "sine_computations": 0
+      },
+      {
+        "query": "JWT token propagation and validation across microservices with API gateway",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.7653606369886217,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6666666666666666,
+        "ild": 0.1619173808532002,
+        "latency_ms": 0.0026226043701171875,
+        "e2e_latency_ms": 438.20905685424805,
+        "sine_computations": 0
+      },
+      {
+        "query": "migrating session auth to JWT with role-based access control claims",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.7653606369886217,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.14235313101194558,
+        "latency_ms": 0.0016689300537109375,
+        "e2e_latency_ms": 278.06806564331055,
+        "sine_computations": 0
+      },
+      {
+        "query": "JWT security vulnerabilities none algorithm attack and token sidejacking prevention",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.46927872602275644,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.11121079906591332,
+        "latency_ms": 0.0021457672119140625,
+        "e2e_latency_ms": 621.3600635528564,
+        "sine_computations": 0
+      }
+    ]
+  },
+  "ctx_sine-iter-k3": {
+    "summary": {
+      "label": "ctx_sine-iter-k3",
+      "mrr": 0.8666666666666667,
+      "mrr_ci": [
+        0.6666666666666666,
+        1.0
+      ],
+      "ndcg_5": 0.7334764471957601,
+      "hit_rate_5": 0.8666666666666667,
+      "precision_5": 0.4666666666666667,
+      "ild": 0.17181719583271335,
+      "ild_ci": [
+        0.16248700710799555,
+        0.18155337769373608
+      ],
+      "avg_latency_ms": 0.08821487426757812,
+      "avg_e2e_latency_ms": 713.9693260192871,
+      "avg_sine_computations": 11.8,
+      "n_queries": 15,
+      "by_difficulty": {
+        "easy": {
+          "mrr": 0.8,
+          "ndcg_5": 0.8,
+          "hit_rate_5": 0.8,
+          "ild": 0.18349382120003557,
+          "count": 5
+        },
+        "medium": {
+          "mrr": 0.8,
+          "ndcg_5": 0.7065735963827292,
+          "hit_rate_5": 0.8,
+          "ild": 0.17680562087010412,
+          "count": 5
+        },
+        "hard": {
+          "mrr": 1.0,
+          "ndcg_5": 0.6938557452045512,
+          "hit_rate_5": 1.0,
+          "ild": 0.1551521454280003,
+          "count": 5
+        }
+      }
+    },
+    "details": [
+      {
+        "query": "how to generate a JWT token with jsonwebtoken in Node.js",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.18054837904778984,
+        "latency_ms": 0.1220703125,
+        "e2e_latency_ms": 1042.5851345062256,
+        "sine_computations": 21
+      },
+      {
+        "query": "JWT header payload signature base64 encoding structure",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.18708981337353534,
+        "latency_ms": 0.11181831359863281,
+        "e2e_latency_ms": 929.7177791595459,
+        "sine_computations": 18
+      },
+      {
+        "query": "jwt malformed error invalid signature debugging",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.17693330491604395,
+        "latency_ms": 0.164031982421875,
+        "e2e_latency_ms": 1262.7849578857422,
+        "sine_computations": 24
+      },
+      {
+        "query": "replacing express-session middleware with JWT token validation",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.20989845028568468,
+        "latency_ms": 0.08392333984375,
+        "e2e_latency_ms": 711.5373611450195,
+        "sine_computations": 12
+      },
+      {
+        "query": "where to store JWT tokens securely localStorage vs httpOnly cookies",
+        "difficulty": "easy",
+        "mrr": 0.0,
+        "ndcg_5": 0.0,
+        "hit_rate_5": 0.0,
+        "precision_5": 0.0,
+        "ild": 0.1629991583771241,
+        "latency_ms": 0.07677078247070312,
+        "e2e_latency_ms": 674.6578216552734,
+        "sine_computations": 9
+      },
+      {
+        "query": "JWT token expiry handling and refresh token rotation",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 0.9197207891481876,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6666666666666666,
+        "ild": 0.19430337145629875,
+        "latency_ms": 0.08893013000488281,
+        "e2e_latency_ms": 718.4319496154785,
+        "sine_computations": 12
+      },
+      {
+        "query": "validating JWT claims and signature verification in middleware",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6666666666666666,
+        "ild": 0.17980607441281926,
+        "latency_ms": 0.10085105895996094,
+        "e2e_latency_ms": 819.9508190155029,
+        "sine_computations": 15
+      },
+      {
+        "query": "HS256 vs RS256 signing algorithm for JWT tokens",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6666666666666666,
+        "ild": 0.188813167388831,
+        "latency_ms": 0.15115737915039062,
+        "e2e_latency_ms": 1197.9339122772217,
+        "sine_computations": 27
+      },
+      {
+        "query": "protecting API routes with Bearer token authorization header",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 0.6131471927654584,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.1771735388562097,
+        "latency_ms": 0.07605552673339844,
+        "e2e_latency_ms": 587.8829956054688,
+        "sine_computations": 9
+      },
+      {
+        "query": "how to revoke JWT tokens before they expire",
+        "difficulty": "medium",
+        "mrr": 0.0,
+        "ndcg_5": 0.0,
+        "hit_rate_5": 0.0,
+        "precision_5": 0.0,
+        "ild": 0.14393195223636193,
+        "latency_ms": 0.05984306335449219,
+        "e2e_latency_ms": 515.5253410339355,
+        "sine_computations": 6
+      },
+      {
+        "query": "JWT authentication setup with token refresh and secure storage best practices",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.46927872602275644,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.15697163807823486,
+        "latency_ms": 0.051021575927734375,
+        "e2e_latency_ms": 368.5719966888428,
+        "sine_computations": 3
+      },
+      {
+        "query": "debugging JWT token expired errors in API middleware with proper validation",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.16410854894652782,
+        "latency_ms": 0.07295608520507812,
+        "e2e_latency_ms": 594.4459438323975,
+        "sine_computations": 9
+      },
+      {
+        "query": "JWT token propagation and validation across microservices with API gateway",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.7653606369886217,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6666666666666666,
+        "ild": 0.1619173808532002,
+        "latency_ms": 0.04792213439941406,
+        "e2e_latency_ms": 359.874963760376,
+        "sine_computations": 3
+      },
+      {
+        "query": "migrating session auth to JWT with role-based access control claims",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.7653606369886217,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.14235313101194558,
+        "latency_ms": 0.0400543212890625,
+        "e2e_latency_ms": 282.3679447174072,
+        "sine_computations": 0
+      },
+      {
+        "query": "JWT security vulnerabilities none algorithm attack and token sidejacking prevention",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.46927872602275644,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.15041002825009298,
+        "latency_ms": 0.07581710815429688,
+        "e2e_latency_ms": 643.2709693908691,
+        "sine_computations": 9
+      }
+    ]
+  },
+  "ctx_sine-cent-k3": {
+    "summary": {
+      "label": "ctx_sine-cent-k3",
+      "mrr": 0.8666666666666667,
+      "mrr_ci": [
+        0.6666666666666666,
+        1.0
+      ],
+      "ndcg_5": 0.7334764471957601,
+      "hit_rate_5": 0.8666666666666667,
+      "precision_5": 0.4888888888888889,
+      "ild": 0.16860244845401173,
+      "ild_ci": [
+        0.16045254111457444,
+        0.1765376282946489
+      ],
+      "avg_latency_ms": 0.08915265401204427,
+      "avg_e2e_latency_ms": 705.7215213775635,
+      "avg_sine_computations": 11.8,
+      "n_queries": 15,
+      "by_difficulty": {
+        "easy": {
+          "mrr": 0.8,
+          "ndcg_5": 0.8,
+          "hit_rate_5": 0.8,
+          "ild": 0.17384957906393075,
+          "count": 5
+        },
+        "medium": {
+          "mrr": 0.8,
+          "ndcg_5": 0.7065735963827292,
+          "hit_rate_5": 0.8,
+          "ild": 0.17680562087010412,
+          "count": 5
+        },
+        "hard": {
+          "mrr": 1.0,
+          "ndcg_5": 0.6938557452045512,
+          "hit_rate_5": 1.0,
+          "ild": 0.1551521454280003,
+          "count": 5
+        }
+      }
+    },
+    "details": [
+      {
+        "query": "how to generate a JWT token with jsonwebtoken in Node.js",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.18054837904778984,
+        "latency_ms": 0.11301040649414062,
+        "e2e_latency_ms": 1097.7060794830322,
+        "sine_computations": 21
+      },
+      {
+        "query": "JWT header payload signature base64 encoding structure",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.1886554772013406,
+        "latency_ms": 0.10395050048828125,
+        "e2e_latency_ms": 923.8240718841553,
+        "sine_computations": 18
+      },
+      {
+        "query": "jwt malformed error invalid signature debugging",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.17693330491604395,
+        "latency_ms": 0.1239776611328125,
+        "e2e_latency_ms": 1154.285192489624,
+        "sine_computations": 24
+      },
+      {
+        "query": "replacing express-session middleware with JWT token validation",
+        "difficulty": "easy",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6666666666666666,
+        "ild": 0.16011157577735521,
+        "latency_ms": 0.087738037109375,
+        "e2e_latency_ms": 710.1929187774658,
+        "sine_computations": 12
+      },
+      {
+        "query": "where to store JWT tokens securely localStorage vs httpOnly cookies",
+        "difficulty": "easy",
+        "mrr": 0.0,
+        "ndcg_5": 0.0,
+        "hit_rate_5": 0.0,
+        "precision_5": 0.0,
+        "ild": 0.1629991583771241,
+        "latency_ms": 0.07915496826171875,
+        "e2e_latency_ms": 614.0401363372803,
+        "sine_computations": 9
+      },
+      {
+        "query": "JWT token expiry handling and refresh token rotation",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 0.9197207891481876,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6666666666666666,
+        "ild": 0.19430337145629875,
+        "latency_ms": 0.08702278137207031,
+        "e2e_latency_ms": 715.6782150268555,
+        "sine_computations": 12
+      },
+      {
+        "query": "validating JWT claims and signature verification in middleware",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6666666666666666,
+        "ild": 0.17980607441281926,
+        "latency_ms": 0.09608268737792969,
+        "e2e_latency_ms": 840.7177925109863,
+        "sine_computations": 15
+      },
+      {
+        "query": "HS256 vs RS256 signing algorithm for JWT tokens",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6666666666666666,
+        "ild": 0.188813167388831,
+        "latency_ms": 0.13685226440429688,
+        "e2e_latency_ms": 1181.3302040100098,
+        "sine_computations": 27
+      },
+      {
+        "query": "protecting API routes with Bearer token authorization header",
+        "difficulty": "medium",
+        "mrr": 1.0,
+        "ndcg_5": 0.6131471927654584,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.1771735388562097,
+        "latency_ms": 0.09894371032714844,
+        "e2e_latency_ms": 623.4869956970215,
+        "sine_computations": 9
+      },
+      {
+        "query": "how to revoke JWT tokens before they expire",
+        "difficulty": "medium",
+        "mrr": 0.0,
+        "ndcg_5": 0.0,
+        "hit_rate_5": 0.0,
+        "precision_5": 0.0,
+        "ild": 0.14393195223636193,
+        "latency_ms": 0.07009506225585938,
+        "e2e_latency_ms": 506.44397735595703,
+        "sine_computations": 6
+      },
+      {
+        "query": "JWT authentication setup with token refresh and secure storage best practices",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.46927872602275644,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.15697163807823486,
+        "latency_ms": 0.06198883056640625,
+        "e2e_latency_ms": 383.0101490020752,
+        "sine_computations": 3
+      },
+      {
+        "query": "debugging JWT token expired errors in API middleware with proper validation",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 1.0,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.16410854894652782,
+        "latency_ms": 0.07915496826171875,
+        "e2e_latency_ms": 591.264009475708,
+        "sine_computations": 9
+      },
+      {
+        "query": "JWT token propagation and validation across microservices with API gateway",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.7653606369886217,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.6666666666666666,
+        "ild": 0.1619173808532002,
+        "latency_ms": 0.06413459777832031,
+        "e2e_latency_ms": 378.75914573669434,
+        "sine_computations": 3
+      },
+      {
+        "query": "migrating session auth to JWT with role-based access control claims",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.7653606369886217,
+        "hit_rate_5": 1.0,
+        "precision_5": 1.0,
+        "ild": 0.14235313101194558,
+        "latency_ms": 0.05602836608886719,
+        "e2e_latency_ms": 267.63296127319336,
+        "sine_computations": 0
+      },
+      {
+        "query": "JWT security vulnerabilities none algorithm attack and token sidejacking prevention",
+        "difficulty": "hard",
+        "mrr": 1.0,
+        "ndcg_5": 0.46927872602275644,
+        "hit_rate_5": 1.0,
+        "precision_5": 0.3333333333333333,
+        "ild": 0.15041002825009298,
+        "latency_ms": 0.07915496826171875,
+        "e2e_latency_ms": 597.4509716033936,
+        "sine_computations": 9
+      }
+    ]
+  }
+}

@@ -2515,3 +2515,112 @@ Rate limiter is complementary to `_reranker_semaphore` (reduces queue depth) and
 | Legitimate agent hits rate limit | Low | Medium | Default 30/min is generous. Configurable via env var. |
 | Clock skew with `time.monotonic()` | None | None | `monotonic()` immune to wall-clock adjustments. |
 | Memory growth from many sessions | Low | Low | Cleanup thread evicts stale sessions every 5 minutes. |
+
+
+---
+
+## Entry 43: Sine-Distance Diversity Reranking — 2026-02-19
+
+### Background
+
+Investigated whether sine distance (`sin(θ) = √(1 - cos²(θ))`) can serve as a post-retrieval diversity reranking step. The hypothesis: after ordering results by relevance (cosine similarity or cross-encoder), reorder positions 2–k to penalize redundant chunks and surface diverse context. Sine distance is 0 for identical vectors and 1 for orthogonal vectors, making it a natural diversity kernel.
+
+### Three Strategies Tested
+
+1. **Anchor** — Compare each chunk against the top-1 result, demote near-duplicates. O(n).
+2. **Iterative** — Greedily select chunks maximizing `λ·relevance + (1-λ)·min_sine_to_selected`. O(k·n).
+3. **Centroid** — Same as iterative but compare against running centroid of selected set. O(k·n).
+
+All strategies preserve the top-1 result (highest relevance) and only reorder positions 2 through k.
+
+### Methodology
+
+Benchmarked across 2 corpora × 3 retrieval paths × 4 λ values:
+
+- **Standard corpus**: 89 docs, 108 Centurion queries (mixed difficulty)
+- **Dense redundant corpus**: 8 JWT authentication docs (same topic, different angles), 15 queries. Generated via Bedrock (Claude 3 Haiku) with forced vocabulary overlap.
+- **Paths**: simple (bi-encoder), hybrid (BM25+vector+RRF), precise (cross-encoder)
+- **λ sweep**: 0.2, 0.3, 0.5, 0.7
+
+Metrics: MRR, nDCG@5, Hit Rate@5, Precision@5, Intra-List Diversity (ILD = mean pairwise cosine distance), sine-step latency, end-to-end latency.
+
+Context efficiency test: compare sine@k=3 vs baseline@k=5 — can we get equivalent quality with 40% less context?
+
+### Results: Standard Corpus (89 docs, 108 queries)
+
+| Path | Strategy | λ | ΔMRR | ΔILD | E2E(ms) | Sine(ms) |
+|------|----------|:-:|:----:|:----:|:-------:|:--------:|
+| simple | iter | 0.2 | -0.004 | +0.032 | 407 | 0.25 |
+| **hybrid** | **centroid** | **0.3** | **+0.012** | **+0.056** | **662** | **0.24** |
+| **hybrid** | **iter** | **0.3** | **+0.010** | **+0.053** | **650** | **0.45** |
+| precise | centroid | 0.2 | -0.004 | +0.030 | 1023 | 0.16 |
+
+Hybrid path headline: sine centroid at λ=0.3 improved MRR (+2.4%), ILD (+19.1%), and Hit Rate (+6.6%) simultaneously. No tradeoff — all metrics improved. This was the only condition across all experiments where relevance and diversity both increased.
+
+Simple path: marginal MRR cost (-0.4%) for +15.2% ILD gain. On easy queries, iterative actually improved MRR (0.381 → 0.426).
+
+Precise path: small MRR cost (-0.4%) for +14.2% ILD gain. The cross-encoder already provides implicit diversity, leaving less room for sine to operate.
+
+#### Context Efficiency (Standard Corpus)
+
+| Path | Strategy | k | MRR | HR | Context |
+|------|----------|:-:|:---:|:--:|:-------:|
+| hybrid | baseline | 5 | 0.511 | 0.565 | 100% |
+| hybrid | sine-iter-k3 | 3 | 0.512 | 0.556 | 60% |
+| simple | baseline | 5 | 0.495 | 0.537 | 100% |
+| simple | sine-cent-k3 | 3 | 0.483 | 0.500 | 60% |
+
+Hybrid sine-iter@k=3 achieves higher MRR than baseline@k=5 at 60% context. Hit Rate drops 0.9% (1 query out of 108).
+
+### Results: Dense Redundant Corpus (8 JWT docs, 15 queries)
+
+| Path | Strategy | λ | ΔMRR | ΔILD | E2E(ms) | Sine(ms) |
+|------|----------|:-:|:----:|:----:|:-------:|:--------:|
+| simple | iter | 0.2 | -0.003 | +0.007 | 324 | 0.18 |
+| hybrid | iter | 0.3 | +0.002 | +0.013 | 524 | 0.35 |
+| precise | iter | 0.2 | 0.000 | +0.006 | 704 | 0.18 |
+
+Smaller gains on the dense corpus. The embedding model (bge-small) already separates "JWT tutorial" from "JWT troubleshooting" well enough that there's less redundancy to fix. The hybrid path still shows the best signal (+0.002 MRR, +0.013 ILD).
+
+### λ Sweep Findings
+
+| λ | Behavior |
+|:-:|---------|
+| 0.2 | Most diversity, slight MRR cost on simple/precise. Best for context efficiency. |
+| 0.3 | Sweet spot for hybrid — improves both MRR and ILD. |
+| 0.5 | Minimal effect — relevance dominates, sine barely changes ordering. |
+| 0.7 | Collapses to cosine ordering. Can actually reduce ILD below baseline. |
+
+### Latency
+
+Sine reranking adds sub-millisecond overhead across all conditions:
+
+| Path | Baseline E2E | With Sine E2E | Sine Step |
+|------|:-----------:|:------------:|:---------:|
+| simple | 386ms | 407ms | 0.25ms |
+| hybrid | 645ms | 662ms | 0.24ms |
+| precise | 927ms | 1023ms | 0.16ms |
+
+The E2E difference is dominated by embedding computation for ILD measurement (benchmark overhead), not the sine step itself.
+
+### Conclusions
+
+1. **Hybrid path: implement.** Sine centroid at λ=0.3 is a free lunch — improves MRR, ILD, and Hit Rate with zero latency cost. RRF fusion produces more inter-result redundancy than either bi-encoder or cross-encoder alone, giving sine the most room to operate.
+
+2. **Simple path: implement.** Sine iterative at λ=0.2 trades 0.4% MRR for 15% ILD gain. Acceptable tradeoff for context-window-constrained agents. Improves MRR on easy queries.
+
+3. **Precise path: skip.** The cross-encoder already provides implicit diversity. Sine adds marginal ILD (+0.030) at a small MRR cost. Not worth the complexity.
+
+4. **Anchor strategy: discard.** Does nothing on either corpus. The top-1 result is rarely similar enough to other results to trigger meaningful demotion.
+
+5. **Context efficiency is real on hybrid.** Sine@k=3 matches baseline@k=5 MRR at 60% context. This is the strongest practical argument for the technique.
+
+### Recommendation
+
+Add sine reranking as a post-processing step in `router.py` for the `simple` and `hybrid` paths. Use iterative strategy with λ=0.2 for simple, centroid with λ=0.3 for hybrid. The sine step sits after Arcane Recall expansion and before the Relevance Ward filter.
+
+### Files Created
+- `scripts/benchmark_sine_rerank.py` — Full benchmark with `--corpus`, `--path`, `--lambda` flags
+- `scripts/generate_redundant_corpus.py` — Bedrock-powered corpus generator for redundancy testing
+- `tests/fixtures/redundant_docs/` — 8 JWT auth docs + 15 eval queries
+- `tests/results/sine_rerank_benchmark*.json` — Raw results for all 6 conditions
