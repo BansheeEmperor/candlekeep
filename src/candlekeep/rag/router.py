@@ -24,10 +24,14 @@ MIN_RELEVANCE_SCORE = 0.75
 MIN_RELEVANCE_SCORE_LEXICAL = 0.65
 
 # RRF scores for hybrid are much smaller (usually < 0.1).
-# Based on Centurion adversarial analysis, noise usually stays below 0.02.
-# NOTE: This is a statistical heuristic based on the Centurion corpus size.
-# In production with 1M+ chunks, this threshold may require recalibration.
-HYBRID_RELEVANCE_THRESHOLD = 0.03
+# With Ward-before-Dispersal ordering, the threshold must be low enough
+# to preserve a viable candidate pool for diversity selection. At k=60
+# with 2 lists, the max RRF score is ~0.033 and the top-5 averages ~0.016.
+# Threshold sweep (Entry 44) confirmed 0.015 produces zero adversarial
+# leaks while preserving full legitimate retrieval quality. The previous
+# value (0.03) filtered 94% of all RRF scores, collapsing the candidate
+# pool to 1 result per query.
+HYBRID_RELEVANCE_THRESHOLD = 0.015
 
 # The Relevance Ward for the precise path (post-reranking).
 # Cross-encoder scores are logits (can be negative). Based on Centurion Set
@@ -157,8 +161,8 @@ def search_with_routing(
     threshold.
 
     Stacks:
-        simple  -> Arcane Recall -> Prismatic Dispersal (iterative) -> Ward
-        hybrid  -> BM25+Vector+RRF+Arcane Recall -> Prismatic Dispersal (centroid) -> Ward
+        simple  -> Arcane Recall -> Ward -> Prismatic Dispersal (iterative)
+        hybrid  -> BM25+Vector+RRF+Arcane Recall -> Ward -> Prismatic Dispersal (centroid)
         precise -> Arcane Recall -> Ward -> Divine Insight -> Ward
 
     For complex multi-part questions, the agent should decompose into
@@ -191,19 +195,22 @@ def search_with_routing(
         # this larger n, then sine reranking selects down to n_results.
         pool = n_results * CANDIDATE_POOL_MULTIPLIER
         results = hybrid_search(db, processed, pool, category=category)
+        # The Relevance Ward (hybrid RRF scores) — applied BEFORE Dispersal
+        # so the diversity step only operates on results above the threshold.
+        results = [r for r in results if r.score >= HYBRID_RELEVANCE_THRESHOLD]
         # Prismatic Dispersal: centroid strategy, λ=0.3
         results = _apply_prismatic_dispersal(db, results, n_results, strategy="centroid")
-        # The Relevance Ward (hybrid RRF scores)
-        results = [r for r in results if r.score >= HYBRID_RELEVANCE_THRESHOLD]
 
     else:
         # Over-fetch so Prismatic Dispersal has a candidate pool.
         pool = n_results * CANDIDATE_POOL_MULTIPLIER
         results = search_with_arcane_recall(db, processed, pool)
-        # Prismatic Dispersal: iterative strategy, λ=0.2
-        results = _apply_prismatic_dispersal(db, results, n_results, strategy="iterative")
-        # The Relevance Ward (adaptive threshold for lexical queries)
+        # The Relevance Ward (adaptive threshold for lexical queries) —
+        # applied BEFORE Dispersal so diversity selection only considers
+        # results above the threshold.
         threshold = _get_vector_threshold(processed)
         results = [r for r in results if r.score >= threshold]
+        # Prismatic Dispersal: iterative strategy, λ=0.2
+        results = _apply_prismatic_dispersal(db, results, n_results, strategy="iterative")
 
     return results

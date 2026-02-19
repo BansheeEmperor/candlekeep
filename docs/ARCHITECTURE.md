@@ -112,14 +112,19 @@ Candlekeep provides three distinct search paths through the library, allowing th
 └────┬─────────────┬─────────────┬────┘
      │             │             │
 ┌────▼────┐   ┌────▼────┐        │
+│Relevance│   │Relevance│        │
+│  Ward   │   │  Ward   │        │
+└────┬────┘   └────┬────┘        │
+     │             │             │
+┌────▼────┐   ┌────▼────┐        │
 │Prismatic│   │Prismatic│        │
 │Dispersal│   │Dispersal│        │
 └────┬────┘   └────┬────┘        │
      │             │             │
-┌────▼────┐   ┌────▼────┐   ┌────▼────┐
-│ Relevance│  │Relevance│   │  Divine │
-│   Ward   │  │  Ward   │   │ Insight │
-└────┬────┘   └────┬────┘   └────┬────┘
+     │             │         ┌────▼────┐
+     │             │         │  Divine │
+     │             │         │ Insight │
+     │             │         └────┬────┘
      │             │             │
      └─────────────┼─────────────┘
                    ▼
@@ -166,7 +171,7 @@ DOCUMENT SOURCE
 
 ### 4. [Prismatic Dispersal](GLOSSARY.md#prismatic-dispersal) (Sine-Distance Diversity Reranking) — simple & hybrid paths only
 
-After Arcane Recall expansion, the simple and hybrid paths apply [Prismatic Dispersal](GLOSSARY.md#prismatic-dispersal) — a sine-distance diversity step that reorders positions 2–k to penalize chunks that are semantically redundant with already-selected results. The name comes from the D&D Prismatic spell family: a prism splits a beam of light into distinct colours, just as this step separates a redundant result set into diverse information facets.
+After Arcane Recall expansion, the simple and hybrid paths apply [The Relevance Ward](GLOSSARY.md#the-relevance-ward) to filter low-confidence candidates, then [Prismatic Dispersal](GLOSSARY.md#prismatic-dispersal) — a sine-distance diversity step that reorders positions 2–k to penalize chunks that are semantically redundant with already-selected results. The Ward runs before Dispersal so that diversity selection only operates on results above the quality threshold (see Research Diary Entry 44 for the A/B benchmark that validated this ordering). The name comes from the D&D Prismatic spell family: a prism splits a beam of light into distinct colours, just as this step separates a redundant result set into diverse information facets.
 
 `sin(θ) = √(1 - cos²(θ))` between two embedding vectors is 0 when they're identical and 1 when they're orthogonal. The algorithm greedily selects each next chunk to maximize `λ·relevance + (1-λ)·diversity`:
 
@@ -192,7 +197,7 @@ Results below a configured threshold are filtered to prevent the AI agent from h
 | Path | Threshold | Score Type |
 |------|-----------|------------|
 | simple | `MIN_RELEVANCE_SCORE` (0.75) | Vector cosine similarity |
-| hybrid | `HYBRID_RELEVANCE_THRESHOLD` (0.03) | RRF fusion score |
+| hybrid | `HYBRID_RELEVANCE_THRESHOLD` (0.015) | RRF fusion score |
 | precise (pre-reranking) | `MIN_RELEVANCE_SCORE` (0.75) | Vector cosine similarity |
 | precise (post-reranking) | `MIN_RERANKER_SCORE` (-10.0) | Cross-encoder logits |
 
@@ -208,7 +213,7 @@ These values represent the optimal configuration identified through the Centurio
 |-----------|---------------|---------|
 | `MIN_RELEVANCE_SCORE` | 0.75 | The Relevance Ward threshold (vector, non-lexical queries) |
 | `MIN_RELEVANCE_SCORE` (lexical) | 0.65 | The Relevance Ward threshold (vector, lexical queries — adaptive) |
-| `HYBRID_RELEVANCE_THRESHOLD` | 0.03 | The Relevance Ward threshold (hybrid RRF) |
+| `HYBRID_RELEVANCE_THRESHOLD` | 0.015 | The Relevance Ward threshold (hybrid RRF) |
 | `MIN_RERANKER_SCORE` | -10.0 | The Relevance Ward threshold (precise, post-reranking) |
 | `EXPANSION_SIMILARITY_THRESHOLD` | 0.92 | Scholar's Discernment — relative multiplier (see note below) |
 | `CHUNK_SIZE` | 512 | Target character count per fragment |

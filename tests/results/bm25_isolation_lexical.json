@@ -13,8 +13,8 @@
       ],
       "ndcg_5": 0.48538687705482836,
       "hit_rate_5": 0.5333333333333333,
-      "precision_5": 0.38944444444444454,
-      "avg_latency_ms": 450.0811179478963,
+      "precision_5": 0.38777777777777783,
+      "avg_latency_ms": 224.33982690175375,
       "n_queries": 30,
       "per_query": [
         {
@@ -95,6 +95,7 @@
           "mrr": 1.0,
           "hr5": 1.0,
           "retrieved_sources": [
+            "tests/fixtures/scale_docs/owasp-top-10.md",
             "tests/fixtures/scale_docs/owasp-top-10.md"
           ]
         },
@@ -135,6 +136,7 @@
           "mrr": 0.0,
           "hr5": 0.0,
           "retrieved_sources": [
+            "tests/fixtures/scale_docs/error-handling-patterns.md",
             "tests/fixtures/scale_docs/error-handling-patterns.md"
           ]
         },
@@ -143,6 +145,7 @@
           "mrr": 1.0,
           "hr5": 1.0,
           "retrieved_sources": [
+            "tests/fixtures/scale_docs/functional-programming.md",
             "tests/fixtures/scale_docs/functional-programming.md"
           ]
         },
@@ -168,7 +171,8 @@
           "hr5": 0.0,
           "retrieved_sources": [
             "tests/fixtures/scale_docs/data-warehouse-modeling.md",
-            "tests/fixtures/scale_docs/container-security.md"
+            "tests/fixtures/scale_docs/container-security.md",
+            "tests/fixtures/scale_docs/vpn-tunneling.md"
           ]
         },
         {
@@ -298,7 +302,7 @@
       "ndcg_5": 0.502053543721495,
       "hit_rate_5": 0.5333333333333333,
       "precision_5": 0.38333333333333336,
-      "avg_latency_ms": 37.09709644317627,
+      "avg_latency_ms": 35.57131290435791,
       "n_queries": 30,
       "per_query": [
         {
@@ -590,15 +594,15 @@
     },
     {
       "label": "hybrid (full)",
-      "mrr": 0.36666666666666664,
+      "mrr": 0.5416666666666666,
       "mrr_ci": [
-        0.2,
-        0.5333333333333333
+        0.39166666666666666,
+        0.6916666666666667
       ],
-      "ndcg_5": 0.36666666666666664,
-      "hit_rate_5": 0.36666666666666664,
-      "precision_5": 0.3555555555555555,
-      "avg_latency_ms": 725.016721089681,
+      "ndcg_5": 0.573875169316738,
+      "hit_rate_5": 0.6666666666666666,
+      "precision_5": 0.24833333333333332,
+      "avg_latency_ms": 360.413392384847,
       "n_queries": 30,
       "per_query": [
         {
@@ -606,7 +610,9 @@
           "mrr": 1.0,
           "hr5": 1.0,
           "retrieved_sources": [
-            "tests/fixtures/scale_docs/http2-http3.md"
+            "tests/fixtures/scale_docs/http2-http3.md",
+            "tests/fixtures/scale_docs/load-balancing.md",
+            "tests/fixtures/scale_docs/load-balancing.md"
           ]
         },
         {
@@ -614,7 +620,9 @@
           "mrr": 1.0,
           "hr5": 1.0,
           "retrieved_sources": [
-            "tests/fixtures/scale_docs/postgresql-internals.md"
+            "tests/fixtures/scale_docs/postgresql-internals.md",
+            "tests/fixtures/scale_docs/linux-networking-config.md",
+            "tests/fixtures/scale_docs/database-backup-recovery.md"
           ]
         },
         {
@@ -622,7 +630,9 @@
           "mrr": 1.0,
           "hr5": 1.0,
           "retrieved_sources": [
-            "tests/fixtures/scale_docs/apache-kafka.md"
+            "tests/fixtures/scale_docs/apache-kafka.md",
+            "tests/fixtures/scale_docs/spark-fundamentals.md",
+            "tests/fixtures/scale_docs/data-lake-architecture.md"
           ]
         },
         {
@@ -630,21 +640,26 @@
           "mrr": 1.0,
           "hr5": 1.0,
           "retrieved_sources": [
-            "tests/fixtures/scale_docs/tls-ssl.md"
+            "tests/fixtures/scale_docs/tls-ssl.md",
+            "tests/fixtures/scale_docs/tcp-ip-fundamentals.md",
+            "tests/fixtures/scale_docs/websocket-protocol.md"
           ]
         },
         {
           "query": "Kubernetes v1.24 removal of dockershim",
-          "mrr": 0.0,
-          "hr5": 0.0,
-          "retrieved_sources": []
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/kubernetes-architecture.md"
+          ]
         },
         {
           "query": "gRPC over HTTP/2",
-          "mrr": 0.0,
-          "hr5": 0.0,
+          "mrr": 0.5,
+          "hr5": 1.0,
           "retrieved_sources": [
-            "tests/fixtures/scale_docs/http2-http3.md"
+            "tests/fixtures/scale_docs/http2-http3.md",
+            "tests/fixtures/scale_docs/grpc-protocol.md"
           ]
         },
         {
@@ -652,14 +667,19 @@
           "mrr": 1.0,
           "hr5": 1.0,
           "retrieved_sources": [
-            "tests/fixtures/scale_docs/redis-data-structures.md"
+            "tests/fixtures/scale_docs/redis-data-structures.md",
+            "tests/fixtures/scale_docs/helm-charts.md"
           ]
         },
         {
           "query": "Elasticsearch 8.x security changes",
-          "mrr": 0.0,
-          "hr5": 0.0,
-          "retrieved_sources": []
+          "mrr": 0.5,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/security-audit-checklist.md",
+            "tests/fixtures/scale_docs/elasticsearch-basics.md",
+            "tests/fixtures/scale_docs/api-security.md"
+          ]
         },
         {
           "query": "OWASP Top 10 2021",
@@ -668,7 +688,7 @@
           "retrieved_sources": [
             "tests/fixtures/scale_docs/owasp-top-10.md",
             "tests/fixtures/scale_docs/elasticsearch-basics.md",
-            "tests/fixtures/scale_docs/owasp-top-10.md"
+            "tests/fixtures/scale_docs/vpn-tunneling.md"
           ]
         },
         {
@@ -684,15 +704,18 @@
           "mrr": 1.0,
           "hr5": 1.0,
           "retrieved_sources": [
-            "tests/fixtures/scale_docs/tcp-ip-fundamentals.md"
+            "tests/fixtures/scale_docs/tcp-ip-fundamentals.md",
+            "tests/fixtures/scale_docs/load-balancing.md",
+            "tests/fixtures/scale_docs/firewall-rules.md"
           ]
         },
         {
           "query": "IPv6 address format",
-          "mrr": 0.0,
-          "hr5": 0.0,
+          "mrr": 0.5,
+          "hr5": 1.0,
           "retrieved_sources": [
             "tests/fixtures/scale_docs/data-serialization.md",
+            "tests/fixtures/scale_docs/cloud-networking.md",
             "tests/fixtures/scale_docs/dns-resolution.md"
           ]
         },
@@ -701,21 +724,29 @@
           "mrr": 0.0,
           "hr5": 0.0,
           "retrieved_sources": [
-            "tests/fixtures/scale_docs/testing-strategies.md"
+            "tests/fixtures/scale_docs/testing-strategies.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md",
+            "tests/fixtures/scale_docs/cryptography-basics.md"
           ]
         },
         {
           "query": "0xEF hex code",
           "mrr": 0.0,
           "hr5": 0.0,
-          "retrieved_sources": []
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/scale_docs/shell-scripting.md",
+            "tests/fixtures/scale_docs/ci-cd-pipelines.md"
+          ]
         },
         {
           "query": "Python 3.10 match statement",
-          "mrr": 0.0,
-          "hr5": 0.0,
+          "mrr": 0.5,
+          "hr5": 1.0,
           "retrieved_sources": [
-            "tests/fixtures/scale_docs/elasticsearch-basics.md"
+            "tests/fixtures/scale_docs/elasticsearch-basics.md",
+            "tests/fixtures/scale_docs/functional-programming.md",
+            "tests/fixtures/scale_docs/owasp-top-10.md"
           ]
         },
         {
@@ -723,75 +754,104 @@
           "mrr": 1.0,
           "hr5": 1.0,
           "retrieved_sources": [
-            "tests/fixtures/scale_docs/compliance-frameworks.md"
+            "tests/fixtures/scale_docs/compliance-frameworks.md",
+            "tests/fixtures/scale_docs/security-audit-checklist.md"
           ]
         },
         {
           "query": "SOC2 Type II audit",
           "mrr": 0.0,
           "hr5": 0.0,
-          "retrieved_sources": []
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/security-audit-checklist.md",
+            "tests/fixtures/scale_docs/data-serialization.md"
+          ]
         },
         {
           "query": "BGE-small-en-v1.5 model",
           "mrr": 0.0,
           "hr5": 0.0,
-          "retrieved_sources": []
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/data-quality.md",
+            "tests/fixtures/scale_docs/tcp-ip-fundamentals.md",
+            "tests/fixtures/scale_docs/design-patterns-creational.md"
+          ]
         },
         {
           "query": "ChromaDB v0.4.0",
           "mrr": 0.0,
           "hr5": 0.0,
           "retrieved_sources": [
-            "tests/fixtures/sample_docs/vector-databases.md"
+            "tests/fixtures/sample_docs/vector-databases.md",
+            "tests/fixtures/scale_docs/container-security.md",
+            "tests/fixtures/scale_docs/container-security.md"
           ]
         },
         {
           "query": "MS-MARCO MiniLM L-6-v2",
           "mrr": 0.0,
           "hr5": 0.0,
-          "retrieved_sources": []
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/container-security.md",
+            "tests/fixtures/scale_docs/vpn-tunneling.md",
+            "tests/fixtures/scale_docs/data-warehouse-modeling.md"
+          ]
         },
         {
           "query": "JWT RS256 signing",
-          "mrr": 0.0,
-          "hr5": 0.0,
+          "mrr": 0.5,
+          "hr5": 1.0,
           "retrieved_sources": [
-            "tests/fixtures/scale_docs/api-security.md"
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/sample_docs/authentication.md",
+            "tests/fixtures/scale_docs/api-gateway-patterns.md"
           ]
         },
         {
           "query": "OAuth 2.0 PKCE flow",
-          "mrr": 0.0,
-          "hr5": 0.0,
+          "mrr": 0.5,
+          "hr5": 1.0,
           "retrieved_sources": [
-            "tests/fixtures/scale_docs/api-security.md"
+            "tests/fixtures/scale_docs/api-security.md",
+            "tests/fixtures/sample_docs/authentication.md"
           ]
         },
         {
           "query": "RAID 6 configurations",
           "mrr": 0.0,
           "hr5": 0.0,
-          "retrieved_sources": []
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/cloud-networking.md",
+            "tests/fixtures/scale_docs/serverless-architecture.md",
+            "tests/fixtures/scale_docs/network-troubleshooting.md"
+          ]
         },
         {
           "query": "SQL-92 standards",
-          "mrr": 0.0,
-          "hr5": 0.0,
-          "retrieved_sources": []
+          "mrr": 0.25,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/data-quality.md",
+            "tests/fixtures/scale_docs/data-pipeline-design.md",
+            "tests/fixtures/scale_docs/compliance-frameworks.md"
+          ]
         },
         {
           "query": "POSIX thread management",
           "mrr": 0.0,
           "hr5": 0.0,
-          "retrieved_sources": []
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/concurrency-patterns.md",
+            "tests/fixtures/scale_docs/linux-memory-management.md"
+          ]
         },
         {
           "query": "systemd unit files",
           "mrr": 1.0,
           "hr5": 1.0,
           "retrieved_sources": [
-            "tests/fixtures/scale_docs/systemd-services.md"
+            "tests/fixtures/scale_docs/systemd-services.md",
+            "tests/fixtures/scale_docs/linux-filesystem.md"
           ]
         },
         {
@@ -799,21 +859,28 @@
           "mrr": 1.0,
           "hr5": 1.0,
           "retrieved_sources": [
-            "tests/fixtures/scale_docs/linux-filesystem.md"
+            "tests/fixtures/scale_docs/linux-filesystem.md",
+            "tests/fixtures/scale_docs/linux-performance-tuning.md"
           ]
         },
         {
           "query": "YAML 1.2 syntax",
-          "mrr": 0.0,
-          "hr5": 0.0,
-          "retrieved_sources": []
+          "mrr": 1.0,
+          "hr5": 1.0,
+          "retrieved_sources": [
+            "tests/fixtures/scale_docs/configuration-management.md",
+            "tests/fixtures/scale_docs/zero-trust-architecture.md",
+            "tests/fixtures/scale_docs/container-fundamentals.md"
+          ]
         },
         {
           "query": "Docker Compose v2",
           "mrr": 1.0,
           "hr5": 1.0,
           "retrieved_sources": [
-            "tests/fixtures/scale_docs/container-fundamentals.md"
+            "tests/fixtures/scale_docs/container-fundamentals.md",
+            "tests/fixtures/sample_docs/api-design.md",
+            "tests/fixtures/scale_docs/ci-cd-pipelines.md"
           ]
         },
         {
@@ -821,7 +888,9 @@
           "mrr": 0.0,
           "hr5": 0.0,
           "retrieved_sources": [
-            "tests/fixtures/scale_docs/well-architected-framework.md"
+            "tests/fixtures/scale_docs/well-architected-framework.md",
+            "tests/fixtures/scale_docs/auto-scaling.md",
+            "tests/fixtures/scale_docs/secrets-management.md"
           ]
         }
       ]
@@ -830,9 +899,9 @@
   "attribution": {
     "vector_mrr": 0.4694444444444444,
     "bm25_mrr": 0.49,
-    "hybrid_mrr": 0.36666666666666664,
-    "total_gain": -0.10277777777777775,
+    "hybrid_mrr": 0.5416666666666666,
+    "total_gain": 0.07222222222222224,
     "bm25_contribution": 0.020555555555555605,
-    "fusion_contribution": -0.12333333333333335
+    "fusion_contribution": 0.05166666666666664
   }
 }
