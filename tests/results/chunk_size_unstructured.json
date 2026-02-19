@@ -1,0 +1,130 @@
+{
+  "config": {
+    "chunk_sizes": [
+      256,
+      512,
+      768,
+      1024
+    ],
+    "corpus": "unstructured",
+    "overlap": 50
+  },
+  "results": [
+    {
+      "chunk_size": 256,
+      "chunk_count": 2155,
+      "avg_chunk_chars": 418,
+      "mrr": 0.9625,
+      "mrr_ci": [
+        0.9,
+        1.0
+      ],
+      "ndcg_5": 0.9657732438392864,
+      "hit_rate_5": 0.975,
+      "precision_5": 0.95,
+      "avg_latency_ms": 64.43976163864136,
+      "n_queries": 40,
+      "by_category": {
+        "semantic": {
+          "mrr": 1.0,
+          "ndcg_5": 1.0,
+          "hit_rate_5": 1.0,
+          "count": 20
+        },
+        "lexical": {
+          "mrr": 0.925,
+          "ndcg_5": 0.9315464876785728,
+          "hit_rate_5": 0.95,
+          "count": 20
+        }
+      }
+    },
+    {
+      "chunk_size": 512,
+      "chunk_count": 972,
+      "avg_chunk_chars": 667,
+      "mrr": 0.95625,
+      "mrr_ci": [
+        0.88125,
+        1.0
+      ],
+      "ndcg_5": 0.9657732438392864,
+      "hit_rate_5": 0.975,
+      "precision_5": 0.9304166666666667,
+      "avg_latency_ms": 46.6549277305603,
+      "n_queries": 40,
+      "by_category": {
+        "semantic": {
+          "mrr": 1.0,
+          "ndcg_5": 1.0,
+          "hit_rate_5": 1.0,
+          "count": 20
+        },
+        "lexical": {
+          "mrr": 0.9125,
+          "ndcg_5": 0.9315464876785728,
+          "hit_rate_5": 0.95,
+          "count": 20
+        }
+      }
+    },
+    {
+      "chunk_size": 768,
+      "chunk_count": 632,
+      "avg_chunk_chars": 911,
+      "mrr": 0.9625,
+      "mrr_ci": [
+        0.9,
+        1.0
+      ],
+      "ndcg_5": 0.9657732438392864,
+      "hit_rate_5": 0.975,
+      "precision_5": 0.8995833333333334,
+      "avg_latency_ms": 42.05893874168396,
+      "n_queries": 40,
+      "by_category": {
+        "semantic": {
+          "mrr": 1.0,
+          "ndcg_5": 1.0,
+          "hit_rate_5": 1.0,
+          "count": 20
+        },
+        "lexical": {
+          "mrr": 0.925,
+          "ndcg_5": 0.9315464876785728,
+          "hit_rate_5": 0.95,
+          "count": 20
+        }
+      }
+    },
+    {
+      "chunk_size": 1024,
+      "chunk_count": 469,
+      "avg_chunk_chars": 1153,
+      "mrr": 0.9625,
+      "mrr_ci": [
+        0.9,
+        1.0
+      ],
+      "ndcg_5": 0.9657732438392864,
+      "hit_rate_5": 0.975,
+      "precision_5": 0.8416666666666668,
+      "avg_latency_ms": 34.759533405303955,
+      "n_queries": 40,
+      "by_category": {
+        "semantic": {
+          "mrr": 1.0,
+          "ndcg_5": 1.0,
+          "hit_rate_5": 1.0,
+          "count": 20
+        },
+        "lexical": {
+          "mrr": 0.925,
+          "ndcg_5": 0.9315464876785728,
+          "hit_rate_5": 0.95,
+          "count": 20
+        }
+      }
+    }
+  ]
+}
