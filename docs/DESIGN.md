@@ -153,13 +153,15 @@ If a remote ChromaDB was populated with model A and the local config says model 
 
 **Decision:** Store model name in collection metadata. On connect, detect mismatch, override local config, log warning. Also: refuse to download models at startup (exit immediately if not cached locally).
 
-### 3.8 Sine-Distance Diversity Reranking (Simple & Hybrid Paths)
+### 3.8 [Prismatic Dispersal](GLOSSARY.md#prismatic-dispersal) (Sine-Distance Diversity Reranking — Simple & Hybrid Paths)
 
 Returning k results ordered purely by relevance risks redundancy — multiple chunks saying the same thing from different parts of the corpus. This wastes the agent's context window without adding information.
 
-Sine distance (`sin(θ) = √(1 - cos²(θ))`) measures orthogonality between vectors: 0 for identical, 1 for maximally different. Applied as a post-retrieval step, it reorders positions 2–k to penalize chunks that are too similar to already-selected results while preserving the top-1 (highest relevance) result.
+[Prismatic Dispersal](GLOSSARY.md#prismatic-dispersal) uses sine distance (`sin(θ) = √(1 - cos²(θ))`) to measure orthogonality between vectors: 0 for identical, 1 for maximally different. Applied as a post-retrieval step, it reorders positions 2–k to penalize chunks that are too similar to already-selected results while preserving the top-1 (highest relevance) result. The name comes from the D&D Prismatic spell family — a prism splits a beam of light into distinct colours, just as this step separates a redundant result set into diverse information facets.
 
-**Decision:** Add sine reranking after Arcane Recall on the `simple` and `hybrid` paths. Not on `precise` — the cross-encoder already provides implicit diversity.
+**Decision:** Add Prismatic Dispersal after Arcane Recall on the `simple` and `hybrid` paths. Not on `precise` — the cross-encoder already provides implicit diversity.
+
+**Candidate pool change:** Prismatic Dispersal needs more candidates than the final `n_results` to select for diversity. The simple and hybrid paths now over-fetch from Arcane Recall by a 3× multiplier (matching the benchmark's 15-candidate → 5-result ratio from Entry 43), then sine-select down to `n_results` before the Relevance Ward filters. Previous behaviour fetched exactly `n_results` from Arcane Recall on these paths.
 
 - **Simple path**: Iterative strategy, λ=0.2 (more diversity weight). Trades 0.4% MRR for +15% ILD.
 - **Hybrid path**: Centroid strategy, λ=0.3. Improves both MRR (+2.4%) and ILD (+19.1%) — no tradeoff.
