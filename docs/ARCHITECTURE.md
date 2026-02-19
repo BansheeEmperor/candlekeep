@@ -111,6 +111,12 @@ Candlekeep provides three distinct search paths through the library, allowing th
 │        (Weighted Expansion)         │
 └────┬─────────────┬─────────────┬────┘
      │             │             │
+┌────▼────┐   ┌────▼────┐        │
+│  Sine   │   │  Sine   │        │
+│Diversity│   │Diversity│        │
+│ Rerank  │   │ Rerank  │        │
+└────┬────┘   └────┬────┘        │
+     │             │             │
 ┌────▼────┐   ┌────▼────┐   ┌────▼────┐
 │ Relevance│  │Relevance│   │  Divine │
 │   Ward   │  │  Ward   │   │ Insight │
@@ -159,10 +165,29 @@ DOCUMENT SOURCE
 - Latency overhead: minimal (due to batched similarity checks)
 - **Scaling note:** Expansion computes cosine similarity for each neighbor of each result. At the default `n_results=5`, this is ~20 similarity checks (5 results × ±2 neighbors). At `n_results=20`, it's ~80 checks. The server logs a warning when `n_results > 10`.
 
-### 4. [Divine Insight](GLOSSARY.md#cross-encoder-reranking) (cross-encoder reranking) — precise path only
+### 4. Sine-Distance Diversity Reranking — simple & hybrid paths only
+
+After Arcane Recall expansion, the simple and hybrid paths apply a sine-distance diversity step. This reorders positions 2–k to penalize chunks that are semantically redundant with already-selected results.
+
+`sin(θ) = √(1 - cos²(θ))` between two embedding vectors is 0 when they're identical and 1 when they're orthogonal. The algorithm greedily selects each next chunk to maximize `λ·relevance + (1-λ)·diversity`:
+
+| Path | Strategy | λ | Effect |
+|------|----------|:-:|--------|
+| simple | Iterative (min sine to any selected) | 0.2 | -0.4% MRR, +15% ILD |
+| hybrid | Centroid (sine to running mean) | 0.3 | +2.4% MRR, +19% ILD |
+
+The top-1 result (highest relevance) is always preserved. The precise path skips this step — the cross-encoder already provides implicit diversity.
+
+Latency: <0.5ms (k·n dot products where k=5, n=15).
+
+**Context efficiency:** Because sine reranking selects more diverse chunks, fewer results can cover the same information breadth. On the hybrid path, sine@k=3 matches baseline@k=5 MRR (0.512 vs 0.511) at 60% of the context budget, with Hit Rate dropping only 0.9%. Agents operating under tight context windows can request `n_results=3` with sine reranking and get equivalent answer quality to `n_results=5` without it.
+
+*Data: Research Diary Entry 43. Design rationale: [DESIGN.md § 3.8](DESIGN.md#38-sine-distance-diversity-reranking-simple--hybrid-paths).*
+
+### 5. [Divine Insight](GLOSSARY.md#cross-encoder-reranking) (cross-encoder reranking) — precise path only
 Cross-encoder (`ms-marco-MiniLM-L-6-v2`) rescores all candidates by examining query-document pairs individually. Higher precision but trades content match and adds latency.
 
-### 5. [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (Filtering)
+### 6. [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (Filtering)
 Results below a configured threshold are filtered to prevent the AI agent from hallucinating based on low-confidence "junk" matches. The Ward operates on all three paths, each with its own score scale:
 
 | Path | Threshold | Score Type |

@@ -1,0 +1,129 @@
+{
+  "queries": [
+    {
+      "query": "how to generate a JWT token with jsonwebtoken in Node.js",
+      "expected_sources": ["tests/fixtures/redundant_docs/jwt-tutorial.md"],
+      "category": "auth",
+      "difficulty": "easy"
+    },
+    {
+      "query": "JWT header payload signature base64 encoding structure",
+      "expected_sources": ["tests/fixtures/redundant_docs/jwt-reference.md"],
+      "category": "auth",
+      "difficulty": "easy"
+    },
+    {
+      "query": "jwt malformed error invalid signature debugging",
+      "expected_sources": ["tests/fixtures/redundant_docs/jwt-troubleshooting.md"],
+      "category": "auth",
+      "difficulty": "easy"
+    },
+    {
+      "query": "replacing express-session middleware with JWT token validation",
+      "expected_sources": ["tests/fixtures/redundant_docs/jwt-migration.md"],
+      "category": "auth",
+      "difficulty": "easy"
+    },
+    {
+      "query": "where to store JWT tokens securely localStorage vs httpOnly cookies",
+      "expected_sources": ["tests/fixtures/redundant_docs/jwt-security.md"],
+      "category": "auth",
+      "difficulty": "easy"
+    },
+    {
+      "query": "JWT token expiry handling and refresh token rotation",
+      "expected_sources": [
+        "tests/fixtures/redundant_docs/jwt-tutorial.md",
+        "tests/fixtures/redundant_docs/jwt-security.md"
+      ],
+      "category": "auth",
+      "difficulty": "medium"
+    },
+    {
+      "query": "validating JWT claims and signature verification in middleware",
+      "expected_sources": [
+        "tests/fixtures/redundant_docs/jwt-reference.md",
+        "tests/fixtures/redundant_docs/jwt-api.md"
+      ],
+      "category": "auth",
+      "difficulty": "medium"
+    },
+    {
+      "query": "HS256 vs RS256 signing algorithm for JWT tokens",
+      "expected_sources": [
+        "tests/fixtures/redundant_docs/jwt-reference.md",
+        "tests/fixtures/redundant_docs/jwt-security.md"
+      ],
+      "category": "auth",
+      "difficulty": "medium"
+    },
+    {
+      "query": "protecting API routes with Bearer token authorization header",
+      "expected_sources": [
+        "tests/fixtures/redundant_docs/jwt-api.md",
+        "tests/fixtures/redundant_docs/jwt-tutorial.md"
+      ],
+      "category": "auth",
+      "difficulty": "medium"
+    },
+    {
+      "query": "how to revoke JWT tokens before they expire",
+      "expected_sources": [
+        "tests/fixtures/redundant_docs/jwt-security.md",
+        "tests/fixtures/redundant_docs/jwt-faq.md"
+      ],
+      "category": "auth",
+      "difficulty": "medium"
+    },
+    {
+      "query": "JWT authentication setup with token refresh and secure storage best practices",
+      "expected_sources": [
+        "tests/fixtures/redundant_docs/jwt-tutorial.md",
+        "tests/fixtures/redundant_docs/jwt-security.md",
+        "tests/fixtures/redundant_docs/jwt-faq.md"
+      ],
+      "category": "auth",
+      "difficulty": "hard"
+    },
+    {
+      "query": "debugging JWT token expired errors in API middleware with proper validation",
+      "expected_sources": [
+        "tests/fixtures/redundant_docs/jwt-troubleshooting.md",
+        "tests/fixtures/redundant_docs/jwt-api.md",
+        "tests/fixtures/redundant_docs/jwt-reference.md"
+      ],
+      "category": "auth",
+      "difficulty": "hard"
+    },
+    {
+      "query": "JWT token propagation and validation across microservices with API gateway",
+      "expected_sources": [
+        "tests/fixtures/redundant_docs/jwt-microservices.md",
+        "tests/fixtures/redundant_docs/jwt-api.md",
+        "tests/fixtures/redundant_docs/jwt-security.md"
+      ],
+      "category": "auth",
+      "difficulty": "hard"
+    },
+    {
+      "query": "migrating session auth to JWT with role-based access control claims",
+      "expected_sources": [
+        "tests/fixtures/redundant_docs/jwt-migration.md",
+        "tests/fixtures/redundant_docs/jwt-api.md",
+        "tests/fixtures/redundant_docs/jwt-tutorial.md"
+      ],
+      "category": "auth",
+      "difficulty": "hard"
+    },
+    {
+      "query": "JWT security vulnerabilities none algorithm attack and token sidejacking prevention",
+      "expected_sources": [
+        "tests/fixtures/redundant_docs/jwt-security.md",
+        "tests/fixtures/redundant_docs/jwt-troubleshooting.md",
+        "tests/fixtures/redundant_docs/jwt-faq.md"
+      ],
+      "category": "auth",
+      "difficulty": "hard"
+    }
+  ]
+}
