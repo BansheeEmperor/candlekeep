@@ -1,0 +1,444 @@
+{
+  "queries": [
+    {
+      "query": "How does connection pooling work in PgBouncer?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-connection-pooling.md"
+      ],
+      "category": "semantic",
+      "difficulty": "easy"
+    },
+    {
+      "query": "What are the internal components and data structures of a B-Tree index in PostgreSQL?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-index-internals.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What are the different table partitioning strategies available in PostgreSQL?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-partitioning.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "How does PostgreSQL handle locking and concurrency control?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-postgres-locks.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What are the internals of the PostgreSQL VACUUM process and Autovacuum?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-postgres-vacuum.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "How does the PostgreSQL query planner estimate the cost of a query?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-query-planning.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What are the key components and operations of a Redis Cluster?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-redis-cluster.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Explain the internal data structures and memory management of Redis.",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-redis-internals.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "How does PostgreSQL logical replication and CDC work?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-replication-logical.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Describe the setup and configuration of PostgreSQL streaming replication.",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-replication-streaming.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What are the key features and improvements in cgroups v2 compared to the previous version?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-cgroups-v2.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Explain the internals of a container runtime and its compliance with the OCI specification.",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-containers-runtime.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "How can eBPF be used for observability and tracing in the Linux kernel?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-ebpf.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Describe the Linux I/O scheduling and block layer internals.",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-io-scheduler.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Explain the techniques and tools for memory profiling and leak detection in Linux.",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-memory-profiling.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Describe the Linux virtual memory management and page table internals.",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-memory-virtual.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Explain the internals of the Linux kernel networking stack.",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-networking-stack.md"
+      ],
+      "category": "semantic",
+      "difficulty": "hard"
+    },
+    {
+      "query": "How can the Linux 'perf' tool be used for performance analysis and profiling?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-perf-analysis.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Describe the differences between CFS and real-time process scheduling in Linux.",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-process-scheduling.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Explain the Systemd service management and unit file configuration in Linux.",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-systemd-units.md"
+      ],
+      "category": "semantic",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What is the default connection pool size in PgBouncer?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-connection-pooling.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "How do you configure the maximum number of client connections in PgBouncer?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-connection-pooling.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What is the purpose of the `autovacuum` process in PostgreSQL?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-postgres-vacuum.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "How do you configure the `autovacuum_max_workers` parameter in PostgreSQL?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-postgres-vacuum.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What is the purpose of the `EXPLAIN` command in PostgreSQL?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-query-planning.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "How do you analyze the cost estimates in the output of the `EXPLAIN` command?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-query-planning.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What is the default Redis cluster configuration for the number of master nodes?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-redis-cluster.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "How do you configure the Redis cluster node discovery using DNS?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/db-redis-cluster.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What is the purpose of the `cgroups` feature in the Linux kernel?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-cgroups-v2.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "How do you configure the memory limit for a cgroup using the `systemd` service manager?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-cgroups-v2.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What is the purpose of the `eBPF` technology in the Linux kernel?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-ebpf.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "How do you write and load custom eBPF programs using the `bpftool` command?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-ebpf.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What is the purpose of the `perf` tool in Linux performance analysis?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-perf-analysis.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "How do you use the `perf record` and `perf report` commands to analyze CPU performance issues?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-perf-analysis.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What is the purpose of the `systemd` service manager in Linux?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-systemd-units.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "How do you configure a custom `systemd` service unit file for a web application?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/linux-systemd-units.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What is the purpose of the `DNS` recursive resolver in a network infrastructure?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/net-dns-recursive.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "How do you configure the `DNSSEC` validation settings in a `BIND` DNS server?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/net-dns-recursive.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What is the purpose of the `HTTP/2` protocol in modern web applications?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/net-http2-internals.md"
+      ],
+      "category": "lexical",
+      "difficulty": "easy"
+    },
+    {
+      "query": "How do you configure the `HTTP/2` settings in the `nginx` web server?",
+      "expected_sources": [
+        "tests/fixtures/unstructured_docs/net-http2-internals.md"
+      ],
+      "category": "lexical",
+      "difficulty": "medium"
+    },
+    {
+      "query": "How to optimize MySQL database performance",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Cassandra data modeling best practices",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Elasticsearch cluster design and scale-out",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Apache Kafka consumer group management and rebalancing",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "MongoDB sharding and shard key selection",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Apache Spark SQL optimization techniques",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Couchbase data modeling and querying",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Apache Hadoop YARN resource management",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Azure Cosmos DB partition key design and management",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Google Cloud Dataflow programming model and pipeline optimization",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Apache Flink event-time processing and watermarking",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Amazon DynamoDB global tables and multi-region replication",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "ClickHouse table partitioning and data skipping",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Apache Kudu storage engine and tablet management",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Apache Druid data ingestion and query optimization",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Apache Pinot real-time data ingestion and OLAP queries",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Apache Hudi data lake management and change data capture",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Apache Iceberg table format and partition management",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Apache Spark Structured Streaming and event-time processing",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Apache Arrow data format and columnar processing",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    }
+  ]
+}
