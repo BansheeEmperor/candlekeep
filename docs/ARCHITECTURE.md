@@ -177,7 +177,7 @@ After Arcane Recall expansion, the simple and hybrid paths apply [Prismatic Disp
 
 The top-1 result (highest relevance) is always preserved. The precise path skips this step — the cross-encoder already provides implicit diversity.
 
-Latency: <0.5ms (k·n dot products where k=5, n=15).
+Latency: <0.5ms for the sine computation (k·n dot products where k=5, n=15). The Prismatic Dispersal step also requires embeddings for the expanded candidate texts — these are computed via a single batched `get_embeddings()` call whose cost is included in the overall path latency figures above (57ms simple, 82ms hybrid).
 
 **Context efficiency:** Because sine reranking selects more diverse chunks, fewer results can cover the same information breadth. On the hybrid path, sine@k=3 matches baseline@k=5 MRR (0.512 vs 0.511) at 60% of the context budget, with Hit Rate dropping only 0.9%. Agents operating under tight context windows can request `n_results=3` with sine reranking and get equivalent answer quality to `n_results=5` without it.
 
@@ -210,11 +210,13 @@ These values represent the optimal configuration identified through the Centurio
 | `MIN_RELEVANCE_SCORE` (lexical) | 0.65 | The Relevance Ward threshold (vector, lexical queries — adaptive) |
 | `HYBRID_RELEVANCE_THRESHOLD` | 0.03 | The Relevance Ward threshold (hybrid RRF) |
 | `MIN_RERANKER_SCORE` | -10.0 | The Relevance Ward threshold (precise, post-reranking) |
-| `EXPANSION_SIMILARITY_THRESHOLD` | 0.92 | Scholar's Discernment (8% similarity gap) |
+| `EXPANSION_SIMILARITY_THRESHOLD` | 0.92 | Scholar's Discernment — relative multiplier (see note below) |
 | `CHUNK_SIZE` | 512 | Target character count per fragment |
 | `CHUNK_OVERLAP` | 50 | Character overlap between fragments |
 
 The vector Ward uses an adaptive threshold: queries detected as lexical (version numbers, acronyms, technical identifiers) use a relaxed threshold of 0.65 to avoid filtering legitimate results that score in the 0.67–0.75 range. Non-lexical queries retain the 0.75 threshold. Cross-domain validation (Diary Entry 40) confirmed zero regressions on non-lexical queries and zero new adversarial leaks across legal, medical, and narrative corpora. See [DESIGN.md §8.10](DESIGN.md#810-adaptive-relevance-ward) for the full analysis.
+
+**`EXPANSION_SIMILARITY_THRESHOLD` note:** This value is a *relative* multiplier, not an absolute cosine similarity threshold. The Scholar's Discernment check in `arcane_recall.py` computes: `neighbor_sim >= match_sim × 0.92`, where `match_sim` is the cosine similarity between the query and the matched chunk, and `neighbor_sim` is the cosine similarity between the query and the candidate neighbor. A neighbor is included only if its query similarity is within 8% of the match's query similarity. The effective absolute threshold therefore varies per result — a match scoring 0.90 requires neighbors to score ≥ 0.828, while a match scoring 0.80 requires ≥ 0.736. When recalibrating, adjust this multiplier (not an absolute score) and re-run the expansion parameter sweep (Diary Entry 28).
 
 Chunk size, overlap, and expansion parameter sweeps were conducted on the current corpus (~2,770 chunks from ~89 technical documentation files). Performance surfaces were flat across tested ranges (Diary Entries 21, 28, 29), indicating these defaults are robust for similar corpora. Cross-domain validation (Diary Entry 38) confirmed these results hold across legal, medical, API reference, and narrative corpora — MRR varies by less than 2.5% across all parameter values for all five corpus types. See [cross-domain sweep charts](cross_domain_sweep_chart.html) for visual comparison. For corpora with substantially different document length, structure, or domain, re-run parameter sweeps before deploying. See [Threshold Calibration](#threshold-calibration) for Relevance Ward recalibration guidance.
 

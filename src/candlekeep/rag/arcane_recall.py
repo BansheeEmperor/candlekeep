@@ -169,7 +169,11 @@ def should_expand(match_chunk, neighbor_chunk, query_embedding, match_embedding,
         match_sim = calculate_cosine_similarity(query_embedding, match_embedding)
         neighbor_sim = calculate_cosine_similarity(query_embedding, neighbor_embedding)
         
-        # Only expand if neighbor’s similarity to the query is within 8% of the match
+        # Only expand if neighbor’s similarity to the query is within 8% of
+        # the match.  NOTE: 0.92 is a relative multiplier
+        # (EXPANSION_SIMILARITY_THRESHOLD), not an absolute cosine threshold.
+        # Effective cutoff = match_sim × 0.92.
+        # See ARCHITECTURE.md § Tuned Parameters for recalibration guidance.
         if neighbor_sim >= (match_sim * 0.92):
             return True
         return False

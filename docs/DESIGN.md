@@ -168,7 +168,7 @@ Returning k results ordered purely by relevance risks redundancy — multiple ch
 
 The hybrid path benefits most because RRF fusion produces more inter-result redundancy than either bi-encoder or cross-encoder alone.
 
-Latency: sub-millisecond (<0.5ms). The sine step computes at most k·n dot products where k=5 and n=15.
+Latency: <0.5ms for the sine computation (at most k·n dot products where k=5 and n=15). The step also requires embeddings for the expanded candidate texts — these are computed via a single batched `get_embeddings()` call whose cost is included in the overall path latency figures (57ms simple, 82ms hybrid in §8.2).
 
 Context efficiency: on the hybrid path, sine@k=3 matches baseline@k=5 MRR at 60% context budget — the agent gets equivalent answer quality from 3 results instead of 5. Hit Rate drops by only 0.9% (1 query out of 108). For agents operating under tight context windows, this means 40% less noise fed to the LLM without losing information.
 
