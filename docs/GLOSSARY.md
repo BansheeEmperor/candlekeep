@@ -63,9 +63,9 @@
 **Technical Name:** Model Pre-loading / Lazy Loading Prevention
 **The Lore:** The ritual of awakening the embedding models and rerankers as the library gates first open. Instead of waiting for the first scholar to ask a question, the library prepares its mind in advance, ensuring that even the very first query is answered without the heavy silence of model loading.
 
-### Prismatic Dispersal
+### Prismatic Dispersal (Retired)
 **Technical Name:** Sine-Distance Diversity Reranking
-**The Lore:** A prism splits a beam of white light into its constituent colours, revealing the hidden spectrum within. So too does Prismatic Dispersal take a set of scrolls that may appear varied but are semantically redundant, and separate them into genuinely distinct facets of knowledge. It measures the orthogonality between scrolls using sine distance — identical scrolls score 0, maximally different scrolls score 1 — and reorders positions 2 through k to surface diverse information while always preserving the most relevant scroll at the top. Applied on the `simple` and `hybrid` paths after [Arcane Recall](#arcane-recall); the `precise` path's [cross-encoder](#cross-encoder-reranking) already provides implicit diversity.
+**Status:** Implemented, benchmarked, and removed. The sine math was sub-millisecond, but the technique required re-embedding expanded candidate texts at query time (~160ms CPU). Comprehensive benchmarking showed <1% MRR improvement across all configurations. See [DESIGN.md § 3.8](DESIGN.md#38-prismatic-dispersal-retired) and Research Diary Entries 43–44 for the full analysis.
 
 ### The Relevance Ward
 **Technical Name:** Cosine Similarity Thresholding

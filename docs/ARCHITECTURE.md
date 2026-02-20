@@ -116,11 +116,6 @@ Candlekeep provides three distinct search paths through the library, allowing th
 │  Ward   │   │  Ward   │        │
 └────┬────┘   └────┬────┘        │
      │             │             │
-┌────▼────┐   ┌────▼────┐        │
-│Prismatic│   │Prismatic│        │
-│Dispersal│   │Dispersal│        │
-└────┬────┘   └────┬────┘        │
-     │             │             │
      │             │         ┌────▼────┐
      │             │         │  Divine │
      │             │         │ Insight │
@@ -169,29 +164,10 @@ DOCUMENT SOURCE
 - Latency overhead: minimal (due to batched similarity checks)
 - **Scaling note:** Expansion computes cosine similarity for each neighbor of each result. At the default `n_results=5`, this is ~20 similarity checks (5 results × ±2 neighbors). At `n_results=20`, it's ~80 checks. The server logs a warning when `n_results > 10`.
 
-### 4. [Prismatic Dispersal](GLOSSARY.md#prismatic-dispersal) (Sine-Distance Diversity Reranking) — simple & hybrid paths only
-
-After Arcane Recall expansion, the simple and hybrid paths apply [The Relevance Ward](GLOSSARY.md#the-relevance-ward) to filter low-confidence candidates, then [Prismatic Dispersal](GLOSSARY.md#prismatic-dispersal) — a sine-distance diversity step that reorders positions 2–k to penalize chunks that are semantically redundant with already-selected results. The Ward runs before Dispersal so that diversity selection only operates on results above the quality threshold (see Research Diary Entry 44 for the A/B benchmark that validated this ordering). The name comes from the D&D Prismatic spell family: a prism splits a beam of light into distinct colours, just as this step separates a redundant result set into diverse information facets.
-
-`sin(θ) = √(1 - cos²(θ))` between two embedding vectors is 0 when they're identical and 1 when they're orthogonal. The algorithm greedily selects each next chunk to maximize `λ·relevance + (1-λ)·diversity`:
-
-| Path | Strategy | λ | Effect |
-|------|----------|:-:|--------|
-| simple | Iterative (min sine to any selected) | 0.2 | -0.4% MRR, +15% ILD |
-| hybrid | Centroid (sine to running mean) | 0.3 | +2.4% MRR, +19% ILD |
-
-The top-1 result (highest relevance) is always preserved. The precise path skips this step — the cross-encoder already provides implicit diversity.
-
-Latency: <0.5ms for the sine computation (k·n dot products where k=5, n=15). The Prismatic Dispersal step also requires embeddings for the expanded candidate texts — these are computed via a single batched `get_embeddings()` call whose cost is included in the overall path latency figures above (57ms simple, 82ms hybrid).
-
-**Context efficiency:** Because sine reranking selects more diverse chunks, fewer results can cover the same information breadth. On the hybrid path, sine@k=3 matches baseline@k=5 MRR (0.512 vs 0.511) at 60% of the context budget, with Hit Rate dropping only 0.9%. Agents operating under tight context windows can request `n_results=3` with sine reranking and get equivalent answer quality to `n_results=5` without it.
-
-*Data: Research Diary Entry 43. Design rationale: [DESIGN.md § 3.8](DESIGN.md#38-prismatic-dispersal-sine-distance-diversity-reranking--simple--hybrid-paths).*
-
-### 5. [Divine Insight](GLOSSARY.md#cross-encoder-reranking) (cross-encoder reranking) — precise path only
+### 4. [Divine Insight](GLOSSARY.md#cross-encoder-reranking) (cross-encoder reranking) — precise path only
 Cross-encoder (`ms-marco-MiniLM-L-6-v2`) rescores all candidates by examining query-document pairs individually. Higher precision but trades content match and adds latency.
 
-### 6. [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (Filtering)
+### 5. [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (Filtering)
 Results below a configured threshold are filtered to prevent the AI agent from hallucinating based on low-confidence "junk" matches. The Ward operates on all three paths, each with its own score scale:
 
 | Path | Threshold | Score Type |
@@ -243,7 +219,7 @@ Candlekeep is designed for sub-linear scaling, ensuring that search performance 
 ### Performance at Scale
 Benchmark results demonstrate that the `simple` search path is highly resilient to corpus growth:
 - **Small Corpus (9 docs, ~178 chunks):** ~30ms avg latency
-- **Medium Corpus (89 docs, ~2,770 chunks):** ~57ms avg latency
+- **Medium Corpus (89 docs, ~2,770 chunks):** ~36ms avg latency
 - **Scaling Efficiency:** A 15× increase in data resulted in less than 2× increase in latency.
 
 *Latency measured on CPU with warm model, similarity-weighted expansion (Scholar's Discernment) active, using stored embeddings from ChromaDB.*
@@ -484,7 +460,7 @@ All settings via environment variables (`.env` file):
 
 | Metric | Target Value |
 |--------|-------|
-| Simple search latency (local) | < 100ms (~57ms measured) |
+| Simple search latency (local) | < 100ms (~36ms measured) |
 | Simple search latency (remote) | ~400ms |
 | Precise search latency | ~920ms CPU / ~230ms MPS (Centurion Set, warm model, float64 on CPU) |
 | Cold-start latency (process spawn to result) | ~5,825ms (CPU, cold model) |
@@ -493,6 +469,21 @@ All settings via environment variables (`.env` file):
 | Scale tested | 2,770 chunks, 80 docs |
 
 *Earlier Research Diary entries (12, 15) report precise-path latency of 1.5–1.7s. Entry 33 introduced a float64 workaround for a torch ≥2.10 NaN regression on CPU, which increases CPU latency to ~920ms. On MPS (Apple Silicon GPU), the precise path runs at ~230ms. The Relevance Ward pre-filtering (Entry 16) reduces the number of candidates scored by the cross-encoder, partially offsetting the float64 overhead.*
+
+### Simple Path Stage Breakdown
+
+Canonical latency reference for the simple search path. All other latency figures in the documentation reference this table. Measured on the Centurion Set (108 queries, 89 docs / ~2,770 chunks, warm model, PersistentClient, `bge-small-en-v1.5`). Reproducible via `scripts/benchmark_pipeline_stages.py`.
+
+| Stage | CPU (p50) | MPS (p50) |
+|-------|----------:|----------:|
+| Negation preprocessing | <0.1ms | <0.1ms |
+| Query embedding (bge-small) | 13ms | 11ms |
+| ChromaDB vector search (HNSW) | 15ms | 13ms |
+| Arcane Recall (expansion) | 21ms | 20ms |
+| Relevance Ward | <0.1ms | <0.1ms |
+| Full simple pipeline | **36ms** | **36ms** |
+
+The simple path performs no inference beyond the initial query embedding. Arcane Recall uses stored embeddings from ChromaDB for the Scholar's Discernment similarity checks — no bi-encoder calls during expansion.
 
 ## Future Work
 
@@ -514,7 +505,6 @@ src/candlekeep/
 │   ├── router.py            # Adaptive query routing
 │   ├── search.py            # Negation preprocessing
 │   ├── arcane_recall.py     # Similarity-weighted expansion
-│   ├── diversity.py         # Prismatic Dispersal (sine-distance diversity)
 │   ├── reranker.py          # Cross-encoder reranking
 │   ├── processor.py         # Document chunking + Bardic Knowledge
 │   ├── hybrid.py            # BM25 lexical search + rank fusion

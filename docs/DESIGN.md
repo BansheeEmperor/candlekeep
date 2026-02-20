@@ -2,11 +2,11 @@
 
 ## 1. Problem Statement
 
-AI agents need access to domain-specific knowledge that isn't in their training data. Existing solutions either require full document context (expensive, hits token limits) or use naive keyword search (misses semantic meaning). Candlekeep provides a RAG knowledge base that an AI agent can query via MCP, getting relevant document fragments with full section context in sub-100ms (typically ~57ms on a warm model with similarity-weighted expansion).
+AI agents need access to domain-specific knowledge that isn't in their training data. Existing solutions either require full document context (expensive, hits token limits) or use naive keyword search (misses semantic meaning). Candlekeep provides a RAG knowledge base that an AI agent can query via MCP, getting relevant document fragments with full section context in sub-100ms (typically ~36ms on a warm model with similarity-weighted expansion).
 
 ## 2. Design Goals
 
-1. **Fast default path** — Sub-100ms search latency for interactive agent use (typically ~57ms with similarity-weighted expansion)
+1. **Fast default path** — Sub-100ms search latency for interactive agent use (typically ~36ms with similarity-weighted expansion)
 2. **High content match** — Return text that actually contains the answer, not just related text
 3. **Agent-native** — The agent controls search strategy, decomposes complex queries, synthesizes results
 4. **Quality enforcement** — Reject poorly structured documents at ingestion time
@@ -91,28 +91,17 @@ If a remote ChromaDB was populated with model A and the local config says model 
 
 **Decision:** Store model name in collection metadata. On connect, detect mismatch, override local config, log warning. Also: refuse to download models at startup (exit immediately if not cached locally).
 
-### 3.8 [Prismatic Dispersal](GLOSSARY.md#prismatic-dispersal) (Sine-Distance Diversity Reranking — Simple & Hybrid Paths)
+### 3.8 Prismatic Dispersal (Retired)
 
-Returning k results ordered purely by relevance risks redundancy — multiple chunks saying the same thing from different parts of the corpus. This wastes the agent's context window without adding information.
+Prismatic Dispersal used sine distance (`sin(θ) = √(1 - cos²(θ))`) to reorder search results for diversity, penalizing semantically redundant chunks. The sine math itself was sub-millisecond, but the technique required re-embedding expanded candidate texts via `get_embeddings()` at query time — the merged multi-chunk windows produced by Arcane Recall don't exist in ChromaDB, so their embeddings can't be looked up from storage.
 
-[Prismatic Dispersal](GLOSSARY.md#prismatic-dispersal) uses sine distance (`sin(θ) = √(1 - cos²(θ))`) to measure orthogonality between vectors: 0 for identical, 1 for maximally different. Applied as a post-retrieval step, it reorders positions 2–k to penalize chunks that are too similar to already-selected results while preserving the top-1 (highest relevance) result. The name comes from the D&D Prismatic spell family — a prism splits a beam of light into distinct colours, just as this step separates a redundant result set into diverse information facets.
+The embedding cost dominated simple-path latency: ~160ms p50 on CPU, ~77ms on MPS (15 expanded chunks of ~700 chars each). Combined with the 3× candidate pool overfetch that Dispersal required, the simple path went from ~36ms to ~203ms on CPU.
 
-**Decision:** Add Prismatic Dispersal after Arcane Recall on the `simple` and `hybrid` paths. Not on `precise` — benchmarking confirmed the cross-encoder already provides sufficient diversity. Adding sine reranking to the precise path (iterative, λ=0.2) reduced MRR by 0.8% and Hit Rate@5 by 3.4% while gaining only +14.2% ILD — a worse tradeoff than the simple path (−0.4% MRR, +15% ILD) and far worse than the hybrid path (+2.4% MRR, +19% ILD). The cross-encoder's joint query-document scoring leaves less redundancy for sine to operate on. *Data: `tests/results/sine_rerank_benchmark.json` (precise path, λ=0.2).*
+A comprehensive benchmark across n_results (3, 5, 10), pool multipliers (1×, 2×, 3×), and both search paths found that Dispersal produced <1% MRR improvement in all tested conditions. The simplest configuration (n=5, pool=1×, no Dispersal) achieved the best MRR at the lowest latency. On the hybrid path, the centroid strategy showed a +3.8% MRR gain on lexical queries (n=30), but this was offset by a -2.8% regression on semantic queries and did not produce a statistically significant overall improvement.
 
-**Candidate pool change:** Prismatic Dispersal needs more candidates than the final `n_results` to select for diversity. The simple and hybrid paths now over-fetch from Arcane Recall by a 3× multiplier (matching the benchmark's 15-candidate → 5-result ratio from Entry 43), then the Relevance Ward filters low-confidence candidates, then sine-select down to `n_results`.
+**Decision:** Removed from both simple and hybrid paths. The 3× pool multiplier was also removed. The agent decomposition architecture (multiple focused searches) provides a more effective diversity mechanism at zero latency cost.
 
-**Pipeline ordering — Ward before Dispersal:** The Relevance Ward runs before Prismatic Dispersal on both simple and hybrid paths. This ensures Dispersal only operates on results that passed the quality gate. The original implementation (Entry 43) placed the Ward after Dispersal, which caused a severe interaction on the hybrid path: Dispersal selected diverse-but-low-scored candidates from the 3× pool, and the Ward's RRF threshold (0.03) then filtered 4 of 5 results per query. The A/B benchmark (Entry 44) confirmed the reorder fixes hybrid MRR (+17.5% on lexical queries) and eliminates adversarial leaks (19/30 → 0/30) with zero impact on the simple path. The overall HR@5 drops by 1.9% — this is entirely from adversarial leak elimination (19 false-positive hits removed), not a regression on legitimate queries.
-
-- **Simple path**: Iterative strategy, λ=0.2 (more diversity weight). Trades 0.4% MRR for +15% ILD.
-- **Hybrid path**: Centroid strategy, λ=0.3. Improves both MRR (+2.4%) and ILD (+19.1%) — no tradeoff.
-
-The hybrid path benefits most because RRF fusion produces more inter-result redundancy than either bi-encoder or cross-encoder alone.
-
-Latency: <0.5ms for the sine computation (at most k·n dot products where k=5 and n=15). The step also requires embeddings for the expanded candidate texts — these are computed via a single batched `get_embeddings()` call whose cost is included in the overall path latency figures (57ms simple, 82ms hybrid in §8.2).
-
-Context efficiency: on the hybrid path, sine@k=3 matches baseline@k=5 MRR at 60% context budget — the agent gets equivalent answer quality from 3 results instead of 5. Hit Rate drops by only 0.9% (1 query out of 108). For agents operating under tight context windows, this means 40% less noise fed to the LLM without losing information.
-
-*Data: Research Diary Entry 43. Benchmark: `scripts/benchmark_sine_rerank.py`.*
+*Data: Research Diary Entries 43–44 (original implementation). Removal benchmark: `scripts/benchmark_pipeline_stages.py`, `tests/results/pipeline_stages.json`.*
 
 ## 4. Techniques Evaluated
 
@@ -231,7 +220,7 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 | **Overall MRR** | 0.4776 (±0.10) | 0.4722 (±0.09) | 0.4884 (±0.10) |
 | **nDCG@5** | 0.4851 (±0.10) | 0.4746 (±0.09) | 0.4932 (±0.10) |
 | **Hit Rate@5** | 0.6019 (±0.09) | 0.7130 (±0.08) | 0.6759 (±0.09) |
-| **Avg Latency** | **57ms** | 82ms | 921ms |
+| **Avg Latency** | **36ms** | 48ms | 921ms |
 
 *95% bootstrap confidence intervals (n=1000, seed=42) shown as ±half-width. Latency measured on CPU with warm model.*
 
