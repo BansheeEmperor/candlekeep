@@ -2,8 +2,6 @@
 import re
 from typing import List, Literal
 
-import numpy as np
-
 from candlekeep.database.interface import VectorDatabase, SearchResult
 from candlekeep.rag.search import preprocess_negation
 
@@ -24,13 +22,10 @@ MIN_RELEVANCE_SCORE = 0.75
 MIN_RELEVANCE_SCORE_LEXICAL = 0.65
 
 # RRF scores for hybrid are much smaller (usually < 0.1).
-# With Ward-before-Dispersal ordering, the threshold must be low enough
-# to preserve a viable candidate pool for diversity selection. At k=60
-# with 2 lists, the max RRF score is ~0.033 and the top-5 averages ~0.016.
+# With k=60 and 2 result lists (vector + BM25), the maximum possible
+# RRF score is ~0.033 and the top-5 averages ~0.016.
 # Threshold sweep (Entry 44) confirmed 0.015 produces zero adversarial
-# leaks while preserving full legitimate retrieval quality. The previous
-# value (0.03) filtered 94% of all RRF scores, collapsing the candidate
-# pool to 1 result per query.
+# leaks while preserving full legitimate retrieval quality.
 HYBRID_RELEVANCE_THRESHOLD = 0.015
 
 # The Relevance Ward for the precise path (post-reranking).
@@ -94,46 +89,6 @@ def _get_vector_threshold(query: str) -> float:
     return MIN_RELEVANCE_SCORE
 
 
-def _apply_prismatic_dispersal(
-    db: VectorDatabase,
-    results: List[SearchResult],
-    n_results: int,
-    strategy: str,
-) -> List[SearchResult]:
-    """Apply Prismatic Dispersal (sine-distance diversity reranking).
-
-    Reorders positions 2–k to penalise chunks that are semantically
-    redundant with already-selected results.  The top-1 result (highest
-    relevance) is always preserved.
-
-    This step requires embeddings for the candidate results.  It calls
-    db.get_embeddings() once to embed the expanded text of each candidate.
-    At the default n_results=5 with a 3× candidate pool, this is 15
-    texts embedded in a single batch — typically < 5ms on a warm model.
-
-    Strategies:
-        iterative — simple path, λ=0.2.  Diversity = min sine distance
-                    to any already-selected chunk.
-        centroid  — hybrid path, λ=0.3.  Diversity = sine distance to
-                    the running centroid of the selected set.
-
-    Data: Research Diary Entry 43.
-    """
-    if len(results) <= 1:
-        return results[:n_results]
-
-    from candlekeep.rag.diversity import sine_rerank_iterative, sine_rerank_centroid
-
-    texts = [r.text for r in results]
-    raw_embeddings = db.get_embeddings(texts)
-    embeddings = [np.array(e) for e in raw_embeddings]
-
-    if strategy == "centroid":
-        return sine_rerank_centroid(results, embeddings, top_k=n_results, lambda_=0.3)
-    else:
-        return sine_rerank_iterative(results, embeddings, top_k=n_results, lambda_=0.2)
-
-
 def search_with_routing(
     db: VectorDatabase,
     query: str,
@@ -145,15 +100,6 @@ def search_with_routing(
 
     All paths use Arcane Recall (±2 chunk expansion) by default.
 
-    The simple and hybrid paths apply Prismatic Dispersal after Arcane
-    Recall to reorder results for diversity before the Relevance Ward
-    filters low-confidence matches.  This requires over-fetching from
-    Arcane Recall / hybrid_search by a 3× candidate pool multiplier so
-    the sine step has room to select for diversity.  Previous behaviour
-    fetched exactly n_results from Arcane Recall on these paths; the new
-    flow fetches n_results × 3 candidates, sine-selects down to
-    n_results, then applies the Ward.
-
     The Relevance Ward uses an adaptive threshold: queries detected as
     lexical (version numbers, acronyms, technical identifiers) use a
     relaxed threshold of 0.65 to avoid filtering legitimate results that
@@ -161,15 +107,14 @@ def search_with_routing(
     threshold.
 
     Stacks:
-        simple  -> Arcane Recall -> Ward -> Prismatic Dispersal (iterative)
-        hybrid  -> BM25+Vector+RRF+Arcane Recall -> Ward -> Prismatic Dispersal (centroid)
+        simple  -> Arcane Recall -> Ward
+        hybrid  -> BM25+Vector+RRF+Arcane Recall -> Ward
         precise -> Arcane Recall -> Ward -> Divine Insight -> Ward
 
     For complex multi-part questions, the agent should decompose into
     multiple simple searches and synthesize the results itself.
     """
     from candlekeep.rag.arcane_recall import search_with_arcane_recall
-    from candlekeep.rag.diversity import CANDIDATE_POOL_MULTIPLIER
 
     processed = preprocess_negation(query)
 
@@ -190,27 +135,14 @@ def search_with_routing(
 
     elif query_type == "hybrid":
         from candlekeep.rag.hybrid import hybrid_search
-        # Over-fetch so Prismatic Dispersal has a candidate pool to
-        # select from.  hybrid_search internally runs Arcane Recall with
-        # this larger n, then sine reranking selects down to n_results.
-        pool = n_results * CANDIDATE_POOL_MULTIPLIER
-        results = hybrid_search(db, processed, pool, category=category)
-        # The Relevance Ward (hybrid RRF scores) — applied BEFORE Dispersal
-        # so the diversity step only operates on results above the threshold.
+        results = hybrid_search(db, processed, n_results, category=category)
+        # The Relevance Ward (hybrid RRF scores)
         results = [r for r in results if r.score >= HYBRID_RELEVANCE_THRESHOLD]
-        # Prismatic Dispersal: centroid strategy, λ=0.3
-        results = _apply_prismatic_dispersal(db, results, n_results, strategy="centroid")
 
     else:
-        # Over-fetch so Prismatic Dispersal has a candidate pool.
-        pool = n_results * CANDIDATE_POOL_MULTIPLIER
-        results = search_with_arcane_recall(db, processed, pool)
-        # The Relevance Ward (adaptive threshold for lexical queries) —
-        # applied BEFORE Dispersal so diversity selection only considers
-        # results above the threshold.
+        results = search_with_arcane_recall(db, processed, n_results)
+        # The Relevance Ward (adaptive threshold for lexical queries)
         threshold = _get_vector_threshold(processed)
         results = [r for r in results if r.score >= threshold]
-        # Prismatic Dispersal: iterative strategy, λ=0.2
-        results = _apply_prismatic_dispersal(db, results, n_results, strategy="iterative")
 
     return results
