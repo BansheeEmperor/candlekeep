@@ -125,7 +125,7 @@ The following retrieval techniques were out of scope for the initial research ph
 
 - **ColBERT / late-interaction models** — Occupies the middle ground between bi-encoder speed and cross-encoder precision. Could reduce precise-path latency while retaining most reranking quality. Not evaluated because ChromaDB does not natively support ColBERT's token-level index, and the current bi-encoder + cross-encoder split already covers the fast/precise tradeoff. Revisit if precise-path latency becomes a deployment blocker.
 
-- **SPLADE / learned sparse retrieval** — Replaces naive BM25 tokenization with learned term weights, improving vocabulary coverage for technical identifiers. Not evaluated because the hybrid path's BM25 + RRF fusion already resolved "Keyword Blindness" (+26% MRR on lexical queries in the Centurion Set), and SPLADE requires a separate model and index. The strongest candidate for improving the hybrid path if the naive tokenizer becomes a limitation at scale. Note: no existing benchmark isolates the BM25 tokenizer's contribution from the RRF fusion's contribution to the +26% improvement. A BM25-only vs vector-only vs hybrid comparison on the lexical query subset would clarify whether the gain comes from BM25 finding results that vector search misses, or from RRF reranking improving the order. See `scripts/benchmark_bm25_isolation.py` when available.
+- **SPLADE / learned sparse retrieval** — Replaces naive BM25 tokenization with learned term weights, improving vocabulary coverage for technical identifiers. Not evaluated because the hybrid path's BM25 + RRF fusion already resolved "Keyword Blindness" (+15–26% MRR on lexical queries in the Centurion Set), and SPLADE requires a separate model and index. The strongest candidate for improving the hybrid path if the naive tokenizer becomes a limitation at scale. Note: no existing benchmark isolates the BM25 tokenizer's contribution from the RRF fusion's contribution to the improvement. A BM25-only vs vector-only vs hybrid comparison on the lexical query subset would clarify whether the gain comes from BM25 finding results that vector search misses, or from RRF reranking improving the order. See `scripts/benchmark_bm25_isolation.py` when available.
 
 - **LLM-generated chunk summaries (Contextual Retrieval)** — Generates a per-chunk context summary via LLM at ingestion time, prepended to each chunk before embedding. Similar to Bardic Knowledge but with richer, LLM-generated context instead of document-level metadata. Not evaluated because the ingestion cost is significant (one LLM call per chunk; ~2,770 calls at current corpus scale) and Bardic Knowledge already provides document-level context enrichment at zero cost. Revisit if content match on the Centurion Set plateaus and ingestion latency is not a constraint.
 
@@ -232,11 +232,13 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 
 | Category | Simple (Vector) | Hybrid (BM25+Vector) | Precise (Reranked) | Note |
 |----------|-----------------|----------------------|--------------------|------|
-| **Lexical** (Identifiers) | 0.42 / 0.44 | **0.53 / 0.55 (+26%)** | 0.42 / 0.42 | Fixing "Keyword Blindness" |
+| **Lexical** (Identifiers) | 0.42 / 0.44 | **0.53 / 0.55 (+15–26%)** | 0.42 / 0.42 | Fixing "Keyword Blindness" |
 | **Semantic** (Concepts) | 0.87 / 0.87 | **0.89 / 0.90 (+2%)** | 0.87 / 0.87 | Stable semantic depth |
 | **Adversarial** (Noise) | 0.0 / 0.0 | 0.0 / 0.0 | 0.0 / 0.0 | Warded ¹ |
 
 ¹ MRR of 0.0 means no adversarial query surfaced a relevant result in the top position. The hybrid path fully filters adversarial queries via the RRF threshold (Hit Rate@5 = 0.0). The precise path filters 70% of adversarial queries via the combined pre-reranking vector Ward and post-reranking cross-encoder Ward (`MIN_RERANKER_SCORE`); the remaining 30% contain technical terms that genuinely match corpus documents. The simple path relies solely on the vector threshold (Hit Rate@5 = 0.40).
+
+*The lexical improvement range (15–26%) varies by HNSW index instantiation. See [ARCHITECTURE.md § Agent Misrouting](ARCHITECTURE.md#agent-misrouting) for the variance analysis and path selection guidance.*
 
 ### 8.3 Core Techniques
 

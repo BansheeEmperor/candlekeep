@@ -429,7 +429,9 @@ This pattern assumes the calling agent is a frontier-class LLM (e.g., Claude, GP
 
 The agent selects the search path (`simple`, `hybrid`, or `precise`) based on its interpretation of the query. If the agent selects `simple` for a query containing exact technical identifiers where `hybrid` would be more appropriate, retrieval quality degrades silently.
 
-**Measured impact:** On the Centurion Set, lexical queries (containing version numbers, error codes, technical identifiers) show MRR of 0.42 on the simple path vs 0.53 on the hybrid path — a 26% gap. Semantic queries show no meaningful difference between paths.
+**Measured impact:** On the Centurion Set, lexical queries (containing version numbers, error codes, technical identifiers) show MRR of 0.42 on the simple path vs 0.53 on the hybrid path — a 15–26% gap depending on HNSW index instantiation (see note below). Semantic queries show no meaningful difference between paths.
+
+*Note: HNSW index construction is non-deterministic. The 26% figure is from the Centurion Set main run (§8.2); an independent run with a separate PersistentClient (Entry 44) measured +15.4%. The improvement is directionally consistent — hybrid outperforms simple on lexical queries across all tested instances.*
 
 **When to prefer hybrid:** Queries containing exact identifiers (`bge-small`, `v3.4.1`), error codes (`0xEF`, `ECONNREFUSED`), version strings, or technical terms that must match literally rather than semantically.
 
