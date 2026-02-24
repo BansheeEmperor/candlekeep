@@ -70,7 +70,7 @@ Candlekeep is a RAG (Retrieval-Augmented Generation) knowledge base server that 
 
 The library routes queries to the optimal technique stack:
 *   **simple** → [Arcane Recall](GLOSSARY.md#arcane-recall) (Fast Path)
-*   **hybrid** → [Wild Magic](GLOSSARY.md#lexical-matching-bm25) (Lexical + Vector). The sparse signal is BM25 by default; an opt-in ColBERT backend (`CANDLEKEEP_SPARSE_BACKEND=colbert`) provides token-level matching for better lexical precision on technical identifiers. BM25 uses stop-word-filtered tokenization with a regex that preserves technical identifiers (e.g., `bge-small`, `v3.4.1`). ColBERT uses late interaction with `answerai-colbert-small-v1`. BM25 is always maintained as fallback during ColBERT index rebuilds.
+*   **hybrid** → [Wild Magic](GLOSSARY.md#lexical-matching-wild-magic) (Lexical + Vector). The sparse signal is BM25 by default; an opt-in ColBERT backend (`CANDLEKEEP_SPARSE_BACKEND=colbert`) provides token-level matching for better lexical precision on technical identifiers. BM25 uses stop-word-filtered tokenization with a regex that preserves technical identifiers (e.g., `bge-small`, `v3.4.1`). ColBERT uses late interaction with `answerai-colbert-small-v1`. BM25 is always maintained as fallback during ColBERT index rebuilds.
 *   **precise** → [Arcane Recall](GLOSSARY.md#arcane-recall) + [Divine Insight](GLOSSARY.md#cross-encoder-reranking) (Precise Path)
 *   **Negation preprocessing** applied to all paths.
 *   **[The Relevance Ward](GLOSSARY.md#the-relevance-ward)** filters low-confidence matches.
