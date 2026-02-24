@@ -115,6 +115,7 @@ A comprehensive benchmark across n_results (3, 5, 10), pool multipliers (1×, 2�
 | Mirror Image (LLM query expansion) | Degraded all metrics | ❌ Rejected |
 | Illusory Script (HyDE) | Unacceptable latency | ❌ Too slow |
 | [Wild Magic](GLOSSARY.md#lexical-matching-bm25) (BM25 hybrid) | Higher lexical quality | ✅ Hybrid path |
+| ColBERT (late interaction) | +0.033 lexical MRR, +0.015 CM | ✅ Opt-in hybrid sparse |
 | Scrying Window (sentence splitting) | Precision collapse | ❌ Rejected |
 
 *Note: The "Result" column references metrics from the retired 15-query legacy suite (Research Diary Entries 1–8). The current evaluation standard is the Centurion Set (108 queries, see [§8.2](#82-the-centurion-set-the-high-audit)) which uses MRR, nDCG@5, and Hit Rate@5.*
@@ -123,9 +124,9 @@ A comprehensive benchmark across n_results (3, 5, 10), pool multipliers (1×, 2�
 
 The following retrieval techniques were out of scope for the initial research phase. Both are infrastructure-level changes to Candlekeep's retrieval pipeline.
 
-- **ColBERT / late-interaction models** — Occupies the middle ground between bi-encoder speed and cross-encoder precision. Could reduce precise-path latency while retaining most reranking quality. Not evaluated because ChromaDB does not natively support ColBERT's token-level index, and the current bi-encoder + cross-encoder split already covers the fast/precise tradeoff. Revisit if precise-path latency becomes a deployment blocker.
+- **ColBERT / late-interaction models** — Benchmarked in 4 configurations (standalone, three-way RRF, replacing BM25, replacing dense vector). Best result: ColBERT replacing BM25 achieves lexical MRR 0.592 (+0.033), overall MRR 0.560 (+0.004), content match 0.823 (+0.015) at +13ms latency. Implemented as opt-in dual sparse backend (`CANDLEKEEP_SPARSE_BACKEND=colbert`). BM25 always maintained as fallback during ColBERT index rebuilds. See Research Diary Entry 49 for benchmark data and Entry 50 for implementation details.
 
-- **SPLADE / learned sparse retrieval** — Replaces naive BM25 tokenization with learned term weights, improving vocabulary coverage for technical identifiers. Not evaluated because the hybrid path's BM25 + RRF fusion already resolved "Keyword Blindness" (+15–26% MRR on lexical queries in the Centurion Set), and SPLADE requires a separate model and index. The strongest candidate for improving the hybrid path if the naive tokenizer becomes a limitation at scale. Note: no existing benchmark isolates the BM25 tokenizer's contribution from the RRF fusion's contribution to the improvement. A BM25-only vs vector-only vs hybrid comparison on the lexical query subset would clarify whether the gain comes from BM25 finding results that vector search misses, or from RRF reranking improving the order. See `scripts/benchmark_bm25_isolation.py` when available.
+- **SPLADE / learned sparse retrieval** — WordPiece tokenization fragments technical identifiers ("PostgreSQL" → "post", "##gre", "##q", "##l"), making it unlikely to improve over BM25 for exact-identifier matching. Not benchmarked. ColBERT's SentencePiece tokenization handles technical identifiers better and was chosen instead.
 
 - **LLM-generated chunk summaries (Contextual Retrieval)** — Generates a per-chunk context summary via LLM at ingestion time, prepended to each chunk before embedding. Similar to Bardic Knowledge but with richer, LLM-generated context instead of document-level metadata. Not evaluated because the ingestion cost is significant (one LLM call per chunk; ~2,770 calls at current corpus scale) and Bardic Knowledge already provides document-level context enrichment at zero cost. Revisit if content match on the Centurion Set plateaus and ingestion latency is not a constraint.
 
