@@ -387,7 +387,7 @@ def search(
     query: str,
     n_results: int = 5,
     category: str | None = None,
-    query_type: str = "simple",
+    query_type: str = "hybrid",
     ctx: Context = CurrentContext(),
 ) -> str:
     """Search knowledge base for relevant documents.
