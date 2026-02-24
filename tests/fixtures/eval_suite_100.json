@@ -16,7 +16,24 @@
       "expected_sources": [
         "tests/fixtures/sample_docs/semantic-search.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "semantic search",
+        "search",
+        "semantic",
+        "boosting",
+        "evaluation",
+        "expansion",
+        "handling",
+        "initial",
+        "metadata",
+        "metrics",
+        "negation",
+        "preprocessing",
+        "query",
+        "query preprocessing",
+        "ranking"
+      ]
     },
     {
       "query": "vector database",
@@ -24,7 +41,24 @@
       "expected_sources": [
         "tests/fixtures/sample_docs/vector-databases.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "vector database",
+        "vector",
+        "cases",
+        "common",
+        "concepts",
+        "databases",
+        "embeddings",
+        "introduction",
+        "key",
+        "popular",
+        "search",
+        "semantic search",
+        "similarity",
+        "similarity search",
+        "use"
+      ]
     },
     {
       "query": "REST API design",
@@ -32,7 +66,24 @@
       "expected_sources": [
         "tests/fixtures/sample_docs/api-design.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "api",
+        "design",
+        "rest",
+        "best",
+        "endpoints",
+        "error",
+        "handling",
+        "http",
+        "pagination",
+        "practices",
+        "principles",
+        "structure",
+        "url",
+        "versioning",
+        "web"
+      ]
     },
     {
       "query": "database normalization",
@@ -40,7 +91,24 @@
       "expected_sources": [
         "tests/fixtures/sample_docs/database-design.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "database",
+        "normalization",
+        "data-modeling",
+        "denormalization",
+        "design",
+        "first",
+        "form",
+        "indexes",
+        "keys",
+        "many",
+        "normal",
+        "one",
+        "primary",
+        "relationships",
+        "schema"
+      ]
     },
     {
       "query": "HTTP/2 vs HTTP/3 performance",
@@ -48,7 +116,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/http2-http3.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "http",
+        "performance",
+        "compression",
+        "conclusion",
+        "dual",
+        "gradual",
+        "header",
+        "header compression",
+        "http/2",
+        "http/3",
+        "implementation",
+        "improvements",
+        "integration",
+        "intermediary",
+        "migration"
+      ]
     },
     {
       "query": "PostgreSQL 15 internals",
@@ -56,7 +141,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/postgresql-internals.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "internals",
+        "postgresql",
+        "ahead",
+        "concurrency",
+        "control",
+        "detailed",
+        "exploration",
+        "indexes",
+        "logging",
+        "multiversion",
+        "mvcc",
+        "partitioning",
+        "planner",
+        "query",
+        "query planner"
+      ]
     },
     {
       "query": "Apache Kafka 3.0 features",
@@ -64,7 +166,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/apache-kafka.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "apache kafka",
+        "apache",
+        "kafka",
+        "kafka architecture",
+        "kafka connect",
+        "kafka consumer groups",
+        "kafka partitions",
+        "kafka streams",
+        "kafka topics",
+        "architecture",
+        "brokers",
+        "components",
+        "connect",
+        "consumers",
+        "data pipelines"
+      ]
     },
     {
       "query": "TLS 1.3 handshake process",
@@ -72,7 +191,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/tls-ssl.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "handshake",
+        "mutual tls",
+        "tls",
+        "certificate",
+        "certificate pinning",
+        "certificates",
+        "chains",
+        "cipher",
+        "cipher suite",
+        "connections",
+        "encryption",
+        "mutual",
+        "ocsp",
+        "ocsp stapling",
+        "overview"
+      ]
     },
     {
       "query": "Kubernetes v1.24 removal of dockershim",
@@ -80,7 +216,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/kubernetes-architecture.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "kubernetes",
+        "architecture",
+        "auditing",
+        "components",
+        "conclusion",
+        "control",
+        "control plane",
+        "cronjobs",
+        "daemonsets",
+        "deployments",
+        "distributed",
+        "events",
+        "jobs",
+        "kube-proxy",
+        "kubelet"
+      ]
     },
     {
       "query": "gRPC over HTTP/2",
@@ -88,7 +241,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/grpc-protocol.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "grpc",
+        "architecture",
+        "bidirectional",
+        "buffers",
+        "client",
+        "deadlines",
+        "definitions",
+        "diagram",
+        "documentation",
+        "enum",
+        "fields",
+        "interceptors",
+        "message",
+        "messages",
+        "nested"
+      ]
     },
     {
       "query": "Redis 7.0 Multi-part AOF",
@@ -96,7 +266,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/redis-data-structures.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "aof",
+        "redis",
+        "append",
+        "architecture",
+        "availability",
+        "cluster",
+        "clustering",
+        "comparisons",
+        "data",
+        "data structures",
+        "database",
+        "file",
+        "hashes",
+        "high",
+        "limitations"
+      ]
     },
     {
       "query": "Elasticsearch 8.x security changes",
@@ -104,7 +291,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/elasticsearch-basics.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "elasticsearch",
+        "aggregation",
+        "aggregations",
+        "allocation",
+        "analyzers",
+        "bool",
+        "built",
+        "bulk",
+        "custom",
+        "defining",
+        "document",
+        "dynamic",
+        "histogram",
+        "indexing",
+        "mapping"
+      ]
     },
     {
       "query": "OWASP Top 10 2021",
@@ -112,7 +316,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/owasp-top-10.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "authentication",
+        "broken",
+        "command",
+        "conclusion",
+        "cross",
+        "deserialization",
+        "forgery",
+        "injection",
+        "insecure",
+        "ldap",
+        "request",
+        "scripting",
+        "server",
+        "side",
+        "site"
+      ]
     },
     {
       "query": "AVX-512 vector instructions",
@@ -120,7 +341,8 @@
       "expected_sources": [
         "docs/HARDWARE_ACCEL.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": []
     },
     {
       "query": "TCP/IP layer 4",
@@ -128,7 +350,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/tcp-ip-fundamentals.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "layer",
+        "tcp",
+        "conclusion",
+        "congestion",
+        "congestion control",
+        "control",
+        "extensions",
+        "flow",
+        "flow control",
+        "fundamentals",
+        "handshake",
+        "model",
+        "networking",
+        "optimizations",
+        "osi"
+      ]
     },
     {
       "query": "IPv6 address format",
@@ -136,7 +375,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/cloud-networking.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "address",
+        "aws",
+        "azure",
+        "cloud",
+        "cloud networking",
+        "concepts",
+        "conclusion",
+        "configurations",
+        "design",
+        "gateway",
+        "gateways",
+        "gcp",
+        "internet",
+        "nat",
+        "nat gateways"
+      ]
     },
     {
       "query": "UUID v4 generation",
@@ -144,7 +400,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/data-serialization.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "advantages",
+        "apache",
+        "avro",
+        "buffers",
+        "columnar",
+        "comparison",
+        "data",
+        "data formats",
+        "data serialization",
+        "disadvantages",
+        "example",
+        "formats",
+        "introduction",
+        "javascript",
+        "json"
+      ]
     },
     {
       "query": "0xEF hex code",
@@ -152,7 +425,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/cryptography-basics.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "adleman",
+        "advanced",
+        "aes",
+        "algorithm",
+        "asymmetric",
+        "based",
+        "bcrypt",
+        "chacha20",
+        "cryptography",
+        "curve",
+        "derivation",
+        "digital",
+        "ecdsa",
+        "elliptic",
+        "encryption"
+      ]
     },
     {
       "query": "Python 3.10 match statement",
@@ -160,7 +450,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/functional-programming.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "adts",
+        "algebraic",
+        "algebraic data types",
+        "benefits",
+        "common",
+        "concepts",
+        "conclusion",
+        "data",
+        "functional",
+        "functional programming",
+        "functions",
+        "functors",
+        "immutability",
+        "immutable",
+        "matching"
+      ]
     },
     {
       "query": "ISO 27001 compliance",
@@ -168,7 +475,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/compliance-frameworks.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "compliance",
+        "iso",
+        "iso 27001",
+        "certification",
+        "dss",
+        "framework",
+        "frameworks",
+        "gdpr",
+        "hipaa",
+        "key",
+        "overview",
+        "pci",
+        "pci dss",
+        "principles",
+        "reporting"
+      ]
     },
     {
       "query": "SOC2 Type II audit",
@@ -176,7 +500,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/compliance-frameworks.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "certification",
+        "compliance",
+        "dss",
+        "framework",
+        "frameworks",
+        "gdpr",
+        "hipaa",
+        "iso",
+        "iso 27001",
+        "key",
+        "overview",
+        "pci",
+        "pci dss",
+        "principles",
+        "reporting"
+      ]
     },
     {
       "query": "BGE-small-en-v1.5 model",
@@ -184,7 +525,24 @@
       "expected_sources": [
         "docs/ARCHITECTURE.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "model",
+        "agent",
+        "arcane",
+        "architecture",
+        "bardic",
+        "boundary",
+        "breakdown",
+        "calibration",
+        "characteristics",
+        "components",
+        "concurrency",
+        "configuration",
+        "contextual",
+        "cross",
+        "decomposition"
+      ]
     },
     {
       "query": "ChromaDB v0.4.0",
@@ -192,7 +550,24 @@
       "expected_sources": [
         "docs/DESIGN.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "accelerated",
+        "adaptive",
+        "agent",
+        "agentic",
+        "arcane",
+        "architecture",
+        "audit",
+        "bardic",
+        "benchmark",
+        "benchmarks",
+        "centurion",
+        "cold",
+        "conditional",
+        "core",
+        "decisions"
+      ]
     },
     {
       "query": "MS-MARCO MiniLM L-6-v2",
@@ -200,7 +575,24 @@
       "expected_sources": [
         "docs/RESEARCH_DIARY.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "adaptive",
+        "added",
+        "advanced",
+        "after",
+        "agent",
+        "ahead",
+        "all",
+        "alternatives",
+        "analysis",
+        "answered",
+        "api",
+        "apple",
+        "approach",
+        "arcane",
+        "architecture"
+      ]
     },
     {
       "query": "JWT RS256 signing",
@@ -208,7 +600,24 @@
       "expected_sources": [
         "tests/fixtures/sample_docs/authentication.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "jwt",
+        "abac",
+        "access",
+        "acl",
+        "api",
+        "attribute",
+        "auth",
+        "authentication",
+        "authorization",
+        "based",
+        "best",
+        "can",
+        "control",
+        "factor",
+        "least"
+      ]
     },
     {
       "query": "OAuth 2.0 PKCE flow",
@@ -216,7 +625,24 @@
       "expected_sources": [
         "tests/fixtures/sample_docs/authentication.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "oauth",
+        "abac",
+        "access",
+        "acl",
+        "api",
+        "attribute",
+        "auth",
+        "authentication",
+        "authorization",
+        "based",
+        "best",
+        "can",
+        "control",
+        "factor",
+        "jwt"
+      ]
     },
     {
       "query": "RAID 6 configurations",
@@ -224,7 +650,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/database-backup-recovery.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "additional",
+        "archive",
+        "archiving",
+        "backup",
+        "backups",
+        "comprehensive",
+        "considerations",
+        "database",
+        "pg_dump",
+        "pitr",
+        "point",
+        "point-in-time",
+        "postgres",
+        "postgresql",
+        "recovery"
+      ]
     },
     {
       "query": "SQL-92 standards",
@@ -232,7 +675,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/sql-query-optimization.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "sql",
+        "algorithms",
+        "conclusion",
+        "database",
+        "database statistics",
+        "explain",
+        "explain plan",
+        "gathering",
+        "hash",
+        "index",
+        "indexing",
+        "interpreting",
+        "join",
+        "join algorithms",
+        "joins"
+      ]
     },
     {
       "query": "POSIX thread management",
@@ -240,7 +700,20 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/linux-process-management.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "management",
+        "cgroups",
+        "exec",
+        "fork",
+        "linux",
+        "namespaces",
+        "nice",
+        "process",
+        "renice",
+        "signals",
+        "states"
+      ]
     },
     {
       "query": "systemd unit files",
@@ -248,7 +721,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/systemd-services.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "unit files",
+        "files",
+        "systemd",
+        "unit",
+        "activation",
+        "advanced",
+        "concepts",
+        "conclusion",
+        "debugging",
+        "dependencies",
+        "file",
+        "journal",
+        "limits",
+        "management",
+        "override"
+      ]
     },
     {
       "query": "EXT4 filesystem limits",
@@ -256,7 +746,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/linux-filesystem.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "filesystem",
+        "allocation",
+        "based",
+        "btrfs",
+        "checksumming",
+        "compression",
+        "configuration",
+        "copy",
+        "defragmentation",
+        "delayed",
+        "etc",
+        "example",
+        "expansion",
+        "ext4",
+        "extent"
+      ]
     },
     {
       "query": "YAML 1.2 syntax",
@@ -264,7 +771,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/configuration-management.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "ansible",
+        "automation",
+        "conclusion",
+        "configuration",
+        "configuration management",
+        "devops",
+        "execution",
+        "idempotency",
+        "introduction",
+        "inventory",
+        "management",
+        "playbook",
+        "playbooks",
+        "roles",
+        "structure"
+      ]
     },
     {
       "query": "Docker Compose v2",
@@ -272,7 +796,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/container-fundamentals.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "compose",
+        "docker",
+        "architecture",
+        "building",
+        "builds",
+        "cgroup",
+        "cgroups",
+        "configuration",
+        "container",
+        "containers",
+        "control",
+        "controllers",
+        "file",
+        "fundamentals",
+        "groups"
+      ]
     },
     {
       "query": "AWS IAM policies",
@@ -280,7 +821,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/api-security.md"
       ],
-      "category": "lexical"
+      "category": "lexical",
+      "expected_content": [
+        "api",
+        "api keys",
+        "api security",
+        "authentication",
+        "authorization",
+        "best",
+        "client",
+        "code",
+        "credentials",
+        "exchange",
+        "flow",
+        "flows",
+        "hmac",
+        "hmac signing",
+        "implicit"
+      ]
     },
     {
       "query": "how to implement chaos engineering",
@@ -288,7 +846,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/chaos-engineering.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "chaos engineering",
+        "chaos",
+        "chaos monkey",
+        "engineering",
+        "blast",
+        "blast radius",
+        "days",
+        "fault",
+        "fault injection",
+        "fault tolerance",
+        "game",
+        "game days",
+        "hypothesis",
+        "injection",
+        "monkey"
+      ]
     },
     {
       "query": "benefits of event-driven architecture",
@@ -296,7 +871,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/event-driven-architecture.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "architecture",
+        "benefits",
+        "driven",
+        "event",
+        "event bus",
+        "event sourcing",
+        "event-driven architecture",
+        "bus",
+        "challenges",
+        "command",
+        "concepts",
+        "consistency",
+        "cqrs",
+        "distributed-systems",
+        "ensuring"
+      ]
     },
     {
       "query": "serverless vs containers",
@@ -304,7 +896,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/serverless-architecture.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "serverless",
+        "architecture",
+        "aws",
+        "aws lambda",
+        "cold",
+        "cold starts",
+        "concepts",
+        "concurrency",
+        "configurations",
+        "considerations",
+        "cost",
+        "cost optimization",
+        "event",
+        "event sources",
+        "execution"
+      ]
     },
     {
       "query": "microservices data consistency",
@@ -312,7 +921,8 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/microservices.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": []
     },
     {
       "query": "data lakehouse architecture",
@@ -320,7 +930,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/data-lake-architecture.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "data architecture",
+        "architecture",
+        "data",
+        "data governance",
+        "data lake",
+        "data pipelines",
+        "data zones",
+        "lakehouse",
+        "access",
+        "apache",
+        "atlas",
+        "aws",
+        "azure",
+        "catalog",
+        "classification"
+      ]
     },
     {
       "query": "zero trust security principles",
@@ -328,7 +955,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/zero-trust-architecture.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "security",
+        "trust",
+        "zero",
+        "access",
+        "adaptive",
+        "aggregation",
+        "anomaly",
+        "api",
+        "application",
+        "approach",
+        "architectural",
+        "architecture",
+        "authentication",
+        "authorization",
+        "automated"
+      ]
     },
     {
       "query": "continuous integration best practices",
@@ -336,7 +980,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/ci-cd-pipelines.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "continuous integration",
+        "continuous deployment",
+        "artifacts",
+        "automation",
+        "blue",
+        "blue-green",
+        "caching",
+        "canary",
+        "ci/cd",
+        "conclusion",
+        "deployment",
+        "deployment strategies",
+        "design",
+        "devops",
+        "execution"
+      ]
     },
     {
       "query": "database sharding strategies",
@@ -344,7 +1005,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/database-sharding.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "database sharding",
+        "sharding strategies",
+        "database",
+        "database resharding",
+        "directory-based sharding",
+        "hash-based sharding",
+        "range-based sharding",
+        "sharding",
+        "strategies",
+        "based",
+        "cross",
+        "cross-shard queries",
+        "directory",
+        "hash",
+        "performance"
+      ]
     },
     {
       "query": "load balancing algorithms",
@@ -352,7 +1030,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/load-balancing.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "load balancing",
+        "algorithms",
+        "balancing",
+        "load",
+        "acceleration",
+        "advanced",
+        "architecture",
+        "balancer",
+        "balancers",
+        "based",
+        "breakers",
+        "caching",
+        "checks",
+        "circuit",
+        "concepts"
+      ]
     },
     {
       "query": "content delivery network optimization",
@@ -360,7 +1055,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/cdn-architecture.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "content delivery network",
+        "anycast",
+        "architecture",
+        "cache",
+        "cache invalidation",
+        "caching",
+        "cdn",
+        "edge",
+        "edge caching",
+        "edge computing",
+        "geographic",
+        "geographic routing",
+        "invalidation",
+        "load balancing",
+        "networking"
+      ]
     },
     {
       "query": "service mesh advantages",
@@ -368,7 +1080,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/service-mesh.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "service mesh",
+        "mesh",
+        "service",
+        "architecture",
+        "components",
+        "conclusion",
+        "configuration",
+        "distributed systems",
+        "envoy",
+        "injection",
+        "installation",
+        "istio",
+        "management",
+        "microservices",
+        "mtls"
+      ]
     },
     {
       "query": "infrastructure as code tools",
@@ -376,7 +1105,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/infrastructure-as-code.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "infrastructure as code",
+        "code",
+        "infrastructure",
+        "advanced",
+        "backends",
+        "cloud",
+        "conclusion",
+        "configuration",
+        "creating",
+        "customization",
+        "data",
+        "dependencies",
+        "detecting",
+        "detection",
+        "drift"
+      ]
     },
     {
       "query": "monitoring vs observability",
@@ -384,7 +1130,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/monitoring-observability.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "monitoring",
+        "observability",
+        "aggregation",
+        "alert",
+        "alerting",
+        "analysis",
+        "channels",
+        "comprehensive",
+        "data",
+        "defining",
+        "distributed",
+        "distributed tracing",
+        "escalation",
+        "fatigue",
+        "guide"
+      ]
     },
     {
       "query": "auto scaling in the cloud",
@@ -392,7 +1155,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/auto-scaling.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "auto",
+        "cloud computing",
+        "predictive scaling",
+        "scaling",
+        "scaling policies",
+        "scaling strategies",
+        "step scaling",
+        "auto-scaling",
+        "combining",
+        "cooldown",
+        "cooldown periods",
+        "infrastructure",
+        "performance",
+        "periods",
+        "policies"
+      ]
     },
     {
       "query": "disaster recovery planning",
@@ -400,7 +1180,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/disaster-recovery.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "disaster recovery",
+        "disaster",
+        "recovery",
+        "active",
+        "active-active",
+        "architecture",
+        "architectures",
+        "backup",
+        "backups",
+        "database",
+        "differential",
+        "failover",
+        "file",
+        "high availability",
+        "image"
+      ]
     },
     {
       "query": "api gateway patterns",
@@ -408,7 +1205,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/api-gateway-patterns.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "api gateway",
+        "api",
+        "gateway",
+        "patterns",
+        "adaptive",
+        "aggregation",
+        "aggregator",
+        "algorithm",
+        "authentication",
+        "authorization",
+        "based",
+        "best",
+        "best practices",
+        "breaking",
+        "bucket"
+      ]
     },
     {
       "query": "cloud storage options",
@@ -416,7 +1230,20 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/cloud-storage-options.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "cloud",
+        "options",
+        "storage",
+        "amazon",
+        "block",
+        "comparison",
+        "ebs",
+        "efs",
+        "file",
+        "object",
+        "summary"
+      ]
     },
     {
       "query": "data serialization formats",
@@ -424,7 +1251,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/data-serialization.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "data formats",
+        "data serialization",
+        "data",
+        "formats",
+        "serialization",
+        "advantages",
+        "apache",
+        "avro",
+        "buffers",
+        "columnar",
+        "comparison",
+        "disadvantages",
+        "example",
+        "introduction",
+        "javascript"
+      ]
     },
     {
       "query": "message queue patterns",
@@ -432,7 +1276,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/event-driven-architecture.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "patterns",
+        "architecture",
+        "benefits",
+        "bus",
+        "challenges",
+        "command",
+        "concepts",
+        "consistency",
+        "cqrs",
+        "distributed-systems",
+        "driven",
+        "ensuring",
+        "event",
+        "event bus",
+        "event sourcing"
+      ]
     },
     {
       "query": "functional programming concepts",
@@ -440,7 +1301,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/functional-programming.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "functional programming",
+        "programming concepts",
+        "concepts",
+        "functional",
+        "programming",
+        "adts",
+        "algebraic",
+        "algebraic data types",
+        "benefits",
+        "common",
+        "conclusion",
+        "data",
+        "functions",
+        "functors",
+        "immutability"
+      ]
     },
     {
       "query": "linux memory management",
@@ -448,7 +1326,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/linux-memory-management.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "memory management",
+        "linux",
+        "management",
+        "memory",
+        "virtual memory",
+        "conclusion",
+        "deep",
+        "dive",
+        "huge",
+        "huge pages",
+        "kernel",
+        "killer",
+        "numa",
+        "oom",
+        "oom killer"
+      ]
     },
     {
       "query": "dns resolution process",
@@ -456,7 +1351,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/dns-resolution.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "dns",
+        "process",
+        "resolution",
+        "aaaa",
+        "address",
+        "caching",
+        "canonical",
+        "cname",
+        "conclusion",
+        "dnssec",
+        "exchange",
+        "extensions",
+        "infrastructure",
+        "iterative",
+        "mail"
+      ]
     },
     {
       "query": "connection pooling benefits",
@@ -464,7 +1376,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/connection-pooling.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "connection pooling",
+        "connection",
+        "connection lifecycle",
+        "pooling",
+        "acquisition",
+        "calculating",
+        "database",
+        "dynamic",
+        "hikaricp",
+        "lifecycle",
+        "metrics",
+        "monitor",
+        "monitoring",
+        "performance",
+        "pgbouncer"
+      ]
     },
     {
       "query": "cryptography basics",
@@ -472,7 +1401,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/cryptography-basics.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "cryptography",
+        "adleman",
+        "advanced",
+        "aes",
+        "algorithm",
+        "asymmetric",
+        "based",
+        "bcrypt",
+        "chacha20",
+        "curve",
+        "derivation",
+        "digital",
+        "ecdsa",
+        "elliptic",
+        "encryption"
+      ]
     },
     {
       "query": "distributed transactions",
@@ -480,7 +1426,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/concurrency-patterns.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "actor",
+        "actor model",
+        "asynchronous",
+        "communicating",
+        "concurrency",
+        "constructs",
+        "csp",
+        "data",
+        "deadlock",
+        "free",
+        "futures",
+        "lock",
+        "lock-free",
+        "model",
+        "multithreading"
+      ]
     },
     {
       "query": "container security hardening",
@@ -488,7 +1451,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/container-security.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "container",
+        "security",
+        "apparmor",
+        "chain",
+        "computing",
+        "image",
+        "malware",
+        "mode",
+        "overview",
+        "protection",
+        "runtime",
+        "scanning",
+        "seccomp",
+        "secure",
+        "supply"
+      ]
     },
     {
       "query": "well architected framework",
@@ -496,7 +1476,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/well-architected-framework.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "architected",
+        "framework",
+        "well",
+        "areas",
+        "aws",
+        "cost",
+        "cost optimization",
+        "design",
+        "design principles",
+        "efficiency",
+        "example",
+        "excellence",
+        "key",
+        "operational",
+        "operational excellence"
+      ]
     },
     {
       "query": "cost optimization strategies",
@@ -504,7 +1501,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/cost-optimization.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "cost",
+        "optimization",
+        "strategies",
+        "auto",
+        "auto-scaling",
+        "aws",
+        "azure",
+        "cloud",
+        "cold",
+        "conclusion",
+        "configuring",
+        "data",
+        "gcp",
+        "hot",
+        "identifying"
+      ]
     },
     {
       "query": "incident response steps",
@@ -512,7 +1526,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/incident-response.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "incident response",
+        "incident",
+        "response",
+        "best",
+        "call",
+        "communication",
+        "devops",
+        "examples",
+        "levels",
+        "lifecycle",
+        "maintenance",
+        "notification",
+        "on-call",
+        "oncall",
+        "playbooks"
+      ]
     },
     {
       "query": "multi-region deployment",
@@ -520,7 +1551,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/multi-region-deployment.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "deployment",
+        "multi",
+        "region",
+        "active",
+        "active-active",
+        "active-passive",
+        "conclusion",
+        "consistency",
+        "data",
+        "data replication",
+        "disaster recovery",
+        "distributed systems",
+        "dns",
+        "dns failover",
+        "failover"
+      ]
     },
     {
       "query": "ssh configuration security",
@@ -528,7 +1576,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/ssh-configuration.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "configuration",
+        "security",
+        "ssh",
+        "agent",
+        "agent forwarding",
+        "authorized_keys",
+        "comprehensive",
+        "devops",
+        "dynamic",
+        "file",
+        "forwarding",
+        "generating",
+        "guide",
+        "hardening",
+        "key"
+      ]
     },
     {
       "query": "vpn tunneling protocols",
@@ -536,7 +1601,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/vpn-tunneling.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "protocols",
+        "tunneling",
+        "vpn",
+        "access",
+        "internet",
+        "ipsec",
+        "modes",
+        "openvpn",
+        "protocol",
+        "remote",
+        "security",
+        "site",
+        "split",
+        "tunnel",
+        "wireguard"
+      ]
     },
     {
       "query": "websocket protocol overview",
@@ -544,7 +1626,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/websocket-protocol.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "overview",
+        "protocol",
+        "websocket",
+        "backoff",
+        "balancing",
+        "client",
+        "clustering",
+        "connections",
+        "documentation",
+        "exponential",
+        "frames",
+        "handshake",
+        "horizontal",
+        "load",
+        "message"
+      ]
     },
     {
       "query": "helm charts fundamentals",
@@ -552,7 +1651,20 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/helm-charts.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "helm",
+        "chart",
+        "conclusion",
+        "dependencies",
+        "development",
+        "hooks",
+        "management",
+        "repository",
+        "templates",
+        "testing",
+        "values"
+      ]
     },
     {
       "query": "linux process management",
@@ -560,7 +1672,20 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/linux-process-management.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "linux",
+        "management",
+        "process",
+        "cgroups",
+        "exec",
+        "fork",
+        "namespaces",
+        "nice",
+        "renice",
+        "signals",
+        "states"
+      ]
     },
     {
       "query": "network troubleshooting tools",
@@ -568,7 +1693,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/network-troubleshooting.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "network",
+        "tools",
+        "troubleshooting",
+        "basic",
+        "cases",
+        "common",
+        "connectivity",
+        "dig",
+        "dns",
+        "issues",
+        "netstat",
+        "nslookup",
+        "performance",
+        "port",
+        "resolution"
+      ]
     },
     {
       "query": "database replication types",
@@ -576,7 +1718,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/database-replication.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "database",
+        "replication",
+        "advantages",
+        "architecture",
+        "asynchronous",
+        "based",
+        "between",
+        "choosing",
+        "conflict",
+        "conflict resolution",
+        "considerations",
+        "disadvantages",
+        "disaster",
+        "failover",
+        "fault tolerance"
+      ]
     },
     {
       "query": "nosql design patterns",
@@ -584,7 +1743,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/nosql-patterns.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "design",
+        "document design",
+        "nosql",
+        "patterns",
+        "aggregation",
+        "data",
+        "data modeling",
+        "data-modeling",
+        "denormalization",
+        "document",
+        "document-design",
+        "graph",
+        "graph traversal",
+        "graph-traversal",
+        "modeling"
+      ]
     },
     {
       "query": "sql query optimization",
@@ -592,7 +1768,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/sql-query-optimization.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "query optimization",
+        "optimization",
+        "query",
+        "query rewriting",
+        "sql",
+        "algorithms",
+        "conclusion",
+        "database",
+        "database statistics",
+        "explain",
+        "explain plan",
+        "gathering",
+        "hash",
+        "index",
+        "indexing"
+      ]
     },
     {
       "query": "data pipeline design",
@@ -600,7 +1793,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/data-pipeline-design.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "data pipeline",
+        "data",
+        "data engineering",
+        "data quality",
+        "design",
+        "pipeline",
+        "architectural",
+        "backpressure",
+        "batch",
+        "batch processing",
+        "best",
+        "components",
+        "comprehensive",
+        "considerations",
+        "dimensions"
+      ]
     },
     {
       "query": "testing strategies for software",
@@ -608,7 +1818,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/testing-strategies.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "e2e testing",
+        "integration testing",
+        "mutation testing",
+        "property-based testing",
+        "strategies",
+        "testing",
+        "unit testing",
+        "based",
+        "comprehensive",
+        "conclusion",
+        "doubles",
+        "e2e-testing",
+        "end",
+        "fakes",
+        "guide"
+      ]
     },
     {
       "query": "dependency injection benefits",
@@ -616,7 +1843,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/dependency-injection.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "dependency injection",
+        "constructor injection",
+        "dependency",
+        "injection",
+        ".net",
+        "architectural",
+        "architecture",
+        "composition",
+        "composition root",
+        "constructor",
+        "containers",
+        "design patterns",
+        "diagrams",
+        "ioc",
+        "ioc containers"
+      ]
     },
     {
       "query": "behavioral design patterns",
@@ -624,7 +1868,24 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/design-patterns-behavioral.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "behavioral patterns",
+        "design patterns",
+        "behavioral",
+        "design",
+        "patterns",
+        "advantages",
+        "applicability",
+        "command",
+        "design-patterns",
+        "disadvantages",
+        "example",
+        "implementation",
+        "iterator",
+        "mediator",
+        "method"
+      ]
     },
     {
       "query": "creational design patterns",
@@ -632,187 +1893,234 @@
       "expected_sources": [
         "tests/fixtures/scale_docs/design-patterns-creational.md"
       ],
-      "category": "semantic"
+      "category": "semantic",
+      "expected_content": [
+        "creational design patterns",
+        "creational patterns",
+        "design patterns",
+        "creational",
+        "design",
+        "patterns",
+        "abstract",
+        "abstract factory",
+        "architecture",
+        "builder",
+        "cases",
+        "conclusion",
+        "cons",
+        "factory",
+        "factory method"
+      ]
     },
     {
       "query": "how to bake sourdough in a kubernetes cluster",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "best brand of hiking boots for Mars",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "quantum entanglement in photosynthesis",
       "difficulty": "medium",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "the secret to eternal life according to python docs",
       "difficulty": "medium",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "where did I leave my keys",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "recipe for disaster in distributed systems",
       "difficulty": "medium",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "blue whales vs sperm whales",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "history of the Roman Empire",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "how to play the banjo",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "why is the sky blue",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "symptoms of a cold",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "movie recommendations for tonight",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "stock market predictions for 2026",
       "difficulty": "hard",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "philosophy of mind and AI",
       "difficulty": "hard",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "meaning of life 42",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "how to win friends and influence people",
       "difficulty": "medium",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "yoga for beginners",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "best coffee shops in London",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "gardening tips for summer",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "how to repair a flat tire",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "history of the internet",
       "difficulty": "medium",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "space travel in the future",
       "difficulty": "medium",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "the art of war summary",
       "difficulty": "medium",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "meditation techniques",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "learning a new language fast",
       "difficulty": "medium",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "climate change impacts",
       "difficulty": "medium",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "renewable energy sources",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "healthy eating habits",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "travel tips for Japan",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     },
     {
       "query": "basics of photography",
       "difficulty": "easy",
       "expected_sources": [],
-      "category": "adversarial"
+      "category": "adversarial",
+      "expected_content": []
     }
   ]
 }
