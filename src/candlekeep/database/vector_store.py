@@ -97,6 +97,13 @@ class ChromaVectorStore(VectorDatabase):
         for source in sources:
             update_bm25_cache(new_search_results, removed_source=source)
 
+        # If ColBERT backend is active, mark its index dirty for lazy rebuild.
+        import os
+        if os.getenv("CANDLEKEEP_SPARSE_BACKEND", "bm25") == "colbert":
+            from candlekeep.rag.colbert import update_colbert_cache
+            for source in sources:
+                update_colbert_cache(new_search_results, removed_source=source)
+
         return len(chunks)
 
     def search(self, query: str, n_results: int = 5, category: str | None = None) -> list[SearchResult]:
@@ -173,6 +180,10 @@ class ChromaVectorStore(VectorDatabase):
         if results["ids"]:
             self.collection.delete(ids=results["ids"])
             remove_from_bm25_cache(source)
+            import os
+            if os.getenv("CANDLEKEEP_SPARSE_BACKEND", "bm25") == "colbert":
+                from candlekeep.rag.colbert import remove_from_colbert_cache
+                remove_from_colbert_cache(source)
             return len(results["ids"])
         return 0
 
@@ -180,6 +191,10 @@ class ChromaVectorStore(VectorDatabase):
         """Clear all documents from the collection."""
         from candlekeep.rag.hybrid import clear_bm25_cache
         clear_bm25_cache()
+        import os
+        if os.getenv("CANDLEKEEP_SPARSE_BACKEND", "bm25") == "colbert":
+            from candlekeep.rag.colbert import clear_colbert_cache
+            clear_colbert_cache()
         
         self.client.delete_collection("candlekeep")
         # Brief pause to let ChromaDB finish cleaning up the deleted
