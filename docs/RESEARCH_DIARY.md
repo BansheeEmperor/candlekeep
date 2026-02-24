@@ -3013,6 +3013,6 @@ RAGatouille requires a langchain compatibility patch (the library imports `langc
 
 ### Known Limitations
 
-1. ColBERT index rebuild is O(N) and blocks the query thread. At 2,859 chunks this takes ~3-5 seconds. At 50k+ chunks it could take 30+ seconds. During this time, queries fall back to BM25.
-2. Multi-worker HTTP mode: each worker maintains its own ColBERT index. A write on worker A does not invalidate workers B/C/D — they serve stale ColBERT results until their own next write or cache rebuild. This is the same limitation BM25 already has (documented in ARCHITECTURE.md § Per-process state tradeoffs). Not a regression.
-3. The langchain compatibility patch is fragile — it may break if RAGatouille changes its import structure.
+1. ColBERT index rebuild runs in a background thread. Queries during rebuild fall back to BM25 transparently. At 2,859 chunks the rebuild takes ~3-5 seconds. At 50k+ chunks it could take 30+ seconds. No query is blocked.
+2. Multi-worker HTTP mode: each worker maintains its own ColBERT index. A write on worker A does not invalidate workers B/C/D — they serve stale ColBERT results until their own next write or cache rebuild. This is the same limitation BM25 already has (documented in ARCHITECTURE.md § Per-process state tradeoffs). Not a regression. Mitigated by disk-based index sharing: workers detect new indexes via file mtime and reload.
+3. The langchain compatibility patch is fragile — it depends on RAGatouille's internal import structure. Pinned to `ragatouille>=0.0.8,<0.1.0`. If the patch or import fails, ColBERT degrades gracefully to BM25 with a warning log. RAGatouille 0.0.10 will migrate to a PyLate backend which may eliminate the langchain dependency entirely.
