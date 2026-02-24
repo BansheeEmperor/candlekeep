@@ -276,7 +276,13 @@ def _colbert_sparse(
     import logging
     logger = logging.getLogger("candlekeep")
 
-    from candlekeep.rag.colbert import get_colbert_searcher
+    from candlekeep.rag.colbert import is_available, get_colbert_searcher
+
+    if not is_available():
+        logger.warning(
+            "[candlekeep] \u26a0 ColBERT unavailable, using BM25 fallback"
+        )
+        return _bm25_sparse(db, query, n_results, category)
 
     searcher = get_colbert_searcher(db)
     if searcher is None or not searcher.ensure_index():
