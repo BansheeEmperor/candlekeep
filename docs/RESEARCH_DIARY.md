@@ -2947,3 +2947,72 @@ ColBERT will be implemented as an opt-in sparse backend replacing BM25, controll
 ### The Competitive Position
 
 Candlekeep isn't the MRR leader, but it's the content quality leader. The systems that beat it on MRR do so by 0.004-0.007 — within noise. The systems that beat it on MRR lose on content match (0.614-0.757 vs 0.808). Candlekeep's combination of hybrid retrieval + Arcane Recall + Relevance Ward produces the most useful results for an LLM agent, even if the ranking order isn't always optimal.
+
+---
+
+## Entry 50: ColBERT Dual Sparse Backend Implementation
+
+**Date:** 2026-02-24
+**Status:** Complete
+
+### Motivation
+
+Entry 49 identified ColBERT replacing BM25 as the most promising improvement: lexical MRR +0.033, overall MRR +0.004, content match +0.015 at +13ms latency. The gain comes from ColBERT's token-level matching handling technical identifiers (version numbers, error codes, package names) better than BM25's bag-of-words approach.
+
+### Architecture
+
+Implemented as a dual sparse backend behind `CANDLEKEEP_SPARSE_BACKEND` environment variable:
+
+- `bm25` (default): Existing BM25Okapi with stop-word-filtered tokenization. No change to current behavior.
+- `colbert`: RAGatouille with `answerai-colbert-small-v1` (~130MB model). Replaces BM25 as the sparse signal in the hybrid path's RRF fusion.
+
+BM25 is always maintained regardless of the backend setting. It serves as the fallback when the ColBERT index is rebuilding.
+
+### Write Path
+
+Ingestion and deletion update both caches when ColBERT is active:
+
+1. BM25 cache: incremental update (existing behavior, always active)
+2. ColBERT cache: chunks added/removed in memory, index marked dirty
+
+The ColBERT index is not rebuilt on every write. Single-file ingestion marks the index dirty; the rebuild happens lazily on the next query. This keeps ingestion fast (~same as BM25-only). For `repopulate_database`, the full ColBERT cache is cleared and rebuilt from scratch on the next query.
+
+### Query Path
+
+When `CANDLEKEEP_SPARSE_BACKEND=colbert`:
+
+1. Check if ColBERT searcher exists and index is ready
+2. If ready: use ColBERT for sparse results
+3. If not ready (rebuilding or first query): fall back to BM25 with warning log: `[candlekeep] ⚠ ColBERT index rebuilding, using BM25 fallback for this query`
+4. RRF fusion and Arcane Recall proceed identically regardless of sparse backend
+
+The agent never sees the backend choice. No error, no retry flow, no configuration exposed via MCP tools.
+
+### Thread Safety
+
+- `ColBERTSearcher` uses an internal lock for chunk list mutations and build state transitions
+- Global `_cache_lock` protects the singleton cache (same pattern as BM25's `_cache_lock`)
+- `_building` flag prevents concurrent rebuilds; queries during rebuild get BM25 fallback
+
+### Dependencies
+
+`ragatouille` added as optional dependency: `pip install candlekeep[colbert]`. The import is lazy — when `CANDLEKEEP_SPARSE_BACKEND=bm25` (default), no ColBERT code is loaded.
+
+RAGatouille requires a langchain compatibility patch (the library imports `langchain.retrievers.document_compressors.base` which may not exist in newer langchain versions). The patch creates stub modules at import time.
+
+### Files Changed
+
+- `src/candlekeep/rag/colbert.py` — New. ColBERT searcher, lazy index, global cache, incremental update/remove/clear functions
+- `src/candlekeep/rag/hybrid.py` — Refactored `hybrid_search` to route through `_get_sparse_results` abstraction. Added `_colbert_sparse` with BM25 fallback + warning log
+- `src/candlekeep/database/vector_store.py` — Added ColBERT cache hooks in `add_documents`, `delete_by_source`, and `clear`
+- `src/candlekeep/config.py` — Added `sparse_backend` setting
+- `pyproject.toml` — Added `[colbert]` optional dependency group
+- `docs/ARCHITECTURE.md` — Updated diagrams, concurrency controls, tuned parameters
+- `docs/DESIGN.md` — Updated technique table and "Not Yet Evaluated" section
+- `.env.example` — Documented `CANDLEKEEP_SPARSE_BACKEND`
+
+### Known Limitations
+
+1. ColBERT index rebuild is O(N) and blocks the query thread. At 2,859 chunks this takes ~3-5 seconds. At 50k+ chunks it could take 30+ seconds. During this time, queries fall back to BM25.
+2. Multi-worker HTTP mode: each worker maintains its own ColBERT index. A write on worker A does not invalidate workers B/C/D — they serve stale ColBERT results until their own next write or cache rebuild. This is the same limitation BM25 already has (documented in ARCHITECTURE.md § Per-process state tradeoffs). Not a regression.
+3. The langchain compatibility patch is fragile — it may break if RAGatouille changes its import structure.
