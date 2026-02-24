@@ -70,7 +70,7 @@ Candlekeep is a RAG (Retrieval-Augmented Generation) knowledge base server that 
 
 The library routes queries to the optimal technique stack:
 *   **simple** → [Arcane Recall](GLOSSARY.md#arcane-recall) (Fast Path)
-*   **hybrid** → [Wild Magic](GLOSSARY.md#lexical-matching-bm25) (Lexical + Vector). BM25 uses stop-word-filtered tokenization with a regex that preserves technical identifiers (e.g., `bge-small`, `v3.4.1`).
+*   **hybrid** → [Wild Magic](GLOSSARY.md#lexical-matching-bm25) (Lexical + Vector). The sparse signal is BM25 by default; an opt-in ColBERT backend (`CANDLEKEEP_SPARSE_BACKEND=colbert`) provides token-level matching for better lexical precision on technical identifiers. BM25 uses stop-word-filtered tokenization with a regex that preserves technical identifiers (e.g., `bge-small`, `v3.4.1`). ColBERT uses late interaction with `answerai-colbert-small-v1`. BM25 is always maintained as fallback during ColBERT index rebuilds.
 *   **precise** → [Arcane Recall](GLOSSARY.md#arcane-recall) + [Divine Insight](GLOSSARY.md#cross-encoder-reranking) (Precise Path)
 *   **Negation preprocessing** applied to all paths.
 *   **[The Relevance Ward](GLOSSARY.md#the-relevance-ward)** filters low-confidence matches.
@@ -98,7 +98,9 @@ Candlekeep provides three distinct search paths through the library, allowing th
 ┌────▼────┐   ┌────▼────┐   ┌────▼────┐
 │ Vector  │   │ Vector  │   │ Vector  │
 │ Search  │   │   +     │   │ Search  │
-└────┬────┘   │ BM25    │   └────┬────┘
+└────┬────┘   │ Sparse  │   └────┬────┘
+     │        │(BM25 or │
+     │        │ ColBERT)│
      │        └────┬────┘        │
      │             ▼             │
      │        ┌─────────┐        │
@@ -194,6 +196,7 @@ These values represent the optimal configuration identified through the Centurio
 | `EXPANSION_SIMILARITY_THRESHOLD` | 0.92 | Scholar's Discernment — relative multiplier (see note below) |
 | `CHUNK_SIZE` | 512 | Target character count per fragment |
 | `CHUNK_OVERLAP` | 50 | Character overlap between fragments |
+| `CANDLEKEEP_SPARSE_BACKEND` | `bm25` | Sparse backend for hybrid path (`bm25` or `colbert`) |
 
 The vector Ward uses an adaptive threshold: queries detected as lexical (version numbers, acronyms, technical identifiers) use a relaxed threshold of 0.65 to avoid filtering legitimate results that score in the 0.67–0.75 range. Non-lexical queries retain the 0.75 threshold. Cross-domain validation (Diary Entry 40) confirmed zero regressions on non-lexical queries and zero new adversarial leaks across legal, medical, and narrative corpora. See [DESIGN.md §8.10](DESIGN.md#810-adaptive-relevance-ward) for the full analysis.
 
@@ -283,12 +286,15 @@ HTTP mode (multi-worker, recommended):
 | `_write_lock` (`threading.Lock`) | Write tools (ingest, delete, repopulate) | Prevents concurrent writes from corrupting ChromaDB state or racing on BM25 cache invalidation. In HTTP mode, acquisition times out after 10 seconds — the caller receives a "server busy" error instead of queuing indefinitely behind a long-running write (e.g., `repopulate_database`). stdio mode uses blocking acquire (single agent). |
 | `_reranker_semaphore` (`threading.Semaphore`) | Precise-path search | Caps concurrent cross-encoder inference at the throughput-optimal level. Value set by hardware: HTTP mode runs a calibration benchmark at startup (tests N=1 up to cores/2, picks peak throughput); stdio mode uses a core-count heuristic (`cores // 3`). See [Precise Path Concurrency](#precise-path-concurrency). |
 | BM25 `_cache_lock` (`threading.Lock`) | Hybrid-path BM25 cache | Existing lock, protects cache reads/rebuilds. |
+| ColBERT `_cache_lock` (`threading.Lock`) | Hybrid-path ColBERT cache (opt-in) | Protects ColBERT searcher reads/rebuilds. Only active when `CANDLEKEEP_SPARSE_BACKEND=colbert`. |
 | `_search_limiter` (`_RateLimiter`) | `search` tool (all paths) | Per-session sliding window. Rejects calls exceeding `CANDLEKEEP_RATE_LIMIT_SEARCH` per `CANDLEKEEP_RATE_LIMIT_WINDOW` seconds. HTTP mode only; no-op in stdio. |
 | `_write_limiter` (`_RateLimiter`) | Write tools (ingest, delete, repopulate) | Per-session sliding window. Rejects calls exceeding `CANDLEKEEP_RATE_LIMIT_WRITE` per `CANDLEKEEP_RATE_LIMIT_WINDOW` seconds. HTTP mode only; no-op in stdio. |
 
 Read operations (simple search, hybrid search, list_documents, get_stats) run without locks against ChromaDB, which handles its own collection-level consistency.
 
 **BM25 cache updates:** After a write, the BM25 cache is updated incrementally — old chunks for the affected source are removed and new chunks are added to the in-memory tokenized corpus, then BM25Okapi IDF statistics are recomputed. This avoids the ChromaDB round-trip and re-tokenization of a full cache rebuild. The IDF recomputation is O(N) arithmetic over pre-tokenized data, which is a constant-factor improvement over the previous approach (O(N) network fetch + O(N) tokenization + O(N) IDF). At 2,770 chunks the difference is small; at 50k+ chunks the network fetch elimination becomes significant. Full cache invalidation (`clear_bm25_cache`) is used only for `repopulate_database`. True O(k) incremental IDF updates would require switching to a library with native support (e.g., `whoosh`, `tantivy`).
+
+**ColBERT cache updates (opt-in):** When `CANDLEKEEP_SPARSE_BACKEND=colbert`, writes mark the ColBERT index dirty for lazy rebuild on the next query. Unlike BM25 (which supports incremental IDF recomputation), ColBERT requires a full index rebuild because the late interaction scoring depends on global token statistics. Single-file ingestion marks dirty; batch ingestion (`repopulate_database`) rebuilds once at the end. During rebuild, queries silently fall back to BM25 with a warning log. BM25 is always maintained regardless of the sparse backend setting.
 
 ### Precise Path Concurrency
 

@@ -204,8 +204,12 @@ def hybrid_search(
     n_results: int = 5,
     category: str | None = None
 ) -> List[SearchResult]:
-    """Perform hybrid search combining Vector and BM25 results.
+    """Perform hybrid search combining Vector and sparse results.
     
+    The sparse signal is BM25 by default. When CANDLEKEEP_SPARSE_BACKEND=colbert,
+    uses ColBERT late interaction instead. Falls back to BM25 transparently if
+    the ColBERT index is rebuilding.
+
     Args:
         db: VectorDatabase instance.
         query: Search query.
@@ -217,20 +221,13 @@ def hybrid_search(
     # 1. Get Vector results (fetch more for fusion)
     vector_results = db.search(query, n_results=n_results * 4, category=category)
     
-    # 2. Get BM25 results
-    bm25_searcher = get_bm25_searcher(db)
-    if bm25_searcher:
-        bm25_results = bm25_searcher.search(query, n_results=n_results * 4)
-        # Apply category filter to BM25 if needed
-        if category:
-            bm25_results = [r for r in bm25_results if r.metadata.get("category") == category]
-    else:
-        bm25_results = []
+    # 2. Get sparse results (ColBERT or BM25)
+    sparse_results = _get_sparse_results(db, query, n_results * 4, category)
         
     # 3. Combine with RRF
     # Fetch 4x candidates to allow for merging and backfilling
     fused_results = reciprocal_rank_fusion(
-        [vector_results, bm25_results],
+        [vector_results, sparse_results],
         k=60,
         top_n=n_results * 4
     )
@@ -240,3 +237,55 @@ def hybrid_search(
     expanded = expand_results(db, fused_results, n_results=n_results, query=query)
     
     return expanded
+
+
+def _get_sparse_results(
+    db, query: str, n_results: int, category: str | None
+) -> List[SearchResult]:
+    """Get sparse retrieval results from the configured backend.
+
+    When ColBERT is configured but its index is rebuilding, falls back
+    to BM25 with a warning log.
+    """
+    import os
+    backend = os.getenv("CANDLEKEEP_SPARSE_BACKEND", "bm25")
+
+    if backend == "colbert":
+        return _colbert_sparse(db, query, n_results, category)
+
+    return _bm25_sparse(db, query, n_results, category)
+
+
+def _bm25_sparse(
+    db, query: str, n_results: int, category: str | None
+) -> List[SearchResult]:
+    """BM25 sparse retrieval."""
+    bm25_searcher = get_bm25_searcher(db)
+    if not bm25_searcher:
+        return []
+    results = bm25_searcher.search(query, n_results=n_results)
+    if category:
+        results = [r for r in results if r.metadata.get("category") == category]
+    return results
+
+
+def _colbert_sparse(
+    db, query: str, n_results: int, category: str | None
+) -> List[SearchResult]:
+    """ColBERT sparse retrieval with BM25 fallback."""
+    import logging
+    logger = logging.getLogger("candlekeep")
+
+    from candlekeep.rag.colbert import get_colbert_searcher
+
+    searcher = get_colbert_searcher(db)
+    if searcher is None or not searcher.ensure_index():
+        logger.warning(
+            "[candlekeep] \u26a0 ColBERT index rebuilding, using BM25 fallback for this query"
+        )
+        return _bm25_sparse(db, query, n_results, category)
+
+    results = searcher.search(query, n_results=n_results)
+    if category:
+        results = [r for r in results if r.metadata.get("category") == category]
+    return results

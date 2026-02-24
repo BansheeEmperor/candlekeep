@@ -84,6 +84,9 @@ class Settings:
     # Structural Integrity (Bardic Knowledge)
     bardic_knowledge: bool = field(default_factory=lambda: os.getenv("CANDLEKEEP_BARDIC_KNOWLEDGE", "true").lower() == "true")
 
+    # Sparse backend for hybrid path (bm25 or colbert)
+    sparse_backend: str = field(default_factory=lambda: os.getenv("CANDLEKEEP_SPARSE_BACKEND", "bm25"))
+
     # Transport settings (multi-agent HTTP mode)
     transport: str = field(default_factory=lambda: os.getenv("CANDLEKEEP_TRANSPORT", "stdio"))
     http_host: str = field(default_factory=lambda: os.getenv("CANDLEKEEP_HTTP_HOST", "127.0.0.1"))
