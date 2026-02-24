@@ -22,8 +22,8 @@
 
 ## 🧪 Arcane Techniques
 
-### Lexical Matching (BM25)
-**The Lore:** A technique that looks for exact symbols and sigils. If thou seeketh "v3.4.1", BM25 will look for exactly those characters. It is immune to the "vibes" of semantic search and focuses strictly on the literal word.
+### Lexical Matching (Wild Magic)
+**The Lore:** A technique that looks for exact symbols and sigils, fused with semantic search via Rank Fusion. The sparse backend can be BM25 (default — bag-of-words matching) or ColBERT (opt-in — token-level late interaction via `CANDLEKEEP_SPARSE_BACKEND=colbert`). Both are immune to the "vibes" of semantic search and focus on literal word matching. ColBERT handles technical identifiers (version numbers, package names) better than BM25 at the cost of a larger model (~130MB) and index rebuild time.
 
 ### Semantic Search (Dense Retrieval)
 **The Lore:** Searching by meaning rather than by word. This technique understands that "caching" and "buffer" are related, even if the words are different. It uses high-dimensional vector spaces to find concepts.

@@ -50,7 +50,7 @@ A trade worth making. The Keeper committed the code and moved on.
 
 ---
 
-### III. The [Wild Magic](GLOSSARY.md#lexical-matching-bm25) Surge
+### III. The [Wild Magic](GLOSSARY.md#lexical-matching-wild-magic) Surge
 
 Confidence is a dangerous thing, but necessity is a powerful motivator.
 
@@ -362,7 +362,7 @@ For those who seek the science behind the sorcery, here is the mapping of the li
 | [**Arcane Coalescence**](GLOSSARY.md#arcane-coalescence) | Window merging of adjacent fragments | `src/candlekeep/rag/arcane_recall.py` |
 | [**Scholar's Discernment**](GLOSSARY.md#the-scholars-discernment) | Similarity-weighted context pruning | `src/candlekeep/rag/arcane_recall.py` |
 | [**Divine Insight**](GLOSSARY.md#cross-encoder-reranking) | Cross-encoder reranking | `src/candlekeep/rag/reranker.py` |
-| [**Wild Magic**](GLOSSARY.md#lexical-matching-bm25) | Hybrid Search (Vector + BM25 Lexical) | `src/candlekeep/rag/hybrid.py` |
+| [**Wild Magic**](GLOSSARY.md#lexical-matching-wild-magic) | Hybrid Search (Vector + BM25 Lexical) | `src/candlekeep/rag/hybrid.py` |
 | [**Arcane Attunement**](GLOSSARY.md#arcane-attunement) | Model pre-loading at startup | `src/candlekeep/mcp/server.py` |
 | [**The Relevance Ward**](GLOSSARY.md#the-relevance-ward) | Score-based result filtering | `src/candlekeep/rag/router.py` |
 | **Mirror Image** | Query expansion variations (Research only) | `tests/test_mirror_image.py` |

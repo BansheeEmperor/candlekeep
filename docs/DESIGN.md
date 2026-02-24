@@ -114,7 +114,7 @@ A comprehensive benchmark across n_results (3, 5, 10), pool multipliers (1×, 2�
 | Flurry of Blows (LLM query decomposition) | High precision, high latency | ❌ Agent does this better |
 | Mirror Image (LLM query expansion) | Degraded all metrics | ❌ Rejected |
 | Illusory Script (HyDE) | Unacceptable latency | ❌ Too slow |
-| [Wild Magic](GLOSSARY.md#lexical-matching-bm25) (BM25 hybrid) | Higher lexical quality | ✅ Hybrid path |
+| [Wild Magic](GLOSSARY.md#lexical-matching-wild-magic) (BM25 hybrid) | Higher lexical quality | ✅ Hybrid path |
 | ColBERT (late interaction) | +0.033 lexical MRR, +0.015 CM | ✅ Opt-in hybrid sparse |
 | Scrying Window (sentence splitting) | Precision collapse | ❌ Rejected |
 
@@ -216,7 +216,7 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 
 *Results from a single representative run. See [Reproducibility](#reproducibility) for 5-run variance analysis (MRR and nDCG@5 perfectly stable; Hit Rate@5 ±0.5%).*
 
-| Metric | Simple Path | Hybrid Path ([Wild Magic](GLOSSARY.md#lexical-matching-bm25)) | Precise Path |
+| Metric | Simple Path | Hybrid Path ([Wild Magic](GLOSSARY.md#lexical-matching-wild-magic)) | Precise Path |
 |--------|------------:|-------------------------:|-------------:|
 | **Overall MRR** | 0.4776 (±0.10) | 0.4722 (±0.09) | 0.4884 (±0.10) |
 | **nDCG@5** | 0.4851 (±0.10) | 0.4746 (±0.09) | 0.4932 (±0.10) |
