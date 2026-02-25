@@ -209,7 +209,12 @@ class ColBERTSearcher:
             self._dirty = True
 
     def _rebuild_sync(self):
-        """Build the index to disk (runs in background thread)."""
+        """Build the index to disk (runs in background thread).
+
+        After building, the model instance retains the searcher — we use
+        it directly for this worker. The index is also saved to disk so
+        other workers can load it via _load_from_disk().
+        """
         with self._lock:
             if not self._texts:
                 self._dirty = False
@@ -219,10 +224,6 @@ class ColBERTSearcher:
             metadata = dict(self._metadata)
 
         index_dir = _get_index_dir()
-        # Build to a temp directory, then swap atomically
-        tmp_dir = Path(tempfile.mkdtemp(
-            prefix="colbert_build_", dir=index_dir.parent
-        ))
         try:
             model = _get_model()
             model.index(
@@ -231,33 +232,39 @@ class ColBERTSearcher:
                 document_ids=doc_ids,
                 split_documents=False,
             )
-            # Save chunk metadata alongside the index
-            meta_path = tmp_dir / _METADATA_FILE
-            meta_path.write_text(json.dumps(metadata))
 
-            # RAGatouille writes to .ragatouille/colbert/indexes/{name}/
-            # Move the built index into our temp dir
+            # The model now has the searcher loaded — use it directly.
+            # This avoids the from_index reload that fails on first use.
+            self._model_for_search = model
+
+            # Save metadata and copy index to shared disk location
+            # so other workers can load it.
             rag_index = Path(f".ragatouille/colbert/indexes/{_INDEX_NAME}")
             if rag_index.exists():
-                built_dir = tmp_dir / "index"
-                shutil.copytree(rag_index, built_dir)
+                tmp_dir = Path(tempfile.mkdtemp(
+                    prefix="colbert_build_", dir=index_dir.parent
+                ))
+                try:
+                    shutil.copytree(rag_index, tmp_dir / "index")
+                    (tmp_dir / _METADATA_FILE).write_text(json.dumps(metadata))
 
-            # Atomic swap: remove old, rename new
-            live_dir = index_dir / "live"
-            old_dir = index_dir / "old"
-            if old_dir.exists():
-                shutil.rmtree(old_dir)
-            if live_dir.exists():
-                live_dir.rename(old_dir)
-            tmp_dir.rename(live_dir)
-            if old_dir.exists():
-                shutil.rmtree(old_dir, ignore_errors=True)
+                    # Atomic swap
+                    live_dir = index_dir / "live"
+                    old_dir = index_dir / "old"
+                    if old_dir.exists():
+                        shutil.rmtree(old_dir)
+                    if live_dir.exists():
+                        live_dir.rename(old_dir)
+                    tmp_dir.rename(live_dir)
+                    if old_dir.exists():
+                        shutil.rmtree(old_dir, ignore_errors=True)
 
-            # Touch marker so other workers detect the new index
-            (index_dir / "index_ready").touch()
-
-            # Load the fresh index for this worker
-            self._load_from_disk()
+                    (index_dir / "index_ready").touch()
+                    self._loaded_mtime = _get_index_mtime()
+                except Exception:
+                    if tmp_dir.exists():
+                        shutil.rmtree(tmp_dir, ignore_errors=True)
+                    logger.warning("[candlekeep] Failed to save ColBERT index to disk")
 
             with self._lock:
                 self._dirty = False
@@ -265,9 +272,6 @@ class ColBERTSearcher:
                 "[candlekeep] ColBERT index rebuilt (%d chunks)", len(texts)
             )
         except Exception:
-            # Clean up temp dir on failure
-            if tmp_dir.exists():
-                shutil.rmtree(tmp_dir, ignore_errors=True)
             logger.exception("[candlekeep] ColBERT index rebuild failed")
         finally:
             with self._lock:
@@ -397,17 +401,18 @@ def get_colbert_searcher(db) -> ColBERTSearcher | None:
 
             # Try loading existing disk index first (fast cold start)
             searcher._load_from_disk()
+            had_disk_index = searcher.ready
 
             # Load chunk data from DB for future rebuilds
             chunks = db.get_all_chunks()
             if chunks:
                 searcher.add_chunks(chunks)
-                # If no disk index was loaded, mark dirty for rebuild
-                if not searcher.ready:
-                    pass  # _dirty already set by add_chunks
-                else:
-                    # Disk index loaded — not dirty unless chunks changed
-                    searcher._dirty = False
+                # add_chunks sets _dirty = True. If we loaded a disk
+                # index, the chunks may match it — but we can't verify
+                # without comparing. Keep dirty so the next query
+                # triggers a rebuild with the current DB state.
+                # The disk index serves queries until the rebuild
+                # completes, so there's no quality gap.
 
             _colbert_cache = searcher
         return _colbert_cache
