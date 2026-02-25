@@ -520,3 +520,59 @@ src/candlekeep/
 └── mcp/
     └── server.py            # MCP tools + conditional registration
 ```
+
+## Storage Sizing
+
+Candlekeep's storage requirements vary by backend and scale linearly with document count. This section provides sizing guidance for capacity planning.
+
+### Storage Breakdown (Current Corpus)
+
+Based on the current documentation corpus (89 docs, ~2,770 chunks):
+
+| Component | Size | Notes |
+|-----------|------|-------|
+| ChromaDB Vectors | ~308 KB | Stored embeddings (bge-small-en-v1.5) |
+| BM25 Index | ~1.2 MB | In-memory tokenized corpus + IDF statistics |
+| ColBERT Index | ~16 MB | Disk-based late interaction index |
+| Models | ~216 MB | bge-small, cross-encoder, ColBERT (shared, one-time cost) |
+
+### Per-Document Costs
+
+Scaling factors derived from corpus analysis:
+
+- **ChromaDB**: ~110 bytes per chunk (512-char target) + metadata overhead
+- **BM25**: ~450 bytes per chunk (tokenized text + indexing structures)  
+- **ColBERT**: ~6 KB per chunk (late interaction representations)
+
+For a typical document (30 chunks at 512 chars):
+- ChromaDB: ~3.3 KB
+- BM25: ~13.5 KB  
+- ColBERT: ~180 KB
+
+### Sizing Formula
+
+Total storage estimate:
+```
+Total = (Fixed Models) + (Chunks × Per-Chunk Cost)
+
+Where Per-Chunk Cost = 
+  - ChromaDB: 110 bytes
+  - BM25: 450 bytes (memory resident)
+  - ColBERT: 6 KB (disk based, opt-in)
+```
+
+Example: 10,000 chunks (~330 documents)
+- ChromaDB: 1.1 MB
+- BM25: 4.5 MB
+- ColBERT: 60 MB
+- Models: 216 MB (fixed)
+
+### Backend Comparison
+
+| Backend | Storage | Memory | Precision | Use Case |
+|---------|---------|--------|-----------|----------|
+| Vector Only | Minimal | Minimal | Good | Speed-critical applications |
+| + BM25 | +1.2 MB/1K docs | Resident | Better | General purpose, balanced |
+| + ColBERT | +16 MB/1K docs | Minimal | Best | Technical docs, exact match |
+
+*Note: BM25 index is memory-resident. ColBERT index is disk-based but requires ~200MB RAM for active queries.*
