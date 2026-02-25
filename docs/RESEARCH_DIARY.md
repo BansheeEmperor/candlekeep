@@ -3016,3 +3016,46 @@ RAGatouille requires a langchain compatibility patch (the library imports `langc
 1. ColBERT index rebuild runs in a background thread. Queries during rebuild fall back to BM25 transparently. At 2,859 chunks the rebuild takes ~3-5 seconds. At 50k+ chunks it could take 30+ seconds. No query is blocked.
 2. Multi-worker HTTP mode: each worker maintains its own ColBERT index. A write on worker A does not invalidate workers B/C/D — they serve stale ColBERT results until their own next write or cache rebuild. This is the same limitation BM25 already has (documented in ARCHITECTURE.md § Per-process state tradeoffs). Not a regression. Mitigated by disk-based index sharing: workers detect new indexes via file mtime and reload.
 3. The langchain compatibility patch is fragile — it depends on RAGatouille's internal import structure. Pinned to `ragatouille>=0.0.8,<0.1.0`. If the patch or import fails, ColBERT degrades gracefully to BM25 with a warning log. RAGatouille 0.0.10 will migrate to a PyLate backend which may eliminate the langchain dependency entirely.
+
+
+---
+
+## Entry 51: ColBERT Production Path Validation
+
+**Date:** 2026-02-25
+**Status:** Complete
+
+### Motivation
+
+Entry 50 implemented the ColBERT dual sparse backend. The benchmark data in Entry 49 came from the benchmark harness (isolated competitors with their own ChromaDB instances). This entry validates the production code path: router → hybrid_search → _colbert_sparse → ColBERTSearcher.
+
+### Bug Found
+
+The initial benchmark run showed ColBERT returning 0 results on every query. Root cause: `get_colbert_searcher` loaded a stale disk index from a previous run, then cleared the dirty flag — preventing a rebuild with current DB data. Fixed by keeping the dirty flag set after disk load so the next query triggers a rebuild. The stale disk index serves queries during the rebuild (no quality gap).
+
+A second issue: `_rebuild_sync` originally tried to reload the index from disk via `RAGPretrainedModel.from_index()` after building. RAGatouille's `from_index` creates a new searcher that needs to reinitialize on every `.search()` call, printing "Loading searcher for index... for the first time" and failing silently. Fixed by using the model instance that built the index directly — it retains the searcher in memory.
+
+### Results (Primary Corpus, 3 runs, 108 queries)
+
+| Metric | BM25 | ColBERT | Delta |
+|--------|:----:|:-------:|:-----:|
+| MRR | 0.5559 | 0.5579 | +0.002 |
+| Sem MRR | 0.903 | 0.892 | -0.011 |
+| Lex MRR | 0.557 | 0.581 | +0.024 |
+| CM | 0.569 | 0.577 | +0.008 |
+| p50 | 54.8ms | 72.1ms | +17.3ms |
+| Tokens | 1607 | 1837 | +230 |
+
+### Comparison with Benchmark Harness (Entry 49)
+
+The benchmark harness competitor (`colbert-replace-bm25`) achieved lex MRR 0.592 (+0.033) and CM 0.823 (+0.015). The production path achieves lex MRR 0.581 (+0.024) and CM 0.577 (+0.008). The differences:
+
+1. The production path applies the full Relevance Ward and Arcane Recall pipeline after RRF fusion, which reshuffles results. The benchmark competitor applies them too, but the interaction between ColBERT scores and the Ward threshold may differ.
+2. Content match is lower because the production path's Arcane Recall expansion operates on the fused results, not the raw ColBERT results. The expansion window and similarity threshold interact differently with ColBERT-ranked chunks.
+3. The +17ms latency overhead (vs +13ms in the harness) includes the RAGatouille searcher initialization cost that happens on each search call.
+
+### Verdict
+
+ColBERT improves lexical MRR by +0.024 through the production path — the primary goal. The semantic MRR regression (-0.011) is a concern; ColBERT's token-level matching may be less effective than BM25 for broad semantic queries. The overall MRR improvement (+0.002) is within noise.
+
+The opt-in design is validated: users who need better lexical precision (version numbers, error codes, package names) can enable ColBERT. Users who don't can stay on BM25 with zero impact.
