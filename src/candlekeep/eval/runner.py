@@ -8,6 +8,7 @@ from dataclasses import dataclass, asdict
 from candlekeep.eval.metrics import (
     calculate_reciprocal_rank,
     calculate_ndcg,
+    calculate_ndcg_graded,
     calculate_hit_rate,
     calculate_precision_at_k
 )
@@ -19,6 +20,7 @@ class EvalQuery:
     expected_sources: List[str]
     category: str
     difficulty: str
+    graded_relevance: Dict[str, int] | None = None  # chunk_id -> grade (0-3)
 
 
 @dataclass
@@ -34,6 +36,8 @@ class EvalResult:
     precision_5: float
     latency_ms: float
     tokens: int
+    ndcg_5_graded: float = -1.0  # -1.0 = no graded data available
+    retrieved_chunk_ids: List[str] | None = None  # source:chunk_index keys
 
 
 class BenchmarkRunner:
@@ -51,18 +55,27 @@ class BenchmarkRunner:
             latency = (time.time() - start_time) * 1000
             
             retrieved_sources = []
+            retrieved_chunk_ids = []
             for r in search_results:
                 source = r.metadata.get('source', '')
                 # Normalize source path to match expected_sources format
                 if 'tests/fixtures' in source:
                     source = source[source.index('tests/fixtures'):]
                 retrieved_sources.append(source)
+                # Build chunk-level ID for graded relevance
+                chunk_idx = r.metadata.get('chunk_index', 0)
+                retrieved_chunk_ids.append(f"{source}:{chunk_idx}")
             
             ground_truth = set(q.expected_sources)
             
             # Calculate tokens (rough estimate: chars / 4)
             total_chars = sum(len(r.text) for r in search_results)
             tokens = total_chars // 4
+
+            # Graded nDCG (when annotations are available)
+            ndcg_g = -1.0
+            if q.graded_relevance:
+                ndcg_g = calculate_ndcg_graded(retrieved_chunk_ids, q.graded_relevance, k)
             
             results.append(EvalResult(
                 query=q.query,
@@ -75,7 +88,9 @@ class BenchmarkRunner:
                 hit_rate_5=calculate_hit_rate(retrieved_sources, ground_truth, 5),
                 precision_5=calculate_precision_at_k(retrieved_sources, ground_truth, 5),
                 latency_ms=latency,
-                tokens=tokens
+                tokens=tokens,
+                ndcg_5_graded=ndcg_g,
+                retrieved_chunk_ids=retrieved_chunk_ids,
             ))
         return results
 
@@ -108,16 +123,27 @@ class BenchmarkRunner:
             "by_category": {},
             "total_queries": len(results)
         }
+
+        # Graded nDCG (only when annotations are present)
+        graded_scores = [r.ndcg_5_graded for r in results if r.ndcg_5_graded >= 0]
+        if graded_scores:
+            g_mean, g_lo, g_hi = bootstrap_ci(graded_scores)
+            summary["avg_ndcg_5_graded"] = g_mean
+            summary["avg_ndcg_5_graded_ci"] = [g_lo, g_hi]
         
         categories = set(r.category for r in results)
         for cat in categories:
             cat_results = [r for r in results if r.category == cat]
-            summary["by_category"][cat] = {
+            cat_summary = {
                 "mrr": sum(r.rr for r in cat_results) / len(cat_results),
                 "avg_ndcg_5": sum(r.ndcg_5 for r in cat_results) / len(cat_results),
                 "avg_hit_rate_5": sum(r.hit_rate_5 for r in cat_results) / len(cat_results),
                 "count": len(cat_results)
             }
+            cat_graded = [r.ndcg_5_graded for r in cat_results if r.ndcg_5_graded >= 0]
+            if cat_graded:
+                cat_summary["avg_ndcg_5_graded"] = sum(cat_graded) / len(cat_graded)
+            summary["by_category"][cat] = cat_summary
             
         return summary
 

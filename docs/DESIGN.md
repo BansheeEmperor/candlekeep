@@ -211,6 +211,7 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 - [**The Success of the Scry (Hit Rate@5)**](GLOSSARY.md#the-success-of-the-scry-hit-ratek): The probability that the answer thou seekest lies within the first five scrolls returned by the library.
 - [**The Oracle's Promptness (MRR)**](GLOSSARY.md#the-oracles-promptness-mrr): Measures how close to the top the most relevant scroll appears. If the Oracle speaks the truth immediately (rank 1), the score is perfect (1.0).
 - [**The Quality of the Arrangement (nDCG@5)**](GLOSSARY.md#the-quality-of-the-tomes-arrangement-ndcgk): Evaluates not just if the truth was found, but if the most relevant scrolls were placed before the less relevant ones.
+- **The Depth of the Arrangement (Graded nDCG@5)**: Like nDCG@5, but uses a 0-3 relevance scale instead of binary. Distinguishes "right document, right answer" (grade 3) from "right document, wrong section" (grade 2). Annotations produced by two independent annotators with reconciliation (see Research Diary Entry 52).
 
 #### Comparative Audit Results
 
@@ -220,6 +221,7 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 |--------|------------:|-------------------------:|-------------:|
 | **Overall MRR** | 0.4776 (±0.10) | 0.4722 (±0.09) | 0.4884 (±0.10) |
 | **nDCG@5** | 0.4851 (±0.10) | 0.4746 (±0.09) | 0.4932 (±0.10) |
+| **Graded nDCG@5** | 0.386 | **0.421** | 0.302 |
 | **Hit Rate@5** | 0.6019 (±0.09) | 0.7130 (±0.08) | 0.6759 (±0.09) |
 | **Avg Latency** | **36ms** | 48ms | 921ms |
 
