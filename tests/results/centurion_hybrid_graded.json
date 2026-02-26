@@ -1,0 +1,2675 @@
+{
+  "summary": {
+    "mrr": 0.5296296296296297,
+    "mrr_ci": [
+      0.4384104938271605,
+      0.6196180555555556
+    ],
+    "avg_ndcg_5": 0.5472509989512656,
+    "avg_ndcg_5_ci": [
+      0.4575354445047969,
+      0.6380054423822851
+    ],
+    "avg_hit_rate_1": 0.49074074074074076,
+    "avg_hit_rate_5": 0.5925925925925926,
+    "avg_hit_rate_5_ci": [
+      0.5,
+      0.6851851851851852
+    ],
+    "avg_precision_5": 0.4699074074074074,
+    "avg_latency_ms": 68.25322133523447,
+    "avg_tokens": 3705.546296296296,
+    "total_tokens": 400199,
+    "by_category": {
+      "semantic": {
+        "mrr": 0.8767361111111112,
+        "avg_ndcg_5": 0.8948832410908172,
+        "avg_hit_rate_5": 0.9375,
+        "count": 48,
+        "avg_ndcg_5_graded": 0.6446446920682982
+      },
+      "lexical": {
+        "mrr": 0.5038888888888889,
+        "avg_ndcg_5": 0.5382904104792485,
+        "avg_hit_rate_5": 0.6333333333333333,
+        "count": 30,
+        "avg_ndcg_5_graded": 0.5414856351057425
+      },
+      "adversarial": {
+        "mrr": 0.0,
+        "avg_ndcg_5": 0.0,
+        "avg_hit_rate_5": 0.0,
+        "count": 30,
+        "avg_ndcg_5_graded": 0.0
+      }
+    },
+    "total_queries": 108,
+    "avg_ndcg_5_graded": 0.4369214284486166,
+    "avg_ndcg_5_graded_ci": [
+      0.3699115895655146,
+      0.5014666547346825
+    ]
+  },
+  "details": [
+    {
+      "query": "What is semantic search?",
+      "category": "semantic",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/semantic-search.md",
+        "tests/fixtures/sample_docs/vector-databases.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.5,
+      "latency_ms": 246.61827087402344,
+      "tokens": 861,
+      "ndcg_5_graded": 0.6234997966086261,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/sample_docs/semantic-search.md:0",
+        "tests/fixtures/sample_docs/vector-databases.md:2"
+      ]
+    },
+    {
+      "query": "vector database",
+      "category": "semantic",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/vector-databases.md",
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/semantic-search.md",
+        "tests/fixtures/scale_docs/database-replication.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.25,
+      "latency_ms": 89.32089805603027,
+      "tokens": 723,
+      "ndcg_5_graded": 0.9639404333166532,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/sample_docs/vector-databases.md:0",
+        "tests/fixtures/sample_docs/database-design.md:0",
+        "tests/fixtures/sample_docs/semantic-search.md:5",
+        "tests/fixtures/scale_docs/database-replication.md:34"
+      ]
+    },
+    {
+      "query": "REST API design",
+      "category": "semantic",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/api-design.md",
+        "tests/fixtures/scale_docs/api-gateway-patterns.md",
+        "tests/fixtures/scale_docs/api-gateway-patterns.md",
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/scale_docs/api-gateway-patterns.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.2,
+      "latency_ms": 51.73206329345703,
+      "tokens": 4403,
+      "ndcg_5_graded": 0.7968124369890611,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/sample_docs/api-design.md:1",
+        "tests/fixtures/scale_docs/api-gateway-patterns.md:0",
+        "tests/fixtures/scale_docs/api-gateway-patterns.md:16",
+        "tests/fixtures/sample_docs/microservices.md:6",
+        "tests/fixtures/scale_docs/api-gateway-patterns.md:9"
+      ]
+    },
+    {
+      "query": "database normalization",
+      "category": "semantic",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/scale_docs/postgresql-internals.md",
+        "tests/fixtures/scale_docs/data-pipeline-design.md",
+        "tests/fixtures/scale_docs/data-pipeline-design.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.4,
+      "latency_ms": 72.50308990478516,
+      "tokens": 2751,
+      "ndcg_5_graded": 0.8613098738256916,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/sample_docs/database-design.md:0",
+        "tests/fixtures/sample_docs/database-design.md:10",
+        "tests/fixtures/scale_docs/postgresql-internals.md:14",
+        "tests/fixtures/scale_docs/data-pipeline-design.md:1",
+        "tests/fixtures/scale_docs/data-pipeline-design.md:23"
+      ]
+    },
+    {
+      "query": "HTTP/2 vs HTTP/3 performance",
+      "category": "lexical",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/http2-http3.md",
+        "tests/fixtures/scale_docs/http2-http3.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 41.78309440612793,
+      "tokens": 4425,
+      "ndcg_5_graded": 0.6366824387328316,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/http2-http3.md:0",
+        "tests/fixtures/scale_docs/http2-http3.md:15"
+      ]
+    },
+    {
+      "query": "PostgreSQL 15 internals",
+      "category": "lexical",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/postgresql-internals.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 39.08205032348633,
+      "tokens": 3978,
+      "ndcg_5_graded": 0.6131471927654584,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/postgresql-internals.md:0"
+      ]
+    },
+    {
+      "query": "Apache Kafka 3.0 features",
+      "category": "lexical",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/apache-kafka.md",
+        "tests/fixtures/scale_docs/apache-kafka.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 41.81718826293945,
+      "tokens": 4495,
+      "ndcg_5_graded": 0.7653606369886218,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/apache-kafka.md:25",
+        "tests/fixtures/scale_docs/apache-kafka.md:0"
+      ]
+    },
+    {
+      "query": "TLS 1.3 handshake process",
+      "category": "lexical",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/tls-ssl.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 42.011260986328125,
+      "tokens": 3924,
+      "ndcg_5_graded": 0.4692787260227565,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/tls-ssl.md:0"
+      ]
+    },
+    {
+      "query": "Kubernetes v1.24 removal of dockershim",
+      "category": "lexical",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/kubernetes-architecture.md",
+        "tests/fixtures/scale_docs/kubernetes-architecture.md",
+        "tests/fixtures/scale_docs/kubernetes-architecture.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 46.46801948547363,
+      "tokens": 5688,
+      "ndcg_5_graded": 0.7227265726449517,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/kubernetes-architecture.md:9",
+        "tests/fixtures/scale_docs/kubernetes-architecture.md:38",
+        "tests/fixtures/scale_docs/kubernetes-architecture.md:0"
+      ]
+    },
+    {
+      "query": "gRPC over HTTP/2",
+      "category": "lexical",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/http2-http3.md",
+        "tests/fixtures/scale_docs/grpc-protocol.md"
+      ],
+      "rr": 0.5,
+      "ndcg_5": 0.6309297535714575,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.5,
+      "latency_ms": 49.43585395812988,
+      "tokens": 6447,
+      "ndcg_5_graded": 0.24630238874072996,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/http2-http3.md:0",
+        "tests/fixtures/scale_docs/grpc-protocol.md:17"
+      ]
+    },
+    {
+      "query": "Redis 7.0 Multi-part AOF",
+      "category": "lexical",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/redis-data-structures.md",
+        "tests/fixtures/scale_docs/redis-data-structures.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 48.08306694030762,
+      "tokens": 3026,
+      "ndcg_5_graded": 0.6366824387328316,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/redis-data-structures.md:0",
+        "tests/fixtures/scale_docs/redis-data-structures.md:14"
+      ]
+    },
+    {
+      "query": "Elasticsearch 8.x security changes",
+      "category": "lexical",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/api-security.md",
+        "tests/fixtures/scale_docs/elasticsearch-basics.md",
+        "tests/fixtures/scale_docs/elasticsearch-basics.md",
+        "tests/fixtures/scale_docs/api-security.md"
+      ],
+      "rr": 0.3333333333333333,
+      "ndcg_5": 0.5,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.4,
+      "latency_ms": 65.79828262329102,
+      "tokens": 3633,
+      "ndcg_5_graded": 0.3856395754028458,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/security-audit-checklist.md:35",
+        "tests/fixtures/scale_docs/api-security.md:14",
+        "tests/fixtures/scale_docs/elasticsearch-basics.md:0",
+        "tests/fixtures/scale_docs/elasticsearch-basics.md:15",
+        "tests/fixtures/scale_docs/api-security.md:38"
+      ]
+    },
+    {
+      "query": "OWASP Top 10 2021",
+      "category": "lexical",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/owasp-top-10.md",
+        "tests/fixtures/scale_docs/owasp-top-10.md",
+        "tests/fixtures/scale_docs/elasticsearch-basics.md",
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/security-audit-checklist.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.4,
+      "latency_ms": 113.7380599975586,
+      "tokens": 1558,
+      "ndcg_5_graded": 1.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/owasp-top-10.md:0",
+        "tests/fixtures/scale_docs/owasp-top-10.md:31",
+        "tests/fixtures/scale_docs/elasticsearch-basics.md:23",
+        "tests/fixtures/scale_docs/security-audit-checklist.md:7",
+        "tests/fixtures/scale_docs/security-audit-checklist.md:38"
+      ]
+    },
+    {
+      "query": "AVX-512 vector instructions",
+      "category": "lexical",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/vector-databases.md",
+        "tests/fixtures/scale_docs/design-patterns-behavioral.md",
+        "tests/fixtures/scale_docs/container-security.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 88.3030891418457,
+      "tokens": 2624,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/sample_docs/vector-databases.md:0",
+        "tests/fixtures/scale_docs/design-patterns-behavioral.md:16",
+        "tests/fixtures/scale_docs/container-security.md:18"
+      ]
+    },
+    {
+      "query": "TCP/IP layer 4",
+      "category": "lexical",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/tcp-ip-fundamentals.md",
+        "tests/fixtures/scale_docs/tcp-ip-fundamentals.md",
+        "tests/fixtures/scale_docs/load-balancing.md",
+        "tests/fixtures/scale_docs/tcp-ip-fundamentals.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.75,
+      "latency_ms": 50.43196678161621,
+      "tokens": 5468,
+      "ndcg_5_graded": 0.8281827047067384,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/tcp-ip-fundamentals.md:1",
+        "tests/fixtures/scale_docs/tcp-ip-fundamentals.md:25",
+        "tests/fixtures/scale_docs/load-balancing.md:7",
+        "tests/fixtures/scale_docs/tcp-ip-fundamentals.md:16"
+      ]
+    },
+    {
+      "query": "IPv6 address format",
+      "category": "lexical",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/dns-resolution.md",
+        "tests/fixtures/scale_docs/tcp-ip-fundamentals.md",
+        "tests/fixtures/scale_docs/cloud-networking.md",
+        "tests/fixtures/scale_docs/vpn-tunneling.md",
+        "tests/fixtures/scale_docs/data-serialization.md"
+      ],
+      "rr": 0.3333333333333333,
+      "ndcg_5": 0.5,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.2,
+      "latency_ms": 126.67703628540039,
+      "tokens": 2305,
+      "ndcg_5_graded": 0.58688267143572,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/dns-resolution.md:18",
+        "tests/fixtures/scale_docs/tcp-ip-fundamentals.md:7",
+        "tests/fixtures/scale_docs/cloud-networking.md:1",
+        "tests/fixtures/scale_docs/vpn-tunneling.md:1",
+        "tests/fixtures/scale_docs/data-serialization.md:12"
+      ]
+    },
+    {
+      "query": "UUID v4 generation",
+      "category": "lexical",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/testing-strategies.md",
+        "tests/fixtures/scale_docs/linux-filesystem.md",
+        "tests/fixtures/scale_docs/linux-filesystem.md",
+        "tests/fixtures/scale_docs/container-security.md",
+        "tests/fixtures/scale_docs/data-pipeline-design.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 84.31005477905273,
+      "tokens": 2221,
+      "ndcg_5_graded": 0.38685280723454163,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/testing-strategies.md:25",
+        "tests/fixtures/scale_docs/linux-filesystem.md:39",
+        "tests/fixtures/scale_docs/linux-filesystem.md:45",
+        "tests/fixtures/scale_docs/container-security.md:33",
+        "tests/fixtures/scale_docs/data-pipeline-design.md:43"
+      ]
+    },
+    {
+      "query": "0xEF hex code",
+      "category": "lexical",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/error-handling-patterns.md",
+        "tests/fixtures/scale_docs/api-security.md",
+        "tests/fixtures/scale_docs/api-security.md",
+        "tests/fixtures/scale_docs/container-security.md",
+        "tests/fixtures/scale_docs/shell-scripting.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 101.93586349487305,
+      "tokens": 2663,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/error-handling-patterns.md:5",
+        "tests/fixtures/scale_docs/api-security.md:26",
+        "tests/fixtures/scale_docs/api-security.md:30",
+        "tests/fixtures/scale_docs/container-security.md:20",
+        "tests/fixtures/scale_docs/shell-scripting.md:14"
+      ]
+    },
+    {
+      "query": "Python 3.10 match statement",
+      "category": "lexical",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/elasticsearch-basics.md",
+        "tests/fixtures/scale_docs/functional-programming.md",
+        "tests/fixtures/scale_docs/owasp-top-10.md",
+        "tests/fixtures/scale_docs/functional-programming.md",
+        "tests/fixtures/scale_docs/connection-pooling.md"
+      ],
+      "rr": 0.5,
+      "ndcg_5": 0.6309297535714575,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.4,
+      "latency_ms": 98.85907173156738,
+      "tokens": 1608,
+      "ndcg_5_graded": 0.6509209298071326,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/elasticsearch-basics.md:16",
+        "tests/fixtures/scale_docs/functional-programming.md:15",
+        "tests/fixtures/scale_docs/owasp-top-10.md:26",
+        "tests/fixtures/scale_docs/functional-programming.md:20",
+        "tests/fixtures/scale_docs/connection-pooling.md:3"
+      ]
+    },
+    {
+      "query": "ISO 27001 compliance",
+      "category": "lexical",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/compliance-frameworks.md",
+        "tests/fixtures/scale_docs/compliance-frameworks.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 43.04790496826172,
+      "tokens": 5220,
+      "ndcg_5_graded": 0.5531464700081437,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/compliance-frameworks.md:3",
+        "tests/fixtures/scale_docs/compliance-frameworks.md:20"
+      ]
+    },
+    {
+      "query": "SOC2 Type II audit",
+      "category": "lexical",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/data-serialization.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 64.07999992370605,
+      "tokens": 7681,
+      "ndcg_5_graded": 0.7653606369886217,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/security-audit-checklist.md:28",
+        "tests/fixtures/scale_docs/security-audit-checklist.md:0",
+        "tests/fixtures/scale_docs/security-audit-checklist.md:21",
+        "tests/fixtures/scale_docs/data-serialization.md:20"
+      ]
+    },
+    {
+      "query": "BGE-small-en-v1.5 model",
+      "category": "lexical",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/data-quality.md",
+        "tests/fixtures/scale_docs/data-warehouse-modeling.md",
+        "tests/fixtures/scale_docs/event-driven-architecture.md",
+        "tests/fixtures/scale_docs/tcp-ip-fundamentals.md",
+        "tests/fixtures/scale_docs/container-security.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 108.52694511413574,
+      "tokens": 3664,
+      "ndcg_5_graded": 0.6934264036172708,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/data-quality.md:19",
+        "tests/fixtures/scale_docs/data-warehouse-modeling.md:32",
+        "tests/fixtures/scale_docs/event-driven-architecture.md:16",
+        "tests/fixtures/scale_docs/tcp-ip-fundamentals.md:2",
+        "tests/fixtures/scale_docs/container-security.md:20"
+      ]
+    },
+    {
+      "query": "ChromaDB v0.4.0",
+      "category": "lexical",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/vector-databases.md",
+        "tests/fixtures/scale_docs/container-security.md",
+        "tests/fixtures/scale_docs/container-security.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 75.35910606384277,
+      "tokens": 2890,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/sample_docs/vector-databases.md:5",
+        "tests/fixtures/scale_docs/container-security.md:18",
+        "tests/fixtures/scale_docs/container-security.md:5"
+      ]
+    },
+    {
+      "query": "MS-MARCO MiniLM L-6-v2",
+      "category": "lexical",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/container-security.md",
+        "tests/fixtures/scale_docs/vpn-tunneling.md",
+        "tests/fixtures/scale_docs/data-warehouse-modeling.md",
+        "tests/fixtures/scale_docs/container-security.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 80.21306991577148,
+      "tokens": 1581,
+      "ndcg_5_graded": 0.5,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/container-security.md:24",
+        "tests/fixtures/scale_docs/vpn-tunneling.md:23",
+        "tests/fixtures/scale_docs/data-warehouse-modeling.md:32",
+        "tests/fixtures/scale_docs/container-security.md:33"
+      ]
+    },
+    {
+      "query": "JWT RS256 signing",
+      "category": "lexical",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/api-security.md",
+        "tests/fixtures/scale_docs/api-security.md",
+        "tests/fixtures/scale_docs/api-gateway-patterns.md",
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/scale_docs/api-security.md"
+      ],
+      "rr": 0.25,
+      "ndcg_5": 0.5,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.2,
+      "latency_ms": 59.504032135009766,
+      "tokens": 6448,
+      "ndcg_5_graded": 0.7698986984637216,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/api-security.md:2",
+        "tests/fixtures/scale_docs/api-security.md:6",
+        "tests/fixtures/scale_docs/api-gateway-patterns.md:21",
+        "tests/fixtures/sample_docs/authentication.md:3",
+        "tests/fixtures/scale_docs/api-security.md:45"
+      ]
+    },
+    {
+      "query": "OAuth 2.0 PKCE flow",
+      "category": "lexical",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/api-security.md",
+        "tests/fixtures/scale_docs/api-security.md",
+        "tests/fixtures/scale_docs/api-security.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 55.54604530334473,
+      "tokens": 4891,
+      "ndcg_5_graded": 0.7227265726449519,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/api-security.md:3",
+        "tests/fixtures/scale_docs/api-security.md:1",
+        "tests/fixtures/scale_docs/api-security.md:21"
+      ]
+    },
+    {
+      "query": "RAID 6 configurations",
+      "category": "lexical",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/linux-filesystem.md",
+        "tests/fixtures/scale_docs/websocket-protocol.md",
+        "tests/fixtures/scale_docs/disaster-recovery.md",
+        "tests/fixtures/scale_docs/linux-filesystem.md",
+        "tests/fixtures/scale_docs/cloud-networking.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 92.82779693603516,
+      "tokens": 4189,
+      "ndcg_5_graded": 0.5855700749881525,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/linux-filesystem.md:37",
+        "tests/fixtures/scale_docs/websocket-protocol.md:6",
+        "tests/fixtures/scale_docs/disaster-recovery.md:33",
+        "tests/fixtures/scale_docs/linux-filesystem.md:21",
+        "tests/fixtures/scale_docs/cloud-networking.md:16"
+      ]
+    },
+    {
+      "query": "SQL-92 standards",
+      "category": "lexical",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/data-pipeline-design.md",
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/scale_docs/compliance-frameworks.md",
+        "tests/fixtures/scale_docs/data-quality.md",
+        "tests/fixtures/scale_docs/sql-query-optimization.md"
+      ],
+      "rr": 0.2,
+      "ndcg_5": 0.38685280723454163,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.2,
+      "latency_ms": 82.09586143493652,
+      "tokens": 3838,
+      "ndcg_5_graded": 0.19928998603536255,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/data-pipeline-design.md:31",
+        "tests/fixtures/sample_docs/database-design.md:1",
+        "tests/fixtures/scale_docs/compliance-frameworks.md:23",
+        "tests/fixtures/scale_docs/data-quality.md:23",
+        "tests/fixtures/scale_docs/sql-query-optimization.md:30"
+      ]
+    },
+    {
+      "query": "POSIX thread management",
+      "category": "lexical",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/concurrency-patterns.md",
+        "tests/fixtures/scale_docs/concurrency-patterns.md",
+        "tests/fixtures/scale_docs/concurrency-patterns.md",
+        "tests/fixtures/scale_docs/linux-memory-management.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 49.24607276916504,
+      "tokens": 4170,
+      "ndcg_5_graded": 0.2640681225725909,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/concurrency-patterns.md:1",
+        "tests/fixtures/scale_docs/concurrency-patterns.md:39",
+        "tests/fixtures/scale_docs/concurrency-patterns.md:11",
+        "tests/fixtures/scale_docs/linux-memory-management.md:5"
+      ]
+    },
+    {
+      "query": "systemd unit files",
+      "category": "lexical",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/systemd-services.md",
+        "tests/fixtures/scale_docs/systemd-services.md",
+        "tests/fixtures/scale_docs/systemd-services.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 44.87895965576172,
+      "tokens": 3596,
+      "ndcg_5_graded": 0.8318724637288825,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/systemd-services.md:2",
+        "tests/fixtures/scale_docs/systemd-services.md:15",
+        "tests/fixtures/scale_docs/systemd-services.md:11"
+      ]
+    },
+    {
+      "query": "EXT4 filesystem limits",
+      "category": "lexical",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/linux-filesystem.md",
+        "tests/fixtures/scale_docs/linux-filesystem.md",
+        "tests/fixtures/scale_docs/linux-filesystem.md",
+        "tests/fixtures/scale_docs/linux-filesystem.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 48.345088958740234,
+      "tokens": 4550,
+      "ndcg_5_graded": 0.797466167576149,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/linux-filesystem.md:1",
+        "tests/fixtures/scale_docs/linux-filesystem.md:45",
+        "tests/fixtures/scale_docs/linux-filesystem.md:37",
+        "tests/fixtures/scale_docs/linux-filesystem.md:25"
+      ]
+    },
+    {
+      "query": "YAML 1.2 syntax",
+      "category": "lexical",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/configuration-management.md",
+        "tests/fixtures/scale_docs/container-fundamentals.md",
+        "tests/fixtures/scale_docs/zero-trust-architecture.md",
+        "tests/fixtures/scale_docs/functional-programming.md",
+        "tests/fixtures/scale_docs/helm-charts.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.2,
+      "latency_ms": 107.92398452758789,
+      "tokens": 929,
+      "ndcg_5_graded": 0.6131471927654584,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/configuration-management.md:3",
+        "tests/fixtures/scale_docs/container-fundamentals.md:20",
+        "tests/fixtures/scale_docs/zero-trust-architecture.md:11",
+        "tests/fixtures/scale_docs/functional-programming.md:15",
+        "tests/fixtures/scale_docs/helm-charts.md:6"
+      ]
+    },
+    {
+      "query": "Docker Compose v2",
+      "category": "lexical",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/container-fundamentals.md",
+        "tests/fixtures/scale_docs/container-fundamentals.md",
+        "tests/fixtures/sample_docs/api-design.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.6666666666666666,
+      "latency_ms": 54.949045181274414,
+      "tokens": 3563,
+      "ndcg_5_graded": 0.5784447668310352,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/container-fundamentals.md:7",
+        "tests/fixtures/scale_docs/container-fundamentals.md:38",
+        "tests/fixtures/sample_docs/api-design.md:3"
+      ]
+    },
+    {
+      "query": "AWS IAM policies",
+      "category": "lexical",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/secrets-management.md",
+        "tests/fixtures/scale_docs/secrets-management.md",
+        "tests/fixtures/scale_docs/well-architected-framework.md",
+        "tests/fixtures/scale_docs/well-architected-framework.md",
+        "tests/fixtures/scale_docs/secrets-management.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 68.43972206115723,
+      "tokens": 2442,
+      "ndcg_5_graded": 0.44149241373678083,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/secrets-management.md:33",
+        "tests/fixtures/scale_docs/secrets-management.md:9",
+        "tests/fixtures/scale_docs/well-architected-framework.md:21",
+        "tests/fixtures/scale_docs/well-architected-framework.md:15",
+        "tests/fixtures/scale_docs/secrets-management.md:28"
+      ]
+    },
+    {
+      "query": "how to implement chaos engineering",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/chaos-engineering.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 42.511701583862305,
+      "tokens": 4055,
+      "ndcg_5_graded": 0.33916020527361607,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/chaos-engineering.md:0"
+      ]
+    },
+    {
+      "query": "benefits of event-driven architecture",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/event-driven-architecture.md",
+        "tests/fixtures/scale_docs/event-driven-architecture.md",
+        "tests/fixtures/scale_docs/event-driven-architecture.md",
+        "tests/fixtures/scale_docs/event-driven-architecture.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 45.81284523010254,
+      "tokens": 4877,
+      "ndcg_5_graded": 0.8687949224876581,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/event-driven-architecture.md:0",
+        "tests/fixtures/scale_docs/event-driven-architecture.md:41",
+        "tests/fixtures/scale_docs/event-driven-architecture.md:24",
+        "tests/fixtures/scale_docs/event-driven-architecture.md:17"
+      ]
+    },
+    {
+      "query": "serverless vs containers",
+      "category": "semantic",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/serverless-architecture.md",
+        "tests/fixtures/scale_docs/serverless-architecture.md",
+        "tests/fixtures/scale_docs/serverless-architecture.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 52.060842514038086,
+      "tokens": 2955,
+      "ndcg_5_graded": 0.8318724637288825,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/serverless-architecture.md:31",
+        "tests/fixtures/scale_docs/serverless-architecture.md:1",
+        "tests/fixtures/scale_docs/serverless-architecture.md:10"
+      ]
+    },
+    {
+      "query": "microservices data consistency",
+      "category": "semantic",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/scale_docs/multi-region-deployment.md",
+        "tests/fixtures/scale_docs/multi-region-deployment.md",
+        "tests/fixtures/scale_docs/multi-region-deployment.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 70.20401954650879,
+      "tokens": 1588,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/sample_docs/microservices.md:10",
+        "tests/fixtures/sample_docs/microservices.md:1",
+        "tests/fixtures/scale_docs/multi-region-deployment.md:32",
+        "tests/fixtures/scale_docs/multi-region-deployment.md:26",
+        "tests/fixtures/scale_docs/multi-region-deployment.md:18"
+      ]
+    },
+    {
+      "query": "data lakehouse architecture",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/data-lake-architecture.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 44.920921325683594,
+      "tokens": 5509,
+      "ndcg_5_graded": 0.3903800499921017,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/data-lake-architecture.md:0"
+      ]
+    },
+    {
+      "query": "zero trust security principles",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/zero-trust-architecture.md",
+        "tests/fixtures/scale_docs/zero-trust-architecture.md",
+        "tests/fixtures/scale_docs/api-security.md",
+        "tests/fixtures/scale_docs/security-audit-checklist.md"
+      ],
+      "rr": 0.5,
+      "ndcg_5": 0.6309297535714575,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.4,
+      "latency_ms": 70.2521800994873,
+      "tokens": 2323,
+      "ndcg_5_graded": 0.8389776660073724,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/security-audit-checklist.md:1",
+        "tests/fixtures/scale_docs/zero-trust-architecture.md:2",
+        "tests/fixtures/scale_docs/zero-trust-architecture.md:25",
+        "tests/fixtures/scale_docs/api-security.md:1",
+        "tests/fixtures/scale_docs/security-audit-checklist.md:14"
+      ]
+    },
+    {
+      "query": "continuous integration best practices",
+      "category": "semantic",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/api-design.md",
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/scale_docs/data-pipeline-design.md",
+        "tests/fixtures/scale_docs/ci-cd-pipelines.md",
+        "tests/fixtures/sample_docs/microservices.md"
+      ],
+      "rr": 0.25,
+      "ndcg_5": 0.43067655807339306,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.2,
+      "latency_ms": 76.77698135375977,
+      "tokens": 3007,
+      "ndcg_5_graded": 0.4306765580733931,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/sample_docs/api-design.md:0",
+        "tests/fixtures/sample_docs/microservices.md:10",
+        "tests/fixtures/scale_docs/data-pipeline-design.md:22",
+        "tests/fixtures/scale_docs/ci-cd-pipelines.md:0",
+        "tests/fixtures/sample_docs/microservices.md:5"
+      ]
+    },
+    {
+      "query": "database sharding strategies",
+      "category": "semantic",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/database-sharding.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 42.452096939086914,
+      "tokens": 3717,
+      "ndcg_5_graded": 0.6131471927654584,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/database-sharding.md:0"
+      ]
+    },
+    {
+      "query": "load balancing algorithms",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/load-balancing.md",
+        "tests/fixtures/scale_docs/load-balancing.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 44.1288948059082,
+      "tokens": 3790,
+      "ndcg_5_graded": 0.7653606369886218,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/load-balancing.md:0",
+        "tests/fixtures/scale_docs/load-balancing.md:18"
+      ]
+    },
+    {
+      "query": "content delivery network optimization",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/cdn-architecture.md",
+        "tests/fixtures/scale_docs/cdn-architecture.md",
+        "tests/fixtures/scale_docs/cdn-architecture.md",
+        "tests/fixtures/scale_docs/cdn-architecture.md",
+        "tests/fixtures/scale_docs/cost-optimization.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.8,
+      "latency_ms": 71.0599422454834,
+      "tokens": 4705,
+      "ndcg_5_graded": 0.8687949224876581,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/cdn-architecture.md:0",
+        "tests/fixtures/scale_docs/cdn-architecture.md:4",
+        "tests/fixtures/scale_docs/cdn-architecture.md:14",
+        "tests/fixtures/scale_docs/cdn-architecture.md:19",
+        "tests/fixtures/scale_docs/cost-optimization.md:11"
+      ]
+    },
+    {
+      "query": "service mesh advantages",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/service-mesh.md",
+        "tests/fixtures/scale_docs/service-mesh.md",
+        "tests/fixtures/scale_docs/service-mesh.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 44.85607147216797,
+      "tokens": 4688,
+      "ndcg_5_graded": 0.8318724637288825,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/service-mesh.md:0",
+        "tests/fixtures/scale_docs/service-mesh.md:36",
+        "tests/fixtures/scale_docs/service-mesh.md:15"
+      ]
+    },
+    {
+      "query": "infrastructure as code tools",
+      "category": "semantic",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/infrastructure-as-code.md",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 44.34800148010254,
+      "tokens": 5518,
+      "ndcg_5_graded": 1.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/infrastructure-as-code.md:27",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md:6",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md:38",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md:44",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md:0"
+      ]
+    },
+    {
+      "query": "monitoring vs observability",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/monitoring-observability.md",
+        "tests/fixtures/scale_docs/monitoring-observability.md",
+        "tests/fixtures/scale_docs/monitoring-observability.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 44.32511329650879,
+      "tokens": 6905,
+      "ndcg_5_graded": 0.7227265726449517,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/monitoring-observability.md:0",
+        "tests/fixtures/scale_docs/monitoring-observability.md:24",
+        "tests/fixtures/scale_docs/monitoring-observability.md:37"
+      ]
+    },
+    {
+      "query": "auto scaling in the cloud",
+      "category": "semantic",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/cost-optimization.md",
+        "tests/fixtures/scale_docs/auto-scaling.md",
+        "tests/fixtures/scale_docs/auto-scaling.md",
+        "tests/fixtures/scale_docs/well-architected-framework.md",
+        "tests/fixtures/scale_docs/auto-scaling.md"
+      ],
+      "rr": 0.5,
+      "ndcg_5": 0.6309297535714575,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.6,
+      "latency_ms": 62.5607967376709,
+      "tokens": 3683,
+      "ndcg_5_graded": 0.6278248466415494,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/cost-optimization.md:14",
+        "tests/fixtures/scale_docs/auto-scaling.md:2",
+        "tests/fixtures/scale_docs/auto-scaling.md:16",
+        "tests/fixtures/scale_docs/well-architected-framework.md:31",
+        "tests/fixtures/scale_docs/auto-scaling.md:10"
+      ]
+    },
+    {
+      "query": "disaster recovery planning",
+      "category": "semantic",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/disaster-recovery.md",
+        "tests/fixtures/scale_docs/disaster-recovery.md",
+        "tests/fixtures/scale_docs/disaster-recovery.md",
+        "tests/fixtures/scale_docs/database-replication.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.75,
+      "latency_ms": 53.971052169799805,
+      "tokens": 6572,
+      "ndcg_5_graded": 0.7714160225925204,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/disaster-recovery.md:0",
+        "tests/fixtures/scale_docs/disaster-recovery.md:23",
+        "tests/fixtures/scale_docs/disaster-recovery.md:16",
+        "tests/fixtures/scale_docs/database-replication.md:47"
+      ]
+    },
+    {
+      "query": "api gateway patterns",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/api-gateway-patterns.md",
+        "tests/fixtures/scale_docs/api-gateway-patterns.md",
+        "tests/fixtures/scale_docs/api-gateway-patterns.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 46.54216766357422,
+      "tokens": 4954,
+      "ndcg_5_graded": 0.7227265726449517,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/api-gateway-patterns.md:0",
+        "tests/fixtures/scale_docs/api-gateway-patterns.md:14",
+        "tests/fixtures/scale_docs/api-gateway-patterns.md:38"
+      ]
+    },
+    {
+      "query": "cloud storage options",
+      "category": "semantic",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/cost-optimization.md",
+        "tests/fixtures/scale_docs/cloud-storage-options.md",
+        "tests/fixtures/scale_docs/cloud-storage-options.md",
+        "tests/fixtures/scale_docs/linux-filesystem.md"
+      ],
+      "rr": 0.5,
+      "ndcg_5": 0.6309297535714575,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.5,
+      "latency_ms": 57.8618049621582,
+      "tokens": 4560,
+      "ndcg_5_graded": 0.7766857240748665,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/cost-optimization.md:0",
+        "tests/fixtures/scale_docs/cloud-storage-options.md:0",
+        "tests/fixtures/scale_docs/cloud-storage-options.md:21",
+        "tests/fixtures/scale_docs/linux-filesystem.md:21"
+      ]
+    },
+    {
+      "query": "data serialization formats",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/data-serialization.md",
+        "tests/fixtures/scale_docs/data-serialization.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 44.718027114868164,
+      "tokens": 6889,
+      "ndcg_5_graded": 0.5531464700081437,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/data-serialization.md:0",
+        "tests/fixtures/scale_docs/data-serialization.md:43"
+      ]
+    },
+    {
+      "query": "message queue patterns",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/cloud-design-patterns.md",
+        "tests/fixtures/scale_docs/error-handling-patterns.md",
+        "tests/fixtures/sample_docs/microservices.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 70.38402557373047,
+      "tokens": 3543,
+      "ndcg_5_graded": 0.7227265726449519,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/cloud-design-patterns.md:32",
+        "tests/fixtures/scale_docs/error-handling-patterns.md:24",
+        "tests/fixtures/sample_docs/microservices.md:7"
+      ]
+    },
+    {
+      "query": "functional programming concepts",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/functional-programming.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 43.946027755737305,
+      "tokens": 3292,
+      "ndcg_5_graded": 0.6131471927654584,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/functional-programming.md:2"
+      ]
+    },
+    {
+      "query": "linux memory management",
+      "category": "semantic",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/linux-memory-management.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 42.90771484375,
+      "tokens": 3892,
+      "ndcg_5_graded": 0.4396592698888862,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/linux-memory-management.md:0"
+      ]
+    },
+    {
+      "query": "dns resolution process",
+      "category": "semantic",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/dns-resolution.md",
+        "tests/fixtures/scale_docs/dns-resolution.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 43.56193542480469,
+      "tokens": 3611,
+      "ndcg_5_graded": 0.7170533846952881,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/dns-resolution.md:0",
+        "tests/fixtures/scale_docs/dns-resolution.md:26"
+      ]
+    },
+    {
+      "query": "connection pooling benefits",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/connection-pooling.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 42.450904846191406,
+      "tokens": 2947,
+      "ndcg_5_graded": 0.5562983930884396,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/connection-pooling.md:0"
+      ]
+    },
+    {
+      "query": "cryptography basics",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/cryptography-basics.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 43.39194297790527,
+      "tokens": 6297,
+      "ndcg_5_graded": 0.6131471927654584,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/cryptography-basics.md:0"
+      ]
+    },
+    {
+      "query": "distributed transactions",
+      "category": "semantic",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/scale_docs/monitoring-observability.md",
+        "tests/fixtures/scale_docs/event-driven-architecture.md",
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/scale_docs/event-driven-architecture.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 94.06900405883789,
+      "tokens": 1712,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/sample_docs/microservices.md:11",
+        "tests/fixtures/scale_docs/monitoring-observability.md:9",
+        "tests/fixtures/scale_docs/event-driven-architecture.md:42",
+        "tests/fixtures/sample_docs/microservices.md:4",
+        "tests/fixtures/scale_docs/event-driven-architecture.md:32"
+      ]
+    },
+    {
+      "query": "container security hardening",
+      "category": "semantic",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/network-security-hardening.md",
+        "tests/fixtures/scale_docs/network-security-hardening.md",
+        "tests/fixtures/scale_docs/container-security.md",
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/container-security.md"
+      ],
+      "rr": 0.3333333333333333,
+      "ndcg_5": 0.6309297535714575,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.4,
+      "latency_ms": 54.05902862548828,
+      "tokens": 3246,
+      "ndcg_5_graded": 0.5993516528688179,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/network-security-hardening.md:0",
+        "tests/fixtures/scale_docs/network-security-hardening.md:26",
+        "tests/fixtures/scale_docs/container-security.md:3",
+        "tests/fixtures/scale_docs/security-audit-checklist.md:44",
+        "tests/fixtures/scale_docs/container-security.md:0"
+      ]
+    },
+    {
+      "query": "well architected framework",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/well-architected-framework.md",
+        "tests/fixtures/scale_docs/well-architected-framework.md",
+        "tests/fixtures/scale_docs/well-architected-framework.md",
+        "tests/fixtures/scale_docs/well-architected-framework.md",
+        "tests/fixtures/scale_docs/well-architected-framework.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 53.38025093078613,
+      "tokens": 5152,
+      "ndcg_5_graded": 1.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/well-architected-framework.md:49",
+        "tests/fixtures/scale_docs/well-architected-framework.md:37",
+        "tests/fixtures/scale_docs/well-architected-framework.md:11",
+        "tests/fixtures/scale_docs/well-architected-framework.md:26",
+        "tests/fixtures/scale_docs/well-architected-framework.md:0"
+      ]
+    },
+    {
+      "query": "cost optimization strategies",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/cost-optimization.md",
+        "tests/fixtures/scale_docs/serverless-architecture.md",
+        "tests/fixtures/scale_docs/serverless-architecture.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.3333333333333333,
+      "latency_ms": 49.12686347961426,
+      "tokens": 4824,
+      "ndcg_5_graded": 0.5729191687400303,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/cost-optimization.md:0",
+        "tests/fixtures/scale_docs/serverless-architecture.md:31",
+        "tests/fixtures/scale_docs/serverless-architecture.md:38"
+      ]
+    },
+    {
+      "query": "incident response steps",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/incident-response.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 43.77007484436035,
+      "tokens": 5309,
+      "ndcg_5_graded": 0.4692787260227565,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/incident-response.md:0"
+      ]
+    },
+    {
+      "query": "multi-region deployment",
+      "category": "semantic",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/multi-region-deployment.md",
+        "tests/fixtures/scale_docs/multi-region-deployment.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 42.27614402770996,
+      "tokens": 5439,
+      "ndcg_5_graded": 0.5531464700081437,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/multi-region-deployment.md:0",
+        "tests/fixtures/scale_docs/multi-region-deployment.md:35"
+      ]
+    },
+    {
+      "query": "ssh configuration security",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/ssh-configuration.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 41.423797607421875,
+      "tokens": 3606,
+      "ndcg_5_graded": 0.5562983930884396,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/ssh-configuration.md:0"
+      ]
+    },
+    {
+      "query": "vpn tunneling protocols",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/vpn-tunneling.md",
+        "tests/fixtures/scale_docs/vpn-tunneling.md",
+        "tests/fixtures/scale_docs/ssh-configuration.md",
+        "tests/fixtures/scale_docs/http2-http3.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 0.5,
+      "latency_ms": 57.04665184020996,
+      "tokens": 3352,
+      "ndcg_5_graded": 0.7621344705083679,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/vpn-tunneling.md:0",
+        "tests/fixtures/scale_docs/vpn-tunneling.md:9",
+        "tests/fixtures/scale_docs/ssh-configuration.md:9",
+        "tests/fixtures/scale_docs/http2-http3.md:13"
+      ]
+    },
+    {
+      "query": "websocket protocol overview",
+      "category": "semantic",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/websocket-protocol.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 41.320085525512695,
+      "tokens": 3370,
+      "ndcg_5_graded": 0.48306700197788277,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/websocket-protocol.md:0"
+      ]
+    },
+    {
+      "query": "helm charts fundamentals",
+      "category": "semantic",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/helm-charts.md",
+        "tests/fixtures/scale_docs/helm-charts.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 49.675941467285156,
+      "tokens": 1657,
+      "ndcg_5_graded": 0.5784447668310352,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/helm-charts.md:1",
+        "tests/fixtures/scale_docs/helm-charts.md:7"
+      ]
+    },
+    {
+      "query": "linux process management",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/linux-process-management.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 47.31893539428711,
+      "tokens": 2957,
+      "ndcg_5_graded": 0.6576630675781056,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/linux-process-management.md:0"
+      ]
+    },
+    {
+      "query": "network troubleshooting tools",
+      "category": "semantic",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/network-troubleshooting.md",
+        "tests/fixtures/scale_docs/network-troubleshooting.md",
+        "tests/fixtures/scale_docs/network-troubleshooting.md",
+        "tests/fixtures/scale_docs/network-troubleshooting.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 41.841983795166016,
+      "tokens": 5267,
+      "ndcg_5_graded": 0.8687949224876581,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/network-troubleshooting.md:37",
+        "tests/fixtures/scale_docs/network-troubleshooting.md:5",
+        "tests/fixtures/scale_docs/network-troubleshooting.md:41",
+        "tests/fixtures/scale_docs/network-troubleshooting.md:0"
+      ]
+    },
+    {
+      "query": "database replication types",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/database-replication.md",
+        "tests/fixtures/scale_docs/database-replication.md",
+        "tests/fixtures/scale_docs/database-replication.md",
+        "tests/fixtures/scale_docs/database-replication.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 46.468257904052734,
+      "tokens": 5219,
+      "ndcg_5_graded": 0.8122682216087221,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/database-replication.md:0",
+        "tests/fixtures/scale_docs/database-replication.md:22",
+        "tests/fixtures/scale_docs/database-replication.md:34",
+        "tests/fixtures/scale_docs/database-replication.md:40"
+      ]
+    },
+    {
+      "query": "nosql design patterns",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/nosql-patterns.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 44.94500160217285,
+      "tokens": 5359,
+      "ndcg_5_graded": 0.6131471927654584,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/nosql-patterns.md:1"
+      ]
+    },
+    {
+      "query": "sql query optimization",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/sql-query-optimization.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 43.81108283996582,
+      "tokens": 4409,
+      "ndcg_5_graded": 0.3903800499921017,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/sql-query-optimization.md:0"
+      ]
+    },
+    {
+      "query": "data pipeline design",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/data-pipeline-design.md",
+        "tests/fixtures/scale_docs/data-pipeline-design.md",
+        "tests/fixtures/scale_docs/data-pipeline-design.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 45.00007629394531,
+      "tokens": 6723,
+      "ndcg_5_graded": 0.7227265726449517,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/data-pipeline-design.md:0",
+        "tests/fixtures/scale_docs/data-pipeline-design.md:27",
+        "tests/fixtures/scale_docs/data-pipeline-design.md:39"
+      ]
+    },
+    {
+      "query": "testing strategies for software",
+      "category": "semantic",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/testing-strategies.md",
+        "tests/fixtures/scale_docs/testing-strategies.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 43.4417724609375,
+      "tokens": 5389,
+      "ndcg_5_graded": 0.5531464700081437,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/testing-strategies.md:0",
+        "tests/fixtures/scale_docs/testing-strategies.md:20"
+      ]
+    },
+    {
+      "query": "dependency injection benefits",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/dependency-injection.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 42.858123779296875,
+      "tokens": 5015,
+      "ndcg_5_graded": 0.6131471927654584,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/dependency-injection.md:0"
+      ]
+    },
+    {
+      "query": "behavioral design patterns",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/design-patterns-behavioral.md",
+        "tests/fixtures/scale_docs/design-patterns-behavioral.md",
+        "tests/fixtures/scale_docs/design-patterns-behavioral.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 42.69075393676758,
+      "tokens": 5871,
+      "ndcg_5_graded": 0.7227265726449517,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/design-patterns-behavioral.md:8",
+        "tests/fixtures/scale_docs/design-patterns-behavioral.md:21",
+        "tests/fixtures/scale_docs/design-patterns-behavioral.md:0"
+      ]
+    },
+    {
+      "query": "creational design patterns",
+      "category": "semantic",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/design-patterns-creational.md",
+        "tests/fixtures/scale_docs/design-patterns-creational.md"
+      ],
+      "rr": 1.0,
+      "ndcg_5": 1.0,
+      "hit_rate_1": 1.0,
+      "hit_rate_5": 1.0,
+      "precision_5": 1.0,
+      "latency_ms": 46.10466957092285,
+      "tokens": 5702,
+      "ndcg_5_graded": 0.5531464700081437,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/design-patterns-creational.md:7",
+        "tests/fixtures/scale_docs/design-patterns-creational.md:0"
+      ]
+    },
+    {
+      "query": "how to bake sourdough in a kubernetes cluster",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/kubernetes-architecture.md",
+        "tests/fixtures/scale_docs/kubernetes-architecture.md",
+        "tests/fixtures/scale_docs/kubernetes-architecture.md",
+        "tests/fixtures/scale_docs/redis-data-structures.md",
+        "tests/fixtures/scale_docs/data-pipeline-design.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 65.89508056640625,
+      "tokens": 5999,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/kubernetes-architecture.md:3",
+        "tests/fixtures/scale_docs/kubernetes-architecture.md:25",
+        "tests/fixtures/scale_docs/kubernetes-architecture.md:17",
+        "tests/fixtures/scale_docs/redis-data-structures.md:21",
+        "tests/fixtures/scale_docs/data-pipeline-design.md:17"
+      ]
+    },
+    {
+      "query": "best brand of hiking boots for Mars",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/data-serialization.md",
+        "tests/fixtures/scale_docs/linux-performance-tuning.md",
+        "tests/fixtures/scale_docs/data-warehouse-modeling.md",
+        "tests/fixtures/scale_docs/linux-performance-tuning.md",
+        "tests/fixtures/scale_docs/data-warehouse-modeling.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 80.7640552520752,
+      "tokens": 3593,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/data-serialization.md:41",
+        "tests/fixtures/scale_docs/linux-performance-tuning.md:18",
+        "tests/fixtures/scale_docs/data-warehouse-modeling.md:7",
+        "tests/fixtures/scale_docs/linux-performance-tuning.md:11",
+        "tests/fixtures/scale_docs/data-warehouse-modeling.md:3"
+      ]
+    },
+    {
+      "query": "quantum entanglement in photosynthesis",
+      "category": "adversarial",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/functional-programming.md",
+        "tests/fixtures/scale_docs/functional-programming.md",
+        "tests/fixtures/scale_docs/testing-strategies.md",
+        "tests/fixtures/scale_docs/cryptography-basics.md",
+        "tests/fixtures/scale_docs/redis-data-structures.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 73.69399070739746,
+      "tokens": 3386,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/functional-programming.md:1",
+        "tests/fixtures/scale_docs/functional-programming.md:6",
+        "tests/fixtures/scale_docs/testing-strategies.md:7",
+        "tests/fixtures/scale_docs/cryptography-basics.md:3",
+        "tests/fixtures/scale_docs/redis-data-structures.md:9"
+      ]
+    },
+    {
+      "query": "the secret to eternal life according to python docs",
+      "category": "adversarial",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/secrets-management.md",
+        "tests/fixtures/scale_docs/cryptography-basics.md",
+        "tests/fixtures/scale_docs/cryptography-basics.md",
+        "tests/fixtures/scale_docs/database-sharding.md",
+        "tests/fixtures/scale_docs/secrets-management.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 78.10592651367188,
+      "tokens": 2566,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/secrets-management.md:21",
+        "tests/fixtures/scale_docs/cryptography-basics.md:3",
+        "tests/fixtures/scale_docs/cryptography-basics.md:7",
+        "tests/fixtures/scale_docs/database-sharding.md:20",
+        "tests/fixtures/scale_docs/secrets-management.md:28"
+      ]
+    },
+    {
+      "query": "where did I leave my keys",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/api-security.md",
+        "tests/fixtures/scale_docs/api-security.md",
+        "tests/fixtures/scale_docs/api-security.md",
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/database-design.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 85.42680740356445,
+      "tokens": 1626,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/api-security.md:40",
+        "tests/fixtures/scale_docs/api-security.md:42",
+        "tests/fixtures/scale_docs/api-security.md:23",
+        "tests/fixtures/sample_docs/caching.md:14",
+        "tests/fixtures/sample_docs/database-design.md:6"
+      ]
+    },
+    {
+      "query": "recipe for disaster in distributed systems",
+      "category": "adversarial",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/monitoring-observability.md",
+        "tests/fixtures/scale_docs/disaster-recovery.md",
+        "tests/fixtures/scale_docs/error-handling-patterns.md",
+        "tests/fixtures/scale_docs/cloud-storage-options.md",
+        "tests/fixtures/scale_docs/monitoring-observability.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 85.6781005859375,
+      "tokens": 2786,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/monitoring-observability.md:9",
+        "tests/fixtures/scale_docs/disaster-recovery.md:0",
+        "tests/fixtures/scale_docs/error-handling-patterns.md:17",
+        "tests/fixtures/scale_docs/cloud-storage-options.md:15",
+        "tests/fixtures/scale_docs/monitoring-observability.md:17"
+      ]
+    },
+    {
+      "query": "blue whales vs sperm whales",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/ci-cd-pipelines.md",
+        "tests/fixtures/scale_docs/ci-cd-pipelines.md",
+        "tests/fixtures/scale_docs/database-migrations.md",
+        "tests/fixtures/scale_docs/data-serialization.md",
+        "tests/fixtures/scale_docs/well-architected-framework.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 83.29391479492188,
+      "tokens": 2247,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/ci-cd-pipelines.md:18",
+        "tests/fixtures/scale_docs/ci-cd-pipelines.md:15",
+        "tests/fixtures/scale_docs/database-migrations.md:10",
+        "tests/fixtures/scale_docs/data-serialization.md:44",
+        "tests/fixtures/scale_docs/well-architected-framework.md:29"
+      ]
+    },
+    {
+      "query": "history of the Roman Empire",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/data-quality.md",
+        "tests/fixtures/scale_docs/penetration-testing-methodology.md",
+        "tests/fixtures/scale_docs/penetration-testing-methodology.md",
+        "tests/fixtures/scale_docs/chaos-engineering.md",
+        "tests/fixtures/scale_docs/design-patterns-creational.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 93.27411651611328,
+      "tokens": 3448,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/data-quality.md:24",
+        "tests/fixtures/scale_docs/penetration-testing-methodology.md:25",
+        "tests/fixtures/scale_docs/penetration-testing-methodology.md:21",
+        "tests/fixtures/scale_docs/chaos-engineering.md:10",
+        "tests/fixtures/scale_docs/design-patterns-creational.md:26"
+      ]
+    },
+    {
+      "query": "how to play the banjo",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/data-serialization.md",
+        "tests/fixtures/scale_docs/sql-query-optimization.md",
+        "tests/fixtures/scale_docs/data-serialization.md",
+        "tests/fixtures/scale_docs/testing-strategies.md",
+        "tests/fixtures/scale_docs/functional-programming.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 79.32329177856445,
+      "tokens": 2168,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/data-serialization.md:21",
+        "tests/fixtures/scale_docs/sql-query-optimization.md:25",
+        "tests/fixtures/scale_docs/data-serialization.md:14",
+        "tests/fixtures/scale_docs/testing-strategies.md:8",
+        "tests/fixtures/scale_docs/functional-programming.md:13"
+      ]
+    },
+    {
+      "query": "why is the sky blue",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/ci-cd-pipelines.md",
+        "tests/fixtures/scale_docs/ci-cd-pipelines.md",
+        "tests/fixtures/scale_docs/linux-permissions.md",
+        "tests/fixtures/scale_docs/database-migrations.md",
+        "tests/fixtures/scale_docs/disaster-recovery.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 92.58699417114258,
+      "tokens": 1706,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/ci-cd-pipelines.md:18",
+        "tests/fixtures/scale_docs/ci-cd-pipelines.md:15",
+        "tests/fixtures/scale_docs/linux-permissions.md:21",
+        "tests/fixtures/scale_docs/database-migrations.md:10",
+        "tests/fixtures/scale_docs/disaster-recovery.md:8"
+      ]
+    },
+    {
+      "query": "symptoms of a cold",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/serverless-architecture.md",
+        "tests/fixtures/scale_docs/data-quality.md",
+        "tests/fixtures/scale_docs/data-quality.md",
+        "tests/fixtures/scale_docs/data-quality.md",
+        "tests/fixtures/scale_docs/cost-optimization.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 62.84904479980469,
+      "tokens": 2991,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/serverless-architecture.md:10",
+        "tests/fixtures/scale_docs/data-quality.md:14",
+        "tests/fixtures/scale_docs/data-quality.md:4",
+        "tests/fixtures/scale_docs/data-quality.md:20",
+        "tests/fixtures/scale_docs/cost-optimization.md:19"
+      ]
+    },
+    {
+      "query": "movie recommendations for tonight",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/linux-performance-tuning.md",
+        "tests/fixtures/scale_docs/penetration-testing-methodology.md",
+        "tests/fixtures/scale_docs/linux-performance-tuning.md",
+        "tests/fixtures/scale_docs/penetration-testing-methodology.md",
+        "tests/fixtures/scale_docs/monitoring-observability.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 84.95616912841797,
+      "tokens": 1774,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/linux-performance-tuning.md:3",
+        "tests/fixtures/scale_docs/penetration-testing-methodology.md:26",
+        "tests/fixtures/scale_docs/linux-performance-tuning.md:21",
+        "tests/fixtures/scale_docs/penetration-testing-methodology.md:1",
+        "tests/fixtures/scale_docs/monitoring-observability.md:28"
+      ]
+    },
+    {
+      "query": "stock market predictions for 2026",
+      "category": "adversarial",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/cloud-design-patterns.md",
+        "tests/fixtures/scale_docs/migration-strategies.md",
+        "tests/fixtures/scale_docs/data-lake-architecture.md",
+        "tests/fixtures/scale_docs/concurrency-patterns.md",
+        "tests/fixtures/scale_docs/auto-scaling.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 98.19388389587402,
+      "tokens": 2322,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/cloud-design-patterns.md:18",
+        "tests/fixtures/scale_docs/migration-strategies.md:35",
+        "tests/fixtures/scale_docs/data-lake-architecture.md:15",
+        "tests/fixtures/scale_docs/concurrency-patterns.md:10",
+        "tests/fixtures/scale_docs/auto-scaling.md:8"
+      ]
+    },
+    {
+      "query": "philosophy of mind and AI",
+      "category": "adversarial",
+      "difficulty": "hard",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/data-quality.md",
+        "tests/fixtures/scale_docs/data-lake-architecture.md",
+        "tests/fixtures/scale_docs/concurrency-patterns.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 93.63603591918945,
+      "tokens": 1634,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/data-quality.md:7",
+        "tests/fixtures/scale_docs/data-lake-architecture.md:28",
+        "tests/fixtures/scale_docs/concurrency-patterns.md:17"
+      ]
+    },
+    {
+      "query": "meaning of life 42",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/data-serialization.md",
+        "tests/fixtures/scale_docs/dependency-injection.md",
+        "tests/fixtures/scale_docs/linux-process-management.md",
+        "tests/fixtures/sample_docs/semantic-search.md",
+        "tests/fixtures/scale_docs/dependency-injection.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 112.8549575805664,
+      "tokens": 2562,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/data-serialization.md:30",
+        "tests/fixtures/scale_docs/dependency-injection.md:21",
+        "tests/fixtures/scale_docs/linux-process-management.md:16",
+        "tests/fixtures/sample_docs/semantic-search.md:0",
+        "tests/fixtures/scale_docs/dependency-injection.md:6"
+      ]
+    },
+    {
+      "query": "how to win friends and influence people",
+      "category": "adversarial",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/nosql-patterns.md",
+        "tests/fixtures/scale_docs/auto-scaling.md",
+        "tests/fixtures/scale_docs/elasticsearch-basics.md",
+        "tests/fixtures/scale_docs/well-architected-framework.md",
+        "tests/fixtures/scale_docs/monitoring-observability.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 86.49873733520508,
+      "tokens": 2185,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/nosql-patterns.md:20",
+        "tests/fixtures/scale_docs/auto-scaling.md:3",
+        "tests/fixtures/scale_docs/elasticsearch-basics.md:27",
+        "tests/fixtures/scale_docs/well-architected-framework.md:13",
+        "tests/fixtures/scale_docs/monitoring-observability.md:32"
+      ]
+    },
+    {
+      "query": "yoga for beginners",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/semantic-search.md",
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/microservices.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 75.42204856872559,
+      "tokens": 568,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/sample_docs/semantic-search.md:2",
+        "tests/fixtures/sample_docs/microservices.md:1",
+        "tests/fixtures/sample_docs/microservices.md:5"
+      ]
+    },
+    {
+      "query": "best coffee shops in London",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/shell-scripting.md",
+        "tests/fixtures/scale_docs/design-patterns-structural.md",
+        "tests/fixtures/scale_docs/data-pipeline-design.md",
+        "tests/fixtures/scale_docs/design-patterns-structural.md",
+        "tests/fixtures/scale_docs/shell-scripting.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 66.80178642272949,
+      "tokens": 2862,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/shell-scripting.md:28",
+        "tests/fixtures/scale_docs/design-patterns-structural.md:39",
+        "tests/fixtures/scale_docs/data-pipeline-design.md:35",
+        "tests/fixtures/scale_docs/design-patterns-structural.md:45",
+        "tests/fixtures/scale_docs/shell-scripting.md:7"
+      ]
+    },
+    {
+      "query": "gardening tips for summer",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/data-serialization.md",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 81.96187019348145,
+      "tokens": 3603,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/data-serialization.md:31",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md:24",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md:31",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md:5"
+      ]
+    },
+    {
+      "query": "how to repair a flat tire",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/migration-strategies.md",
+        "tests/fixtures/scale_docs/linux-filesystem.md",
+        "tests/fixtures/scale_docs/design-patterns-structural.md",
+        "tests/fixtures/scale_docs/design-patterns-structural.md",
+        "tests/fixtures/scale_docs/testing-strategies.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 100.60000419616699,
+      "tokens": 2847,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/migration-strategies.md:3",
+        "tests/fixtures/scale_docs/linux-filesystem.md:20",
+        "tests/fixtures/scale_docs/design-patterns-structural.md:18",
+        "tests/fixtures/scale_docs/design-patterns-structural.md:4",
+        "tests/fixtures/scale_docs/testing-strategies.md:19"
+      ]
+    },
+    {
+      "query": "history of the internet",
+      "category": "adversarial",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/tcp-ip-fundamentals.md",
+        "tests/fixtures/scale_docs/cloud-networking.md",
+        "tests/fixtures/scale_docs/tcp-ip-fundamentals.md",
+        "tests/fixtures/scale_docs/zero-trust-architecture.md",
+        "tests/fixtures/scale_docs/data-warehouse-modeling.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 84.28692817687988,
+      "tokens": 4604,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/tcp-ip-fundamentals.md:25",
+        "tests/fixtures/scale_docs/cloud-networking.md:6",
+        "tests/fixtures/scale_docs/tcp-ip-fundamentals.md:3",
+        "tests/fixtures/scale_docs/zero-trust-architecture.md:14",
+        "tests/fixtures/scale_docs/data-warehouse-modeling.md:9"
+      ]
+    },
+    {
+      "query": "space travel in the future",
+      "category": "adversarial",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/infrastructure-as-code.md",
+        "tests/fixtures/scale_docs/concurrency-patterns.md",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md",
+        "tests/fixtures/scale_docs/event-driven-architecture.md",
+        "tests/fixtures/scale_docs/chaos-engineering.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 90.79599380493164,
+      "tokens": 3678,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/infrastructure-as-code.md:19",
+        "tests/fixtures/scale_docs/concurrency-patterns.md:11",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md:34",
+        "tests/fixtures/scale_docs/event-driven-architecture.md:11",
+        "tests/fixtures/scale_docs/chaos-engineering.md:17"
+      ]
+    },
+    {
+      "query": "the art of war summary",
+      "category": "adversarial",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/penetration-testing-methodology.md",
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/scale_docs/cloud-storage-options.md",
+        "tests/fixtures/scale_docs/design-patterns-creational.md",
+        "tests/fixtures/scale_docs/incident-response.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 97.10836410522461,
+      "tokens": 3006,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/penetration-testing-methodology.md:26",
+        "tests/fixtures/sample_docs/authentication.md:10",
+        "tests/fixtures/scale_docs/cloud-storage-options.md:21",
+        "tests/fixtures/scale_docs/design-patterns-creational.md:37",
+        "tests/fixtures/scale_docs/incident-response.md:34"
+      ]
+    },
+    {
+      "query": "meditation techniques",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/stream-processing.md",
+        "tests/fixtures/sample_docs/semantic-search.md",
+        "tests/fixtures/scale_docs/stream-processing.md",
+        "tests/fixtures/scale_docs/stream-processing.md",
+        "tests/fixtures/scale_docs/nosql-patterns.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 71.90990447998047,
+      "tokens": 2899,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/stream-processing.md:37",
+        "tests/fixtures/sample_docs/semantic-search.md:0",
+        "tests/fixtures/scale_docs/stream-processing.md:2",
+        "tests/fixtures/scale_docs/stream-processing.md:24",
+        "tests/fixtures/scale_docs/nosql-patterns.md:1"
+      ]
+    },
+    {
+      "query": "learning a new language fast",
+      "category": "adversarial",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/semantic-search.md",
+        "tests/fixtures/scale_docs/data-serialization.md",
+        "tests/fixtures/scale_docs/data-serialization.md",
+        "tests/fixtures/sample_docs/vector-databases.md",
+        "tests/fixtures/scale_docs/serverless-architecture.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 98.04415702819824,
+      "tokens": 2563,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/sample_docs/semantic-search.md:2",
+        "tests/fixtures/scale_docs/data-serialization.md:12",
+        "tests/fixtures/scale_docs/data-serialization.md:48",
+        "tests/fixtures/sample_docs/vector-databases.md:4",
+        "tests/fixtures/scale_docs/serverless-architecture.md:20"
+      ]
+    },
+    {
+      "query": "climate change impacts",
+      "category": "adversarial",
+      "difficulty": "medium",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/incident-response.md",
+        "tests/fixtures/scale_docs/linux-permissions.md",
+        "tests/fixtures/scale_docs/incident-response.md",
+        "tests/fixtures/scale_docs/database-replication.md",
+        "tests/fixtures/scale_docs/chaos-engineering.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 132.1101188659668,
+      "tokens": 3017,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/incident-response.md:14",
+        "tests/fixtures/scale_docs/linux-permissions.md:6",
+        "tests/fixtures/scale_docs/incident-response.md:32",
+        "tests/fixtures/scale_docs/database-replication.md:5",
+        "tests/fixtures/scale_docs/chaos-engineering.md:17"
+      ]
+    },
+    {
+      "query": "renewable energy sources",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/disaster-recovery.md",
+        "tests/fixtures/scale_docs/serverless-architecture.md",
+        "tests/fixtures/scale_docs/data-pipeline-design.md",
+        "tests/fixtures/scale_docs/disaster-recovery.md",
+        "tests/fixtures/scale_docs/serverless-architecture.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 85.30998229980469,
+      "tokens": 5367,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/disaster-recovery.md:8",
+        "tests/fixtures/scale_docs/serverless-architecture.md:5",
+        "tests/fixtures/scale_docs/data-pipeline-design.md:1",
+        "tests/fixtures/scale_docs/disaster-recovery.md:45",
+        "tests/fixtures/scale_docs/serverless-architecture.md:33"
+      ]
+    },
+    {
+      "query": "healthy eating habits",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/load-balancing.md",
+        "tests/fixtures/scale_docs/connection-pooling.md",
+        "tests/fixtures/scale_docs/database-sharding.md",
+        "tests/fixtures/scale_docs/kubernetes-architecture.md",
+        "tests/fixtures/sample_docs/caching.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 109.60817337036133,
+      "tokens": 1992,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/load-balancing.md:10",
+        "tests/fixtures/scale_docs/connection-pooling.md:11",
+        "tests/fixtures/scale_docs/database-sharding.md:13",
+        "tests/fixtures/scale_docs/kubernetes-architecture.md:11",
+        "tests/fixtures/sample_docs/caching.md:0"
+      ]
+    },
+    {
+      "query": "travel tips for Japan",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/migration-strategies.md",
+        "tests/fixtures/scale_docs/event-driven-architecture.md",
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/scale_docs/migration-strategies.md",
+        "tests/fixtures/scale_docs/migration-strategies.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 93.42598915100098,
+      "tokens": 2440,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/migration-strategies.md:24",
+        "tests/fixtures/scale_docs/event-driven-architecture.md:11",
+        "tests/fixtures/sample_docs/caching.md:9",
+        "tests/fixtures/scale_docs/migration-strategies.md:1",
+        "tests/fixtures/scale_docs/migration-strategies.md:10"
+      ]
+    },
+    {
+      "query": "basics of photography",
+      "category": "adversarial",
+      "difficulty": "easy",
+      "retrieved_sources": [
+        "tests/fixtures/scale_docs/design-patterns-creational.md",
+        "tests/fixtures/sample_docs/vector-databases.md",
+        "tests/fixtures/scale_docs/design-patterns-creational.md",
+        "tests/fixtures/scale_docs/design-patterns-creational.md",
+        "tests/fixtures/scale_docs/cryptography-basics.md"
+      ],
+      "rr": 0.0,
+      "ndcg_5": 0.0,
+      "hit_rate_1": 0.0,
+      "hit_rate_5": 0.0,
+      "precision_5": 0.0,
+      "latency_ms": 76.40504837036133,
+      "tokens": 1852,
+      "ndcg_5_graded": 0.0,
+      "retrieved_chunk_ids": [
+        "tests/fixtures/scale_docs/design-patterns-creational.md:36",
+        "tests/fixtures/sample_docs/vector-databases.md:1",
+        "tests/fixtures/scale_docs/design-patterns-creational.md:21",
+        "tests/fixtures/scale_docs/design-patterns-creational.md:29",
+        "tests/fixtures/scale_docs/cryptography-basics.md:9"
+      ]
+    }
+  ]
+}

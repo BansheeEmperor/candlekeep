@@ -3059,3 +3059,94 @@ The benchmark harness competitor (`colbert-replace-bm25`) achieved lex MRR 0.592
 ColBERT improves lexical MRR by +0.024 through the production path — the primary goal. The semantic MRR regression (-0.011) is a concern; ColBERT's token-level matching may be less effective than BM25 for broad semantic queries. The overall MRR improvement (+0.002) is within noise.
 
 The opt-in design is validated: users who need better lexical precision (version numbers, error codes, package names) can enable ColBERT. Users who don't can stay on BM25 with zero impact.
+
+
+---
+
+## Entry 52: Graded Relevance Annotations — 2026-02-26
+
+### Problem
+
+The Centurion Set used binary relevance: a chunk is either from an expected source (relevant) or not (irrelevant). This means nDCG@5 and MRR measure essentially the same thing with different weighting. A chunk from the correct document that directly answers the query scores identically to a chunk from the same document that contains only tangentially related content.
+
+The Entry 15 finding — precise path has higher precision but lower content match than simple — couldn't be explained by binary metrics. We needed graded relevance to distinguish "right document, right answer" from "right document, wrong section."
+
+### Implementation
+
+#### Graded Metrics (metrics.py)
+
+Added `calculate_dcg_graded` and `calculate_ndcg_graded` to `src/candlekeep/eval/metrics.py`. These accept a `Dict[str, int]` mapping chunk IDs (`source:chunk_index`) to integer grades on a 0-3 scale:
+
+- 3 (Perfect): Directly answers the query
+- 2 (Highly relevant): On-topic, useful context, doesn't directly answer
+- 1 (Marginally relevant): Related concepts from a different angle
+- 0 (Irrelevant): No meaningful connection
+
+The runner (`eval/runner.py`) now computes graded nDCG alongside binary nDCG when annotations are present. Fully backward-compatible — queries without `graded_relevance` produce `ndcg_5_graded = -1.0` (sentinel).
+
+#### Annotation Process
+
+Two-annotator approach with reconciliation:
+
+1. **Annotator 1 (heuristic):** Ran all 3 search paths on the Centurion Set, pooled 709 unique (query, chunk) pairs. Graded using source membership + keyword overlap ratio. (`scripts/annotate_graded_relevance.py`)
+
+2. **Annotator 2 (independent):** Graded the same pairs independently. Saw only the query text and chunk text — no expected sources, no heuristic grades. (`scripts/annotate_llm_second_rater.py`)
+
+3. **Reconciliation:** Exact agreement → use agreed grade. Adjacent (delta=1) → use the higher grade (favors recall). Large disagreement (delta≥2) → use annotator 2's grade (less susceptible to keyword-matching artifacts).
+
+#### Inter-Annotator Agreement
+
+| Metric | Value |
+|--------|-------|
+| Cohen's κ (binary: relevant vs irrelevant) | 0.534 |
+| Cohen's κ (ordinal, linear-weighted) | 0.420 |
+| Exact agreement | 42.0% |
+| Adjacent agreement (within 1 grade) | 81.9% |
+
+Moderate agreement. The annotators disagree most on grade 2 vs 3 (is this chunk "highly relevant" or "perfect"?) and grade 0 vs 1 (is this chunk "irrelevant" or "marginally relevant"?). The 82% adjacent agreement means they rarely disagree by more than 1 grade.
+
+The heuristic annotator is bimodal (50% grade 0, 34% grade 3) while the second annotator uses the full scale (31% grade 0, 34% grade 1, 28% grade 2, 7% grade 3). The reconciled set redistributes toward the middle.
+
+### Benchmark Results (Reconciled Grades, v1.2)
+
+#### Candlekeep Paths
+
+| Path | MRR | nDCG@5 (binary) | nDCG@5 (graded) | HR@5 | CM | p50ms |
+|------|:---:|:---:|:---:|:---:|:---:|:---:|
+| simple | 0.522 | 0.532 | 0.386 | 0.833 | 0.715 | 46 |
+| hybrid | 0.556 | 0.567 | 0.421 | 0.593 | 0.808 | 56 |
+| precise | 0.532 | 0.536 | 0.302 | 0.824 | 0.742 | 120 |
+
+#### Competitive (Centurion Set, 1 run)
+
+| Competitor | MRR | nDCG@5 | gNDCG@5 | HR@5 | CM | p50ms |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| naive | 0.499 | 0.512 | 0.262 | 0.546 | 0.485 | 15 |
+| naive-rerank | 0.549 | 0.560 | 0.282 | 0.593 | 0.529 | 225 |
+| langchain | 0.535 | 0.548 | 0.202 | 0.583 | 0.467 | 16 |
+| candlekeep-simple | 0.522 | 0.532 | **0.386** | 0.833 | 0.715 | 46 |
+| candlekeep-hybrid | 0.556 | 0.567 | **0.421** | 0.593 | 0.808 | 56 |
+| ablation-no-bardic | 0.475 | 0.484 | 0.242 | 0.769 | 0.498 | 42 |
+| ablation-no-arcane | 0.519 | 0.532 | 0.247 | 0.833 | 0.587 | 17 |
+
+### Key Findings
+
+1. **Graded nDCG separates Candlekeep from competitors.** On binary metrics, naive-rerank (MRR 0.549) leads and most comparisons are within confidence intervals. On graded nDCG, candlekeep-hybrid (0.421) and candlekeep-simple (0.386) pull ahead of naive-rerank (0.282) by 0.10-0.14. The technique stack doesn't just find the right document — it surfaces the best chunk from that document.
+
+2. **Arcane Recall and Bardic Knowledge contribute equally to graded ranking.** Removing Arcane Recall drops gNDCG from 0.386 to 0.247 (-0.139). Removing Bardic Knowledge drops it to 0.242 (-0.144). Neither technique changes binary nDCG much — their value is in answer quality, not document discovery.
+
+3. **The precise path ranks answer-bearing chunks lower.** Precise gNDCG (0.302) is below simple (0.386) despite similar binary nDCG (0.536 vs 0.532). The cross-encoder promotes chunks that are semantically relevant to the query but aren't the most answer-bearing. This confirms the Entry 15 hypothesis with quantitative evidence.
+
+4. **Content match and graded nDCG corroborate each other.** The rank ordering by CM (hybrid 0.808 > precise 0.742 > simple 0.715 > naive 0.485) closely tracks gNDCG (hybrid 0.421 > simple 0.386 > precise 0.302 > naive 0.262). Two independent metrics measuring the same underlying quality dimension.
+
+### Files Changed
+
+- `src/candlekeep/eval/metrics.py` — Added `calculate_dcg_graded`, `calculate_ndcg_graded`
+- `src/candlekeep/eval/runner.py` — Added `graded_relevance` to EvalQuery, `ndcg_5_graded` to EvalResult
+- `scripts/benchmark_competitors.py` — Graded nDCG in competitive benchmark output
+- `scripts/annotate_graded_relevance.py` — Heuristic annotation tool (new)
+- `scripts/annotate_llm_second_rater.py` — Second annotator tool (new)
+- `tests/test_graded_metrics.py` — 12 unit tests for graded metrics (new)
+- `tests/fixtures/eval_suite_100.json` — v1.2 with reconciled graded relevance
+- `tests/results/competitive_benchmark_graded.json` — Competitive results with gNDCG
+- `tests/results/llm_annotator_agreement.json` — Agreement report
