@@ -96,6 +96,7 @@ def build_competitor(name: str) -> Competitor:
     )
 
     from scripts.competitors.langchain_rag import LangChainRAG
+    from scripts.competitors.langchain_defaults import LangChainDefaults
     from scripts.competitors.ragatouille_colbert import RAGatouilleCompetitor
     from scripts.competitors.colbert_hybrid import ColBERTHybrid
     from scripts.competitors.colbert_replace import ColBERTReplaceBM25, ColBERTReplaceDense
@@ -107,6 +108,7 @@ def build_competitor(name: str) -> Competitor:
         "naive-rerank": NaiveRerank,
         "langchain": lambda: LangChainRAG(use_mmr=False),
         "langchain-mmr": lambda: LangChainRAG(use_mmr=True),
+        "langchain-defaults": LangChainDefaults,
         "ragatouille": RAGatouilleCompetitor,
         "colbert-hybrid": ColBERTHybrid,
         "colbert-replace-bm25": ColBERTReplaceBM25,
