@@ -1,4 +1,3 @@
-```
 ![Candlekeep](docs/candlekeep_icon.png)
 
 # Candlekeep
