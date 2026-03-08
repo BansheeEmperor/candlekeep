@@ -1,0 +1,60 @@
+name: Tests
+
+on:
+  pull_request:
+    branches: [ production, master, main ]
+  push:
+    branches: [ production, master, main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest pytest-cov
+
+      - name: Setup Candlekeep (Download Models)
+        run: |
+          mkdir -p ~/.local/share/candlekeep
+          python -m spacy download en_core_web_sm
+          python << 'EOF'
+          import os
+          from pathlib import Path
+          from sentence_transformers import SentenceTransformer, CrossEncoder
+          
+          # Force a specific data dir for CI
+          models_dir = Path.home() / ".local" / "share" / "candlekeep" / "models"
+          models_dir.mkdir(parents=True, exist_ok=True)
+          
+          print(f"Downloading Bi-Encoder to {models_dir}")
+          SentenceTransformer("BAAI/bge-small-en-v1.5", cache_folder=str(models_dir))
+          
+          print(f"Downloading Cross-Encoder to {models_dir}")
+          CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2", cache_folder=str(models_dir))
+          EOF
+
+      - name: Run unit tests
+        env:
+          XDG_DATA_HOME: /home/runner/.local/share
+          CANDLEKEEP_DEVICE: cpu
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/src
+          # Run only stable unit tests that don't require a live database
+          pytest tests/test_router.py \
+                 tests/test_quality_gate.py \
+                 tests/test_arcane_recall_unit.py \
+                 tests/test_protection.py \
+                 tests/test_processor.py \
+                 tests/test_providers.py \
+                 tests/test_rate_limiter.py
