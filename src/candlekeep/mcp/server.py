@@ -477,7 +477,13 @@ def get_stats() -> str:
 
 **Usage (this session)**
 - Total queries: {queries}
-- Tokens saved: ~{tokens_saved:,}"""
+- Tokens saved: ~{tokens_saved:,}
+
+**Embedding Cache**
+- Hits: {stats.get('embed_cache_hits', 0)}
+- Misses: {stats.get('embed_cache_misses', 0)}
+- Size: {stats.get('embed_cache_size', 0)}"""
+
 
 
 @mcp.tool
