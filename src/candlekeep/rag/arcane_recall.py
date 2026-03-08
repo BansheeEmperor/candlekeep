@@ -58,7 +58,7 @@ def expand_results(
     # Get query embedding if needed for similarity-weighted expansion
     query_embedding = None
     if query:
-        query_embedding = db.get_embeddings([query])[0]
+        query_embedding = db.embed_query(query)
 
     for source, source_results in results_by_source.items():
         doc_chunks = chunks_by_source[source]
