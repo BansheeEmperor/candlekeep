@@ -463,6 +463,15 @@ All settings via environment variables (`.env` file):
 | CANDLEKEEP_RATE_LIMIT_SEARCH | 30 | Max search calls per session per window (HTTP mode, 0=disabled) |
 | CANDLEKEEP_RATE_LIMIT_WRITE | 5 | Max write calls per session per window (HTTP mode, 0=disabled) |
 | CANDLEKEEP_RATE_LIMIT_WINDOW | 60 | Rate limit window in seconds (HTTP mode) |
+| CANDLEKEEP_LLM_PROVIDER | (empty) | LLM provider: `anthropic`, `openai`, `bedrock`, `openai_compat` |
+| CANDLEKEEP_LLM_MODEL | (per-provider) | Model name override for LLM provider |
+| CANDLEKEEP_VLM_PROVIDER | (empty) | Vision provider: `anthropic`, `openai`, `bedrock`, `openai_compat` |
+| CANDLEKEEP_VLM_MODEL | (per-provider) | Model name override for vision provider |
+| CANDLEKEEP_LLM_BASE_URL | (empty) | Base URL for `openai_compat` LLM endpoint |
+| CANDLEKEEP_VLM_BASE_URL | (empty) | Base URL for `openai_compat` vision endpoint |
+| ANTHROPIC_API_KEY | (empty) | API key for Anthropic provider |
+| OPENAI_API_KEY | (empty) | API key for OpenAI provider |
+| AWS_REGION | us-east-1 | AWS region for Bedrock provider |
 
 ## Performance Characteristics
 
@@ -493,6 +502,49 @@ Canonical latency reference for the simple search path. All other latency figure
 
 The simple path performs no inference beyond the initial query embedding. Arcane Recall uses stored embeddings from ChromaDB for the Scholar's Discernment similarity checks — no bi-encoder calls during expansion.
 
+## LLM & Vision Providers
+
+Candlekeep uses a provider abstraction layer for runtime LLM calls (RAPTOR summaries) and vision calls (image captioning). Text and vision providers are independently configurable — use a cheap local model for summaries and a stronger hosted model for captioning without coupling.
+
+### Provider Architecture
+
+```
+create_llm_provider()  ──→  LLMProvider.complete(prompt) ──→ str
+create_vision_provider() ──→ VisionProvider.caption(image_bytes) ──→ str
+```
+
+Both factory functions read from environment variables and use lazy imports, so provider dependencies are only required when that provider is selected. All provider errors are wrapped in `ProviderError(provider_name, message, cause)` for uniform error handling.
+
+### Available Providers
+
+| Provider | LLM | Vision | Install | Auth |
+|----------|-----|--------|---------|------|
+| `anthropic` | ✓ | ✓ | `pip install anthropic` | `ANTHROPIC_API_KEY` |
+| `openai` | ✓ | ✓ | `pip install openai` | `OPENAI_API_KEY` |
+| `bedrock` | ✓ | ✓ | `pip install candlekeep[bedrock]` | AWS credential chain |
+| `openai_compat` | ✓ | ✓ | `pip install openai` | `CANDLEKEEP_LLM_BASE_URL` / `CANDLEKEEP_VLM_BASE_URL` |
+
+The `openai_compat` provider covers Ollama, LM Studio, vLLM, and anything else that speaks the OpenAI API spec. This is the local inference path — no external dependencies required beyond a running inference server.
+
+### Example Configurations
+
+Local-only (Ollama):
+```bash
+CANDLEKEEP_LLM_PROVIDER=openai_compat
+CANDLEKEEP_LLM_MODEL=llama3.2
+CANDLEKEEP_LLM_BASE_URL=http://localhost:11434/v1
+```
+
+Mixed (local LLM, hosted vision):
+```bash
+CANDLEKEEP_LLM_PROVIDER=openai_compat
+CANDLEKEEP_LLM_MODEL=llama3.2
+CANDLEKEEP_LLM_BASE_URL=http://localhost:11434/v1
+CANDLEKEEP_VLM_PROVIDER=anthropic
+CANDLEKEEP_VLM_MODEL=claude-sonnet-4-20250514
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
 ## Future Work
 
 - **HNSW parameter validation at scale** — `scripts/sweep_hnsw.py` generates a 10k+ chunk corpus and sweeps `search_ef` values. Run on target hardware to validate that HNSW defaults remain optimal beyond the tested 2,770-chunk corpus. At 100k+ vectors, `search_ef` > 10 may improve recall.
@@ -509,6 +561,13 @@ src/candlekeep/
 │   ├── interface.py         # Abstract VectorDatabase
 │   ├── vector_store.py      # ChromaDB implementation
 │   └── embeddings.py        # Model loading + caching
+├── providers/
+│   ├── base.py              # LLMProvider / VisionProvider ABCs
+│   ├── factory.py           # Env-driven provider instantiation
+│   ├── anthropic.py         # Anthropic (Claude) implementation
+│   ├── openai.py            # OpenAI implementation
+│   ├── bedrock.py           # AWS Bedrock implementation
+│   └── openai_compat.py     # OpenAI-compatible (Ollama, LM Studio, vLLM)
 ├── rag/
 │   ├── router.py            # Adaptive query routing
 │   ├── search.py            # Negation preprocessing

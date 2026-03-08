@@ -22,6 +22,7 @@ A RAG knowledge base server that gives AI agents the power to search, retrieve, 
 - **Quality Gate**: Documents must have frontmatter and structure to enter the library
 - **Embedding Protection**: Auto-detects model mismatch on remote databases
 - **8 MCP Tools**: Search, ingest, critique, generate docs, and more
+- **[LLM & Vision Providers](docs/ARCHITECTURE.md#llm--vision-providers)**: Pluggable `anthropic`, `openai`, `bedrock`, and `openai_compat` (Ollama/LM Studio/vLLM) — text and vision independently configurable
 - **Token Auth**: Bearer token authentication for remote ChromaDB
 
 ## Quick Start
@@ -98,14 +99,15 @@ Access to write tools is managed by your database permissions (configured via `C
 ```bash
 # Unit tests — no database required (~1.4s)
 pytest tests/test_router.py tests/test_quality_gate.py tests/test_arcane_recall_unit.py \
-       tests/test_protection.py tests/test_processor.py tests/test_search.py
+       tests/test_protection.py tests/test_processor.py tests/test_search.py \
+       tests/test_providers.py
 
 # Benchmarks — requires local ChromaDB on localhost:8000
 ./scripts/start_chroma.sh
 pytest tests/test_router_benchmark.py -v -s
 ```
 
-37 unit tests covering router, quality gate, chunk expansion, embedding protection, and document processing. Benchmark tests include regression assertions that fail if precision or content match drops below 80%.
+59 unit tests covering router, quality gate, chunk expansion, embedding protection, document processing, and LLM/vision providers. Benchmark tests include regression assertions that fail if precision or content match drops below 80%.
 
 ## Requirements
 
