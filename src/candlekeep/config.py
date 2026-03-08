@@ -98,6 +98,10 @@ class Settings:
     rate_limit_write: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_RATE_LIMIT_WRITE", "5")))
     rate_limit_window: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_RATE_LIMIT_WINDOW", "60")))
 
+    # LLM / Vision provider selection (anthropic, openai, bedrock, openai_compat)
+    llm_provider: str = field(default_factory=lambda: os.getenv("CANDLEKEEP_LLM_PROVIDER", ""))
+    vlm_provider: str = field(default_factory=lambda: os.getenv("CANDLEKEEP_VLM_PROVIDER", ""))
+
     # Data directory
     data_dir: Path = field(default_factory=get_data_dir)
 
