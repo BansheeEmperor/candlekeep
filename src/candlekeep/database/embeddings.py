@@ -1,4 +1,6 @@
 """Embedding manager with model caching and selection."""
+import threading
+from collections import OrderedDict
 from sentence_transformers import SentenceTransformer
 from candlekeep.config import Settings, EMBEDDING_MODELS, EmbeddingModel
 
@@ -10,6 +12,12 @@ class EmbeddingManager:
 
     def __init__(self, settings: Settings | None = None):
         self.settings = settings or Settings.from_env()
+        self._cache = OrderedDict()
+        self._cache_lock = threading.Lock()
+        self._hits = 0
+        self._misses = 0
+        self._max_cache_size = self.settings.embedding_cache_size
+
 
     @classmethod
     def get_instance(cls, settings: Settings | None = None) -> "EmbeddingManager":
@@ -72,5 +80,36 @@ class EmbeddingManager:
         return embeddings.tolist()
 
     def embed_query(self, query: str, model_name: EmbeddingModel | None = None) -> list[float]:
-        """Generate embedding for a single query."""
-        return self.embed([query], model_name, is_query=True)[0]
+        """Generate embedding for a single query with LRU cache."""
+        model_name = model_name or self.settings.embedding_model
+        
+        if self._max_cache_size == 0:
+            return self.embed([query], model_name, is_query=True)[0]
+
+        cache_key = (query, model_name)
+        with self._cache_lock:
+            if cache_key in self._cache:
+                self._hits += 1
+                self._cache.move_to_end(cache_key)
+                return self._cache[cache_key]
+        
+        # Cache miss - compute embedding
+        embedding = self.embed([query], model_name, is_query=True)[0]
+        
+        with self._cache_lock:
+            self._misses += 1
+            self._cache[cache_key] = embedding
+            self._cache.move_to_end(cache_key)
+            if len(self._cache) > self._max_cache_size:
+                self._cache.popitem(last=False)
+        
+        return embedding
+
+    def get_cache_stats(self) -> dict:
+        """Get embedding cache hit/miss statistics."""
+        with self._cache_lock:
+            return {
+                "embedding_cache_hits": self._hits,
+                "embedding_cache_misses": self._misses,
+                "embedding_cache_size": len(self._cache)
+            }
