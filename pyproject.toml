@@ -6,8 +6,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "fastmcp==2.14.5",
-    "chromadb>=0.4.22",
-
+    "chromadb>=0.4.0",
     "sentence-transformers>=2.2.0",
     "spacy>=3.7.0",
     "pdfplumber>=0.10.0",
