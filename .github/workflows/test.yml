@@ -59,13 +59,21 @@ jobs:
           CANDLEKEEP_DEVICE: cpu
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/src
+          # Core logic and technique validation
           pytest tests/test_router.py \
                  tests/test_quality_gate.py \
                  tests/test_arcane_recall_unit.py \
                  tests/test_protection.py \
                  tests/test_processor.py \
                  tests/test_providers.py \
-                 tests/test_rate_limiter.py
+                 tests/test_rate_limiter.py \
+                 tests/test_multi_agent.py \
+                 tests/test_multi_agent_integration.py \
+                 tests/test_discrimination.py \
+                 tests/test_embeddings.py \
+                 tests/test_graded_metrics.py \
+                 tests/test_arcane_recall.py \
+                 tests/test_benchmark.py
 
       - name: Run Sanity Benchmarks
         env:
