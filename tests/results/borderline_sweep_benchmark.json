@@ -1,0 +1,530 @@
+{
+  "clean_only": {
+    "docs": 89,
+    "chunks": 2859,
+    "query_set": "clean",
+    "sweeps": {
+      "threshold_0.85": {
+        "similarity_threshold": 0.85,
+        "summary": {
+          "mrr": 0.6666666666666667,
+          "avg_ndcg_5": 0.7,
+          "avg_hit_rate_1": 0.6,
+          "avg_hit_rate_5": 0.8,
+          "avg_precision_5": 0.35,
+          "avg_latency_ms": 349.31559562683105,
+          "avg_tokens": 2315.6,
+          "total_tokens": 11578,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.6666666666666667,
+              "avg_ndcg_5": 0.7,
+              "avg_hit_rate_5": 0.8,
+              "count": 5
+            }
+          },
+          "total_queries": 5
+        }
+      },
+      "threshold_0.88": {
+        "similarity_threshold": 0.88,
+        "summary": {
+          "mrr": 0.6666666666666667,
+          "avg_ndcg_5": 0.7,
+          "avg_hit_rate_1": 0.6,
+          "avg_hit_rate_5": 0.8,
+          "avg_precision_5": 0.35,
+          "avg_latency_ms": 329.302978515625,
+          "avg_tokens": 2268.8,
+          "total_tokens": 11344,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.6666666666666667,
+              "avg_ndcg_5": 0.7,
+              "avg_hit_rate_5": 0.8,
+              "count": 5
+            }
+          },
+          "total_queries": 5
+        }
+      },
+      "threshold_0.9": {
+        "similarity_threshold": 0.9,
+        "summary": {
+          "mrr": 0.6666666666666667,
+          "avg_ndcg_5": 0.7,
+          "avg_hit_rate_1": 0.6,
+          "avg_hit_rate_5": 0.8,
+          "avg_precision_5": 0.35,
+          "avg_latency_ms": 326.3936996459961,
+          "avg_tokens": 2069.4,
+          "total_tokens": 10347,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.6666666666666667,
+              "avg_ndcg_5": 0.7,
+              "avg_hit_rate_5": 0.8,
+              "count": 5
+            }
+          },
+          "total_queries": 5
+        }
+      },
+      "threshold_0.92": {
+        "similarity_threshold": 0.92,
+        "summary": {
+          "mrr": 0.6666666666666667,
+          "avg_ndcg_5": 0.7,
+          "avg_hit_rate_1": 0.6,
+          "avg_hit_rate_5": 0.8,
+          "avg_precision_5": 0.42000000000000004,
+          "avg_latency_ms": 334.36999320983887,
+          "avg_tokens": 1672.6,
+          "total_tokens": 8363,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.6666666666666667,
+              "avg_ndcg_5": 0.7,
+              "avg_hit_rate_5": 0.8,
+              "count": 5
+            }
+          },
+          "total_queries": 5
+        }
+      },
+      "threshold_0.95": {
+        "similarity_threshold": 0.95,
+        "summary": {
+          "mrr": 0.65,
+          "avg_ndcg_5": 0.7,
+          "avg_hit_rate_1": 0.6,
+          "avg_hit_rate_5": 0.8,
+          "avg_precision_5": 0.41,
+          "avg_latency_ms": 368.84379386901855,
+          "avg_tokens": 1165.2,
+          "total_tokens": 5826,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.65,
+              "avg_ndcg_5": 0.7,
+              "avg_hit_rate_5": 0.8,
+              "count": 5
+            }
+          },
+          "total_queries": 5
+        }
+      }
+    }
+  },
+  "borderline_only": {
+    "docs": 10,
+    "chunks": 75,
+    "query_set": "borderline",
+    "sweeps": {
+      "threshold_0.85": {
+        "similarity_threshold": 0.85,
+        "summary": {
+          "mrr": 0.5333333333333333,
+          "avg_ndcg_5": 0.5630929753571458,
+          "avg_hit_rate_1": 0.5,
+          "avg_hit_rate_5": 0.6,
+          "avg_precision_5": 0.23833333333333334,
+          "avg_latency_ms": 462.2762203216553,
+          "avg_tokens": 2975.0,
+          "total_tokens": 29750,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.48148148148148145,
+              "avg_ndcg_5": 0.5145477503968287,
+              "avg_hit_rate_5": 0.5555555555555556,
+              "count": 9
+            },
+            "lexical": {
+              "mrr": 1.0,
+              "avg_ndcg_5": 1.0,
+              "avg_hit_rate_5": 1.0,
+              "count": 1
+            }
+          },
+          "total_queries": 10
+        }
+      },
+      "threshold_0.88": {
+        "similarity_threshold": 0.88,
+        "summary": {
+          "mrr": 0.5333333333333333,
+          "avg_ndcg_5": 0.5630929753571458,
+          "avg_hit_rate_1": 0.5,
+          "avg_hit_rate_5": 0.6,
+          "avg_precision_5": 0.22999999999999998,
+          "avg_latency_ms": 409.75990295410156,
+          "avg_tokens": 2831.9,
+          "total_tokens": 28319,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.48148148148148145,
+              "avg_ndcg_5": 0.5145477503968287,
+              "avg_hit_rate_5": 0.5555555555555556,
+              "count": 9
+            },
+            "lexical": {
+              "mrr": 1.0,
+              "avg_ndcg_5": 1.0,
+              "avg_hit_rate_5": 1.0,
+              "count": 1
+            }
+          },
+          "total_queries": 10
+        }
+      },
+      "threshold_0.9": {
+        "similarity_threshold": 0.9,
+        "summary": {
+          "mrr": 0.5333333333333333,
+          "avg_ndcg_5": 0.5630929753571458,
+          "avg_hit_rate_1": 0.5,
+          "avg_hit_rate_5": 0.6,
+          "avg_precision_5": 0.22999999999999998,
+          "avg_latency_ms": 389.44387435913086,
+          "avg_tokens": 2719.8,
+          "total_tokens": 27198,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.48148148148148145,
+              "avg_ndcg_5": 0.5145477503968287,
+              "avg_hit_rate_5": 0.5555555555555556,
+              "count": 9
+            },
+            "lexical": {
+              "mrr": 1.0,
+              "avg_ndcg_5": 1.0,
+              "avg_hit_rate_5": 1.0,
+              "count": 1
+            }
+          },
+          "total_queries": 10
+        }
+      },
+      "threshold_0.92": {
+        "similarity_threshold": 0.92,
+        "summary": {
+          "mrr": 0.5333333333333333,
+          "avg_ndcg_5": 0.5630929753571458,
+          "avg_hit_rate_1": 0.5,
+          "avg_hit_rate_5": 0.6,
+          "avg_precision_5": 0.265,
+          "avg_latency_ms": 408.97133350372314,
+          "avg_tokens": 2349.8,
+          "total_tokens": 23498,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.48148148148148145,
+              "avg_ndcg_5": 0.5145477503968287,
+              "avg_hit_rate_5": 0.5555555555555556,
+              "count": 9
+            },
+            "lexical": {
+              "mrr": 1.0,
+              "avg_ndcg_5": 1.0,
+              "avg_hit_rate_5": 1.0,
+              "count": 1
+            }
+          },
+          "total_queries": 10
+        }
+      },
+      "threshold_0.95": {
+        "similarity_threshold": 0.95,
+        "summary": {
+          "mrr": 0.5333333333333333,
+          "avg_ndcg_5": 0.5630929753571458,
+          "avg_hit_rate_1": 0.5,
+          "avg_hit_rate_5": 0.6,
+          "avg_precision_5": 0.265,
+          "avg_latency_ms": 391.14232063293457,
+          "avg_tokens": 1874.4,
+          "total_tokens": 18744,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.48148148148148145,
+              "avg_ndcg_5": 0.5145477503968287,
+              "avg_hit_rate_5": 0.5555555555555556,
+              "count": 9
+            },
+            "lexical": {
+              "mrr": 1.0,
+              "avg_ndcg_5": 1.0,
+              "avg_hit_rate_5": 1.0,
+              "count": 1
+            }
+          },
+          "total_queries": 10
+        }
+      }
+    }
+  },
+  "mixed_clean_queries": {
+    "docs": 99,
+    "chunks": 2934,
+    "query_set": "clean",
+    "sweeps": {
+      "threshold_0.85": {
+        "similarity_threshold": 0.85,
+        "summary": {
+          "mrr": 0.6666666666666667,
+          "avg_ndcg_5": 0.7,
+          "avg_hit_rate_1": 0.6,
+          "avg_hit_rate_5": 0.8,
+          "avg_precision_5": 0.35,
+          "avg_latency_ms": 342.12183952331543,
+          "avg_tokens": 2373.2,
+          "total_tokens": 11866,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.6666666666666667,
+              "avg_ndcg_5": 0.7,
+              "avg_hit_rate_5": 0.8,
+              "count": 5
+            }
+          },
+          "total_queries": 5
+        }
+      },
+      "threshold_0.88": {
+        "similarity_threshold": 0.88,
+        "summary": {
+          "mrr": 0.6666666666666667,
+          "avg_ndcg_5": 0.7,
+          "avg_hit_rate_1": 0.6,
+          "avg_hit_rate_5": 0.8,
+          "avg_precision_5": 0.35,
+          "avg_latency_ms": 332.76381492614746,
+          "avg_tokens": 2339.0,
+          "total_tokens": 11695,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.6666666666666667,
+              "avg_ndcg_5": 0.7,
+              "avg_hit_rate_5": 0.8,
+              "count": 5
+            }
+          },
+          "total_queries": 5
+        }
+      },
+      "threshold_0.9": {
+        "similarity_threshold": 0.9,
+        "summary": {
+          "mrr": 0.6666666666666667,
+          "avg_ndcg_5": 0.7,
+          "avg_hit_rate_1": 0.6,
+          "avg_hit_rate_5": 0.8,
+          "avg_precision_5": 0.35,
+          "avg_latency_ms": 340.46831130981445,
+          "avg_tokens": 2163.2,
+          "total_tokens": 10816,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.6666666666666667,
+              "avg_ndcg_5": 0.7,
+              "avg_hit_rate_5": 0.8,
+              "count": 5
+            }
+          },
+          "total_queries": 5
+        }
+      },
+      "threshold_0.92": {
+        "similarity_threshold": 0.92,
+        "summary": {
+          "mrr": 0.65,
+          "avg_ndcg_5": 0.7,
+          "avg_hit_rate_1": 0.6,
+          "avg_hit_rate_5": 0.8,
+          "avg_precision_5": 0.41,
+          "avg_latency_ms": 339.25395011901855,
+          "avg_tokens": 1765.2,
+          "total_tokens": 8826,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.65,
+              "avg_ndcg_5": 0.7,
+              "avg_hit_rate_5": 0.8,
+              "count": 5
+            }
+          },
+          "total_queries": 5
+        }
+      },
+      "threshold_0.95": {
+        "similarity_threshold": 0.95,
+        "summary": {
+          "mrr": 0.65,
+          "avg_ndcg_5": 0.7,
+          "avg_hit_rate_1": 0.6,
+          "avg_hit_rate_5": 0.8,
+          "avg_precision_5": 0.41,
+          "avg_latency_ms": 335.2755069732666,
+          "avg_tokens": 1246.8,
+          "total_tokens": 6234,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.65,
+              "avg_ndcg_5": 0.7,
+              "avg_hit_rate_5": 0.8,
+              "count": 5
+            }
+          },
+          "total_queries": 5
+        }
+      }
+    }
+  },
+  "mixed_borderline_queries": {
+    "docs": 99,
+    "chunks": 2934,
+    "query_set": "borderline",
+    "sweeps": {
+      "threshold_0.85": {
+        "similarity_threshold": 0.85,
+        "summary": {
+          "mrr": 0.5333333333333333,
+          "avg_ndcg_5": 0.5630929753571458,
+          "avg_hit_rate_1": 0.5,
+          "avg_hit_rate_5": 0.6,
+          "avg_precision_5": 0.23833333333333334,
+          "avg_latency_ms": 393.7840223312378,
+          "avg_tokens": 2975.0,
+          "total_tokens": 29750,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.48148148148148145,
+              "avg_ndcg_5": 0.5145477503968287,
+              "avg_hit_rate_5": 0.5555555555555556,
+              "count": 9
+            },
+            "lexical": {
+              "mrr": 1.0,
+              "avg_ndcg_5": 1.0,
+              "avg_hit_rate_5": 1.0,
+              "count": 1
+            }
+          },
+          "total_queries": 10
+        }
+      },
+      "threshold_0.88": {
+        "similarity_threshold": 0.88,
+        "summary": {
+          "mrr": 0.5333333333333333,
+          "avg_ndcg_5": 0.5630929753571458,
+          "avg_hit_rate_1": 0.5,
+          "avg_hit_rate_5": 0.6,
+          "avg_precision_5": 0.22999999999999998,
+          "avg_latency_ms": 384.50262546539307,
+          "avg_tokens": 2831.9,
+          "total_tokens": 28319,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.48148148148148145,
+              "avg_ndcg_5": 0.5145477503968287,
+              "avg_hit_rate_5": 0.5555555555555556,
+              "count": 9
+            },
+            "lexical": {
+              "mrr": 1.0,
+              "avg_ndcg_5": 1.0,
+              "avg_hit_rate_5": 1.0,
+              "count": 1
+            }
+          },
+          "total_queries": 10
+        }
+      },
+      "threshold_0.9": {
+        "similarity_threshold": 0.9,
+        "summary": {
+          "mrr": 0.5333333333333333,
+          "avg_ndcg_5": 0.5630929753571458,
+          "avg_hit_rate_1": 0.5,
+          "avg_hit_rate_5": 0.6,
+          "avg_precision_5": 0.22999999999999998,
+          "avg_latency_ms": 400.7763862609863,
+          "avg_tokens": 2719.8,
+          "total_tokens": 27198,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.48148148148148145,
+              "avg_ndcg_5": 0.5145477503968287,
+              "avg_hit_rate_5": 0.5555555555555556,
+              "count": 9
+            },
+            "lexical": {
+              "mrr": 1.0,
+              "avg_ndcg_5": 1.0,
+              "avg_hit_rate_5": 1.0,
+              "count": 1
+            }
+          },
+          "total_queries": 10
+        }
+      },
+      "threshold_0.92": {
+        "similarity_threshold": 0.92,
+        "summary": {
+          "mrr": 0.5333333333333333,
+          "avg_ndcg_5": 0.5630929753571458,
+          "avg_hit_rate_1": 0.5,
+          "avg_hit_rate_5": 0.6,
+          "avg_precision_5": 0.265,
+          "avg_latency_ms": 388.5669231414795,
+          "avg_tokens": 2349.8,
+          "total_tokens": 23498,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.48148148148148145,
+              "avg_ndcg_5": 0.5145477503968287,
+              "avg_hit_rate_5": 0.5555555555555556,
+              "count": 9
+            },
+            "lexical": {
+              "mrr": 1.0,
+              "avg_ndcg_5": 1.0,
+              "avg_hit_rate_5": 1.0,
+              "count": 1
+            }
+          },
+          "total_queries": 10
+        }
+      },
+      "threshold_0.95": {
+        "similarity_threshold": 0.95,
+        "summary": {
+          "mrr": 0.5333333333333333,
+          "avg_ndcg_5": 0.5630929753571458,
+          "avg_hit_rate_1": 0.5,
+          "avg_hit_rate_5": 0.6,
+          "avg_precision_5": 0.265,
+          "avg_latency_ms": 384.77025032043457,
+          "avg_tokens": 1874.4,
+          "total_tokens": 18744,
+          "by_category": {
+            "semantic": {
+              "mrr": 0.48148148148148145,
+              "avg_ndcg_5": 0.5145477503968287,
+              "avg_hit_rate_5": 0.5555555555555556,
+              "count": 9
+            },
+            "lexical": {
+              "mrr": 1.0,
+              "avg_ndcg_5": 1.0,
+              "avg_hit_rate_5": 1.0,
+              "count": 1
+            }
+          },
+          "total_queries": 10
+        }
+      }
+    }
+  }
+}

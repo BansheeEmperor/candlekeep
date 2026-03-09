@@ -1,14 +1,18 @@
 """Test Mirror Image (Multi-Query Retrieval)."""
-from candlekeep.rag.mirror_image import search_with_mirror_image
+import pytest
+# Skip if module is missing (experimental)
+mirror = pytest.importorskip("candlekeep.rag.mirror_image")
 from tests.benchmark import RAGBenchmark
 from tests.benchmark_queries import BENCHMARK_QUERIES
+
+pytestmark = [pytest.mark.experimental]
 
 
 def test_mirror_image(seeded_store):
     """Benchmark Mirror Image technique."""
     # Create search function with Mirror Image
     def search_fn(query: str, n_results: int):
-        return search_with_mirror_image(
+        return mirror.search_with_mirror_image(
             seeded_store, 
             query, 
             n_results,

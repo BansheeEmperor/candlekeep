@@ -1,0 +1,928 @@
+{
+  "metadata": {
+    "name": "Centurion Set",
+    "version": "1.0",
+    "total_queries": 108,
+    "categories": [
+      "lexical",
+      "semantic",
+      "adversarial"
+    ],
+    "reference_answers": true,
+    "generator": "Bedrock Claude 3 Haiku"
+  },
+  "queries": [
+    {
+      "query": "What is semantic search?",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/sample_docs/semantic-search.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Semantic search is a method of information retrieval that goes beyond simple keyword matching to understand the meaning and intent behind queries. It involves techniques like query preprocessing to handle negation and expand queries with synonyms, as well as ranking and reranking approaches that consider metadata matches, recency, popularity, and other relevance signals. The goal of semantic search is to improve the accuracy and relevance of search results."
+    },
+    {
+      "query": "vector database",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/sample_docs/vector-databases.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "A vector database is a type of database that stores and retrieves data based on semantic similarity rather than exact keyword matches. Vector databases use embeddings, which are numerical representations of text that capture semantic meaning, to represent documents as high-dimensional vectors. This allows the database to perform similarity search, where it finds documents with similar meanings by calculating distances between vectors in high-dimensional space. Common use cases for vector databases include semantic search engines, recommendation systems, question answering systems, and document clustering and classification."
+    },
+    {
+      "query": "REST API design",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/sample_docs/api-design.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "REST API design follows several key principles:\n\n- Stateless: Each request contains all the information needed to process it, without relying on server-side state.\n- Resource-based: URLs represent resources (nouns) rather than actions (verbs).\n- HTTP methods: Standard HTTP methods like GET, POST, PUT, and DELETE are used to perform CRUD operations on resources.\n- Standard status codes: APIs return consistent HTTP status codes like 200 OK, 404 Not Found, and 500 Server Error."
+    },
+    {
+      "query": "database normalization",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/sample_docs/database-design.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Database normalization is the process of organizing data in a database to reduce redundancy and improve data integrity. The key principles of database normalization are:\n\n1. First Normal Form (1NF): Ensure that all columns contain atomic values (no arrays or lists) and each column has a unique name.\n2. Second Normal Form (2NF): Ensure that all non-key columns are fully dependent on the primary key, with no partial dependencies.\n3. Third Normal Form (3NF): Ensure that non-key columns do not have transitive dependencies, meaning they do not depend on other non-key columns.\n\nAdhering to these normalization principles helps to create a well-structured, efficient, and maintainable database schema."
+    },
+    {
+      "query": "HTTP/2 vs HTTP/3 performance",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/http2-http3.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "HTTP/2 offers several performance improvements over HTTP/1.1, including:\n\nMultiplexing: HTTP/2 allows multiple requests and responses to be in flight simultaneously over a single TCP connection, reducing latency compared to the serial request-response model of HTTP/1.1.\n\nServer Push: HTTP/2 enables the server to proactively send resources to the client before they are requested, further improving performance by reducing round trips.\n\nHeader Compression: HTTP/2 compresses request and response headers, reducing the amount of data that needs to be transmitted.\n\nIn contrast, HTTP/3 is built on top of the QUIC protocol, which uses UDP instead of TCP. This allows for faster connection establishment and recovery from packet loss, potentially improving performance in certain network conditions compared to HTTP/2."
+    },
+    {
+      "query": "PostgreSQL 15 internals",
+      "difficulty": "hard",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/postgresql-internals.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "PostgreSQL 15 uses a Multiversion Concurrency Control (MVCC) system to manage concurrent transactions and ensure data consistency. MVCC allows multiple transactions to access the same data simultaneously without causing conflicts or data corruption. PostgreSQL also uses a Write-Ahead Logging (WAL) system to ensure data durability and consistency, where changes are first recorded in the WAL before being applied to the database."
+    },
+    {
+      "query": "Apache Kafka 3.0 features",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/apache-kafka.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "Apache Kafka 3.0 introduced several new features:\n\n1. Improved Kafka Streams API: Kafka Streams 3.0 includes enhancements to the Kafka Streams API, such as improved support for stateful processing and new operators for data transformation and aggregation.\n\n2. Enhanced Kafka Connect: Kafka Connect 3.0 includes improvements to the Kafka Connect framework, including better support for data transformation and improved error handling.\n\n3. Expanded Kafka Security: Kafka 3.0 includes expanded security features, such as support for SASL/SCRAM authentication and improved integration with external authentication providers.\n\n4. Improved Kafka Monitoring: Kafka 3.0 includes enhancements to the Kafka monitoring and metrics system, including new metrics and improved visualization tools."
+    },
+    {
+      "query": "TLS 1.3 handshake process",
+      "difficulty": "hard",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/tls-ssl.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "The TLS 1.3 handshake process involves the following key steps:\n\n1. Client Hello: The client sends a message to the server that includes the TLS version, a list of supported cipher suites, compression methods, and a random value.\n\n2. Server Hello: The server responds with a message that includes the selected TLS version, cipher suite, compression method, and a random value.\n\n3. Server Certificate: The server sends its X.509 certificate chain to the client, including the server's public key certificate, any intermediate CA certificates, and the root CA certificate.\n\n4. Client Key Exchange: The client generates a pre-master secret and encrypts it with the server's public key from the certificate, then sends this encrypted pre-master secret to the server.\n\n5. Change Cipher Spec: Both the client and server send messages to indicate that all future communications will be encrypted using the negotiated cipher suite and keys.\n\n6. Finished: The client and server exchange encrypted \"Finished\" messages to confirm the successful completion of the handshake."
+    },
+    {
+      "query": "Kubernetes v1.24 removal of dockershim",
+      "difficulty": "hard",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/kubernetes-architecture.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "Kubernetes v1.24 will remove the dockershim, which was a component that provided compatibility between Kubernetes and the Docker container runtime. With this removal, Kubernetes will no longer support the Docker runtime directly, and users will need to use alternative container runtimes like containerd or CRI-O. This change is part of Kubernetes' effort to decouple the container runtime from the core Kubernetes components, allowing for more flexibility and innovation in the container runtime ecosystem."
+    },
+    {
+      "query": "gRPC over HTTP/2",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/grpc-protocol.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "gRPC is a modern open-source remote procedure call (RPC) framework that uses HTTP/2 as the underlying transport protocol. The key features of gRPC over HTTP/2 are:\n\n1. Efficient binary serialization using Protocol Buffers (protobuf) for data exchange.\n2. Bidirectional streaming support, allowing for efficient real-time communication between clients and servers.\n3. Automatic generation of client and server stubs from protobuf service definitions, simplifying application development.\n4. Support for deadlines and cancellation, enabling robust and responsive distributed systems."
+    },
+    {
+      "query": "Redis 7.0 Multi-part AOF",
+      "difficulty": "hard",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/redis-data-structures.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "Redis 7.0 introduced a new feature called \"Multi-part AOF\", which enhances the Append-Only File (AOF) persistence model. The Multi-part AOF allows the AOF file to be split into multiple files, improving the performance and reliability of the AOF persistence. This feature enables more efficient handling of large AOF files, as the Redis server can load and rewrite the AOF in a more scalable manner."
+    },
+    {
+      "query": "Elasticsearch 8.x security changes",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/elasticsearch-basics.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "Elasticsearch 8.x introduced several security changes:\n\n1. Mandatory TLS encryption: Elasticsearch 8.x requires TLS encryption for all HTTP and transport connections by default. This enhances the security of data transmission.\n\n2. Removal of basic authentication: Elasticsearch 8.x no longer supports basic authentication. Users must now authenticate using token-based or PKI-based authentication methods.\n\n3. Deprecation of the `elasticsearch-users` file: The `elasticsearch-users` file for managing user credentials has been deprecated in favor of the new Elasticsearch security plugin."
+    },
+    {
+      "query": "OWASP Top 10 2021",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/owasp-top-10.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "The OWASP Top 10 2021 is a list of the most critical security risks to web applications, as identified by the Open Web Application Security Project (OWASP). The top vulnerabilities include injection flaws (such as SQL injection and OS command injection), broken authentication, cross-site scripting (XSS), security misconfiguration, and insecure deserialization. To prevent these vulnerabilities, the document recommends techniques like input validation, using parameterized queries, applying the principle of least privilege, and leveraging web application firewalls and dynamic query builders."
+    },
+    {
+      "query": "AVX-512 vector instructions",
+      "difficulty": "hard",
+      "expected_sources": [
+        "docs/HARDWARE_ACCEL.md"
+      ],
+      "category": "lexical",
+      "reference_answer": ""
+    },
+    {
+      "query": "TCP/IP layer 4",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/tcp-ip-fundamentals.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "The Transport Layer in the TCP/IP protocol stack corresponds to layer 4 of the OSI model. This layer is responsible for ensuring complete data transfer between applications, including segmentation, flow control, and error correction. The two main protocols at the Transport Layer are TCP (Transmission Control Protocol) and UDP (User Datagram Protocol). TCP provides reliable, connection-oriented data transfer, while UDP offers unreliable, connectionless data transfer."
+    },
+    {
+      "query": "IPv6 address format",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/cloud-networking.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "An IPv6 address is a 128-bit address used to identify devices on an IPv6 network. The format of an IPv6 address consists of eight groups of four hexadecimal digits separated by colons, such as `2001:0db8:85a3:0000:0000:8a2e:0370:7334`. The first 64 bits represent the network prefix, and the last 64 bits represent the interface identifier, which is typically derived from the device's MAC address."
+    },
+    {
+      "query": "UUID v4 generation",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/data-serialization.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "UUID v4 is a type of Universally Unique Identifier (UUID) that is randomly generated. The UUID v4 specification defines a method for generating UUIDs from random or pseudo-random numbers. This method produces a 128-bit number that is very likely to be unique across space and time. UUIDs generated using this method do not require a central registration authority and can be generated without consultation with that authority."
+    },
+    {
+      "query": "0xEF hex code",
+      "difficulty": "hard",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/cryptography-basics.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "The hexadecimal code 0xEF does not have a specific meaning in the context of cryptography. Hexadecimal codes are used to represent binary data, but 0xEF is not a commonly used value in cryptographic algorithms or standards. The source text does not mention the hexadecimal code 0xEF or provide any information about its meaning or usage in cryptography."
+    },
+    {
+      "query": "Python 3.10 match statement",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/functional-programming.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "The Python 3.10 match statement is a new pattern matching feature introduced in Python 3.10. It allows you to match a value against a series of patterns, similar to a switch statement in other programming languages. The match statement provides a concise and expressive way to handle complex data structures and control flow in your Python code."
+    },
+    {
+      "query": "ISO 27001 compliance",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/compliance-frameworks.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "ISO 27001 is an international standard that specifies the requirements for an information security management system (ISMS). To achieve ISO 27001 compliance, organizations must implement a comprehensive set of security controls across 14 domains, including information security policies, access control, cryptography, physical security, operations security, and incident management. The standard requires organizations to conduct regular risk assessments, implement appropriate security measures, and undergo third-party audits to verify the effectiveness of their ISMS."
+    },
+    {
+      "query": "SOC2 Type II audit",
+      "difficulty": "hard",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/compliance-frameworks.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "A SOC 2 Type II audit evaluates the design and operating effectiveness of an organization's controls related to security, availability, processing integrity, confidentiality, and privacy of data over a period of time, typically 6-12 months. To achieve SOC 2 compliance, organizations must implement controls across these 5 trust principles, including access management, logging and monitoring, change management, vulnerability management, incident response, backup and disaster recovery, risk assessment, vendor management, and security awareness training."
+    },
+    {
+      "query": "BGE-small-en-v1.5 model",
+      "difficulty": "medium",
+      "expected_sources": [
+        "docs/ARCHITECTURE.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "The bge-small-en-v1.5 model is the embedding model used by the Candlekeep RAG (Retrieval-Augmented Generation) knowledge base server. Candlekeep uses this model as part of its \"Arcane Recall\" component within the RAG pipeline, which is responsible for the retrieval of relevant information from the underlying document database."
+    },
+    {
+      "query": "ChromaDB v0.4.0",
+      "difficulty": "medium",
+      "expected_sources": [
+        "docs/DESIGN.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "ChromaDB v0.4.0 is not mentioned in the given source document. The document discusses the design of the Candlekeep system, which provides a RAG knowledge base that an AI agent can query. It describes the design goals and decisions, such as having three search paths (simple, hybrid, and precise), having the agent decompose queries rather than the search tool, and using \"Arcane Recall\" to return adjacent chunks around each match. However, there is no information about the specific ChromaDB version 0.4.0."
+    },
+    {
+      "query": "MS-MARCO MiniLM L-6-v2",
+      "difficulty": "hard",
+      "expected_sources": [
+        "docs/RESEARCH_DIARY.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "The MS-MARCO MiniLM L-6-v2 is a technique that is part of the \"Recommended Stack\" for the RAG (Retrieval Augmented Generation) system optimization project described in the source document. Specifically, the document states that the \"Tier 1 (Always Use)\" recommendation is to use the \"Bardic Knowledge\" and \"Arcane Recall\" techniques, which together achieve a precision of 97.3%, content quality of 88.7%, and latency of 37ms. The \"Tier 2 (Conditional)\" recommendation is to use the \"Flurry of Blows\" technique for complex queries, if the additional latency of around 1100ms is acceptable."
+    },
+    {
+      "query": "JWT RS256 signing",
+      "difficulty": "hard",
+      "expected_sources": [
+        "tests/fixtures/sample_docs/authentication.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "JWT (JSON Web Tokens) use the RS256 algorithm for signing. This is an asymmetric cryptographic algorithm that uses a private key to sign the token and a public key to verify it. The JWT structure consists of a header, payload, and signature. The header specifies the algorithm used, the payload contains the claims, and the signature is generated using the private key to ensure the integrity of the token. This allows for stateless authentication, where the server does not need to store session information."
+    },
+    {
+      "query": "OAuth 2.0 PKCE flow",
+      "difficulty": "hard",
+      "expected_sources": [
+        "tests/fixtures/sample_docs/authentication.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "The OAuth 2.0 PKCE (Proof Key for Code Exchange) flow is a security enhancement to the standard OAuth 2.0 authorization code grant flow. It is designed to protect against authorization code interception attacks, particularly in public clients like mobile apps or single-page applications (SPAs).\n\nIn the PKCE flow, the client application generates a cryptographically random \"code verifier\" value and derives a \"code challenge\" from it. The client sends the code challenge to the authorization server when requesting an authorization code. When the client later exchanges the authorization code for an access token, it also sends the original code verifier. The authorization server verifies that the code verifier matches the previously sent code challenge, ensuring that the token exchange is performed by the same client that initiated the authorization request."
+    },
+    {
+      "query": "RAID 6 configurations",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/database-backup-recovery.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "RAID 6 configurations provide data redundancy by using two independent parity blocks. This allows the system to continue operating even if two disks fail simultaneously. RAID 6 can tolerate the loss of any two disks in the array without data loss, making it a robust storage solution for mission-critical applications."
+    },
+    {
+      "query": "SQL-92 standards",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/sql-query-optimization.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "SQL-92 refers to the SQL standard published in 1992, which was the third major revision of the SQL language. This standard introduced several key features, including:\n\n- Support for outer joins, which allow for the inclusion of rows that do not have matching values in the joined tables.\n- Improved support for subqueries, including the ability to use subqueries in the SELECT, FROM, and WHERE clauses.\n- Standardized syntax for common SQL operations, such as CREATE TABLE, ALTER TABLE, and DROP TABLE.\n- Improved support for data types, including the introduction of the TIMESTAMP data type.\n\nThe SQL-92 standard laid the foundation for the modern SQL language and is still widely used today, even as newer versions of the standard have been published."
+    },
+    {
+      "query": "POSIX thread management",
+      "difficulty": "hard",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/linux-process-management.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "POSIX thread management in Linux is handled through the use of the `fork()` and `exec()` system calls. The `fork()` system call creates a new process, which is a copy of the calling process, and the `exec()` system call replaces the current process image with a new process image. Processes in Linux can be in one of several states, including running, waiting, stopped, and zombie. The current state of processes can be viewed using the `ps` command."
+    },
+    {
+      "query": "systemd unit files",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/systemd-services.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "Systemd unit files are configuration files used by the systemd init system to manage services, sockets, mounts, devices, and other system resources on Linux. Unit files are typically located in the /etc/systemd/system/ and /usr/lib/systemd/system/ directories, and have extensions like .service, .socket, .target, or .timer depending on the type of unit.\n\nUnit files define how a particular service or resource should be managed, including the command to start/stop the service, dependencies on other units, and whether the service should be automatically restarted. Systemd also uses \"targets\" to group related services and resources together, similar to the runlevels used in older init systems."
+    },
+    {
+      "query": "EXT4 filesystem limits",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/linux-filesystem.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "The ext4 filesystem has the following limits:\n\n- Maximum file size: 16TB\n- Maximum filesystem size: 1EB (exabyte)\n- Maximum number of subdirectories within a directory: 64,000\n- Maximum number of hard links to a file: 65,000\n\nThese limits are defined by the ext4 filesystem design and cannot be changed after the filesystem is created."
+    },
+    {
+      "query": "YAML 1.2 syntax",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/configuration-management.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "YAML 1.2 syntax is the version of the YAML data serialization format used by Ansible. Ansible Playbooks, which define the configuration management tasks to be executed, are written in YAML 1.2 format. The YAML syntax used in Ansible Playbooks follows a specific structure, including sections for hosts, tasks, handlers, variables, and templates. Ansible Playbooks are executed using the `ansible-playbook` command."
+    },
+    {
+      "query": "Docker Compose v2",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/container-fundamentals.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "Docker Compose v2 is a newer version of the Docker Compose tool, which is used to define and run multi-container Docker applications. The key components that enable container technology, as described in the source text, are namespaces, control groups (cgroups), and union file systems (OverlayFS). These Linux kernel features provide isolation, resource management, and efficient layering of file systems for containers."
+    },
+    {
+      "query": "AWS IAM policies",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/api-security.md"
+      ],
+      "category": "lexical",
+      "reference_answer": "AWS IAM (Identity and Access Management) policies are JSON-based documents that define the permissions for AWS resources. These policies specify the actions that are allowed or denied on specific resources, such as Amazon S3 buckets, Amazon EC2 instances, or AWS Lambda functions. IAM policies can be attached to IAM users, groups, or roles to control their access to AWS services and resources. They are a fundamental component of AWS security and access management, allowing organizations to implement the principle of least privilege and grant only the necessary permissions to their AWS entities."
+    },
+    {
+      "query": "how to implement chaos engineering",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/chaos-engineering.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "To implement chaos engineering, you can follow these key principles and techniques:\n\n1. Conduct hypothesis-driven experiments to test the system's resilience under turbulent conditions. Clearly define a testable hypothesis about the system's behavior.\n\n2. Run chaos experiments continuously, not just during initial development or before major releases. Resilience must be an ongoing concern.\n\n3. Use controlled environments that closely mimic production to ensure representative results. Start with small, low-impact experiments and gradually increase the blast radius.\n\n4. Inject faults like network latency, resource exhaustion, service failures, and dependency failures to observe how the system responds. Tools like the Chaos Toolkit can help automate these fault injection experiments."
+    },
+    {
+      "query": "benefits of event-driven architecture",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/event-driven-architecture.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "The key benefits of event-driven architecture include:\n\n1. Loose coupling: Components are decoupled, allowing for easier maintenance, independent scaling, and more flexibility.\n2. Asynchronous communication: Events can be processed asynchronously, improving responsiveness and scalability.\n3. Scalability: Individual components can scale independently due to the decoupled nature of the architecture.\n4. Fault tolerance: If one component fails, the rest of the system can continue to function, improving overall resilience.\n5. Audit trail: The event store provides a comprehensive record of all actions and state changes in the system."
+    },
+    {
+      "query": "serverless vs containers",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/serverless-architecture.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Serverless architecture and containers are two different approaches to cloud computing. Serverless architecture, exemplified by AWS Lambda, is a cloud computing execution model where the cloud provider is responsible for executing code and managing the underlying infrastructure. In this model, developers focus on writing code without worrying about provisioning or managing servers. Containers, on the other hand, are a way to package and run applications in a consistent, isolated environment, allowing for portability and scalability across different computing environments."
+    },
+    {
+      "query": "microservices data consistency",
+      "difficulty": "hard",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/microservices.md"
+      ],
+      "category": "semantic",
+      "reference_answer": ""
+    },
+    {
+      "query": "data lakehouse architecture",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/data-lake-architecture.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "The data lakehouse architecture combines the flexibility and scalability of a data lake with the structured data management capabilities of a data warehouse. Key components include:\n\n1. Ingestion Layer: Responsible for bringing data into the data lake from various sources, using tools like Apache Kafka, Apache Spark Streaming, AWS Kinesis, and Azure Event Hubs.\n\n2. Storage Layer: The foundation of the data lake, where raw, unprocessed data is stored using object storage services like Amazon S3, Azure Blob Storage, or Google Cloud Storage.\n\n3. Processing Layer: Responsible for transforming and enriching the raw data stored in the data lake, using tools like Apache Spark, Apache Flink, AWS Glue, or Azure Databricks for batch and stream processing."
+    },
+    {
+      "query": "zero trust security principles",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/zero-trust-architecture.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "The core principles of zero trust security include:\n\n1. Verify Explicitly: All users, devices, and applications must be continuously authenticated and authorized, regardless of network location.\n2. Use Least Privilege Access: Granular access policies should be defined to grant the minimum necessary privileges for each user, device, or application to perform their required functions.\n3. Assume Breach: Organizations should assume that a breach has already occurred and design security controls accordingly, focusing on data protection and rapid response.\n4. Verify and Monitor Everywhere: All network traffic, user activities, and system events should be continuously monitored and validated, both on-premises and in the cloud.\n\nImplementing a zero trust architecture involves key components such as identity verification and access control, micro-segmentation and least privilege, and continuous validation and monitoring."
+    },
+    {
+      "query": "continuous integration best practices",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/ci-cd-pipelines.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "The key continuous integration best practices based on the source text are:\n\n1. Establish a clear CI/CD pipeline with well-defined stages, including source code management, build, test, static code analysis, artifact storage, and deployment.\n2. Automate the pipeline stages using tools like Jenkins, with specific steps for compiling the source code, running tests, analyzing the code, storing artifacts, and deploying the application.\n3. Manage the generated artifacts, such as compiled binaries, Docker images, and test reports, by storing them in a repository for later use.\n4. Implement parallel execution of pipeline stages to improve efficiency and reduce the overall build time.\n5. Leverage caching mechanisms to speed up the pipeline by reusing previously built artifacts or test results.\n6. Adopt deployment strategies like blue-green, canary, or rolling deployments to ensure reliable and safe application updates."
+    },
+    {
+      "query": "database sharding strategies",
+      "difficulty": "hard",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/database-sharding.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Database sharding strategies refer to the different approaches used to horizontally partition data across multiple database instances, or \"shards\", to improve scalability and performance. The three main sharding strategies are:\n\n1. Hash-based sharding: This uses a hash function to determine the shard where a particular data item is stored, based on a specific column or set of columns. It results in even data distribution but can make cross-shard queries more complex.\n\n2. Range-based sharding: This partitions data based on a range of values in a specific column or set of columns, often used when data can be naturally divided into logical ranges. It can enable more efficient cross-shard queries but may lead to uneven data distribution.\n\n3. Directory-based sharding: This uses a central directory to map data to specific shards, allowing more flexibility in shard management but introducing additional complexity and a potential single point of failure."
+    },
+    {
+      "query": "load balancing algorithms",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/load-balancing.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "The most common load balancing algorithms are:\n\nRound-robin: Sends each new connection to the next server in the list, cycling through the entire pool to ensure each server receives an equal number of connections.\n\nLeast connections: Sends each new connection to the server with the fewest number of active connections, helping to balance the load more evenly across backend servers.\n\nWeighted: Allows assigning a weight value to each backend server, so servers with a higher weight receive more traffic than those with a lower weight, useful for servers with different capacities.\n\nIP hash: Uses a hash of the client's IP address to determine which server the connection should be sent to, maintaining session affinity.\n\nLoad balancers can operate at different layers of the OSI model, with layer 4 load balancers making decisions based on transport layer information like IP addresses and ports, while layer 7 load balancers have more visibility into the application layer."
+    },
+    {
+      "query": "content delivery network optimization",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/cdn-architecture.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "A Content Delivery Network (CDN) is designed to efficiently deliver content to users around the world. The key components of a CDN architecture include edge servers, which are strategically placed to minimize the distance and latency between the user and the content, and an origin server, which is the primary source of the content. Load balancers direct user requests to the appropriate edge server, and a cache management system manages the content stored on the edge servers. Edge caching is a fundamental aspect of CDN architecture, where content is stored on the edge servers closest to the end-users, allowing the CDN to serve content directly from the edge and reduce latency and load on the origin server."
+    },
+    {
+      "query": "service mesh advantages",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/service-mesh.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "The key advantages of a service mesh architecture include:\n\n1. Traffic management: A service mesh provides advanced traffic control features such as load balancing, circuit breaking, retries, and timeouts.\n\n2. Security: The service mesh can enable secure communication between services using mutual TLS (mTLS) for authentication and encryption.\n\n3. Observability: The service mesh collects telemetry data, including metrics, logs, and traces, to provide visibility into the health and performance of the mesh.\n\n4. Decoupling of application and infrastructure concerns: The service mesh architecture separates the application code from the infrastructure concerns, allowing developers to focus on building business logic while the service mesh handles cross-cutting concerns."
+    },
+    {
+      "query": "infrastructure as code tools",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/infrastructure-as-code.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Terraform is an open-source Infrastructure as Code (IaC) tool that allows you to define and provision your infrastructure in a declarative manner. It supports a wide range of cloud providers and on-premises resources. Terraform maintains the state of your infrastructure in a state file, which is typically stored in a backend, such as a local file, an S3 bucket, or a HashiCorp Consul backend. Terraform supports state locking to prevent multiple users or processes from modifying the state file at the same time, and state importing to add existing resources to the Terraform state."
+    },
+    {
+      "query": "monitoring vs observability",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/monitoring-observability.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Monitoring and observability are related but distinct concepts. Monitoring focuses on collecting and analyzing metrics, such as the RED (Rate, Errors, Duration) and USE (Utilization, Saturation, Errors) metrics, to track the health and performance of a system. Observability, on the other hand, is a broader concept that encompasses monitoring, as well as other techniques like distributed tracing and log aggregation, to provide a more comprehensive understanding of a system's behavior and enable faster issue resolution."
+    },
+    {
+      "query": "auto scaling in the cloud",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/auto-scaling.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Auto-scaling in the cloud refers to the ability of a system to automatically adjust its resource capacity based on actual load. There are several strategies for implementing auto-scaling, including:\n\n1. Target Tracking Scaling: This adjusts the capacity to maintain a target value for a specific metric, such as average CPU utilization, keeping the target metric as close to the specified value as possible.\n\n2. Step Scaling: This adjusts the capacity based on a set of scaling adjustments, known as step adjustments, which specify a metric value range and the corresponding adjustment to make to the current capacity.\n\n3. Predictive Scaling: This uses load forecasting to automatically scale the capacity ahead of predicted traffic changes, allowing the system to proactively scale resources to meet anticipated demand."
+    },
+    {
+      "query": "disaster recovery planning",
+      "difficulty": "hard",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/disaster-recovery.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Disaster recovery planning involves strategies to recover IT systems, data, and operations in the event of a disaster or major outage. The two key metrics are Recovery Point Objective (RPO), the maximum amount of data that can be lost, and Recovery Time Objective (RTO), the maximum time before normal operations must resume. A fundamental strategy is backup and restore, which involves regularly creating full or incremental backups of critical data and systems that can be used to restore operations. Backups can be stored on-site, off-site, or in the cloud, and the specific backup strategy should be designed to meet the organization's RPO and RTO requirements."
+    },
+    {
+      "query": "api gateway patterns",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/api-gateway-patterns.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "The API gateway design patterns described in the document include:\n\n1. Proxy Pattern: The API gateway forwards requests directly to the appropriate microservice without any additional processing. This is suitable for simple use cases.\n\n2. Aggregator Pattern: The API gateway sends individual requests to relevant services, aggregates the responses, and returns the combined result to the client. This is used when a client needs to retrieve data from multiple microservices.\n\n3. Translator Pattern: The API gateway is responsible for translating the client's request into the format expected by the microservice, and then translating the response back into the client's expected format. This is used when the client and microservice APIs have different data formats or protocols.\n\n4. Decomposer Pattern: The API gateway decomposes the client's request into individual service calls, executes them concurrently, and then composes the final response. This is used when a client request requires data from multiple microservices, but the client does not want to be responsible for orchestrating those requests."
+    },
+    {
+      "query": "cloud storage options",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/cloud-storage-options.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Amazon S3 is an object storage service that offers several storage classes for different data access patterns and durability requirements. S3 Standard is for frequently accessed data, S3 Intelligent-Tiering automatically moves data between access tiers, S3 Standard-IA and S3 One Zone-IA are for infrequently accessed data, and S3 Glacier and S3 Glacier Deep Archive are for long-term archival of rarely accessed data. S3 Lifecycle policies can be used to automatically transition objects between storage classes or delete objects based on age. S3 supports various access methods like GET/HEAD/PUT/DELETE, multi-part uploads, batch operations, and data querying with S3 Select and S3 Glacier Select."
+    },
+    {
+      "query": "data serialization formats",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/data-serialization.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Data serialization formats refer to the various ways of converting data structures or objects into a format that can be stored or transmitted, and then reconstructed later. Some popular data serialization formats include:\n\nJSON (JavaScript Object Notation): A lightweight, human-readable data interchange format that represents data as a collection of name/value pairs and ordered lists of values. It has a simple syntax, is language-independent, and is widely adopted, but can be verbose and has limited data types.\n\nProtobuf (Protocol Buffers): A binary serialization format developed by Google that is compact, fast, and language-neutral. It uses a schema definition language to define the structure of the data, enabling efficient schema evolution.\n\nAvro: A row-oriented data serialization system developed by Apache that provides rich data structures, a compact binary format, and dynamic typing. It supports schema evolution and is often used in big data and stream processing applications.\n\nParquet and ORC: Column-oriented file formats designed for efficient storage and querying of large datasets. They use compression and encoding techniques to achieve high performance and are commonly used in big data ecosystems like Hadoop and Spark."
+    },
+    {
+      "query": "message queue patterns",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/event-driven-architecture.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Message queue patterns are a key component of event-driven architecture. The document describes the following relevant patterns:\n\n1. Event Producers: Components that generate events based on actions or state changes.\n2. Event Consumers: Components that subscribe to and process events.\n3. Event Bus: The middleware that facilitates the publishing and subscribing of events.\n\nThese patterns allow for asynchronous, decoupled communication between components in an event-driven system, promoting scalability, fault tolerance, and flexibility."
+    },
+    {
+      "query": "functional programming concepts",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/functional-programming.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Functional programming concepts include:\n\n1. Immutability: In functional programming, values are immutable, meaning they cannot be changed once created. Instead, new data structures are created with the desired changes.\n\n2. Pure functions: Pure functions are functions that, given the same input, will always return the same output and have no side effects. They do not depend on or modify any external state.\n\nThe source text provides details on the benefits of immutability, such as referential transparency, concurrency, and easier debugging and testing. It also explains the benefits of pure functions, including referential transparency, testability, parallelism, and caching/memoization."
+    },
+    {
+      "query": "linux memory management",
+      "difficulty": "hard",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/linux-memory-management.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Linux memory management involves the use of virtual memory, which allows processes to access more memory than is physically available on the system. This is implemented through page tables, which map virtual memory pages to physical memory frames. The processor's Memory Management Unit (MMU) uses these page tables to translate virtual addresses to physical addresses during memory accesses. Page tables are organized in a multi-level hierarchy, with a top-level page directory and lower-level page tables. When a process attempts to access a virtual address, the MMU uses the page tables to translate the virtual address to a physical address. If the page is not present in the page tables, the MMU generates a page fault, which is handled by the kernel."
+    },
+    {
+      "query": "dns resolution process",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/dns-resolution.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "The DNS resolution process involves the following steps:\n\n1. The client (e.g., web browser) first checks its local cache for the requested domain's IP address. If not found, it sends a recursive query to a DNS resolver.\n\n2. The resolver queries the root DNS servers to find the appropriate top-level domain (TLD) server, then queries the TLD server to locate the authoritative DNS server for the domain.\n\n3. The authoritative server provides the requested information, such as the IP address, which the resolver then caches and returns to the client."
+    },
+    {
+      "query": "connection pooling benefits",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/connection-pooling.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Database connection pooling provides several benefits:\n\n1. Improved performance: By reusing existing database connections instead of creating new ones for every operation, connection pooling reduces the overhead and latency associated with establishing new connections.\n\n2. Increased scalability: Connection pooling allows an application to handle more concurrent requests by efficiently managing a limited number of database connections.\n\n3. Efficient resource utilization: Connection pooling optimizes the use of database server resources by maintaining a pool of reusable connections, reducing the need to create and destroy connections frequently."
+    },
+    {
+      "query": "cryptography basics",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/cryptography-basics.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Cryptography is the practice of securing information through the use of codes and ciphers. The fundamental concepts of cryptography include:\n\n- Symmetric encryption: A single shared secret key is used to encrypt and decrypt data, such as the Advanced Encryption Standard (AES) algorithm. AES supports 128, 192, and 256-bit key sizes and operates on 128-bit blocks of data.\n- Asymmetric encryption: Two separate keys are used - a public key for encryption and a private key for decryption, such as RSA and ECDSA.\n- Hashing: A one-way mathematical function that converts data into a fixed-size output, such as SHA-256 and bcrypt.\n- Key derivation functions (KDFs): Algorithms that derive secure cryptographic keys from a password or other input, such as PBKDF2 and Argon2.\n\nThese fundamental cryptographic concepts are widely used to secure data, communications, and user authentication."
+    },
+    {
+      "query": "distributed transactions",
+      "difficulty": "hard",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/concurrency-patterns.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Distributed transactions refer to the coordination of multiple operations across different systems or databases as a single logical transaction. The source text does not directly discuss distributed transactions, as it focuses on concurrency patterns and constructs within a single system, such as thread pools. The text provides an example implementation of a basic thread pool in Python, but does not mention how to handle distributed transactions or the challenges involved in coordinating multiple systems. The source text does not contain information to answer the query about distributed transactions."
+    },
+    {
+      "query": "container security hardening",
+      "difficulty": "hard",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/container-security.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Container security hardening involves several key practices:\n\n1. Image scanning: Scanning container images for known vulnerabilities using tools like Trivy, Clair, and Anchore, and scanning for malware using tools like ClamAV.\n2. Runtime protection: Implementing security measures like seccomp and AppArmor to restrict the capabilities of running containers and prevent unauthorized access or actions.\n3. Rootless containers: Using rootless containers, which run as non-root users, to reduce the risk of privilege escalation attacks.\n4. Supply chain security: Ensuring the security of the container image supply chain by verifying the provenance and integrity of container images."
+    },
+    {
+      "query": "well architected framework",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/well-architected-framework.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "The AWS Well-Architected Framework is a set of best practices and design principles to help cloud architects build secure, high-performing, resilient, and efficient infrastructure. The Operational Excellence pillar focuses on the ability to run and monitor systems to deliver business value and continually improve supporting processes and procedures. Key design principles include automating operational procedures, embedding documentation, making frequent and reversible changes, and anticipating and learning from failures. The framework covers areas such as implementing strong change management, maintaining observability, having effective incident response, and continuously improving operations based on data."
+    },
+    {
+      "query": "cost optimization strategies",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/cost-optimization.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Cloud cost optimization strategies include:\n\n1. Right-sizing: Ensuring cloud resources are appropriately sized to meet workload requirements. This involves identifying and resizing oversized resources to better match usage needs.\n\n2. Reserved Instances: Committing to a longer-term usage of cloud resources in exchange for a discounted hourly rate. This can provide significant cost savings compared to on-demand pricing.\n\n3. Spot Instances: Utilizing spare cloud computing capacity at discounted prices. Spot instances can offer substantial cost savings but are subject to interruption.\n\n4. Auto-scaling: Automatically scaling cloud resources up and down based on demand to optimize costs and ensure efficient resource utilization.\n\n5. Storage tiering: Leveraging different storage tiers (e.g., hot, warm, cold) to match data access requirements and minimize storage costs."
+    },
+    {
+      "query": "incident response steps",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/incident-response.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "The key incident response steps outlined in the document are:\n\n1. Detection: Identifying the incident, typically through monitoring systems or user reports.\n2. Triaging: Assessing the incident's severity, impact, and urgency to determine the appropriate response.\n3. Escalation: Notifying the relevant teams or on-call personnel to initiate the incident response process.\n4. Remediation: Investigating, diagnosing, and resolving the incident.\n5. Postmortem: Reviewing the incident, identifying root causes, and documenting lessons learned.\n6. Closure: Formally closing the incident after all necessary actions have been completed.\n\nThe document also describes four incident severity levels, ranging from critical (Severity 1) to low (Severity 4), which determine the response and prioritization of the incident."
+    },
+    {
+      "query": "multi-region deployment",
+      "difficulty": "hard",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/multi-region-deployment.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Multi-region deployment refers to the strategy of deploying an application or service across multiple geographic regions. This can be done in an active-active or active-passive configuration.\n\nIn an active-active setup, the application runs in multiple regions simultaneously, with all regions actively serving user traffic. This provides high availability and low latency, as users can be routed to the nearest region. However, it requires more complex coordination and data replication between regions.\n\nAlternatively, an active-passive configuration has one region actively serving traffic, while the other region(s) are in standby mode, ready to take over in the event of a failover. This is simpler to implement but offers lower availability and potentially higher latency."
+    },
+    {
+      "query": "ssh configuration security",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/ssh-configuration.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "The SSH configuration file allows you to define custom settings for connecting to remote hosts, including specifying the host, user, identity file, and port. It also supports features like ProxyCommand to connect through a bastion host. SSH authentication relies on public-key cryptography, where users have a public key shared with remote servers and a private key kept secure on their local machine. To manage multiple keys, you can use the IdentityFile option in the SSH config file to specify which key to use for each host. The SSH agent is a background process that holds your private keys in memory, allowing you to authenticate with remote servers without constantly entering your passphrase."
+    },
+    {
+      "query": "vpn tunneling protocols",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/vpn-tunneling.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "VPN tunneling protocols refer to the various methods used to establish secure, encrypted connections between devices or networks over a public network like the internet. The two main VPN protocols discussed in the source text are:\n\nIPSec (Internet Protocol Security): IPSec operates at the network layer and provides encryption, authentication, and data integrity for IP traffic. It has two main modes: Transport Mode, which encrypts the payload but leaves the original IP headers intact, and Tunnel Mode, which encapsulates the entire original IP packet within a new IP packet with IPSec headers. IPSec uses the ESP and AH protocols, as well as the IKE protocol for key exchange.\n\nWireGuard: WireGuard is a newer, open-source VPN protocol that aims to be faster, simpler, and more secure than existing solutions. It operates at the network layer and uses modern cryptographic primitives like Curve25519 and ChaCha20-Poly1305. WireGuard has a minimal attack surface and uses a peer-to-peer architecture, allowing devices to communicate directly without a central VPN server."
+    },
+    {
+      "query": "websocket protocol overview",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/websocket-protocol.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "The WebSocket protocol is a computer communications protocol that provides a two-way communication channel over a single TCP connection. It was designed as an efficient alternative to traditional HTTP-based polling for real-time web applications.\n\nThe WebSocket handshake is the process of establishing a WebSocket connection between a client and a server. The client initiates the handshake with an HTTP request that includes specific headers, and the server responds with a set of headers indicating that it is switching the protocol to WebSocket.\n\nAfter the handshake is complete, the client and server can start exchanging WebSocket frames, which are the basic units of data transmission in the WebSocket protocol. Each frame has a specific structure, including fields for the frame type, payload length, and payload data."
+    },
+    {
+      "query": "helm charts fundamentals",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/helm-charts.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Helm charts are the unit of packaging for the Helm package manager for Kubernetes. The key fundamentals of Helm charts include:\n\nTemplates: Helm templates are written in the Go template language and used to generate Kubernetes manifest files. They can include variables, functions, and control structures for dynamic and reusable configurations.\n\nValues: The `values.yaml` file defines the default values for the chart's templates, which can be overridden when the chart is installed or upgraded.\n\nDependencies: Helm charts can depend on other Helm charts, called \"subchart\" dependencies, which are specified in the `Chart.yaml` file."
+    },
+    {
+      "query": "linux process management",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/linux-process-management.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Linux process management involves the creation, execution, and monitoring of processes. The key aspects are:\n\n1. Fork and Exec: The `fork()` system call creates a new process (child) that is a copy of the calling process (parent). The `exec()` system call replaces the current process image with a new process image, effectively terminating the old process and starting a new one.\n\n2. Process States: Processes in Linux can be in one of several states - running, waiting, stopped, or zombie. The `ps` command can be used to view the current state of processes.\n\n3. Signals: Processes can receive and handle various signals, which are software interrupts that notify a process of an event. Signals can be used to control and manage processes.\n\n4. Nice and Renice: The `nice` and `renice` commands allow you to adjust the scheduling priority of a process, which determines how much CPU time it receives."
+    },
+    {
+      "query": "network troubleshooting tools",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/network-troubleshooting.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "The key network troubleshooting tools mentioned in the source text are:\n\n1. tcpdump: A powerful network packet analysis tool that allows capturing and inspecting network traffic on a specific interface. It can be used for troubleshooting network issues, analyzing network behavior, and identifying potential security threats.\n\n2. traceroute: A network diagnostic tool that helps identify the path a packet takes from your computer to a destination IP address or hostname. It is useful for troubleshooting connectivity issues and identifying where in the network a problem might be occurring.\n\nThe text provides details on the basic usage and common use cases for each of these tools, including examples of how to use them for tasks like capturing and analyzing network traffic, troubleshooting connectivity issues, identifying security threats, and debugging application-level issues."
+    },
+    {
+      "query": "database replication types",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/database-replication.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Database replication can take several forms:\n\nPrimary-replica (or master-slave) replication has a single primary database that accepts all writes, and changes are asynchronously replicated to one or more read-only replica databases. This provides high availability, scalability for reads, and disaster recovery.\n\nMulti-primary (or multi-master) replication allows writes on multiple databases, with conflicts resolved automatically or manually. This supports higher write throughput but introduces more complexity around conflict resolution.\n\nSynchronous replication ensures that changes are applied atomically across all replicas, providing stronger consistency guarantees but potentially lower availability during failures.\n\nAsynchronous replication, the more common approach, allows the replicas to lag behind the primary, improving availability but potentially leading to data loss if the primary fails."
+    },
+    {
+      "query": "nosql design patterns",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/nosql-patterns.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "NoSQL databases employ flexible, schema-less or schema-optional models that can accommodate unstructured, semi-structured, and rapidly changing data. Key NoSQL data modeling patterns include:\n\n1. Denormalization: NoSQL encourages denormalization to optimize for read performance and query patterns, minimizing the need for complex joins.\n2. Aggregation: NoSQL data models are structured to match common query patterns, even if it results in duplicating data across different entities.\n3. Time-series data modeling: NoSQL databases are well-suited for time-series data, allowing efficient storage and retrieval of data points over time."
+    },
+    {
+      "query": "sql query optimization",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/sql-query-optimization.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "The key techniques for SQL query optimization include:\n\n1. Using EXPLAIN plans to analyze the execution plan and identify potential performance bottlenecks, such as full table scans or suboptimal join algorithms.\n2. Selecting appropriate indexes to speed up data lookups, especially for columns used in the WHERE clause.\n3. Rewriting queries to use more efficient join algorithms, such as hash joins or merge joins, instead of nested loop joins.\n4. Analyzing database statistics to ensure the query optimizer has accurate information about the data distribution and cardinality, which can help it generate better execution plans."
+    },
+    {
+      "query": "data pipeline design",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/data-pipeline-design.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "A data pipeline is a series of steps that transform, integrate, and move data from various sources to a target destination. The key components of a data pipeline include data sources, ingestion, transformation, loading, orchestration, and monitoring and alerting. When designing a data pipeline, important considerations include data volume and velocity, data variety, data quality, scalability, reliability, performance, maintainability, and security and governance. The pipeline should be designed to handle the expected data load, accommodate diverse data formats, ensure data integrity, scale as needed, and be resilient, efficient, and easy to maintain."
+    },
+    {
+      "query": "testing strategies for software",
+      "difficulty": "easy",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/testing-strategies.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "The primary testing strategies for software include:\n\n1. Unit Testing: Verifying the correctness of individual, isolated components or units of the system.\n2. Integration Testing: Evaluating how different components or modules of the system work together.\n3. End-to-End (E2E) Testing: Validating the entire system, including user interactions and the flow of data through the application.\n\nUnit tests focus on exercising a single, isolated component or functionality, ensuring it behaves as expected. Integration tests examine the interactions and data flow between different components or modules, simulating complete end-to-end workflows. These testing strategies play a crucial role in ensuring the overall quality and stability of the software system."
+    },
+    {
+      "query": "dependency injection benefits",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/dependency-injection.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Dependency injection provides several key benefits:\n\n1. Testability: It makes it easier to write unit tests by allowing you to easily substitute mock or stub implementations of dependencies.\n2. Flexibility: Decoupling objects from their dependencies enables you to easily swap out implementations, improving flexibility and maintainability.\n3. Modularity: Dependency injection promotes a modular design, as components can be developed, tested, and deployed independently.\n4. Inversion of Control: Dependency injection inverts the control of object creation and lifetime management, allowing a central authority (the IoC container) to manage these concerns."
+    },
+    {
+      "query": "behavioral design patterns",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/design-patterns-behavioral.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "Behavioral design patterns are a category of design patterns that focus on the communication between objects and how they interact with each other. Some key behavioral design patterns include:\n\n- Observer: Allows objects to be notified of changes to the state of another object. It provides a way to implement event-driven architectures.\n- Strategy: Defines a family of algorithms, encapsulates each one, and makes them interchangeable. Clients can select the appropriate algorithm at runtime.\n- Command: Encapsulates a request as an object, allowing for the parameterization of clients with different requests, queue or log requests, and support undoable operations.\n\nThese patterns provide flexible ways to manage object interactions and communication, making the code more modular, extensible, and maintainable."
+    },
+    {
+      "query": "creational design patterns",
+      "difficulty": "medium",
+      "expected_sources": [
+        "tests/fixtures/scale_docs/design-patterns-creational.md"
+      ],
+      "category": "semantic",
+      "reference_answer": "The creational design patterns are a set of design patterns that deal with object creation mechanisms, aiming to create objects in a manner suitable to the situation. The key creational design patterns are:\n\n- Singleton: Ensures a class has only one instance and provides a global point of access to it.\n- Factory Method: Defines an interface for creating an object, but lets subclasses decide which class to instantiate.\n- Abstract Factory: Provides an interface for creating families of related or dependent objects without specifying their concrete classes.\n- Builder: Separates the construction of a complex object from its representation so that the same construction process can create different representations.\n- Prototype: Specifies the kind of object to create using a prototypical instance, and creates new objects by copying this prototype.\n\nThese patterns provide different ways to create objects, allowing for flexibility, modularity, and testability in software design."
+    },
+    {
+      "query": "how to bake sourdough in a kubernetes cluster",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "best brand of hiking boots for Mars",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "quantum entanglement in photosynthesis",
+      "difficulty": "medium",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "the secret to eternal life according to python docs",
+      "difficulty": "medium",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "where did I leave my keys",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "recipe for disaster in distributed systems",
+      "difficulty": "medium",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "blue whales vs sperm whales",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "history of the Roman Empire",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "how to play the banjo",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "why is the sky blue",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "symptoms of a cold",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "movie recommendations for tonight",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "stock market predictions for 2026",
+      "difficulty": "hard",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "philosophy of mind and AI",
+      "difficulty": "hard",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "meaning of life 42",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "how to win friends and influence people",
+      "difficulty": "medium",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "yoga for beginners",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "best coffee shops in London",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "gardening tips for summer",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "how to repair a flat tire",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "history of the internet",
+      "difficulty": "medium",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "space travel in the future",
+      "difficulty": "medium",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "the art of war summary",
+      "difficulty": "medium",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "meditation techniques",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "learning a new language fast",
+      "difficulty": "medium",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "climate change impacts",
+      "difficulty": "medium",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "renewable energy sources",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "healthy eating habits",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "travel tips for Japan",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    },
+    {
+      "query": "basics of photography",
+      "difficulty": "easy",
+      "expected_sources": [],
+      "category": "adversarial",
+      "reference_answer": "The provided context does not contain information to answer this question."
+    }
+  ]
+}

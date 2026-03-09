@@ -1,0 +1,102 @@
+{
+  "naive": {
+    "content_match": 0.4590909090909091,
+    "avg_tokens": 362.7763157894737,
+    "efficiency": 1.2654930575934529,
+    "by_category": {
+      "semantic": 0.5460992907801419,
+      "lexical": 0.3180773249738767
+    },
+    "n_queries": 76
+  },
+  "naive-rerank": {
+    "content_match": 0.5035087719298246,
+    "avg_tokens": 455.1842105263158,
+    "efficiency": 1.106164845541616,
+    "by_category": {
+      "semantic": 0.5900709219858157,
+      "lexical": 0.3632183908045977
+    },
+    "n_queries": 76
+  },
+  "langchain": {
+    "content_match": 0.43939393939393934,
+    "avg_tokens": 343.38157894736844,
+    "efficiency": 1.2796083608820703,
+    "by_category": {
+      "semantic": 0.5232753062540296,
+      "lexical": 0.303448275862069
+    },
+    "n_queries": 76
+  },
+  "candlekeep-simple": {
+    "content_match": 0.74688995215311,
+    "avg_tokens": 3721.1184210526317,
+    "efficiency": 0.20071652327093356,
+    "by_category": {
+      "semantic": 0.8425531914893617,
+      "lexical": 0.5918495297805643
+    },
+    "n_queries": 76
+  },
+  "candlekeep-hybrid": {
+    "content_match": 0.8170653907496013,
+    "avg_tokens": 5532.065789473684,
+    "efficiency": 0.1476962534148272,
+    "by_category": {
+      "semantic": 0.9049645390070922,
+      "lexical": 0.6746081504702194
+    },
+    "n_queries": 76
+  },
+  "candlekeep-precise": {
+    "content_match": 0.7383572567783094,
+    "avg_tokens": 3664.1315789473683,
+    "efficiency": 0.2015094820886385,
+    "by_category": {
+      "semantic": 0.8425531914893617,
+      "lexical": 0.5694879832810867
+    },
+    "n_queries": 76
+  },
+  "ablation-no-bardic": {
+    "content_match": 0.5041467304625199,
+    "avg_tokens": 752.6184210526316,
+    "efficiency": 0.669857016995953,
+    "by_category": {
+      "semantic": 0.6070921985815603,
+      "lexical": 0.3373040752351097
+    },
+    "n_queries": 76
+  },
+  "ablation-no-arcane": {
+    "content_match": 0.5678628389154705,
+    "avg_tokens": 574.3815789473684,
+    "efficiency": 0.9886508546394466,
+    "by_category": {
+      "semantic": 0.6335267569310122,
+      "lexical": 0.4614420062695924
+    },
+    "n_queries": 76
+  },
+  "ablation-no-ward": {
+    "content_match": 0.7839712918660288,
+    "avg_tokens": 4263.026315789473,
+    "efficiency": 0.18390017649254048,
+    "by_category": {
+      "semantic": 0.8812379110251451,
+      "lexical": 0.6263322884012539
+    },
+    "n_queries": 76
+  },
+  "ablation-no-dispersal": {
+    "content_match": 0.7065390749601276,
+    "avg_tokens": 2355.4736842105262,
+    "efficiency": 0.29995625920012564,
+    "by_category": {
+      "semantic": 0.7943262411347518,
+      "lexical": 0.5642633228840125
+    },
+    "n_queries": 76
+  }
+}

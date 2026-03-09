@@ -1,0 +1,28 @@
+{
+  "bm25": {
+    "backend": "bm25",
+    "runs": 3,
+    "queries": 108,
+    "mrr": 0.5559,
+    "content_match": 0.569,
+    "p50_ms": 54.8,
+    "tokens": 1607.0,
+    "sem_mrr": 0.903,
+    "lex_mrr": 0.557,
+    "sem_cm": 0.878,
+    "lex_cm": 0.642
+  },
+  "colbert": {
+    "backend": "colbert",
+    "runs": 3,
+    "queries": 108,
+    "mrr": 0.5579,
+    "content_match": 0.577,
+    "p50_ms": 72.1,
+    "tokens": 1837.0,
+    "sem_mrr": 0.892,
+    "lex_mrr": 0.581,
+    "sem_cm": 0.886,
+    "lex_cm": 0.66
+  }
+}

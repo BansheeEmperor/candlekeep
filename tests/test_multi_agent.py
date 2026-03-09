@@ -3,13 +3,16 @@
 Covers: dual-mode transport, optional auth, write serialization,
 in-memory metrics, concurrent reads, and stdio regression.
 """
+import pytest
 import threading
 import time
 from unittest.mock import MagicMock, patch, PropertyMock
 
-import pytest
-
 from candlekeep.config import Settings
+# Use absolute import to avoid naming collision with candlekeep.mcp object
+from candlekeep.mcp import server as mcp_server
+
+pytestmark = [pytest.mark.unit]
 
 
 # ============================================================
@@ -67,10 +70,9 @@ class TestMCPCreation:
         mock_settings.mcp_token = "some-token"
         mock_settings.spice = False
 
-        with patch("candlekeep.mcp.server._settings", mock_settings), \
-             patch("candlekeep.mcp.server.instructions", "test"):
-            from candlekeep.mcp.server import _create_mcp
-            mcp_instance = _create_mcp()
+        with patch.object(mcp_server, "_settings", mock_settings), \
+             patch.object(mcp_server, "instructions", "test"):
+            mcp_instance = mcp_server._create_mcp()
             # Should create without auth — FastMCP with no auth kwarg
             assert mcp_instance is not None
             assert mcp_instance.name == "candlekeep"
@@ -82,11 +84,11 @@ class TestMCPCreation:
         mock_settings.mcp_token = "secret-token"
         mock_settings.spice = False
 
-        with patch("candlekeep.mcp.server._settings", mock_settings), \
-             patch("candlekeep.mcp.server.instructions", "test"):
-            from candlekeep.mcp.server import _create_mcp
-            mcp_instance = _create_mcp()
+        with patch.object(mcp_server, "_settings", mock_settings), \
+             patch.object(mcp_server, "instructions", "test"):
+            mcp_instance = mcp_server._create_mcp()
             assert mcp_instance is not None
+            # Check for presence of auth in internal app (FastMCP quirk)
             assert mcp_instance.auth is not None
 
     def test_http_mode_without_token_no_auth(self):
@@ -96,10 +98,9 @@ class TestMCPCreation:
         mock_settings.mcp_token = ""
         mock_settings.spice = False
 
-        with patch("candlekeep.mcp.server._settings", mock_settings), \
-             patch("candlekeep.mcp.server.instructions", "test"):
-            from candlekeep.mcp.server import _create_mcp
-            mcp_instance = _create_mcp()
+        with patch.object(mcp_server, "_settings", mock_settings), \
+             patch.object(mcp_server, "instructions", "test"):
+            mcp_instance = mcp_server._create_mcp()
             assert mcp_instance is not None
 
 
@@ -109,13 +110,11 @@ class TestMCPCreation:
 
 class TestQueryCounter:
     def test_starts_at_zero(self):
-        from candlekeep.mcp.server import _QueryCounter
-        counter = _QueryCounter()
+        counter = mcp_server._QueryCounter()
         assert counter.count == 0
 
     def test_increment(self):
-        from candlekeep.mcp.server import _QueryCounter
-        counter = _QueryCounter()
+        counter = mcp_server._QueryCounter()
         counter.increment()
         counter.increment()
         counter.increment()
@@ -123,8 +122,7 @@ class TestQueryCounter:
 
     def test_thread_safety(self):
         """Concurrent increments should not lose counts."""
-        from candlekeep.mcp.server import _QueryCounter
-        counter = _QueryCounter()
+        counter = mcp_server._QueryCounter()
         n_threads = 10
         n_increments = 1000
 
@@ -149,19 +147,16 @@ class TestWriteLock:
     """Verify that write operations are serialized via _write_lock."""
 
     def test_write_lock_exists(self):
-        from candlekeep.mcp.server import _write_lock
-        assert isinstance(_write_lock, type(threading.Lock()))
+        assert isinstance(mcp_server._write_lock, type(threading.Lock()))
 
     def test_concurrent_writes_serialize(self):
         """Two threads acquiring _write_lock should not overlap."""
-        from candlekeep.mcp.server import _write_lock
-
         execution_log = []
         barrier = threading.Barrier(2)
 
         def writer(name):
             barrier.wait()  # Sync start
-            with _write_lock:
+            with mcp_server._write_lock:
                 execution_log.append(f"{name}_start")
                 time.sleep(0.05)  # Simulate work
                 execution_log.append(f"{name}_end")
@@ -195,10 +190,9 @@ class TestMainEntrypoint:
         mock_settings = MagicMock()
         mock_settings.transport = "stdio"
 
-        with patch("candlekeep.mcp.server._settings", mock_settings), \
-             patch("candlekeep.mcp.server.mcp") as mock_mcp:
-            from candlekeep.mcp.server import main
-            main()
+        with patch.object(mcp_server, "_settings", mock_settings), \
+             patch.object(mcp_server, "mcp") as mock_mcp:
+            mcp_server.main()
             mock_mcp.run.assert_called_once_with()
 
     def test_http_mode_calls_run_with_transport(self):
@@ -208,10 +202,9 @@ class TestMainEntrypoint:
         mock_settings.http_host = "0.0.0.0"
         mock_settings.http_port = 8111
 
-        with patch("candlekeep.mcp.server._settings", mock_settings), \
-             patch("candlekeep.mcp.server.mcp") as mock_mcp:
-            from candlekeep.mcp.server import main
-            main()
+        with patch.object(mcp_server, "_settings", mock_settings), \
+             patch.object(mcp_server, "mcp") as mock_mcp:
+            mcp_server.main()
             mock_mcp.run.assert_called_once_with(
                 transport="http", host="0.0.0.0", port=8111
             )
@@ -226,9 +219,7 @@ class TestStatsUsesCounter:
 
     def test_stats_reflects_counter(self):
         """get_stats should use _query_counter.count for query/token stats."""
-        from candlekeep.mcp.server import _QueryCounter
-
-        mock_counter = _QueryCounter()
+        mock_counter = mcp_server._QueryCounter()
         mock_counter.increment()
         mock_counter.increment()
 
@@ -243,12 +234,11 @@ class TestStatsUsesCounter:
             "context_savings_ratio": 19.5,
         }
 
-        with patch("candlekeep.mcp.server._loading", False), \
-             patch("candlekeep.mcp.server._read_access", True), \
-             patch("candlekeep.mcp.server.get_store", return_value=mock_store), \
-             patch("candlekeep.mcp.server._query_counter", mock_counter):
-            from candlekeep.mcp.server import get_stats
-            result = get_stats.fn()
+        with patch.object(mcp_server, "_loading", False), \
+             patch.object(mcp_server, "_read_access", True), \
+             patch.object(mcp_server, "get_store", return_value=mock_store), \
+             patch.object(mcp_server, "_query_counter", mock_counter):
+            result = mcp_server.get_stats.fn()
             assert "Total queries: 2" in result
             # tokens_saved = 2 * (12500 - 640) = 23720
             assert "23,720" in result
@@ -318,10 +308,9 @@ class TestAuthTokenValidation:
         mock_settings.mcp_token = "my-secret-123"
         mock_settings.spice = False
 
-        with patch("candlekeep.mcp.server._settings", mock_settings), \
-             patch("candlekeep.mcp.server.instructions", "test"):
-            from candlekeep.mcp.server import _create_mcp
-            mcp_instance = _create_mcp()
+        with patch.object(mcp_server, "_settings", mock_settings), \
+             patch.object(mcp_server, "instructions", "test"):
+            mcp_instance = mcp_server._create_mcp()
             # The auth provider should have our token
             assert mcp_instance.auth is not None
             from fastmcp.server.auth import StaticTokenVerifier

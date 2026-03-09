@@ -7,12 +7,15 @@ Two server fixtures:
 
 Both auto-skip if ChromaDB is not running on localhost:8000.
 """
+import pytest
 import asyncio
 import os
 import signal
 import subprocess
 import sys
 import tempfile
+
+pytestmark = [pytest.mark.integration]
 import time
 from pathlib import Path
 

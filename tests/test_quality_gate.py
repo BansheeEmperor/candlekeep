@@ -1,7 +1,10 @@
 """Unit tests for document quality gate."""
+import pytest
 import tempfile
 from pathlib import Path
 from candlekeep.mcp.server import check_document_quality
+
+pytestmark = [pytest.mark.unit]
 
 
 def _write_temp(content: str, suffix=".md") -> Path:

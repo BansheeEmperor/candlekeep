@@ -5,7 +5,7 @@ description = "RAG knowledge base server with ChromaDB and MCP interface"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "fastmcp>=2.14.0",
+    "fastmcp==2.14.5",
     "chromadb>=0.4.0",
     "sentence-transformers>=2.2.0",
     "spacy>=3.7.0",
@@ -41,3 +41,10 @@ packages = ["src/candlekeep"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+markers = [
+    "unit: fast logic tests with no external dependencies",
+    "benchmark: quality and latency audits",
+    "integration: tests requiring a live ChromaDB connection",
+    "slow: heavy benchmarks or long-running simulations",
+    "experimental: tests for upcoming or missing features"
+]

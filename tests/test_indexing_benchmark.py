@@ -1,9 +1,8 @@
 """Benchmark HNSW indexing parameters: search_ef, M, and distance metrics."""
+import pytest
 import json
 import tempfile
 from pathlib import Path
-
-import pytest
 
 from candlekeep.config import Settings
 from candlekeep.database.vector_store import ChromaVectorStore
@@ -11,6 +10,8 @@ from candlekeep.rag.processor import DocumentProcessor
 from candlekeep.rag.router import search_with_routing
 from tests.benchmark import RAGBenchmark
 from tests.benchmark_queries import BENCHMARK_QUERIES
+
+pytestmark = [pytest.mark.slow]
 
 SAMPLE_DOCS = Path(__file__).parent / "fixtures" / "sample_docs"
 

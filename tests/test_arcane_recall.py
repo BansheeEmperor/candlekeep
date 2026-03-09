@@ -1,7 +1,10 @@
 """Test Arcane Recall (Parent Document Retrieval)."""
+import pytest
 from candlekeep.rag.arcane_recall import search_with_arcane_recall
 from tests.benchmark import RAGBenchmark
 from tests.benchmark_queries import BENCHMARK_QUERIES
+
+pytestmark = [pytest.mark.benchmark]
 
 
 def test_arcane_recall(seeded_store):
