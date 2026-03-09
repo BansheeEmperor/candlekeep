@@ -12,16 +12,17 @@ the question apart, searches each piece, and combines the results.
 The difference between these two benchmarks measures the value of agent
 decomposition — how much coverage improves when queries are properly split.
 """
+import pytest
 import json
 from pathlib import Path
-
-import pytest
 
 from candlekeep.config import Settings
 from candlekeep.database.vector_store import ChromaVectorStore
 from candlekeep.rag.processor import DocumentProcessor
 from candlekeep.rag.router import search_with_routing
 from tests.decomposed_queries import DECOMPOSED_QUERIES
+
+pytestmark = [pytest.mark.slow]
 
 SCALE_DOCS = Path(__file__).parent / "fixtures" / "scale_docs"
 

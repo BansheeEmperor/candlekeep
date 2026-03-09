@@ -1,0 +1,110 @@
+{
+  "simple": {
+    "precision": 0.8957,
+    "recall": 3.8877,
+    "f1": 1.4559,
+    "content_match": 0.8734,
+    "latency_ms": 26.3,
+    "by_difficulty": {
+      "easy": {
+        "count": 5,
+        "precision": 1.0,
+        "recall": 5.0,
+        "latency_ms": 23.56882095336914
+      },
+      "medium": {
+        "count": 9,
+        "precision": 0.9555555555555555,
+        "recall": 4.777777777777778,
+        "latency_ms": 25.38585662841797
+      },
+      "hard": {
+        "count": 9,
+        "precision": 0.7777777777777778,
+        "recall": 2.3796296296296293,
+        "latency_ms": 28.77436743842231
+      }
+    }
+  },
+  "context": {
+    "precision": 0.8957,
+    "recall": 3.8877,
+    "f1": 1.4559,
+    "content_match": 0.8734,
+    "latency_ms": 26.5,
+    "by_difficulty": {
+      "easy": {
+        "count": 5,
+        "precision": 1.0,
+        "recall": 5.0,
+        "latency_ms": 23.259449005126953
+      },
+      "medium": {
+        "count": 9,
+        "precision": 0.9555555555555555,
+        "recall": 4.777777777777778,
+        "latency_ms": 25.270647472805447
+      },
+      "hard": {
+        "count": 9,
+        "precision": 0.7777777777777778,
+        "recall": 2.3796296296296293,
+        "latency_ms": 29.409938388400608
+      }
+    }
+  },
+  "complex": {
+    "precision": 0.8957,
+    "recall": 3.8877,
+    "f1": 1.4559,
+    "content_match": 0.8734,
+    "latency_ms": 26.5,
+    "by_difficulty": {
+      "easy": {
+        "count": 5,
+        "precision": 1.0,
+        "recall": 5.0,
+        "latency_ms": 23.717737197875977
+      },
+      "medium": {
+        "count": 9,
+        "precision": 0.9555555555555555,
+        "recall": 4.777777777777778,
+        "latency_ms": 25.27700530158149
+      },
+      "hard": {
+        "count": 9,
+        "precision": 0.7777777777777778,
+        "recall": 2.3796296296296293,
+        "latency_ms": 29.28582827250163
+      }
+    }
+  },
+  "precise": {
+    "precision": 0.8986,
+    "recall": 2.337,
+    "f1": 1.298,
+    "content_match": 0.7975,
+    "latency_ms": 1517.8,
+    "by_difficulty": {
+      "easy": {
+        "count": 5,
+        "precision": 1.0,
+        "recall": 3.0,
+        "latency_ms": 1504.5216083526611
+      },
+      "medium": {
+        "count": 9,
+        "precision": 1.0,
+        "recall": 3.0,
+        "latency_ms": 1550.5932966868083
+      },
+      "hard": {
+        "count": 9,
+        "precision": 0.7407407407407408,
+        "recall": 1.3055555555555556,
+        "latency_ms": 1492.390235265096
+      }
+    }
+  }
+}

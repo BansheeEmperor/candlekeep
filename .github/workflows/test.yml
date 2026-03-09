@@ -53,36 +53,15 @@ jobs:
           CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2", cache_folder=str(models_dir))
           EOF
 
-      - name: Run Unit Tests
-        env:
-          XDG_DATA_HOME: /home/runner/.local/share
-          CANDLEKEEP_DEVICE: cpu
-        run: |
-          export PYTHONPATH=$PYTHONPATH:$(pwd)/src
-          # Core logic and technique validation
-          pytest tests/test_router.py \
-                 tests/test_quality_gate.py \
-                 tests/test_arcane_recall_unit.py \
-                 tests/test_protection.py \
-                 tests/test_processor.py \
-                 tests/test_providers.py \
-                 tests/test_rate_limiter.py \
-                 tests/test_multi_agent.py \
-                 tests/test_multi_agent_integration.py \
-                 tests/test_discrimination.py \
-                 tests/test_embeddings.py \
-                 tests/test_graded_metrics.py \
-                 tests/test_arcane_recall.py \
-                 tests/test_benchmark.py
-
-      - name: Run Sanity Benchmarks
+      - name: Run Unit Tests and Sanity Benchmarks
         env:
           XDG_DATA_HOME: /home/runner/.local/share
           CANDLEKEEP_DEVICE: cpu
           CHROMA_URL: http://localhost:8000
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/src
-          pytest tests/test_router_benchmark.py -v -s
+          # Run logic tests and quality benchmarks (p50/precision)
+          pytest -m "unit or benchmark" -v -s
 
       - name: Check for Integration Test Requirement
         id: changed-files
@@ -93,6 +72,7 @@ jobs:
             src/candlekeep/config.py
             tests/test_vector_store.py
             tests/test_search.py
+            tests/test_multi_agent_integration.py
 
       - name: Run Integration Tests
         if: steps.changed-files.outputs.any_changed == 'true'
@@ -102,5 +82,5 @@ jobs:
           CHROMA_URL: http://localhost:8000
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/src
-          pytest tests/test_vector_store.py \
-                 tests/test_search.py
+          # Run tests that require a live ChromaDB connection
+          pytest -m "integration" -v -s

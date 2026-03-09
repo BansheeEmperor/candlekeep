@@ -8,6 +8,8 @@ from candlekeep.database.vector_store import ChromaVectorStore
 from candlekeep.rag.processor import DocumentProcessor
 from candlekeep.rag.router import search_with_routing
 
+pytestmark = [pytest.mark.benchmark]
+
 QUERIES = [
     ("How to store tokens on iOS?", "ios-auth.md"),
     ("Biometric login implementation for Android", "android-auth.md"),

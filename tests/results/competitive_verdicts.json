@@ -1,0 +1,98 @@
+[
+  {
+    "category": "adversarial",
+    "dimension": "quality",
+    "metric": "mrr",
+    "result": "TIE",
+    "delta": 0.0,
+    "candlekeep_value": 0.0,
+    "candlekeep_ci": [
+      0.0,
+      0.0
+    ],
+    "best_competitor": "naive",
+    "best_competitor_value": 0.0,
+    "attributed_technique": null,
+    "failed_queries": null
+  },
+  {
+    "category": "adversarial",
+    "dimension": "quality",
+    "metric": "hit_rate_5",
+    "result": "WIN",
+    "delta": 1.0,
+    "candlekeep_value": 1.0,
+    "candlekeep_ci": [
+      1.0,
+      1.0
+    ],
+    "best_competitor": "naive",
+    "best_competitor_value": 0.0,
+    "attributed_technique": "Relevance Ward",
+    "failed_queries": null
+  },
+  {
+    "category": "lexical",
+    "dimension": "quality",
+    "metric": "mrr",
+    "result": "TIE",
+    "delta": -0.008333333333333415,
+    "candlekeep_value": 0.575,
+    "candlekeep_ci": [
+      0.4960555555555556,
+      0.6444583333333334
+    ],
+    "best_competitor": "naive-rerank",
+    "best_competitor_value": 0.5833333333333334,
+    "attributed_technique": null,
+    "failed_queries": null
+  },
+  {
+    "category": "lexical",
+    "dimension": "quality",
+    "metric": "hit_rate_5",
+    "result": "TIE",
+    "delta": 0.033333333333333326,
+    "candlekeep_value": 0.7,
+    "candlekeep_ci": [
+      0.62,
+      0.7733333333333333
+    ],
+    "best_competitor": "naive-rerank",
+    "best_competitor_value": 0.6666666666666666,
+    "attributed_technique": null,
+    "failed_queries": null
+  },
+  {
+    "category": "semantic",
+    "dimension": "quality",
+    "metric": "mrr",
+    "result": "TIE",
+    "delta": 0.03541666666666654,
+    "candlekeep_value": 0.9048611111111111,
+    "candlekeep_ci": [
+      0.8680555555555556,
+      0.9375
+    ],
+    "best_competitor": "naive-rerank",
+    "best_competitor_value": 0.8694444444444446,
+    "attributed_technique": null,
+    "failed_queries": null
+  },
+  {
+    "category": "semantic",
+    "dimension": "quality",
+    "metric": "hit_rate_5",
+    "result": "TIE",
+    "delta": 0.004166666666666652,
+    "candlekeep_value": 0.9208333333333333,
+    "candlekeep_ci": [
+      0.8875,
+      0.95
+    ],
+    "best_competitor": "naive-rerank",
+    "best_competitor_value": 0.9166666666666666,
+    "attributed_technique": null,
+    "failed_queries": null
+  }
+]

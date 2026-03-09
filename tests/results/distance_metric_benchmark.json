@@ -1,0 +1,23 @@
+{
+  "cosine": {
+    "precision": 0.8783,
+    "recall": 3.8442,
+    "f1": 1.4299,
+    "content": 0.8734,
+    "latency": 99.2
+  },
+  "l2": {
+    "precision": 0.7739,
+    "recall": 2.779,
+    "f1": 1.2107,
+    "content": 0.7342,
+    "latency": 104.7
+  },
+  "ip": {
+    "precision": 0.8783,
+    "recall": 3.8442,
+    "f1": 1.4299,
+    "content": 0.8734,
+    "latency": 107.3
+  }
+}

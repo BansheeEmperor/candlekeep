@@ -5,6 +5,8 @@ from candlekeep.database.vector_store import ChromaVectorStore
 from candlekeep.database.interface import Chunk
 from candlekeep.config import Settings
 
+pytestmark = [pytest.mark.integration]
+
 
 def test_negation_preprocessing():
     """Test negation clause removal."""

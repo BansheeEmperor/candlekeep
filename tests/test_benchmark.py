@@ -6,6 +6,8 @@ from candlekeep.rag.search import search_with_preprocessing
 from tests.benchmark import RAGBenchmark
 from tests.benchmark_queries import BENCHMARK_QUERIES
 
+pytestmark = [pytest.mark.benchmark]
+
 
 class TestRAGBenchmark:
     """RAG quality benchmark tests."""

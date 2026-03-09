@@ -1,7 +1,10 @@
 """Unit tests for Arcane Recall expand_results."""
+import pytest
 from unittest.mock import MagicMock
 from candlekeep.database.interface import SearchResult
 from candlekeep.rag.arcane_recall import expand_results
+
+pytestmark = [pytest.mark.unit]
 
 
 def _make_result(text, source="doc.md", chunk_index=0, score=0.9):

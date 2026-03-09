@@ -1,13 +1,17 @@
 """Test Illusory Script (HyDE)."""
-from candlekeep.rag.illusory_script import search_with_illusory_script
+import pytest
+# Skip if module is missing (experimental)
+illusory = pytest.importorskip("candlekeep.rag.illusory_script")
 from tests.benchmark import RAGBenchmark
 from tests.benchmark_queries import BENCHMARK_QUERIES
+
+pytestmark = [pytest.mark.experimental]
 
 
 def test_illusory_script(seeded_store):
     """Benchmark Illusory Script technique."""
     def search_fn(query: str, n_results: int):
-        return search_with_illusory_script(
+        return illusory.search_with_illusory_script(
             seeded_store,
             query,
             n_results,

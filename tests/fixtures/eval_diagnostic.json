@@ -1,0 +1,192 @@
+{
+  "metadata": {
+    "name": "Diagnostic Query Set",
+    "version": "1.0",
+    "total_queries": 30,
+    "categories": ["negation", "exact-identifier", "context-dependent", "redundancy", "out-of-domain"],
+    "corpus": "tests/fixtures/sample_docs/ + tests/fixtures/scale_docs/",
+    "notes": "Each subset targets a specific failure mode. When a competitor loses on one of these, the cause is immediately attributable."
+  },
+  "queries": [
+    {
+      "query": "authentication methods without using passwords",
+      "expected_sources": ["tests/fixtures/sample_docs/authentication.md"],
+      "category": "negation",
+      "difficulty": "medium"
+    },
+    {
+      "query": "caching strategies not involving Redis",
+      "expected_sources": ["tests/fixtures/sample_docs/caching.md"],
+      "category": "negation",
+      "difficulty": "medium"
+    },
+    {
+      "query": "database design without normalization",
+      "expected_sources": ["tests/fixtures/sample_docs/database-design.md"],
+      "category": "negation",
+      "difficulty": "medium"
+    },
+    {
+      "query": "API design excluding REST",
+      "expected_sources": ["tests/fixtures/sample_docs/api-design.md"],
+      "category": "negation",
+      "difficulty": "medium"
+    },
+    {
+      "query": "microservices communication except synchronous",
+      "expected_sources": ["tests/fixtures/sample_docs/microservices.md"],
+      "category": "negation",
+      "difficulty": "medium"
+    },
+    {
+      "query": "search techniques without keyword matching",
+      "expected_sources": ["tests/fixtures/sample_docs/semantic-search.md"],
+      "category": "negation",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Elasticsearch 8.x breaking changes",
+      "expected_sources": ["tests/fixtures/scale_docs/elasticsearch-basics.md"],
+      "category": "exact-identifier",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Redis 7.0 AOF rewrite",
+      "expected_sources": ["tests/fixtures/scale_docs/redis-data-structures.md"],
+      "category": "exact-identifier",
+      "difficulty": "hard"
+    },
+    {
+      "query": "PostgreSQL 15 new features",
+      "expected_sources": ["tests/fixtures/scale_docs/postgresql-internals.md"],
+      "category": "exact-identifier",
+      "difficulty": "medium"
+    },
+    {
+      "query": "TLS 1.3 zero round trip",
+      "expected_sources": ["tests/fixtures/scale_docs/tls-ssl.md"],
+      "category": "exact-identifier",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Kubernetes v1.24 dockershim removal",
+      "expected_sources": ["tests/fixtures/scale_docs/kubernetes-architecture.md"],
+      "category": "exact-identifier",
+      "difficulty": "hard"
+    },
+    {
+      "query": "OWASP Top 10 2021 vulnerabilities",
+      "expected_sources": ["tests/fixtures/scale_docs/owasp-top-10.md"],
+      "category": "exact-identifier",
+      "difficulty": "medium"
+    },
+    {
+      "query": "How do you store and refresh JWT tokens securely?",
+      "expected_sources": ["tests/fixtures/sample_docs/authentication.md"],
+      "category": "context-dependent",
+      "difficulty": "hard"
+    },
+    {
+      "query": "What happens when a cache entry expires and multiple requests arrive simultaneously?",
+      "expected_sources": ["tests/fixtures/sample_docs/caching.md"],
+      "category": "context-dependent",
+      "difficulty": "hard"
+    },
+    {
+      "query": "How do you handle schema migrations in a microservices architecture?",
+      "expected_sources": ["tests/fixtures/sample_docs/microservices.md"],
+      "category": "context-dependent",
+      "difficulty": "hard"
+    },
+    {
+      "query": "What are the steps to implement rate limiting on an API endpoint?",
+      "expected_sources": ["tests/fixtures/sample_docs/api-design.md"],
+      "category": "context-dependent",
+      "difficulty": "hard"
+    },
+    {
+      "query": "How does the embedding model affect search quality in a vector database?",
+      "expected_sources": ["tests/fixtures/sample_docs/vector-databases.md"],
+      "category": "context-dependent",
+      "difficulty": "hard"
+    },
+    {
+      "query": "What is the complete process for setting up database replication?",
+      "expected_sources": ["tests/fixtures/scale_docs/database-replication.md"],
+      "category": "context-dependent",
+      "difficulty": "hard"
+    },
+    {
+      "query": "caching",
+      "expected_sources": ["tests/fixtures/sample_docs/caching.md"],
+      "category": "redundancy",
+      "difficulty": "easy"
+    },
+    {
+      "query": "authentication",
+      "expected_sources": ["tests/fixtures/sample_docs/authentication.md"],
+      "category": "redundancy",
+      "difficulty": "easy"
+    },
+    {
+      "query": "database",
+      "expected_sources": ["tests/fixtures/sample_docs/database-design.md"],
+      "category": "redundancy",
+      "difficulty": "easy"
+    },
+    {
+      "query": "API",
+      "expected_sources": ["tests/fixtures/sample_docs/api-design.md"],
+      "category": "redundancy",
+      "difficulty": "easy"
+    },
+    {
+      "query": "microservices",
+      "expected_sources": ["tests/fixtures/sample_docs/microservices.md"],
+      "category": "redundancy",
+      "difficulty": "easy"
+    },
+    {
+      "query": "containers",
+      "expected_sources": ["tests/fixtures/scale_docs/container-fundamentals.md"],
+      "category": "redundancy",
+      "difficulty": "easy"
+    },
+    {
+      "query": "how to train a neural network from scratch",
+      "expected_sources": [],
+      "category": "out-of-domain",
+      "difficulty": "easy"
+    },
+    {
+      "query": "best practices for raising chickens in urban areas",
+      "expected_sources": [],
+      "category": "out-of-domain",
+      "difficulty": "easy"
+    },
+    {
+      "query": "history of the Roman Empire's decline",
+      "expected_sources": [],
+      "category": "out-of-domain",
+      "difficulty": "easy"
+    },
+    {
+      "query": "how to solve differential equations numerically",
+      "expected_sources": [],
+      "category": "out-of-domain",
+      "difficulty": "medium"
+    },
+    {
+      "query": "recipe for authentic Neapolitan pizza dough",
+      "expected_sources": [],
+      "category": "out-of-domain",
+      "difficulty": "easy"
+    },
+    {
+      "query": "techniques for oil painting landscapes",
+      "expected_sources": [],
+      "category": "out-of-domain",
+      "difficulty": "easy"
+    }
+  ]
+}
