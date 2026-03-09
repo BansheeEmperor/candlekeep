@@ -72,8 +72,8 @@ jobs:
           CHROMA_URL: http://localhost:8000
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/src
-          # Run logic tests and quality benchmarks (p50/precision)
-          pytest -m "unit or benchmark" -v -s --junitxml=pytest.xml | tee pytest-output.txt
+          # Run logic tests and quality benchmarks
+          pytest -m "unit or benchmark" -v -s | tee pytest-output.txt
 
       - name: Check for Integration Test Requirement
         id: changed-files
@@ -100,7 +100,6 @@ jobs:
       - name: Prepare PR Comment
         if: github.event_name == 'pull_request' && always()
         run: |
-          # Create a nice summary from the pytest output
           echo "## 🛡️ CI Test Results" > pr_comment.md
           echo "" >> pr_comment.md
           
@@ -115,13 +114,9 @@ jobs:
             echo "- ⏭️ **Skipped:** $SKIPPED" >> pr_comment.md
             echo "" >> pr_comment.md
             
-            # Extract Benchmark Results if present
-            if grep -q "RAG BENCHMARK REPORT" pytest-output.txt; then
-              echo "### 📊 Benchmark Performance" >> pr_comment.md
-              echo "\`\`\`" >> pr_comment.md
-              # Get overall metrics from the first report found
-              grep -A 6 "RAG BENCHMARK REPORT" pytest-output.txt | tail -n 6 >> pr_comment.md
-              echo "\`\`\`" >> pr_comment.md
+            # Use comparison script for Simple path (most common baseline)
+            if [ -f tests/results/router_simple_benchmark.json ]; then
+              python3 scripts/compare_benchmarks.py tests/results/baseline.json tests/results/router_simple_benchmark.json >> pr_comment.md
             fi
           else
             echo "⚠️ No test output found." >> pr_comment.md
@@ -136,7 +131,5 @@ jobs:
         with:
           header: test-results
           path: pr_comment.md
-          # Recreate the comment only if there's been a newer comment from someone else
-          # Otherwise, just update the existing one.
           recreate: true
           only_if_last_comment_is_not_from_bot: true
