@@ -6,6 +6,10 @@ on:
   push:
     branches: [ production, master, main ]
 
+permissions:
+  pull-requests: write
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -68,8 +72,8 @@ jobs:
           CHROMA_URL: http://localhost:8000
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/src
-          # Run logic tests and quality benchmarks (p50/precision)
-          pytest -m "unit or benchmark" -v -s
+          # Run logic tests and quality benchmarks
+          pytest -m "unit or benchmark" -v -s | tee pytest-output.txt
 
       - name: Check for Integration Test Requirement
         id: changed-files
@@ -91,4 +95,44 @@ jobs:
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/src
           # Run tests that require a live ChromaDB connection
-          pytest -m "integration" -v -s
+          pytest -m "integration" -v -s >> pytest-output.txt
+
+      - name: Prepare PR Comment
+        if: github.event_name == 'pull_request' && always()
+        run: |
+          echo "## 🛡️ CI Test Results" > pr_comment.md
+          echo "" >> pr_comment.md
+          
+          if [ -f pytest-output.txt ]; then
+            PASSED=$(grep -c "PASSED" pytest-output.txt || true)
+            FAILED=$(grep -c "FAILED" pytest-output.txt || true)
+            SKIPPED=$(grep -c "SKIPPED" pytest-output.txt || true)
+            
+            echo "### Summary" >> pr_comment.md
+            echo "- ✅ **Passed:** $PASSED" >> pr_comment.md
+            echo "- ❌ **Failed:** $FAILED" >> pr_comment.md
+            echo "- ⏭️ **Skipped:** $SKIPPED" >> pr_comment.md
+            echo "" >> pr_comment.md
+            
+            # Path-specific comparisons consolidated into a single table
+            # Order: Simple -> Hybrid -> Precise
+            python3 scripts/compare_benchmarks.py \
+              "Simple Path (Arcane Recall)" tests/results/archive/router_simple_benchmark.json tests/results/router_simple_benchmark.json \
+              "Hybrid Path (BM25 + Vector)" tests/results/archive/router_hybrid_benchmark.json tests/results/router_hybrid_benchmark.json \
+              "Precise Path (Reranker)" tests/results/archive/router_precise_benchmark.json tests/results/router_precise_benchmark.json \
+              >> pr_comment.md
+          else
+            echo "⚠️ No test output found." >> pr_comment.md
+          fi
+          
+          echo "" >> pr_comment.md
+          echo "*Updated at: $(date -u)*" >> pr_comment.md
+
+      - name: Post PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request' && always()
+        with:
+          header: test-results
+          path: pr_comment.md
+          recreate: true
+          only_if_last_comment_is_not_from_bot: true
