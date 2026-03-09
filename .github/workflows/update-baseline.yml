@@ -7,6 +7,12 @@ on:
       - 'tests/results/archive/**'
       - 'docs/**'
       - 'README.md'
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual baseline update'
+        required: false
+        default: 'Manual re-standardization'
 
 permissions:
   contents: write
