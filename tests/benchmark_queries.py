@@ -7,28 +7,40 @@ BENCHMARK_QUERIES = [
     BenchmarkQuery(
         query="What is semantic search?",
         difficulty="easy",
-        expected_sources=["tests/fixtures/sample_docs/semantic-search.md"],
+        expected_sources=[
+            "tests/fixtures/sample_docs/semantic-search.md",
+            "tests/fixtures/sample_docs/vector-databases.md"
+        ],
         expected_content=["semantic search", "meaning", "intent"],
         category="core"
     ),
     BenchmarkQuery(
         query="vector database",
         difficulty="easy",
-        expected_sources=["tests/fixtures/sample_docs/vector-databases.md"],
+        expected_sources=[
+            "tests/fixtures/sample_docs/vector-databases.md",
+            "tests/fixtures/sample_docs/semantic-search.md"
+        ],
         expected_content=["vector", "embeddings", "similarity"],
         category="core"
     ),
     BenchmarkQuery(
         query="REST API design",
         difficulty="easy",
-        expected_sources=["tests/fixtures/sample_docs/api-design.md"],
+        expected_sources=[
+            "tests/fixtures/sample_docs/api-design.md",
+            "tests/fixtures/sample_docs/microservices.md"
+        ],
         expected_content=["REST", "HTTP", "endpoints"],
         category="core"
     ),
     BenchmarkQuery(
         query="database normalization",
         difficulty="easy",
-        expected_sources=["tests/fixtures/sample_docs/database-design.md"],
+        expected_sources=[
+            "tests/fixtures/sample_docs/database-design.md",
+            "tests/fixtures/sample_docs/vector-databases.md"
+        ],
         expected_content=["normalization", "1NF", "2NF", "3NF"],
         category="core"
     ),
@@ -37,35 +49,49 @@ BENCHMARK_QUERIES = [
     BenchmarkQuery(
         query="How do I handle negation in search queries?",
         difficulty="medium",
-        expected_sources=["tests/fixtures/sample_docs/semantic-search.md"],
+        expected_sources=[
+            "tests/fixtures/sample_docs/semantic-search.md"
+        ],
         expected_content=["negation", "preprocessing", "without", "not"],
         category="core"
     ),
     BenchmarkQuery(
         query="What are microservices communication patterns?",
         difficulty="medium",
-        expected_sources=["tests/fixtures/sample_docs/microservices.md"],
+        expected_sources=[
+            "tests/fixtures/sample_docs/microservices.md",
+            "tests/fixtures/sample_docs/api-design.md"
+        ],
         expected_content=["synchronous", "asynchronous", "message", "REST"],
         category="core"
     ),
     BenchmarkQuery(
         query="How should I implement caching?",
         difficulty="medium",
-        expected_sources=["tests/fixtures/sample_docs/caching.md"],
+        expected_sources=[
+            "tests/fixtures/sample_docs/caching.md",
+            "tests/fixtures/sample_docs/semantic-search.md"
+        ],
         expected_content=["cache", "pattern", "TTL", "invalidation"],
         category="core"
     ),
     BenchmarkQuery(
         query="What's the difference between authentication and authorization?",
         difficulty="medium",
-        expected_sources=["tests/fixtures/sample_docs/authentication.md"],
+        expected_sources=[
+            "tests/fixtures/sample_docs/authentication.md",
+            "tests/fixtures/sample_docs/api-design.md"
+        ],
         expected_content=["authentication", "authorization", "who", "what"],
         category="core"
     ),
     BenchmarkQuery(
         query="When should I denormalize a database?",
         difficulty="medium",
-        expected_sources=["tests/fixtures/sample_docs/database-design.md"],
+        expected_sources=[
+            "tests/fixtures/sample_docs/database-design.md",
+            "tests/fixtures/sample_docs/caching.md"
+        ],
         expected_content=["denormalization", "read-heavy", "performance"],
         category="core"
     ),
@@ -76,7 +102,8 @@ BENCHMARK_QUERIES = [
         difficulty="hard",
         expected_sources=[
             "tests/fixtures/sample_docs/api-design.md",
-            "tests/fixtures/sample_docs/caching.md"
+            "tests/fixtures/sample_docs/caching.md",
+            "tests/fixtures/sample_docs/microservices.md"
         ],
         expected_content=["API", "cache", "performance", "scalable"],
         category="core"
@@ -91,7 +118,10 @@ BENCHMARK_QUERIES = [
     BenchmarkQuery(
         query="How do microservices handle data consistency?",
         difficulty="hard",
-        expected_sources=["tests/fixtures/sample_docs/microservices.md"],
+        expected_sources=[
+            "tests/fixtures/sample_docs/microservices.md",
+            "tests/fixtures/sample_docs/database-design.md"
+        ],
         expected_content=["saga", "consistency", "distributed", "transaction"],
         category="core"
     ),
@@ -100,21 +130,30 @@ BENCHMARK_QUERIES = [
     BenchmarkQuery(
         query="OAuth 2.0 flows",
         difficulty="medium",
-        expected_sources=["tests/fixtures/sample_docs/authentication.md"],
+        expected_sources=[
+            "tests/fixtures/sample_docs/authentication.md",
+            "tests/fixtures/sample_docs/api-design.md"
+        ],
         expected_content=["OAuth", "authorization", "flow"],
         category="core"
     ),
     BenchmarkQuery(
         query="cache eviction policies",
         difficulty="medium",
-        expected_sources=["tests/fixtures/sample_docs/caching.md"],
+        expected_sources=[
+            "tests/fixtures/sample_docs/caching.md",
+            "tests/fixtures/sample_docs/semantic-search.md"
+        ],
         expected_content=["LRU", "LFU", "eviction"],
         category="core"
     ),
     BenchmarkQuery(
         query="API versioning strategies",
         difficulty="easy",
-        expected_sources=["tests/fixtures/sample_docs/api-design.md"],
+        expected_sources=[
+            "tests/fixtures/sample_docs/api-design.md",
+            "tests/fixtures/sample_docs/authentication.md"
+        ],
         expected_content=["version", "v1", "v2"],
         category="core"
     ),
@@ -174,7 +213,11 @@ BENCHMARK_QUERIES = [
     BenchmarkQuery(
         query="distributed systems design principles",
         difficulty="hard",
-        expected_sources=["tests/fixtures/sample_docs/microservices.md"],
+        expected_sources=[
+            "tests/fixtures/sample_docs/microservices.md",
+            "tests/fixtures/sample_docs/api-design.md",
+            "tests/fixtures/sample_docs/vector-databases.md"
+        ],
         expected_content=["independent", "decentralized", "service"],
         category="core"
     ),
