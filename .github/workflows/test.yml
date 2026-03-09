@@ -56,7 +56,6 @@ jobs:
       - name: Run Unit Tests
         env:
           XDG_DATA_HOME: /home/runner/.local/share
-          SENTENCE_TRANSFORMERS_HOME: /home/runner/.local/share/candlekeep/models
           CANDLEKEEP_DEVICE: cpu
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/src
@@ -71,7 +70,6 @@ jobs:
       - name: Run Sanity Benchmarks
         env:
           XDG_DATA_HOME: /home/runner/.local/share
-          SENTENCE_TRANSFORMERS_HOME: /home/runner/.local/share/candlekeep/models
           CANDLEKEEP_DEVICE: cpu
           CHROMA_URL: http://localhost:8000
         run: |
@@ -92,7 +90,6 @@ jobs:
         if: steps.changed-files.outputs.any_changed == 'true'
         env:
           XDG_DATA_HOME: /home/runner/.local/share
-          SENTENCE_TRANSFORMERS_HOME: /home/runner/.local/share/candlekeep/models
           CANDLEKEEP_DEVICE: cpu
           CHROMA_URL: http://localhost:8000
         run: |
