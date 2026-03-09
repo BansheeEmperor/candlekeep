@@ -4,11 +4,10 @@ Current default: 512 chars, 50 overlap.
 Arcane Recall expands ±2 chunks, so smaller chunks get compensated with context.
 The question: does chunk size affect retrieval quality or just expansion behavior?
 """
+import pytest
 import json
 import tempfile
 from pathlib import Path
-
-import pytest
 
 from candlekeep.config import Settings
 from candlekeep.database.vector_store import ChromaVectorStore
@@ -16,6 +15,8 @@ from candlekeep.rag.processor import DocumentProcessor
 from candlekeep.rag.router import search_with_routing
 from tests.benchmark import RAGBenchmark
 from tests.benchmark_queries import BENCHMARK_QUERIES
+
+pytestmark = [pytest.mark.slow]
 
 SAMPLE_DOCS = Path(__file__).parent / "fixtures" / "sample_docs"
 

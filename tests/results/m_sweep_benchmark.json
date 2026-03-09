@@ -1,0 +1,30 @@
+{
+  "8": {
+    "precision": 0.8783,
+    "recall": 3.8442,
+    "f1": 1.4299,
+    "content": 0.8734,
+    "latency": 104.7
+  },
+  "16": {
+    "precision": 0.8783,
+    "recall": 3.8442,
+    "f1": 1.4299,
+    "content": 0.8734,
+    "latency": 98.9
+  },
+  "32": {
+    "precision": 0.8783,
+    "recall": 3.8442,
+    "f1": 1.4299,
+    "content": 0.8734,
+    "latency": 104.5
+  },
+  "48": {
+    "precision": 0.8783,
+    "recall": 3.8442,
+    "f1": 1.4299,
+    "content": 0.8734,
+    "latency": 103.7
+  }
+}

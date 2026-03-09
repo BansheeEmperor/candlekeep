@@ -5,6 +5,8 @@ from candlekeep.eval.metrics import (
     calculate_ndcg_graded,
 )
 
+pytestmark = [pytest.mark.unit]
+
 
 class TestDCGGraded:
     def test_perfect_ranking(self):

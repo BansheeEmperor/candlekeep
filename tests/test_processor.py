@@ -4,6 +4,8 @@ from pathlib import Path
 from candlekeep.rag.processor import DocumentProcessor
 from candlekeep.config import Settings
 
+pytestmark = [pytest.mark.unit]
+
 
 @pytest.fixture
 def processor():

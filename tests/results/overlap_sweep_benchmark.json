@@ -1,0 +1,150 @@
+{
+  "overlap_0": {
+    "chunk_overlap": 0,
+    "chunk_size": 512,
+    "expansion_chunks": 2,
+    "total_chunks": 2795,
+    "summary": {
+      "mrr": 0.5018518518518519,
+      "avg_ndcg_5": 0.5162420590450107,
+      "avg_hit_rate_1": 0.48148148148148145,
+      "avg_hit_rate_5": 0.5462962962962963,
+      "avg_precision_5": 0.47067901234567905,
+      "avg_latency_ms": 544.8565461017467,
+      "avg_tokens": 2595.324074074074,
+      "total_tokens": 280295,
+      "by_category": {
+        "semantic": {
+          "mrr": 0.8298611111111112,
+          "avg_ndcg_5": 0.8360610365327387,
+          "avg_hit_rate_5": 0.8541666666666666,
+          "count": 48
+        },
+        "lexical": {
+          "mrr": 0.4788888888888889,
+          "avg_ndcg_5": 0.5207737541096568,
+          "avg_hit_rate_5": 0.6,
+          "count": 30
+        },
+        "adversarial": {
+          "mrr": 0.0,
+          "avg_ndcg_5": 0.0,
+          "avg_hit_rate_5": 0.0,
+          "count": 30
+        }
+      },
+      "total_queries": 108
+    }
+  },
+  "overlap_25": {
+    "chunk_overlap": 25,
+    "chunk_size": 512,
+    "expansion_chunks": 2,
+    "total_chunks": 2828,
+    "summary": {
+      "mrr": 0.508641975308642,
+      "avg_ndcg_5": 0.5238832303004708,
+      "avg_hit_rate_1": 0.49074074074074076,
+      "avg_hit_rate_5": 0.5555555555555556,
+      "avg_precision_5": 0.47206790123456793,
+      "avg_latency_ms": 543.3965237052353,
+      "avg_tokens": 2688.1111111111113,
+      "total_tokens": 290316,
+      "by_category": {
+        "semantic": {
+          "mrr": 0.8263888888888888,
+          "avg_ndcg_5": 0.8360610365327387,
+          "avg_hit_rate_5": 0.8541666666666666,
+          "count": 48
+        },
+        "lexical": {
+          "mrr": 0.508888888888889,
+          "avg_ndcg_5": 0.548281970629313,
+          "avg_hit_rate_5": 0.6333333333333333,
+          "count": 30
+        },
+        "adversarial": {
+          "mrr": 0.0,
+          "avg_ndcg_5": 0.0,
+          "avg_hit_rate_5": 0.0,
+          "count": 30
+        }
+      },
+      "total_queries": 108
+    }
+  },
+  "overlap_50": {
+    "chunk_overlap": 50,
+    "chunk_size": 512,
+    "expansion_chunks": 2,
+    "total_chunks": 2859,
+    "summary": {
+      "mrr": 0.5023148148148148,
+      "avg_ndcg_5": 0.5156716302334844,
+      "avg_hit_rate_1": 0.48148148148148145,
+      "avg_hit_rate_5": 0.5462962962962963,
+      "avg_precision_5": 0.471141975308642,
+      "avg_latency_ms": 529.6392242113749,
+      "avg_tokens": 2756.703703703704,
+      "total_tokens": 297724,
+      "by_category": {
+        "semantic": {
+          "mrr": 0.8298611111111112,
+          "avg_ndcg_5": 0.8360610365327387,
+          "avg_hit_rate_5": 0.8541666666666666,
+          "count": 48
+        },
+        "lexical": {
+          "mrr": 0.4805555555555555,
+          "avg_ndcg_5": 0.5187202103881617,
+          "avg_hit_rate_5": 0.6,
+          "count": 30
+        },
+        "adversarial": {
+          "mrr": 0.0,
+          "avg_ndcg_5": 0.0,
+          "avg_hit_rate_5": 0.0,
+          "count": 30
+        }
+      },
+      "total_queries": 108
+    }
+  },
+  "overlap_100": {
+    "chunk_overlap": 100,
+    "chunk_size": 512,
+    "expansion_chunks": 2,
+    "total_chunks": 2961,
+    "summary": {
+      "mrr": 0.5098765432098765,
+      "avg_ndcg_5": 0.5237185769596745,
+      "avg_hit_rate_1": 0.49074074074074076,
+      "avg_hit_rate_5": 0.5555555555555556,
+      "avg_precision_5": 0.47160493827160493,
+      "avg_latency_ms": 537.9914663456104,
+      "avg_tokens": 2812.546296296296,
+      "total_tokens": 303755,
+      "by_category": {
+        "semantic": {
+          "mrr": 0.8305555555555556,
+          "avg_ndcg_5": 0.8450334648259344,
+          "avg_hit_rate_5": 0.875,
+          "count": 48
+        },
+        "lexical": {
+          "mrr": 0.5066666666666666,
+          "avg_ndcg_5": 0.5333333333333333,
+          "avg_hit_rate_5": 0.6,
+          "count": 30
+        },
+        "adversarial": {
+          "mrr": 0.0,
+          "avg_ndcg_5": 0.0,
+          "avg_hit_rate_5": 0.0,
+          "count": 30
+        }
+      },
+      "total_queries": 108
+    }
+  }
+}

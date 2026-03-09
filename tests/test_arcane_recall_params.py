@@ -4,6 +4,8 @@ from candlekeep.rag.arcane_recall import search_with_arcane_recall
 from tests.benchmark import RAGBenchmark
 from tests.benchmark_queries import BENCHMARK_QUERIES
 
+pytestmark = [pytest.mark.slow]
+
 
 @pytest.mark.parametrize("expansion_chunks", [1, 2, 3, 4])
 def test_arcane_recall_expansion_sizes(seeded_store, expansion_chunks):

@@ -5,6 +5,7 @@ import sys
 import torch
 from sentence_transformers import CrossEncoder
 from candlekeep.database.interface import SearchResult
+from candlekeep.config import Settings
 
 _cross_encoder: CrossEncoder | None = None
 _cross_encoder_key: str | None = None
@@ -20,10 +21,18 @@ def _get_cross_encoder(model_name: str, device: str = "cpu") -> CrossEncoder:
     global _cross_encoder, _cross_encoder_key
     key = f"{model_name}:{device}"
     if _cross_encoder is None or _cross_encoder_key != key:
+        settings = Settings.from_env()
+        cache_dir = settings.models_dir
+        
         try:
-            _cross_encoder = CrossEncoder(model_name, device=device, local_files_only=True)
+            _cross_encoder = CrossEncoder(
+                model_name, 
+                device=device, 
+                local_files_only=True,
+                cache_folder=str(cache_dir)
+            )
         except Exception:
-            print(f"[candlekeep] ❌ Cross-encoder '{model_name}' not found locally. "
+            print(f"[candlekeep] ❌ Cross-encoder '{model_name}' not found locally in {cache_dir}. "
                   f"Run ./scripts/setup.sh", file=sys.stderr)
             sys.exit(1)
 

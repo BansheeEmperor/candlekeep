@@ -1,0 +1,376 @@
+{
+  "metadata": {
+    "name": "Paul Graham Essay Set (Bedrock-generated)",
+    "version": "1.0",
+    "total_queries": 48,
+    "categories": [
+      "adversarial",
+      "conceptual",
+      "cross-essay",
+      "factual"
+    ],
+    "corpus": "tests/fixtures/paul_graham/",
+    "generator": "Bedrock Claude 3.5 Sonnet"
+  },
+  "queries": [
+    {
+      "query": "What is the key insight that Paul Graham describes about spam filtering?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/a-plan-for-spam.md"
+      ],
+      "category": "factual",
+      "difficulty": "easy"
+    },
+    {
+      "query": "What was novel about the web-based application that Paul Graham and Robert Morris built at Viaweb?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/beating-the-averages.md"
+      ],
+      "category": "conceptual",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What is the most common unscalable thing that founders have to do at the start of a startup?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/do-things-that-dont-scale.md"
+      ],
+      "category": "factual",
+      "difficulty": "easy"
+    },
+    {
+      "query": "According to Paul Graham, what are the three things that startups need to create to be successful?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/how-to-start-a-startup.md"
+      ],
+      "category": "factual",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Why does Paul Graham think that mean people tend to fail as startup founders?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/mean-people-fail.md"
+      ],
+      "category": "conceptual",
+      "difficulty": "medium"
+    },
+    {
+      "query": "How did the teaching of writing become mixed together with the study of literature, according to Paul Graham?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/the-age-of-the-essay.md"
+      ],
+      "category": "conceptual",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What does Paul Graham say is the key to getting good startup ideas?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/how-to-get-startup-ideas.md"
+      ],
+      "category": "factual",
+      "difficulty": "easy"
+    },
+    {
+      "query": "According to Paul Graham, what is the key difference between a low-tech and high-tech society in terms of variation in productivity?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/great-hackers.md"
+      ],
+      "category": "conceptual",
+      "difficulty": "hard"
+    },
+    {
+      "query": "What does Paul Graham say is the economic proposition of starting a startup?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/how-to-make-wealth.md"
+      ],
+      "category": "conceptual",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What does Paul Graham say is the problem with having religion and politics as part of one's identity?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/keep-your-identity-small.md"
+      ],
+      "category": "conceptual",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Did we actually dress like that?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/what-you-cant-say.md"
+      ],
+      "category": "factual",
+      "difficulty": "easy"
+    },
+    {
+      "query": "What would someone coming back to visit us in a time machine have to be careful not to say?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/what-you-cant-say.md"
+      ],
+      "category": "conceptual",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What is the recipe for genius?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/the-bus-ticket-theory-of-genius.md"
+      ],
+      "category": "conceptual",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Why is raising money so brutal for startups?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/a-fundraising-survival-guide.md"
+      ],
+      "category": "factual",
+      "difficulty": "easy"
+    },
+    {
+      "query": "What is the most important predictor of startup success?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/the-anatomy-of-determination.md"
+      ],
+      "category": "factual",
+      "difficulty": "easy"
+    },
+    {
+      "query": "How can a computer science undergraduate become a good hacker?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/undergraduation.md"
+      ],
+      "category": "conceptual",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What message does each city send to its residents?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/cities-and-ambition.md"
+      ],
+      "category": "conceptual",
+      "difficulty": "hard"
+    },
+    {
+      "query": "How much rewriting does Paul Graham do for his essays?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/a-version-10.md"
+      ],
+      "category": "factual",
+      "difficulty": "medium"
+    },
+    {
+      "query": "Why don't more startups become as successful as Google?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/why-there-arent-more-googles.md"
+      ],
+      "category": "conceptual",
+      "difficulty": "medium"
+    },
+    {
+      "query": "How do most fortunes get lost?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/how-to-lose-time-and-money.md"
+      ],
+      "category": "factual",
+      "difficulty": "easy"
+    },
+    {
+      "query": "What is the main difference between design and research according to the essay?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/design-and-research.md"
+      ],
+      "category": "conceptual",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What are some of the advantages that startups get from being located in the US according to the essay?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/why-startups-condense-in-america.md"
+      ],
+      "category": "factual",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Why does the author recommend changing your company's name if you don't have the .com domain for it?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/change-your-name.md"
+      ],
+      "category": "conceptual",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What surprised the architect Kate the most about the startup world?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/what-kate-saw-in-silicon-valley.md"
+      ],
+      "category": "factual",
+      "difficulty": "easy"
+    },
+    {
+      "query": "What does the author say is the key thing that Y Combinator looks for in founders?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/billionaires-build.md"
+      ],
+      "category": "factual",
+      "difficulty": "easy"
+    },
+    {
+      "query": "What was the canonical hacker's computer before the rise of Intel/Microsoft boxes?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/return-of-the-mac.md"
+      ],
+      "category": "factual",
+      "difficulty": "easy"
+    },
+    {
+      "query": "What does the author say is the key to writing simply and effectively?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/write-simply.md"
+      ],
+      "category": "conceptual",
+      "difficulty": "medium"
+    },
+    {
+      "query": "What does the author say is the key to holding a program in one's head?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/holding-a-program-in-ones-head.md"
+      ],
+      "category": "conceptual",
+      "difficulty": "hard"
+    },
+    {
+      "query": "What are the key factors that contribute to the success of a startup according to the essay 'How to Start a Startup'?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/how-to-start-a-startup.md",
+        "tests/fixtures/paul_graham/do-things-that-dont-scale.md"
+      ],
+      "category": "cross-essay",
+      "difficulty": "hard"
+    },
+    {
+      "query": "How does the essay 'Beating the Averages' describe the use of the Lisp programming language in the Viaweb startup, and how does this relate to the advice given in 'Great Hackers' about learning Lisp?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/beating-the-averages.md",
+        "tests/fixtures/paul_graham/great-hackers.md"
+      ],
+      "category": "cross-essay",
+      "difficulty": "hard"
+    },
+    {
+      "query": "What are the key differences between written and spoken language described in the essays 'The Age of the Essay' and 'Write Like You Talk', and how do these differences impact the effectiveness of writing?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/the-age-of-the-essay.md",
+        "tests/fixtures/paul_graham/write-like-you-talk.md"
+      ],
+      "category": "cross-essay",
+      "difficulty": "hard"
+    },
+    {
+      "query": "How do the essays 'How to Make Wealth' and 'Inequality and Risk' discuss the relationship between economic inequality and productivity, and what strategies are proposed for addressing inequality?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/how-to-make-wealth.md",
+        "tests/fixtures/paul_graham/inequality-and-risk.md"
+      ],
+      "category": "cross-essay",
+      "difficulty": "hard"
+    },
+    {
+      "query": "What insights do the essays 'Mean People Fail' and 'The Anatomy of Determination' provide about the relationship between personal character traits and entrepreneurial success?",
+      "expected_sources": [
+        "tests/fixtures/paul_graham/mean-people-fail.md",
+        "tests/fixtures/paul_graham/the-anatomy-of-determination.md"
+      ],
+      "category": "cross-essay",
+      "difficulty": "hard"
+    },
+    {
+      "query": "how to configure nginx reverse proxy for kubernetes",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "best practices for PostgreSQL index optimization",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "machine learning model training with PyTorch distributed",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "OWASP top 10 web application security vulnerabilities 2024",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "terraform module for AWS VPC with private subnets",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "how to implement OAuth 2.0 PKCE flow in React",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "Redis cluster sharding with consistent hashing",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "GraphQL subscription implementation with WebSocket",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "differential privacy in federated learning systems",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "quantum computing applications in molecular biology",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "easy"
+    },
+    {
+      "query": "What did Paul Graham say about cooking Italian food?",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Paul Graham's advice on learning to play guitar",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "How does Paul Graham recommend training for marathons?",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "What is Paul Graham's opinion on cryptocurrency mining?",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    },
+    {
+      "query": "Paul Graham's guide to home renovation and interior design",
+      "expected_sources": [],
+      "category": "adversarial",
+      "difficulty": "hard"
+    }
+  ]
+}

@@ -1,0 +1,286 @@
+{
+  "expansion_chunks_sweep": {
+    "expansion_1": {
+      "expansion_chunks": 1,
+      "similarity_threshold": 0.92,
+      "summary": {
+        "mrr": 0.5018518518518519,
+        "avg_ndcg_5": 0.5156716302334844,
+        "avg_hit_rate_1": 0.48148148148148145,
+        "avg_hit_rate_5": 0.5462962962962963,
+        "avg_precision_5": 0.4725308641975308,
+        "avg_latency_ms": 393.0401493001867,
+        "avg_tokens": 2155.1203703703704,
+        "total_tokens": 232753,
+        "by_category": {
+          "lexical": {
+            "mrr": 0.4788888888888889,
+            "avg_ndcg_5": 0.5187202103881617,
+            "avg_hit_rate_5": 0.6,
+            "count": 30
+          },
+          "adversarial": {
+            "mrr": 0.0,
+            "avg_ndcg_5": 0.0,
+            "avg_hit_rate_5": 0.0,
+            "count": 30
+          },
+          "semantic": {
+            "mrr": 0.8298611111111112,
+            "avg_ndcg_5": 0.8360610365327387,
+            "avg_hit_rate_5": 0.8541666666666666,
+            "count": 48
+          }
+        },
+        "total_queries": 108
+      }
+    },
+    "expansion_2": {
+      "expansion_chunks": 2,
+      "similarity_threshold": 0.92,
+      "summary": {
+        "mrr": 0.5023148148148148,
+        "avg_ndcg_5": 0.5156716302334844,
+        "avg_hit_rate_1": 0.48148148148148145,
+        "avg_hit_rate_5": 0.5462962962962963,
+        "avg_precision_5": 0.471141975308642,
+        "avg_latency_ms": 528.077761332194,
+        "avg_tokens": 2755.3888888888887,
+        "total_tokens": 297582,
+        "by_category": {
+          "lexical": {
+            "mrr": 0.4805555555555555,
+            "avg_ndcg_5": 0.5187202103881617,
+            "avg_hit_rate_5": 0.6,
+            "count": 30
+          },
+          "adversarial": {
+            "mrr": 0.0,
+            "avg_ndcg_5": 0.0,
+            "avg_hit_rate_5": 0.0,
+            "count": 30
+          },
+          "semantic": {
+            "mrr": 0.8298611111111112,
+            "avg_ndcg_5": 0.8360610365327387,
+            "avg_hit_rate_5": 0.8541666666666666,
+            "count": 48
+          }
+        },
+        "total_queries": 108
+      }
+    },
+    "expansion_3": {
+      "expansion_chunks": 3,
+      "similarity_threshold": 0.92,
+      "summary": {
+        "mrr": 0.5030864197530864,
+        "avg_ndcg_5": 0.5156716302334844,
+        "avg_hit_rate_1": 0.48148148148148145,
+        "avg_hit_rate_5": 0.5462962962962963,
+        "avg_precision_5": 0.4719135802469136,
+        "avg_latency_ms": 603.028568956587,
+        "avg_tokens": 3095.8888888888887,
+        "total_tokens": 334356,
+        "by_category": {
+          "lexical": {
+            "mrr": 0.48333333333333334,
+            "avg_ndcg_5": 0.5187202103881617,
+            "avg_hit_rate_5": 0.6,
+            "count": 30
+          },
+          "adversarial": {
+            "mrr": 0.0,
+            "avg_ndcg_5": 0.0,
+            "avg_hit_rate_5": 0.0,
+            "count": 30
+          },
+          "semantic": {
+            "mrr": 0.8298611111111112,
+            "avg_ndcg_5": 0.8360610365327387,
+            "avg_hit_rate_5": 0.8541666666666666,
+            "count": 48
+          }
+        },
+        "total_queries": 108
+      }
+    }
+  },
+  "similarity_threshold_sweep": {
+    "threshold_0.85": {
+      "expansion_chunks": 2,
+      "similarity_threshold": 0.85,
+      "summary": {
+        "mrr": 0.5030864197530864,
+        "avg_ndcg_5": 0.5156716302334844,
+        "avg_hit_rate_1": 0.48148148148148145,
+        "avg_hit_rate_5": 0.5462962962962963,
+        "avg_precision_5": 0.46867283950617283,
+        "avg_latency_ms": 517.8375818111278,
+        "avg_tokens": 3525.046296296296,
+        "total_tokens": 380705,
+        "by_category": {
+          "lexical": {
+            "mrr": 0.48333333333333334,
+            "avg_ndcg_5": 0.5187202103881617,
+            "avg_hit_rate_5": 0.6,
+            "count": 30
+          },
+          "adversarial": {
+            "mrr": 0.0,
+            "avg_ndcg_5": 0.0,
+            "avg_hit_rate_5": 0.0,
+            "count": 30
+          },
+          "semantic": {
+            "mrr": 0.8298611111111112,
+            "avg_ndcg_5": 0.8360610365327387,
+            "avg_hit_rate_5": 0.8541666666666666,
+            "count": 48
+          }
+        },
+        "total_queries": 108
+      }
+    },
+    "threshold_0.88": {
+      "expansion_chunks": 2,
+      "similarity_threshold": 0.88,
+      "summary": {
+        "mrr": 0.5030864197530864,
+        "avg_ndcg_5": 0.5156716302334844,
+        "avg_hit_rate_1": 0.48148148148148145,
+        "avg_hit_rate_5": 0.5462962962962963,
+        "avg_precision_5": 0.46867283950617283,
+        "avg_latency_ms": 537.9288991292318,
+        "avg_tokens": 3302.6481481481483,
+        "total_tokens": 356686,
+        "by_category": {
+          "lexical": {
+            "mrr": 0.48333333333333334,
+            "avg_ndcg_5": 0.5187202103881617,
+            "avg_hit_rate_5": 0.6,
+            "count": 30
+          },
+          "adversarial": {
+            "mrr": 0.0,
+            "avg_ndcg_5": 0.0,
+            "avg_hit_rate_5": 0.0,
+            "count": 30
+          },
+          "semantic": {
+            "mrr": 0.8298611111111112,
+            "avg_ndcg_5": 0.8360610365327387,
+            "avg_hit_rate_5": 0.8541666666666666,
+            "count": 48
+          }
+        },
+        "total_queries": 108
+      }
+    },
+    "threshold_0.9": {
+      "expansion_chunks": 2,
+      "similarity_threshold": 0.9,
+      "summary": {
+        "mrr": 0.5030864197530864,
+        "avg_ndcg_5": 0.5156716302334844,
+        "avg_hit_rate_1": 0.48148148148148145,
+        "avg_hit_rate_5": 0.5462962962962963,
+        "avg_precision_5": 0.4700617283950617,
+        "avg_latency_ms": 503.4335454305013,
+        "avg_tokens": 3048.490740740741,
+        "total_tokens": 329237,
+        "by_category": {
+          "lexical": {
+            "mrr": 0.48333333333333334,
+            "avg_ndcg_5": 0.5187202103881617,
+            "avg_hit_rate_5": 0.6,
+            "count": 30
+          },
+          "adversarial": {
+            "mrr": 0.0,
+            "avg_ndcg_5": 0.0,
+            "avg_hit_rate_5": 0.0,
+            "count": 30
+          },
+          "semantic": {
+            "mrr": 0.8298611111111112,
+            "avg_ndcg_5": 0.8360610365327387,
+            "avg_hit_rate_5": 0.8541666666666666,
+            "count": 48
+          }
+        },
+        "total_queries": 108
+      }
+    },
+    "threshold_0.92": {
+      "expansion_chunks": 2,
+      "similarity_threshold": 0.92,
+      "summary": {
+        "mrr": 0.5023148148148148,
+        "avg_ndcg_5": 0.5156716302334844,
+        "avg_hit_rate_1": 0.48148148148148145,
+        "avg_hit_rate_5": 0.5462962962962963,
+        "avg_precision_5": 0.471141975308642,
+        "avg_latency_ms": 513.0459401342604,
+        "avg_tokens": 2755.3888888888887,
+        "total_tokens": 297582,
+        "by_category": {
+          "lexical": {
+            "mrr": 0.4805555555555555,
+            "avg_ndcg_5": 0.5187202103881617,
+            "avg_hit_rate_5": 0.6,
+            "count": 30
+          },
+          "adversarial": {
+            "mrr": 0.0,
+            "avg_ndcg_5": 0.0,
+            "avg_hit_rate_5": 0.0,
+            "count": 30
+          },
+          "semantic": {
+            "mrr": 0.8298611111111112,
+            "avg_ndcg_5": 0.8360610365327387,
+            "avg_hit_rate_5": 0.8541666666666666,
+            "count": 48
+          }
+        },
+        "total_queries": 108
+      }
+    },
+    "threshold_0.95": {
+      "expansion_chunks": 2,
+      "similarity_threshold": 0.95,
+      "summary": {
+        "mrr": 0.5018518518518519,
+        "avg_ndcg_5": 0.5156716302334844,
+        "avg_hit_rate_1": 0.48148148148148145,
+        "avg_hit_rate_5": 0.5462962962962963,
+        "avg_precision_5": 0.4729938271604939,
+        "avg_latency_ms": 509.6351967917548,
+        "avg_tokens": 2014.8240740740741,
+        "total_tokens": 217601,
+        "by_category": {
+          "lexical": {
+            "mrr": 0.4788888888888889,
+            "avg_ndcg_5": 0.5187202103881617,
+            "avg_hit_rate_5": 0.6,
+            "count": 30
+          },
+          "adversarial": {
+            "mrr": 0.0,
+            "avg_ndcg_5": 0.0,
+            "avg_hit_rate_5": 0.0,
+            "count": 30
+          },
+          "semantic": {
+            "mrr": 0.8298611111111112,
+            "avg_ndcg_5": 0.8360610365327387,
+            "avg_hit_rate_5": 0.8541666666666666,
+            "count": 48
+          }
+        },
+        "total_queries": 108
+      }
+    }
+  }
+}

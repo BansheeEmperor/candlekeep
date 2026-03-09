@@ -1,0 +1,689 @@
+{
+  "summary": {
+    "total_queries": 23,
+    "avg_precision": 0.7754738015607581,
+    "avg_recall": 0.6884057971014493,
+    "f1_score": 0.7293505025721851,
+    "avg_latency_ms": 57.724662449048914,
+    "avg_top_score": 1.3921750986956523,
+    "content_match_rate": 0.8860759493670886,
+    "by_difficulty": {
+      "easy": {
+        "count": 5,
+        "precision": 0.5833333333333333,
+        "recall": 0.6,
+        "latency_ms": 45.09854316711426
+      },
+      "medium": {
+        "count": 9,
+        "precision": 0.9444444444444444,
+        "recall": 0.7222222222222222,
+        "latency_ms": 43.37498876783583
+      },
+      "hard": {
+        "count": 9,
+        "precision": 0.7132478632478633,
+        "recall": 0.7037037037037037,
+        "latency_ms": 79.08884684244792
+      }
+    },
+    "by_category": {
+      "core": {
+        "count": 20,
+        "precision": 0.7533333333333333,
+        "recall": 0.6416666666666667,
+        "latency_ms": 44.40176486968994
+      },
+      "agent": {
+        "count": 3,
+        "precision": 0.923076923076923,
+        "recall": 1.0,
+        "latency_ms": 146.5439796447754
+      }
+    }
+  },
+  "results": [
+    {
+      "query": "What is semantic search?",
+      "difficulty": "easy",
+      "precision": 1.0,
+      "recall": 1.0,
+      "latency_ms": 40.39907455444336,
+      "top_score": 1.2404588699999999,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/semantic-search.md",
+        "tests/fixtures/sample_docs/vector-databases.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/semantic-search.md",
+        "tests/fixtures/sample_docs/vector-databases.md"
+      ],
+      "found_content": [
+        "semantic search",
+        "meaning",
+        "intent"
+      ],
+      "expected_content": [
+        "semantic search",
+        "meaning",
+        "intent"
+      ]
+    },
+    {
+      "query": "vector database",
+      "difficulty": "easy",
+      "precision": 0.3333333333333333,
+      "recall": 0.5,
+      "latency_ms": 48.83885383605957,
+      "top_score": 1.65905677,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/vector-databases.md",
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/database-design.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/vector-databases.md",
+        "tests/fixtures/sample_docs/semantic-search.md"
+      ],
+      "found_content": [
+        "vector",
+        "embeddings",
+        "similarity"
+      ],
+      "expected_content": [
+        "vector",
+        "embeddings",
+        "similarity"
+      ]
+    },
+    {
+      "query": "REST API design",
+      "difficulty": "easy",
+      "precision": 0.3333333333333333,
+      "recall": 0.5,
+      "latency_ms": 47.74808883666992,
+      "top_score": 1.82382333,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/api-design.md",
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/database-design.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/api-design.md",
+        "tests/fixtures/sample_docs/microservices.md"
+      ],
+      "found_content": [
+        "REST",
+        "HTTP"
+      ],
+      "expected_content": [
+        "REST",
+        "HTTP",
+        "endpoints"
+      ]
+    },
+    {
+      "query": "database normalization",
+      "difficulty": "easy",
+      "precision": 1.0,
+      "recall": 0.5,
+      "latency_ms": 43.538808822631836,
+      "top_score": 1.35279328,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/database-design.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/vector-databases.md"
+      ],
+      "found_content": [
+        "normalization",
+        "1NF",
+        "2NF",
+        "3NF"
+      ],
+      "expected_content": [
+        "normalization",
+        "1NF",
+        "2NF",
+        "3NF"
+      ]
+    },
+    {
+      "query": "How do I handle negation in search queries?",
+      "difficulty": "medium",
+      "precision": 0.5,
+      "recall": 1.0,
+      "latency_ms": 44.564008712768555,
+      "top_score": 1.79745394,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/semantic-search.md",
+        "tests/fixtures/sample_docs/vector-databases.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/semantic-search.md"
+      ],
+      "found_content": [
+        "negation",
+        "preprocessing",
+        "without",
+        "not"
+      ],
+      "expected_content": [
+        "negation",
+        "preprocessing",
+        "without",
+        "not"
+      ]
+    },
+    {
+      "query": "What are microservices communication patterns?",
+      "difficulty": "medium",
+      "precision": 1.0,
+      "recall": 0.5,
+      "latency_ms": 41.275978088378906,
+      "top_score": 1.27445778,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/microservices.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/api-design.md"
+      ],
+      "found_content": [
+        "synchronous",
+        "asynchronous",
+        "message",
+        "REST"
+      ],
+      "expected_content": [
+        "synchronous",
+        "asynchronous",
+        "message",
+        "REST"
+      ]
+    },
+    {
+      "query": "How should I implement caching?",
+      "difficulty": "medium",
+      "precision": 1.0,
+      "recall": 0.5,
+      "latency_ms": 44.33178901672363,
+      "top_score": 1.24226358,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/caching.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/semantic-search.md"
+      ],
+      "found_content": [
+        "cache",
+        "pattern",
+        "TTL",
+        "invalidation"
+      ],
+      "expected_content": [
+        "cache",
+        "pattern",
+        "TTL",
+        "invalidation"
+      ]
+    },
+    {
+      "query": "What's the difference between authentication and authorization?",
+      "difficulty": "medium",
+      "precision": 1.0,
+      "recall": 0.5,
+      "latency_ms": 41.24188423156738,
+      "top_score": 1.8908489099999999,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/authentication.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/api-design.md"
+      ],
+      "found_content": [
+        "authentication",
+        "authorization",
+        "who",
+        "what"
+      ],
+      "expected_content": [
+        "authentication",
+        "authorization",
+        "who",
+        "what"
+      ]
+    },
+    {
+      "query": "When should I denormalize a database?",
+      "difficulty": "medium",
+      "precision": 1.0,
+      "recall": 1.0,
+      "latency_ms": 43.63417625427246,
+      "top_score": 1.59698157,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/caching.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/caching.md"
+      ],
+      "found_content": [
+        "denormalization",
+        "read-heavy"
+      ],
+      "expected_content": [
+        "denormalization",
+        "read-heavy",
+        "performance"
+      ]
+    },
+    {
+      "query": "How do I design a scalable API with proper caching?",
+      "difficulty": "hard",
+      "precision": 0.8,
+      "recall": 1.0,
+      "latency_ms": 49.10731315612793,
+      "top_score": 1.95202006,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/api-design.md",
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/caching.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/api-design.md",
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/microservices.md"
+      ],
+      "found_content": [
+        "API",
+        "cache"
+      ],
+      "expected_content": [
+        "API",
+        "cache",
+        "performance",
+        "scalable"
+      ]
+    },
+    {
+      "query": "What are the security considerations for JWT tokens?",
+      "difficulty": "hard",
+      "precision": 1.0,
+      "recall": 1.0,
+      "latency_ms": 42.88887977600098,
+      "top_score": 1.6126837,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/authentication.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/authentication.md"
+      ],
+      "found_content": [
+        "JWT",
+        "security",
+        "expiration",
+        "HTTPS"
+      ],
+      "expected_content": [
+        "JWT",
+        "security",
+        "expiration",
+        "HTTPS"
+      ]
+    },
+    {
+      "query": "How do microservices handle data consistency?",
+      "difficulty": "hard",
+      "precision": 1.0,
+      "recall": 0.5,
+      "latency_ms": 41.123151779174805,
+      "top_score": 1.29315742,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/microservices.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/database-design.md"
+      ],
+      "found_content": [
+        "saga",
+        "consistency",
+        "distributed",
+        "transaction"
+      ],
+      "expected_content": [
+        "saga",
+        "consistency",
+        "distributed",
+        "transaction"
+      ]
+    },
+    {
+      "query": "OAuth 2.0 flows",
+      "difficulty": "medium",
+      "precision": 1.0,
+      "recall": 0.5,
+      "latency_ms": 42.962074279785156,
+      "top_score": 0.7975634699999999,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/authentication.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/api-design.md"
+      ],
+      "found_content": [
+        "OAuth",
+        "authorization"
+      ],
+      "expected_content": [
+        "OAuth",
+        "authorization",
+        "flow"
+      ]
+    },
+    {
+      "query": "cache eviction policies",
+      "difficulty": "medium",
+      "precision": 1.0,
+      "recall": 0.5,
+      "latency_ms": 43.951988220214844,
+      "top_score": 0.89758918,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/caching.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/semantic-search.md"
+      ],
+      "found_content": [
+        "LRU",
+        "LFU",
+        "eviction"
+      ],
+      "expected_content": [
+        "LRU",
+        "LFU",
+        "eviction"
+      ]
+    },
+    {
+      "query": "API versioning strategies",
+      "difficulty": "easy",
+      "precision": 0.25,
+      "recall": 0.5,
+      "latency_ms": 44.9678897857666,
+      "top_score": 1.21538826,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/api-design.md",
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/caching.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/api-design.md",
+        "tests/fixtures/sample_docs/authentication.md"
+      ],
+      "found_content": [
+        "version",
+        "v1",
+        "v2"
+      ],
+      "expected_content": [
+        "version",
+        "v1",
+        "v2"
+      ]
+    },
+    {
+      "query": "How do microservices handle authentication while maintaining cache consistency across distributed services?",
+      "difficulty": "hard",
+      "precision": 1.0,
+      "recall": 1.0,
+      "latency_ms": 136.27386093139648,
+      "top_score": 1.29513907,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/caching.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/caching.md"
+      ],
+      "found_content": [
+        "authentication",
+        "cache",
+        "distributed",
+        "service"
+      ],
+      "expected_content": [
+        "authentication",
+        "cache",
+        "distributed",
+        "service"
+      ]
+    },
+    {
+      "query": "Compare session-based auth with JWT tokens and explain when to use each with API versioning",
+      "difficulty": "hard",
+      "precision": 1.0,
+      "recall": 1.0,
+      "latency_ms": 132.74788856506348,
+      "top_score": 1.2887948200000001,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/api-design.md",
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/authentication.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/api-design.md"
+      ],
+      "found_content": [
+        "session",
+        "JWT",
+        "stateless",
+        "version"
+      ],
+      "expected_content": [
+        "session",
+        "JWT",
+        "stateless",
+        "version"
+      ]
+    },
+    {
+      "query": "I need to understand how to build a complete web application that handles user authentication with OAuth 2.0 and JWT tokens while also implementing a caching layer with proper cache invalidation strategies and designing a RESTful API with versioning and pagination for large datasets across multiple microservices",
+      "difficulty": "hard",
+      "precision": 0.7692307692307693,
+      "recall": 1.0,
+      "latency_ms": 170.6101894378662,
+      "top_score": 1.75964618,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/api-design.md",
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/microservices.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/api-design.md",
+        "tests/fixtures/sample_docs/microservices.md"
+      ],
+      "found_content": [
+        "OAuth",
+        "JWT",
+        "cache",
+        "REST",
+        "pagination"
+      ],
+      "expected_content": [
+        "OAuth",
+        "JWT",
+        "cache",
+        "REST",
+        "pagination"
+      ]
+    },
+    {
+      "query": "distributed systems design principles",
+      "difficulty": "hard",
+      "precision": 0.25,
+      "recall": 0.3333333333333333,
+      "latency_ms": 43.08509826660156,
+      "top_score": 1.17036703,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/api-design.md",
+        "tests/fixtures/sample_docs/database-design.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/api-design.md",
+        "tests/fixtures/sample_docs/vector-databases.md"
+      ],
+      "found_content": [],
+      "expected_content": [
+        "independent",
+        "decentralized",
+        "service"
+      ]
+    },
+    {
+      "query": "trade-offs between consistency and performance in data architecture",
+      "difficulty": "hard",
+      "precision": 0.6,
+      "recall": 0.5,
+      "latency_ms": 48.499107360839844,
+      "top_score": 1.48312788,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/vector-databases.md",
+        "tests/fixtures/sample_docs/vector-databases.md",
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/database-design.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/caching.md"
+      ],
+      "found_content": [
+        "denormalization",
+        "read-heavy",
+        "cache"
+      ],
+      "expected_content": [
+        "denormalization",
+        "read-heavy",
+        "cache",
+        "stale"
+      ]
+    },
+    {
+      "query": "quantum entanglement in photosynthesis",
+      "difficulty": "hard",
+      "precision": 0.0,
+      "recall": 0.0,
+      "latency_ms": 47.46413230895996,
+      "top_score": 0.794115,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/caching.md"
+      ],
+      "expected_sources": [],
+      "found_content": [],
+      "expected_content": []
+    },
+    {
+      "query": "caching strategies without Redis",
+      "difficulty": "medium",
+      "precision": 1.0,
+      "recall": 1.0,
+      "latency_ms": 44.68393325805664,
+      "top_score": 1.41709268,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/sample_docs/caching.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/caching.md"
+      ],
+      "found_content": [
+        "cache",
+        "pattern",
+        "TTL"
+      ],
+      "expected_content": [
+        "cache",
+        "pattern",
+        "TTL"
+      ]
+    },
+    {
+      "query": "authentication methods not using passwords",
+      "difficulty": "medium",
+      "precision": 1.0,
+      "recall": 1.0,
+      "latency_ms": 43.72906684875488,
+      "top_score": 1.16520449,
+      "retrieved_sources": [
+        "tests/fixtures/sample_docs/authentication.md"
+      ],
+      "expected_sources": [
+        "tests/fixtures/sample_docs/authentication.md"
+      ],
+      "found_content": [
+        "OAuth",
+        "MFA",
+        "biometric"
+      ],
+      "expected_content": [
+        "OAuth",
+        "MFA",
+        "biometric"
+      ]
+    }
+  ]
+}
