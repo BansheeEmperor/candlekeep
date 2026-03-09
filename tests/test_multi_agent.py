@@ -238,11 +238,7 @@ class TestStatsUsesCounter:
              patch.object(mcp_server, "_read_access", True), \
              patch.object(mcp_server, "get_store", return_value=mock_store), \
              patch.object(mcp_server, "_query_counter", mock_counter):
-            print(f"DEBUG CI: type(mcp_server.get_stats) = {type(mcp_server.get_stats)}")
-            if hasattr(mcp_server.get_stats, "fn"):
-                result = mcp_server.get_stats.fn()
-            else:
-                result = mcp_server.get_stats()
+            result = mcp_server.get_stats.fn()
             assert "Total queries: 2" in result
             # tokens_saved = 2 * (12500 - 640) = 23720
             assert "23,720" in result
