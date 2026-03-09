@@ -6,6 +6,8 @@ from candlekeep.rag.router import search_with_routing
 from tests.benchmark import RAGBenchmark
 from tests.benchmark_queries import BENCHMARK_QUERIES
 
+pytestmark = [pytest.mark.benchmark]
+
 
 class TestRouterBenchmark:
     """Benchmark quality and latency for both router paths."""

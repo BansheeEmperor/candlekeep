@@ -1,13 +1,14 @@
 """Scale benchmark: test router performance with large corpus."""
+import pytest
 import json
 import time
 from pathlib import Path
 
-import pytest
-
 from candlekeep.rag.router import search_with_routing
 from candlekeep.rag.processor import DocumentProcessor
 from candlekeep.config import Settings
+
+pytestmark = [pytest.mark.slow]
 
 SCALE_DOCS = Path(__file__).parent / "fixtures" / "scale_docs"
 

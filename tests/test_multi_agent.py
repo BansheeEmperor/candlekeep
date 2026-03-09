@@ -3,13 +3,14 @@
 Covers: dual-mode transport, optional auth, write serialization,
 in-memory metrics, concurrent reads, and stdio regression.
 """
+import pytest
 import threading
 import time
 from unittest.mock import MagicMock, patch, PropertyMock
 
-import pytest
-
 from candlekeep.config import Settings
+
+pytestmark = [pytest.mark.unit]
 
 
 # ============================================================

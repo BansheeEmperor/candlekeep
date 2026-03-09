@@ -1,12 +1,13 @@
 """Tests for per-session rate limiting."""
+import pytest
 import time
 import threading
 from unittest.mock import MagicMock
 
-import pytest
-
 # Import the class directly from server module internals
 from candlekeep.mcp.server import _RateLimiter, _rate_check
+
+pytestmark = [pytest.mark.unit]
 
 
 class TestRateLimiter:

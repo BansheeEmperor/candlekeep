@@ -1,10 +1,11 @@
 """Unit tests for embedding mismatch detection and conditional tool registration."""
+import pytest
 import os
 import tempfile
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
-import pytest
+pytestmark = [pytest.mark.unit]
 
 
 class TestEmbeddingMismatchDetection:

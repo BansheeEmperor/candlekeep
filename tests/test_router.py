@@ -1,7 +1,10 @@
 """Unit tests for the search router."""
+import pytest
 from unittest.mock import MagicMock, patch
 from candlekeep.database.interface import SearchResult
 from candlekeep.rag.router import search_with_routing, MIN_RELEVANCE_SCORE
+
+pytestmark = [pytest.mark.unit]
 
 
 def _make_result(text="test", score=0.9, source="test.md", chunk_index=0):

@@ -1,9 +1,11 @@
 """Unit tests for the provider abstraction layer."""
+import pytest
 from unittest.mock import MagicMock, patch
 import json
-import pytest
 
 from candlekeep.providers.base import LLMProvider, VisionProvider, ProviderError
+
+pytestmark = [pytest.mark.unit]
 
 
 # ---------------------------------------------------------------------------

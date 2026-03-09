@@ -3,16 +3,17 @@
 Each model produces different embeddings, so we re-ingest the corpus
 per model and measure retrieval quality on the same queries.
 """
+import pytest
 import json
 import tempfile
 import time
 from pathlib import Path
 
-import pytest
-
 from candlekeep.config import Settings, EMBEDDING_MODELS
 from candlekeep.database.vector_store import ChromaVectorStore
 from candlekeep.rag.processor import DocumentProcessor
+
+pytestmark = [pytest.mark.slow]
 from candlekeep.rag.router import search_with_routing
 from tests.benchmark import RAGBenchmark
 from tests.benchmark_queries import BENCHMARK_QUERIES

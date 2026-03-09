@@ -41,3 +41,10 @@ packages = ["src/candlekeep"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+markers = [
+    "unit: fast logic tests with no external dependencies",
+    "benchmark: quality and latency audits",
+    "integration: tests requiring a live ChromaDB connection",
+    "slow: heavy benchmarks or long-running simulations",
+    "experimental: tests for upcoming or missing features"
+]

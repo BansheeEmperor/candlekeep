@@ -1,0 +1,32 @@
+{
+  "minilm": {
+    "model_id": "sentence-transformers/all-MiniLM-L6-v2",
+    "chunks": 89,
+    "ingest_s": 2.6,
+    "precision": 0.8913043478260869,
+    "recall": 2.981884057971015,
+    "f1": 1.372391914426323,
+    "content": 0.8354430379746836,
+    "latency": 18.249314764271613
+  },
+  "bge-small": {
+    "model_id": "BAAI/bge-small-en-v1.5",
+    "chunks": 89,
+    "ingest_s": 3.0,
+    "precision": 0.8782608695652173,
+    "recall": 3.844202898550725,
+    "f1": 1.4298523593811503,
+    "content": 0.8734177215189873,
+    "latency": 22.834570511527684
+  },
+  "nomic": {
+    "model_id": "nomic-ai/nomic-embed-text-v1.5",
+    "chunks": 89,
+    "ingest_s": 8.1,
+    "precision": 0.9043478260869565,
+    "recall": 3.648550724637681,
+    "f1": 1.4494322152945491,
+    "content": 0.8481012658227848,
+    "latency": 47.02118168706479
+  }
+}

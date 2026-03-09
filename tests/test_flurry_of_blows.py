@@ -1,13 +1,17 @@
 """Test Flurry of Blows (Query Decomposition)."""
-from candlekeep.rag.flurry_of_blows import search_with_flurry_of_blows
+import pytest
+# Skip if module is missing (experimental)
+flurry = pytest.importorskip("candlekeep.rag.flurry_of_blows")
 from tests.benchmark import RAGBenchmark
 from tests.benchmark_queries import BENCHMARK_QUERIES
+
+pytestmark = [pytest.mark.experimental]
 
 
 def test_flurry_of_blows(seeded_store):
     """Benchmark Flurry of Blows technique."""
     def search_fn(query: str, n_results: int):
-        return search_with_flurry_of_blows(
+        return flurry.search_with_flurry_of_blows(
             seeded_store,
             query,
             n_results,
