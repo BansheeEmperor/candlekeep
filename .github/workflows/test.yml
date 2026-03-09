@@ -115,10 +115,11 @@ jobs:
             echo "" >> pr_comment.md
             
             # Path-specific comparisons consolidated into a single table
+            # Order: Simple -> Hybrid -> Precise
             python3 scripts/compare_benchmarks.py \
               "Simple Path (Arcane Recall)" tests/results/archive/router_simple_benchmark.json tests/results/router_simple_benchmark.json \
-              "Precise Path (Reranker)" tests/results/archive/router_precise_benchmark.json tests/results/router_precise_benchmark.json \
               "Hybrid Path (BM25 + Vector)" tests/results/archive/router_hybrid_benchmark.json tests/results/router_hybrid_benchmark.json \
+              "Precise Path (Reranker)" tests/results/archive/router_precise_benchmark.json tests/results/router_precise_benchmark.json \
               >> pr_comment.md
           else
             echo "⚠️ No test output found." >> pr_comment.md

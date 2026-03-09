@@ -21,14 +21,13 @@ def get_significance(new, old, metric_type):
         if delta > 0.01: return f"🟢 +{delta:.1%}"
         if delta < -0.01: return f"🔴 {delta:.1%}"
     elif metric_type == "latency":
-        # Latency is noisy, 15% threshold for significance
         percent_change = (delta / old)
         if percent_change < -0.15: return f"⚡ {percent_change:.1%}"
         if percent_change > 0.15: return f"⚠️ +{percent_change:.1%}"
     return "−"
 
 def main():
-    # Expected args: <label1> <base1> <new1> <label2> <base2> <new2> ...
+    # Expected args: <label1> <base1> <new1> ...
     args = sys.argv[1:]
     if len(args) < 3 or len(args) % 3 != 0:
         print("Usage: compare_benchmarks.py <label> <base> <new> [...]")
@@ -39,8 +38,15 @@ def main():
     print("| Metric | Baseline | Current | Change |")
     print("| :--- | :--- | :--- | :--- |")
     
+    # Define colors for labels
+    label_colors = {
+        "Simple Path": "🟢",
+        "Hybrid Path": "🧬",
+        "Precise Path": "🎯"
+    }
+
     for i in range(0, len(args), 3):
-        label = args[i]
+        full_label = args[i]
         baseline = load_json(args[i+1])
         current = load_json(args[i+2])
         
@@ -50,8 +56,15 @@ def main():
         if not baseline:
             baseline = {"summary": {"avg_precision": 0, "avg_recall": 0, "avg_latency_ms": 0}}
 
-        # Divider Row
-        print(f"| **{label}** | | | |")
+        # Simplified label for color matching
+        color = "⚪"
+        for key in label_colors:
+            if key in full_label:
+                color = label_colors[key]
+                break
+
+        # Single-cell spanning header (Markdown hack: use empty cells for others)
+        print(f"| **{color} {full_label}** | | | |")
         
         b_sum = baseline["summary"]
         c_sum = current["summary"]
@@ -75,7 +88,6 @@ def main():
                 b_str = f"{b_val:.0f}ms"
                 c_str = f"{c_val:.0f}ms"
                 
-            # Use non-breaking spaces for indentation in table
             print(f"| &nbsp;&nbsp;{m_label} | {b_str} | {c_str} | {sig} |")
 
 if __name__ == "__main__":
