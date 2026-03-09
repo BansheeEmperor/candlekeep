@@ -33,7 +33,15 @@ jobs:
           pip install -e .
           pip install pytest pytest-cov
 
+      - name: Cache Models
+        id: cache-models
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/candlekeep/models
+          key: ${{ runner.os }}-models-${{ hashFiles('src/candlekeep/config.py') }}
+
       - name: Setup Candlekeep (Download Models)
+        if: steps.cache-models.outputs.cache-hit != 'true'
         run: |
           mkdir -p ~/.local/share/candlekeep
           python -m spacy download en_core_web_sm
