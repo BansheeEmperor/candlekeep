@@ -7,6 +7,12 @@ on:
       - 'tests/results/archive/**'
       - 'docs/**'
       - 'README.md'
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Explain why you are establishing a new performance baseline (e.g., "After merging LRU cache optimization")'
+        required: true
+        default: 'Baseline synchronization with latest production enhancements'
 
 permissions:
   contents: write
@@ -86,9 +92,13 @@ jobs:
           branch: chore/update-baselines
           title: "chore: update performance baselines"
           body: |
-            This is an automated PR to update the performance baselines in `tests/results/archive/`.
+            ### 🚀 Automated Baseline Update
             
-            New benchmark results were generated on the `production` branch. Please review the changes to ensure the new performance metrics are acceptable.
+            **Reason:** ${{ github.event.inputs.reason || 'Standard production synchronization' }}
+            
+            This PR updates the performance baselines in `tests/results/archive/` to match the current state of the `production` branch.
+            
+            Please review the changes to ensure the new performance metrics are acceptable before merging.
           commit-message: "chore: update performance baselines"
           labels: |
             automated-pr
