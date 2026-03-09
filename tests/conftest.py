@@ -39,12 +39,23 @@ def document_processor(test_settings):
 
 @pytest.fixture(scope="session")
 def seeded_store(vector_store, document_processor):
-    """Vector store seeded with test documents."""
+    """Vector store seeded with test documents required by the benchmark."""
+    from tests.benchmark_queries import BENCHMARK_QUERIES
+    
+    # Get set of all expected source paths from the benchmark queries
+    expected_sources = set()
+    for q in BENCHMARK_QUERIES:
+        for src in q.expected_sources:
+            # Normalize to filename only for easier matching if needed
+            expected_sources.add(Path(src).name)
+            
     test_docs = Path(__file__).parent / "fixtures" / "sample_docs"
     
+    ingested_count = 0
     for doc_file in test_docs.glob("*"):
-        if doc_file.is_file():
+        if doc_file.is_file() and doc_file.name in expected_sources:
             chunks = document_processor.process(str(doc_file))
             vector_store.add_documents(chunks)
-    
+            ingested_count += 1
+            
     return vector_store
