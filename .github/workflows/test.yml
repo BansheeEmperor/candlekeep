@@ -1,4 +1,4 @@
-name: Tests
+name: Comprehensive Tests
 
 on:
   pull_request:
@@ -9,8 +9,17 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    
+    services:
+      chroma:
+        image: chromadb/chroma:latest
+        ports:
+          - 8000:8000
+
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Needed for changed-files detection
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -33,7 +42,6 @@ jobs:
           from pathlib import Path
           from sentence_transformers import SentenceTransformer, CrossEncoder
           
-          # Force a specific data dir for CI
           models_dir = Path.home() / ".local" / "share" / "candlekeep" / "models"
           models_dir.mkdir(parents=True, exist_ok=True)
           
@@ -44,13 +52,12 @@ jobs:
           CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2", cache_folder=str(models_dir))
           EOF
 
-      - name: Run unit tests
+      - name: Run Unit Tests
         env:
           XDG_DATA_HOME: /home/runner/.local/share
           CANDLEKEEP_DEVICE: cpu
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/src
-          # Run only stable unit tests that don't require a live database
           pytest tests/test_router.py \
                  tests/test_quality_gate.py \
                  tests/test_arcane_recall_unit.py \
@@ -58,3 +65,33 @@ jobs:
                  tests/test_processor.py \
                  tests/test_providers.py \
                  tests/test_rate_limiter.py
+
+      - name: Run Sanity Benchmarks
+        env:
+          XDG_DATA_HOME: /home/runner/.local/share
+          CANDLEKEEP_DEVICE: cpu
+          CHROMA_URL: http://localhost:8000
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/src
+          pytest tests/test_router_benchmark.py -v -s
+
+      - name: Check for Integration Test Requirement
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            src/candlekeep/database/**
+            src/candlekeep/config.py
+            tests/test_vector_store.py
+            tests/test_search.py
+
+      - name: Run Integration Tests
+        if: steps.changed-files.outputs.any_changed == 'true'
+        env:
+          XDG_DATA_HOME: /home/runner/.local/share
+          CANDLEKEEP_DEVICE: cpu
+          CHROMA_URL: http://localhost:8000
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/src
+          pytest tests/test_vector_store.py \
+                 tests/test_search.py
