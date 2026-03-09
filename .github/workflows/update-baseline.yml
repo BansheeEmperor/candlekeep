@@ -89,7 +89,9 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
-          branch: chore/update-baselines
+          branch: chore/update-baselines-${{ github.sha }}
+          delete-branch: true
+          base: production
           title: "chore: update performance baselines"
           body: |
             ### 🚀 Automated Baseline Update
