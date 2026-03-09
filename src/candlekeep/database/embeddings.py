@@ -41,6 +41,18 @@ class EmbeddingManager:
             local_files_only=True,
             device=self.settings.device,
         )
+        
+        # Promote to float64 on CPU for better determinism and to match reranker precision
+        if self.settings.device == "cpu":
+            try:
+                import torch
+                self._model.to(torch.float64)
+            except Exception as e:
+                # Fallback to float32 if conversion fails (e.g. meta tensors in CI)
+                import sys
+                print(f"[candlekeep] ⚠ Could not promote embedding model to float64: {e}. "
+                      f"Continuing with float32.", file=sys.stderr)
+            
         self._current_model = model_id
         return self._model
 
