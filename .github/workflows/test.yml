@@ -114,24 +114,12 @@ jobs:
             echo "- ⏭️ **Skipped:** $SKIPPED" >> pr_comment.md
             echo "" >> pr_comment.md
             
-            # Path-specific comparisons
-            if [ -f tests/results/router_simple_benchmark.json ]; then
-              echo "#### 🟢 Simple Path (Arcane Recall)" >> pr_comment.md
-              python3 scripts/compare_benchmarks.py tests/results/archive/router_simple_benchmark.json tests/results/router_simple_benchmark.json >> pr_comment.md
-              echo "" >> pr_comment.md
-            fi
-            
-            if [ -f tests/results/router_precise_benchmark.json ]; then
-              echo "#### 🎯 Precise Path (Reranker)" >> pr_comment.md
-              python3 scripts/compare_benchmarks.py tests/results/archive/router_precise_benchmark.json tests/results/router_precise_benchmark.json >> pr_comment.md
-              echo "" >> pr_comment.md
-            fi
-
-            if [ -f tests/results/router_hybrid_benchmark.json ]; then
-              echo "#### 🧬 Hybrid Path (BM25 + Vector)" >> pr_comment.md
-              python3 scripts/compare_benchmarks.py tests/results/archive/router_hybrid_benchmark.json tests/results/router_hybrid_benchmark.json >> pr_comment.md
-              echo "" >> pr_comment.md
-            fi
+            # Path-specific comparisons consolidated into a single table
+            python3 scripts/compare_benchmarks.py \
+              "Simple Path (Arcane Recall)" tests/results/archive/router_simple_benchmark.json tests/results/router_simple_benchmark.json \
+              "Precise Path (Reranker)" tests/results/archive/router_precise_benchmark.json tests/results/router_precise_benchmark.json \
+              "Hybrid Path (BM25 + Vector)" tests/results/archive/router_hybrid_benchmark.json tests/results/router_hybrid_benchmark.json \
+              >> pr_comment.md
           else
             echo "⚠️ No test output found." >> pr_comment.md
           fi
