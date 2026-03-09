@@ -88,6 +88,7 @@ class TestMCPCreation:
             from candlekeep.mcp.server import _create_mcp
             mcp_instance = _create_mcp()
             assert mcp_instance is not None
+            # Check for presence of auth in internal app (FastMCP quirk)
             assert mcp_instance.auth is not None
 
     def test_http_mode_without_token_no_auth(self):
