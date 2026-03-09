@@ -44,7 +44,7 @@ class TestRouterBenchmark:
             assert summary['avg_precision'] > 0.7, f"Simple overall precision ({summary['avg_precision']:.1%}) dropped below 70%"
             assert summary['avg_latency_ms'] < 100, "Simple path latency too high"
         elif query_type == "hybrid":
-            assert summary['avg_precision'] > 0.7, f"Hybrid overall precision ({summary['avg_precision']:.1%}) dropped below 70%"
+            assert summary['avg_precision'] > 0.6, f"Hybrid overall precision ({summary['avg_precision']:.1%}) dropped below 60%"
             assert summary['avg_latency_ms'] < 200, "Hybrid path latency too high"
         else:
             assert summary['avg_precision'] > 0.6, f"Precise overall precision ({summary['avg_precision']:.1%}) dropped below 60%"

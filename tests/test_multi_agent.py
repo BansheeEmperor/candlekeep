@@ -63,45 +63,45 @@ class TestMCPCreation:
 
     def test_stdio_mode_no_auth(self):
         """stdio mode never adds auth, even if token is set."""
+        import candlekeep.mcp.server as mcp_server
         mock_settings = MagicMock()
         mock_settings.transport = "stdio"
         mock_settings.mcp_token = "some-token"
         mock_settings.spice = False
 
-        with patch("candlekeep.mcp.server._settings", mock_settings), \
-             patch("candlekeep.mcp.server.instructions", "test"):
-            from candlekeep.mcp.server import _create_mcp
-            mcp_instance = _create_mcp()
+        with patch.object(mcp_server, "_settings", mock_settings), \
+             patch.object(mcp_server, "instructions", "test"):
+            mcp_instance = mcp_server._create_mcp()
             # Should create without auth — FastMCP with no auth kwarg
             assert mcp_instance is not None
             assert mcp_instance.name == "candlekeep"
 
     def test_http_mode_with_token_enables_auth(self):
         """HTTP mode + token should create FastMCP with StaticTokenVerifier."""
+        import candlekeep.mcp.server as mcp_server
         mock_settings = MagicMock()
         mock_settings.transport = "http"
         mock_settings.mcp_token = "secret-token"
         mock_settings.spice = False
 
-        with patch("candlekeep.mcp.server._settings", mock_settings), \
-             patch("candlekeep.mcp.server.instructions", "test"):
-            from candlekeep.mcp.server import _create_mcp
-            mcp_instance = _create_mcp()
+        with patch.object(mcp_server, "_settings", mock_settings), \
+             patch.object(mcp_server, "instructions", "test"):
+            mcp_instance = mcp_server._create_mcp()
             assert mcp_instance is not None
             # Check for presence of auth in internal app (FastMCP quirk)
             assert mcp_instance.auth is not None
 
     def test_http_mode_without_token_no_auth(self):
         """HTTP mode without token should create FastMCP without auth."""
+        import candlekeep.mcp.server as mcp_server
         mock_settings = MagicMock()
         mock_settings.transport = "http"
         mock_settings.mcp_token = ""
         mock_settings.spice = False
 
-        with patch("candlekeep.mcp.server._settings", mock_settings), \
-             patch("candlekeep.mcp.server.instructions", "test"):
-            from candlekeep.mcp.server import _create_mcp
-            mcp_instance = _create_mcp()
+        with patch.object(mcp_server, "_settings", mock_settings), \
+             patch.object(mcp_server, "instructions", "test"):
+            mcp_instance = mcp_server._create_mcp()
             assert mcp_instance is not None
 
 
@@ -194,26 +194,26 @@ class TestWriteLock:
 class TestMainEntrypoint:
     def test_stdio_mode_calls_run_default(self):
         """main() with stdio transport calls mcp.run() with no args."""
+        import candlekeep.mcp.server as mcp_server
         mock_settings = MagicMock()
         mock_settings.transport = "stdio"
 
-        with patch("candlekeep.mcp.server._settings", mock_settings), \
-             patch("candlekeep.mcp.server.mcp") as mock_mcp:
-            from candlekeep.mcp.server import main
-            main()
+        with patch.object(mcp_server, "_settings", mock_settings), \
+             patch.object(mcp_server, "mcp") as mock_mcp:
+            mcp_server.main()
             mock_mcp.run.assert_called_once_with()
 
     def test_http_mode_calls_run_with_transport(self):
         """main() with http transport calls mcp.run(transport='http', ...)."""
+        import candlekeep.mcp.server as mcp_server
         mock_settings = MagicMock()
         mock_settings.transport = "http"
         mock_settings.http_host = "0.0.0.0"
         mock_settings.http_port = 8111
 
-        with patch("candlekeep.mcp.server._settings", mock_settings), \
-             patch("candlekeep.mcp.server.mcp") as mock_mcp:
-            from candlekeep.mcp.server import main
-            main()
+        with patch.object(mcp_server, "_settings", mock_settings), \
+             patch.object(mcp_server, "mcp") as mock_mcp:
+            mcp_server.main()
             mock_mcp.run.assert_called_once_with(
                 transport="http", host="0.0.0.0", port=8111
             )
@@ -228,6 +228,7 @@ class TestStatsUsesCounter:
 
     def test_stats_reflects_counter(self):
         """get_stats should use _query_counter.count for query/token stats."""
+        import candlekeep.mcp.server as mcp_server
         from candlekeep.mcp.server import _QueryCounter
 
         mock_counter = _QueryCounter()
@@ -245,12 +246,11 @@ class TestStatsUsesCounter:
             "context_savings_ratio": 19.5,
         }
 
-        with patch("candlekeep.mcp.server._loading", False), \
-             patch("candlekeep.mcp.server._read_access", True), \
-             patch("candlekeep.mcp.server.get_store", return_value=mock_store), \
-             patch("candlekeep.mcp.server._query_counter", mock_counter):
-            from candlekeep.mcp.server import get_stats
-            result = get_stats.fn()
+        with patch.object(mcp_server, "_loading", False), \
+             patch.object(mcp_server, "_read_access", True), \
+             patch.object(mcp_server, "get_store", return_value=mock_store), \
+             patch.object(mcp_server, "_query_counter", mock_counter):
+            result = mcp_server.get_stats.fn()
             assert "Total queries: 2" in result
             # tokens_saved = 2 * (12500 - 640) = 23720
             assert "23,720" in result
@@ -315,15 +315,15 @@ class TestAuthTokenValidation:
 
     def test_auth_object_created_with_correct_token(self):
         """The token from CANDLEKEEP_MCP_TOKEN should be the key in the verifier."""
+        import candlekeep.mcp.server as mcp_server
         mock_settings = MagicMock()
         mock_settings.transport = "http"
         mock_settings.mcp_token = "my-secret-123"
         mock_settings.spice = False
 
-        with patch("candlekeep.mcp.server._settings", mock_settings), \
-             patch("candlekeep.mcp.server.instructions", "test"):
-            from candlekeep.mcp.server import _create_mcp
-            mcp_instance = _create_mcp()
+        with patch.object(mcp_server, "_settings", mock_settings), \
+             patch.object(mcp_server, "instructions", "test"):
+            mcp_instance = mcp_server._create_mcp()
             # The auth provider should have our token
             assert mcp_instance.auth is not None
             from fastmcp.server.auth import StaticTokenVerifier
