@@ -1,0 +1,95 @@
+name: Update Performance Baselines
+
+on:
+  push:
+    branches: [ production ]
+    paths-ignore:
+      - 'tests/results/archive/**'
+      - 'docs/**'
+      - 'README.md'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-baseline:
+    if: github.repository == 'BansheeEmperor/candlekeep'
+    runs-on: ubuntu-latest
+    
+    services:
+      chroma:
+        image: chromadb/chroma:latest
+        ports:
+          - 8000:8000
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest pytest-cov
+
+      - name: Cache Models
+        id: cache-models
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/candlekeep/models
+          key: ${{ runner.os }}-models-${{ hashFiles('src/candlekeep/config.py') }}
+
+      - name: Setup Candlekeep (Download Models)
+        if: steps.cache-models.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/.local/share/candlekeep
+          python -m spacy download en_core_web_sm
+          python << 'EOF'
+          import os
+          from pathlib import Path
+          from sentence_transformers import SentenceTransformer, CrossEncoder
+          
+          models_dir = Path.home() / ".local" / "share" / "candlekeep" / "models"
+          models_dir.mkdir(parents=True, exist_ok=True)
+          
+          print(f"Downloading Bi-Encoder to {models_dir}")
+          SentenceTransformer("BAAI/bge-small-en-v1.5", cache_folder=str(models_dir))
+          
+          print(f"Downloading Cross-Encoder to {models_dir}")
+          from sentence_transformers import CrossEncoder
+          CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2", cache_folder=str(models_dir))
+          EOF
+
+      - name: Run Benchmarks
+        env:
+          XDG_DATA_HOME: /home/runner/.local/share
+          CANDLEKEEP_DEVICE: cpu
+          CHROMA_URL: http://localhost:8000
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/src
+          # Run benchmarks to generate fresh results
+          pytest -m "benchmark" -v -s
+
+      - name: Update Archive
+        run: |
+          python3 scripts/update_baseline.py
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: chore/update-baselines
+          title: "chore: update performance baselines"
+          body: |
+            This is an automated PR to update the performance baselines in `tests/results/archive/`.
+            
+            New benchmark results were generated on the `production` branch. Please review the changes to ensure the new performance metrics are acceptable.
+          commit-message: "chore: update performance baselines"
+          labels: |
+            automated-pr
+            performance
