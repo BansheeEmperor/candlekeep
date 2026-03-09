@@ -114,9 +114,23 @@ jobs:
             echo "- ⏭️ **Skipped:** $SKIPPED" >> pr_comment.md
             echo "" >> pr_comment.md
             
-            # Use comparison script for Simple path (most common baseline)
+            # Path-specific comparisons
             if [ -f tests/results/router_simple_benchmark.json ]; then
-              python3 scripts/compare_benchmarks.py tests/results/baseline.json tests/results/router_simple_benchmark.json >> pr_comment.md
+              echo "#### 🟢 Simple Path (Arcane Recall)" >> pr_comment.md
+              python3 scripts/compare_benchmarks.py tests/results/archive/router_simple_benchmark.json tests/results/router_simple_benchmark.json >> pr_comment.md
+              echo "" >> pr_comment.md
+            fi
+            
+            if [ -f tests/results/router_precise_benchmark.json ]; then
+              echo "#### 🎯 Precise Path (Reranker)" >> pr_comment.md
+              python3 scripts/compare_benchmarks.py tests/results/archive/router_precise_benchmark.json tests/results/router_precise_benchmark.json >> pr_comment.md
+              echo "" >> pr_comment.md
+            fi
+
+            if [ -f tests/results/router_hybrid_benchmark.json ]; then
+              echo "#### 🧬 Hybrid Path (BM25 + Vector)" >> pr_comment.md
+              python3 scripts/compare_benchmarks.py tests/results/archive/router_hybrid_benchmark.json tests/results/router_hybrid_benchmark.json >> pr_comment.md
+              echo "" >> pr_comment.md
             fi
           else
             echo "⚠️ No test output found." >> pr_comment.md
