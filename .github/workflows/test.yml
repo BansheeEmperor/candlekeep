@@ -49,12 +49,14 @@ jobs:
           SentenceTransformer("BAAI/bge-small-en-v1.5", cache_folder=str(models_dir))
           
           print(f"Downloading Cross-Encoder to {models_dir}")
+          from sentence_transformers import CrossEncoder
           CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2", cache_folder=str(models_dir))
           EOF
 
       - name: Run Unit Tests
         env:
           XDG_DATA_HOME: /home/runner/.local/share
+          SENTENCE_TRANSFORMERS_HOME: /home/runner/.local/share/candlekeep/models
           CANDLEKEEP_DEVICE: cpu
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)/src
@@ -69,6 +71,7 @@ jobs:
       - name: Run Sanity Benchmarks
         env:
           XDG_DATA_HOME: /home/runner/.local/share
+          SENTENCE_TRANSFORMERS_HOME: /home/runner/.local/share/candlekeep/models
           CANDLEKEEP_DEVICE: cpu
           CHROMA_URL: http://localhost:8000
         run: |
@@ -89,6 +92,7 @@ jobs:
         if: steps.changed-files.outputs.any_changed == 'true'
         env:
           XDG_DATA_HOME: /home/runner/.local/share
+          SENTENCE_TRANSFORMERS_HOME: /home/runner/.local/share/candlekeep/models
           CANDLEKEEP_DEVICE: cpu
           CHROMA_URL: http://localhost:8000
         run: |
