@@ -21,6 +21,7 @@ def get_significance(new, old, metric_type):
         if delta > 0.01: return f"🟢 +{delta:.1%}"
         if delta < -0.01: return f"🔴 {delta:.1%}"
     elif metric_type == "latency":
+        # Latency is noisy, 15% threshold for significance
         percent_change = (delta / old)
         if percent_change < -0.15: return f"⚡ {percent_change:.1%}"
         if percent_change > 0.15: return f"⚠️ +{percent_change:.1%}"
@@ -35,8 +36,16 @@ def main():
 
     print("### 📊 Performance Comparison")
     print("")
-    print("| Metric | Baseline | Current | Change |")
-    print("| :--- | :--- | :--- | :--- |")
+    print("<table>")
+    print("  <thead>")
+    print("    <tr>")
+    print("      <th align='left'>Metric</th>")
+    print("      <th align='right'>Baseline</th>")
+    print("      <th align='right'>Current</th>")
+    print("      <th align='center'>Change</th>")
+    print("    </tr>")
+    print("  </thead>")
+    print("  <tbody>")
     
     # Define colors for labels
     label_colors = {
@@ -56,15 +65,16 @@ def main():
         if not baseline:
             baseline = {"summary": {"avg_precision": 0, "avg_recall": 0, "avg_latency_ms": 0}}
 
-        # Simplified label for color matching
         color = "⚪"
         for key in label_colors:
             if key in full_label:
                 color = label_colors[key]
                 break
 
-        # Single-cell spanning header (Markdown hack: use empty cells for others)
-        print(f"| **{color} {full_label}** | | | |")
+        # Divider Row using colspan for consolidation
+        print(f"    <tr style='background-color: #f6f8fa;'>")
+        print(f"      <td colspan='4'><strong>{color} {full_label}</strong></td>")
+        print(f"    </tr>")
         
         b_sum = baseline["summary"]
         c_sum = current["summary"]
@@ -88,7 +98,15 @@ def main():
                 b_str = f"{b_val:.0f}ms"
                 c_str = f"{c_val:.0f}ms"
                 
-            print(f"| &nbsp;&nbsp;{m_label} | {b_str} | {c_str} | {sig} |")
+            print(f"    <tr>")
+            print(f"      <td>&nbsp;&nbsp;{m_label}</td>")
+            print(f"      <td align='right'>{b_str}</td>")
+            print(f"      <td align='right'>{c_str}</td>")
+            print(f"      <td align='center'>{sig}</td>")
+            print(f"    </tr>")
+
+    print("  </tbody>")
+    print("</table>")
 
 if __name__ == "__main__":
     main()
