@@ -68,8 +68,15 @@ class VectorDatabase(ABC):
     def get_embeddings(self, texts: List[str]) -> List[List[float]]:
         """Get embeddings for a list of texts."""
         pass
+
+    @abstractmethod
+    def embed_query(self, query: str) -> List[float]:
+        """Get cached embedding for a single query."""
+        pass
+
     @abstractmethod
     def get_stored_embeddings_by_source(self, source: str) -> Dict[int, List[float]]:
+
         """Get stored embeddings for all chunks from a source document.
 
         Returns a dict mapping chunk_index to the embedding vector that was

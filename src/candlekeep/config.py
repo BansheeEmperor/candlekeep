@@ -70,6 +70,7 @@ class Settings:
     
     # Embedding settings
     embedding_model: EmbeddingModel = field(default_factory=lambda: os.getenv("CANDLEKEEP_EMBEDDING", "bge-small"))
+    embedding_cache_size: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_EMBEDDING_CACHE_SIZE", "500")))
     
     # Inference device
     device: str = field(default_factory=lambda: os.getenv("CANDLEKEEP_DEVICE", "auto"))

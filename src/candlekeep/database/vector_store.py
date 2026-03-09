@@ -239,7 +239,7 @@ class ChromaVectorStore(VectorDatabase):
         
         tokens_per_query = (5 * self.settings.chunk_size) // 4
         
-        return {
+        stats = {
             "total_chunks": count,
             "total_documents": len(docs),
             "database_size_bytes": total_size,
@@ -249,6 +249,15 @@ class ChromaVectorStore(VectorDatabase):
             "tokens_per_query": tokens_per_query,
             "context_savings_ratio": estimated_tokens / tokens_per_query if tokens_per_query else 0,
         }
+        
+        # Add embedding cache stats
+        cache_stats = self.embedder.get_cache_stats()
+        stats["embed_cache_hits"] = cache_stats["embedding_cache_hits"]
+        stats["embed_cache_misses"] = cache_stats["embedding_cache_misses"]
+        stats["embed_cache_size"] = cache_stats["embedding_cache_size"]
+        
+        return stats
+
 
     def get_by_entity(self, entity: str, n_results: int = 10) -> list[SearchResult]:
         """Search documents containing an entity."""
@@ -291,7 +300,13 @@ class ChromaVectorStore(VectorDatabase):
         if hasattr(embeddings, 'tolist'):
             return embeddings.tolist()
         return embeddings
+
+    def embed_query(self, query: str) -> list[float]:
+        """Get cached embedding for a single query."""
+        return self.embedder.embed_query(query)
+
     def get_stored_embeddings_by_source(self, source: str) -> dict[int, list[float]]:
+
         """Get stored embeddings for all chunks from a source document."""
         results = self.collection.get(
             where={"source": source},
