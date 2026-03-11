@@ -1,6 +1,6 @@
 [project]
 name = "candlekeep"
-version = "0.1.0"
+version = "0.1.1"
 description = "RAG knowledge base server with ChromaDB and MCP interface"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -11,7 +11,7 @@ dependencies = [
     "spacy>=3.7.0",
     "pdfplumber>=0.10.0",
     "python-dotenv>=1.0.0",
-    "pysqlite3-binary>=0.5.0",
+    "pysqlite3>=0.5.0",
     "rank-bm25>=0.2.2",
     "numpy>=1.26.0",
 ]
