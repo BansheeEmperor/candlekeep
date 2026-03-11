@@ -4,7 +4,7 @@
     "avg_precision": 0.7182806324110672,
     "avg_recall": 0.7463768115942028,
     "f1_score": 0.7320592408048567,
-    "avg_latency_ms": 1591.6267581607985,
+    "avg_latency_ms": 1531.0142662214196,
     "avg_top_score": 0.8594451766947041,
     "content_match_rate": 0.9240506329113924,
     "by_difficulty": {
@@ -12,33 +12,33 @@
         "count": 5,
         "precision": 0.7,
         "recall": 0.8,
-        "latency_ms": 708.5947513580322
+        "latency_ms": 680.2385807037354
       },
       "medium": {
         "count": 9,
         "precision": 0.7666666666666667,
         "recall": 0.6666666666666666,
-        "latency_ms": 1015.0934060414633
+        "latency_ms": 976.9541422526041
       },
       "hard": {
         "count": 9,
         "precision": 0.6800505050505051,
         "recall": 0.7962962962962963,
-        "latency_ms": 2658.7334473927817
+        "latency_ms": 2557.727548811171
       }
     },
     "by_category": {
-      "agent": {
-        "count": 3,
-        "precision": 0.5568181818181818,
-        "recall": 0.8333333333333334,
-        "latency_ms": 5459.691127141316
-      },
       "core": {
         "count": 20,
         "precision": 0.7424999999999999,
         "recall": 0.7333333333333333,
-        "latency_ms": 1011.4171028137207
+        "latency_ms": 970.9632039070129
+      },
+      "agent": {
+        "count": 3,
+        "precision": 0.5568181818181818,
+        "recall": 0.8333333333333334,
+        "latency_ms": 5264.688014984131
       }
     }
   },
@@ -48,7 +48,7 @@
       "difficulty": "easy",
       "precision": 1.0,
       "recall": 1.0,
-      "latency_ms": 339.7865295410156,
+      "latency_ms": 332.3547840118408,
       "top_score": 3.378793478012085,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/semantic-search.md",
@@ -74,7 +74,7 @@
       "difficulty": "easy",
       "precision": 0.5,
       "recall": 0.5,
-      "latency_ms": 506.30879402160645,
+      "latency_ms": 482.8345775604248,
       "top_score": 8.14097785949707,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/vector-databases.md",
@@ -100,7 +100,7 @@
       "difficulty": "easy",
       "precision": 0.75,
       "recall": 1.0,
-      "latency_ms": 972.6443290710449,
+      "latency_ms": 928.1563758850098,
       "top_score": 6.122216701507568,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/api-design.md",
@@ -127,7 +127,7 @@
       "difficulty": "easy",
       "precision": 1.0,
       "recall": 1.0,
-      "latency_ms": 511.99936866760254,
+      "latency_ms": 493.38340759277344,
       "top_score": 3.896195411682129,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/database-design.md",
@@ -155,7 +155,7 @@
       "difficulty": "medium",
       "precision": 1.0,
       "recall": 1.0,
-      "latency_ms": 1442.7919387817383,
+      "latency_ms": 1403.6064147949219,
       "top_score": 1.2504862546920776,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/semantic-search.md"
@@ -181,7 +181,7 @@
       "difficulty": "medium",
       "precision": 1.0,
       "recall": 0.5,
-      "latency_ms": 287.3988151550293,
+      "latency_ms": 273.4389305114746,
       "top_score": 3.85030198097229,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/microservices.md"
@@ -208,7 +208,7 @@
       "difficulty": "medium",
       "precision": 1.0,
       "recall": 0.5,
-      "latency_ms": 1468.553066253662,
+      "latency_ms": 1397.5160121917725,
       "top_score": -1.8312389850616455,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/caching.md"
@@ -235,7 +235,7 @@
       "difficulty": "medium",
       "precision": 0.2,
       "recall": 0.5,
-      "latency_ms": 1459.3019485473633,
+      "latency_ms": 1412.712812423706,
       "top_score": -1.0008630752563477,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/authentication.md",
@@ -266,7 +266,7 @@
       "difficulty": "medium",
       "precision": 1.0,
       "recall": 0.5,
-      "latency_ms": 1474.5712280273438,
+      "latency_ms": 1410.4933738708496,
       "top_score": -9.235879898071289,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/database-design.md"
@@ -290,7 +290,7 @@
       "difficulty": "hard",
       "precision": 1.0,
       "recall": 1.0,
-      "latency_ms": 1673.2866764068604,
+      "latency_ms": 1617.7847385406494,
       "top_score": -4.73859167098999,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/api-design.md",
@@ -320,7 +320,7 @@
       "difficulty": "hard",
       "precision": 0.2,
       "recall": 1.0,
-      "latency_ms": 2167.294502258301,
+      "latency_ms": 2078.655481338501,
       "top_score": 1.4519195556640625,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/authentication.md",
@@ -350,7 +350,7 @@
       "difficulty": "hard",
       "precision": 1.0,
       "recall": 0.5,
-      "latency_ms": 971.9910621643066,
+      "latency_ms": 924.0932464599609,
       "top_score": 3.259756565093994,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/microservices.md"
@@ -377,7 +377,7 @@
       "difficulty": "medium",
       "precision": 0.5,
       "recall": 0.5,
-      "latency_ms": 989.4628524780273,
+      "latency_ms": 941.7698383331299,
       "top_score": 5.03148078918457,
       "retrieved_sources": [
         "tests/fixtures/discrimination_docs/web-auth.md",
@@ -403,7 +403,7 @@
       "difficulty": "medium",
       "precision": 1.0,
       "recall": 0.5,
-      "latency_ms": 281.9688320159912,
+      "latency_ms": 274.5633125305176,
       "top_score": -8.809633255004883,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/caching.md"
@@ -428,7 +428,7 @@
       "difficulty": "easy",
       "precision": 0.25,
       "recall": 0.5,
-      "latency_ms": 1212.2347354888916,
+      "latency_ms": 1164.463758468628,
       "top_score": -3.136536121368408,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/api-design.md",
@@ -456,7 +456,7 @@
       "difficulty": "hard",
       "precision": 1.0,
       "recall": 1.0,
-      "latency_ms": 3416.2657260894775,
+      "latency_ms": 3247.9608058929443,
       "top_score": 5.459006309509277,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/microservices.md",
@@ -487,7 +487,7 @@
       "difficulty": "hard",
       "precision": 0.125,
       "recall": 0.5,
-      "latency_ms": 6721.20213508606,
+      "latency_ms": 6473.2794761657715,
       "top_score": 1.895100474357605,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/authentication.md",
@@ -520,7 +520,7 @@
       "difficulty": "hard",
       "precision": 0.5454545454545454,
       "recall": 1.0,
-      "latency_ms": 6241.605520248413,
+      "latency_ms": 6072.823762893677,
       "top_score": 4.291586875915527,
       "retrieved_sources": [
         "tests/fixtures/discrimination_docs/web-auth.md",
@@ -561,7 +561,7 @@
       "difficulty": "hard",
       "precision": 0.75,
       "recall": 0.6666666666666666,
-      "latency_ms": 1205.8842182159424,
+      "latency_ms": 1162.431240081787,
       "top_score": -2.3981521129608154,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/database-design.md",
@@ -590,7 +590,7 @@
       "difficulty": "hard",
       "precision": 0.5,
       "recall": 0.5,
-      "latency_ms": 1020.5078125,
+      "latency_ms": 955.2896022796631,
       "top_score": -3.750948667526245,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/microservices.md",
@@ -617,7 +617,7 @@
       "difficulty": "hard",
       "precision": 1.0,
       "recall": 1.0,
-      "latency_ms": 510.5633735656738,
+      "latency_ms": 487.229585647583,
       "top_score": 0.0,
       "retrieved_sources": [],
       "expected_sources": [],
@@ -629,7 +629,7 @@
       "difficulty": "medium",
       "precision": 1.0,
       "recall": 1.0,
-      "latency_ms": 275.676965713501,
+      "latency_ms": 266.3106918334961,
       "top_score": 6.187711238861084,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/caching.md"
@@ -653,7 +653,7 @@
       "difficulty": "medium",
       "precision": 0.2,
       "recall": 1.0,
-      "latency_ms": 1456.1150074005127,
+      "latency_ms": 1412.1758937835693,
       "top_score": 0.4535493552684784,
       "retrieved_sources": [
         "tests/fixtures/discrimination_docs/iot-auth.md",
