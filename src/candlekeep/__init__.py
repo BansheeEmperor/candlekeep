@@ -11,7 +11,7 @@ if sys.version_info < (3, 10):
 try:
     import sqlite3
 except ImportError:
-    # Try pysqlite3-binary as fallback
+    # Try pysqlite3 as fallback
     try:
         import pysqlite3 as sqlite3
         sys.modules['sqlite3'] = sqlite3
@@ -28,7 +28,7 @@ if sqlite3.sqlite_version_info < (3, 35, 0):
     except ImportError:
         raise RuntimeError(
             f"ChromaDB requires SQLite >= 3.35.0, found {sqlite3.sqlite_version}\n"
-            "Fix: pip install pysqlite3-binary"
+            "Fix: pip install pysqlite3"
         )
 
 from candlekeep.mcp.server import mcp, main
