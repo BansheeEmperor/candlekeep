@@ -35,7 +35,7 @@ def run_sensitivity_sweep():
     # Seed
     for doc_path in list(sample_docs.glob("*")) + list(scale_docs.glob("*")):
         if doc_path.is_file():
-            vector_store.add_documents(processor.process(str(doc_path)))
+            vector_store.add_documents(processor.process(str(doc_path)).chunks)
             
     # 1. Overfitting Check (Original 23 Queries)
     print("--- OVERFITTING CHECK (N=23) ---")

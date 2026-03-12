@@ -36,7 +36,7 @@ def _create_store(hnsw_m=16, hnsw_ef_construction=100, hnsw_ef_search=10, space=
     proc = DocumentProcessor(settings)
     for f in SAMPLE_DOCS.glob("*"):
         if f.is_file():
-            store.add_documents(proc.process(str(f)))
+            store.add_documents(proc.process(str(f)).chunks)
     return store
 
 
