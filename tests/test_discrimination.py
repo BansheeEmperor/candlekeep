@@ -29,7 +29,7 @@ def setup_db(bardic_knowledge: bool):
     
     docs_dir = Path(__file__).parent / "fixtures" / "discrimination_docs"
     for doc_path in docs_dir.glob("*.md"):
-        chunks = processor.process(doc_path)
+        chunks = processor.process(doc_path).chunks
         store.add_documents(chunks)
         
     return store, temp_dir

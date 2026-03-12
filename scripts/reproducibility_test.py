@@ -40,7 +40,7 @@ def run_single(query_type: str) -> dict:
         fixtures = Path(__file__).parent.parent / "tests" / "fixtures"
         for doc in list((fixtures / "sample_docs").glob("*")) + list((fixtures / "scale_docs").glob("*")):
             if doc.is_file():
-                store.add_documents(processor.process(str(doc)))
+                store.add_documents(processor.process(str(doc)).chunks)
 
         suite_path = fixtures / "eval_suite_100.json"
         with open(suite_path) as f:
