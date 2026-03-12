@@ -39,7 +39,7 @@ def scale_store():
         pytest.skip("Scale corpus not generated")
 
     for f in sorted(SCALE_DOCS.glob("*.md")):
-        store.add_documents(proc.process(str(f)))
+        store.add_documents(proc.process(str(f)).chunks)
 
     print(f"\n📦 {store.collection.count()} chunks ingested")
     return store

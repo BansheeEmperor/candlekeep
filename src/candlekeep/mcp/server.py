@@ -683,15 +683,18 @@ def ingest(path: str, ctx: Context = CurrentContext()) -> str:
                     return msg
 
             if p.is_file():
-                chunks = get_processor().process(p)
+                result = get_processor().process(p)
             else:
-                chunks = get_processor().process_directory(p)
+                result = get_processor().process_directory(p)
 
-            if not chunks:
+            if not result.chunks:
                 return "No content found to ingest."
 
-            count = get_store().add_documents(chunks, collection="default")
-            return f"✓ Ingested {count} chunks from {path}"
+            count = get_store().add_documents(result.chunks, collection="default")
+            msg = f"✓ Ingested {count} chunks from {path}"
+            if result.images_captioned or result.images_from_cache:
+                msg += f" ({result.images_captioned} images captioned, {result.images_from_cache} from cache)"
+            return msg
     except _WriteLockTimeout as e:
         return str(e)
     except chromadb.errors.AuthorizationError as e:
