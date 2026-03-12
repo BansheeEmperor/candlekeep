@@ -479,6 +479,11 @@ All settings via environment variables (`.env` file):
 | CANDLEKEEP_LLM_MODEL | (per-provider) | Model name override for LLM provider |
 | CANDLEKEEP_VLM_PROVIDER | (empty) | Vision provider: `anthropic`, `openai`, `bedrock`, `openai_compat` |
 | CANDLEKEEP_VLM_MODEL | (per-provider) | Model name override for vision provider |
+| CANDLEKEEP_VLM_CONCURRENCY | 3 | Max concurrent VLM caption calls per document |
+| CANDLEKEEP_VLM_MAX_COST_PER_DOC | 0.0 | Cost circuit breaker per document (0=unlimited) |
+| CANDLEKEEP_VLM_PDF_MAX_PAGES | 15 | Max figure pages to caption per PDF |
+| CANDLEKEEP_VLM_FETCH_REMOTE_IMAGES | false | Caption remote images in markdown (http/https URLs) |
+| CANDLEKEEP_CAPTION_BOOST | 0.0 | Flat boost for caption chunks in retrieval (0=disabled, 1.0=recommended) |
 | CANDLEKEEP_LLM_BASE_URL | (empty) | Base URL for `openai_compat` LLM endpoint |
 | CANDLEKEEP_VLM_BASE_URL | (empty) | Base URL for `openai_compat` vision endpoint |
 | ANTHROPIC_API_KEY | (empty) | API key for Anthropic provider |
