@@ -27,13 +27,42 @@ A RAG knowledge base server that gives AI agents the power to search, retrieve, 
 
 ## Quick Start
 
+### PyPI (Recommended)
+
+The easiest way to get the library up and running for use with any MCP client:
+
 ```bash
-# Enter the library
+pip install candlekeep
+
+# Run in stdio mode (standard)
+candlekeep
+
+# Run in HTTP mode (recommended for better performance)
+CANDLEKEEP_TRANSPORT=http CANDLEKEEP_HTTP_PORT=8111 candlekeep
+```
+
+### Docker (Isolated)
+
+Run the server in a container. Note that if your ChromaDB is running on `localhost`, you'll need to use your host's internal IP (e.g., `host.docker.internal` on Docker Desktop):
+
+```bash
+docker run -p 8111:8111 \
+  -e CHROMA_URL=http://host.docker.internal:8000 \
+  ghcr.io/bansheeemperor/candlekeep:latest
+```
+
+### Local Development
+
+If you wish to contribute or modify the library's arcane secrets:
+
+```bash
+git clone https://github.com/raalgaw/candlekeep.git
+cd candlekeep
 pip install -e .
-./scripts/setup.sh       # Download the tomes (embedding models)
-./scripts/configure.sh   # Set your wards (configuration)
-./scripts/start_chroma.sh # Awaken the vault (ChromaDB)
-candlekeep               # Open the gates
+./scripts/setup.sh        # Download the tomes (embedding models)
+./scripts/configure.sh    # Set your wards (configuration)
+./scripts/start_chroma.sh  # Awaken the vault (ChromaDB)
+candlekeep                # Enter the library
 ```
 
 ### MCP Client Integration
