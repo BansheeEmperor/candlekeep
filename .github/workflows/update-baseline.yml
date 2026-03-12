@@ -2,7 +2,7 @@ name: Update Performance Baselines
 
 on:
   push:
-    branches: [ production ]
+    branches: [ dev ]
     paths-ignore:
       - 'tests/results/archive/**'
       - 'docs/**'
@@ -12,7 +12,7 @@ on:
       reason:
         description: 'Explain why you are establishing a new performance baseline (e.g., "After merging LRU cache optimization")'
         required: true
-        default: 'Baseline synchronization with latest production enhancements'
+        default: 'Baseline synchronization with latest development enhancements'
 
 permissions:
   contents: write
@@ -91,14 +91,14 @@ jobs:
         with:
           branch: chore/update-baselines-${{ github.sha }}
           delete-branch: true
-          base: production
+          base: dev
           title: "chore: update performance baselines"
           body: |
             ### 🚀 Automated Baseline Update
             
-            **Reason:** ${{ github.event.inputs.reason || 'Standard production synchronization' }}
+            **Reason:** ${{ github.event.inputs.reason || 'Standard development synchronization' }}
             
-            This PR updates the performance baselines in `tests/results/archive/` to match the current state of the `production` branch.
+            This PR updates the performance baselines in `tests/results/archive/` to match the current state of the `dev` branch.
             
             Please review the changes to ensure the new performance metrics are acceptable before merging.
           commit-message: "chore: update performance baselines"
