@@ -4,7 +4,7 @@
     "avg_precision": 0.7613433667781493,
     "avg_recall": 0.6884057971014493,
     "f1_score": 0.7230398200365377,
-    "avg_latency_ms": 16.765667044598125,
+    "avg_latency_ms": 17.615318298339844,
     "avg_top_score": 1.3924486786956525,
     "content_match_rate": 0.8987341772151899,
     "by_difficulty": {
@@ -12,19 +12,19 @@
         "count": 5,
         "precision": 0.5833333333333333,
         "recall": 0.6,
-        "latency_ms": 12.785196304321289
+        "latency_ms": 13.459539413452148
       },
       "medium": {
         "count": 9,
         "precision": 0.9222222222222223,
         "recall": 0.7222222222222222,
-        "latency_ms": 11.42642233106825
+        "latency_ms": 12.091424730088976
       },
       "hard": {
         "count": 9,
         "precision": 0.6993589743589743,
         "recall": 0.7037037037037037,
-        "latency_ms": 24.316284391615127
+        "latency_ms": 25.44797791375054
       }
     },
     "by_category": {
@@ -32,13 +32,13 @@
         "count": 20,
         "precision": 0.7433333333333333,
         "recall": 0.6416666666666667,
-        "latency_ms": 13.129174709320068
+        "latency_ms": 13.882684707641602
       },
       "agent": {
         "count": 3,
         "precision": 0.8814102564102564,
         "recall": 1.0,
-        "latency_ms": 41.008949279785156
+        "latency_ms": 42.499542236328125
       }
     }
   },
@@ -48,7 +48,7 @@
       "difficulty": "easy",
       "precision": 1.0,
       "recall": 1.0,
-      "latency_ms": 13.997316360473633,
+      "latency_ms": 14.437437057495117,
       "top_score": 1.24045893,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/semantic-search.md",
@@ -74,7 +74,7 @@
       "difficulty": "easy",
       "precision": 0.3333333333333333,
       "recall": 0.5,
-      "latency_ms": 13.41867446899414,
+      "latency_ms": 14.177322387695312,
       "top_score": 1.6590566500000001,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/vector-databases.md",
@@ -101,7 +101,7 @@
       "difficulty": "easy",
       "precision": 0.3333333333333333,
       "recall": 0.5,
-      "latency_ms": 13.170719146728516,
+      "latency_ms": 14.01662826538086,
       "top_score": 1.8238233,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/api-design.md",
@@ -127,7 +127,7 @@
       "difficulty": "easy",
       "precision": 1.0,
       "recall": 0.5,
-      "latency_ms": 9.474039077758789,
+      "latency_ms": 9.850263595581055,
       "top_score": 1.35279325,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/database-design.md"
@@ -154,7 +154,7 @@
       "difficulty": "medium",
       "precision": 0.5,
       "recall": 1.0,
-      "latency_ms": 13.84878158569336,
+      "latency_ms": 14.642715454101562,
       "top_score": 1.7974537,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/semantic-search.md",
@@ -181,7 +181,7 @@
       "difficulty": "medium",
       "precision": 1.0,
       "recall": 0.5,
-      "latency_ms": 10.082006454467773,
+      "latency_ms": 10.964155197143555,
       "top_score": 1.27445801,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/microservices.md",
@@ -210,7 +210,7 @@
       "difficulty": "medium",
       "precision": 1.0,
       "recall": 0.5,
-      "latency_ms": 10.011911392211914,
+      "latency_ms": 10.93745231628418,
       "top_score": 1.24226346,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/caching.md",
@@ -238,7 +238,7 @@
       "difficulty": "medium",
       "precision": 1.0,
       "recall": 0.5,
-      "latency_ms": 9.953737258911133,
+      "latency_ms": 10.401010513305664,
       "top_score": 1.8908488499999998,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/authentication.md"
@@ -265,7 +265,7 @@
       "difficulty": "medium",
       "precision": 1.0,
       "recall": 1.0,
-      "latency_ms": 15.08188247680664,
+      "latency_ms": 16.132831573486328,
       "top_score": 1.59698154,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/database-design.md",
@@ -293,7 +293,7 @@
       "difficulty": "hard",
       "precision": 0.8,
       "recall": 1.0,
-      "latency_ms": 24.264812469482422,
+      "latency_ms": 25.725841522216797,
       "top_score": 1.95202024,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/api-design.md",
@@ -323,7 +323,7 @@
       "difficulty": "hard",
       "precision": 1.0,
       "recall": 1.0,
-      "latency_ms": 9.670257568359375,
+      "latency_ms": 10.195016860961914,
       "top_score": 1.61268352,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/authentication.md",
@@ -350,7 +350,7 @@
       "difficulty": "hard",
       "precision": 1.0,
       "recall": 0.5,
-      "latency_ms": 9.917020797729492,
+      "latency_ms": 10.622739791870117,
       "top_score": 1.2931576,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/microservices.md",
@@ -378,7 +378,7 @@
       "difficulty": "medium",
       "precision": 0.8,
       "recall": 0.5,
-      "latency_ms": 13.341426849365234,
+      "latency_ms": 13.67950439453125,
       "top_score": 0.8038565299999999,
       "retrieved_sources": [
         "tests/fixtures/discrimination_docs/web-auth.md",
@@ -407,7 +407,7 @@
       "difficulty": "medium",
       "precision": 1.0,
       "recall": 0.5,
-      "latency_ms": 10.317325592041016,
+      "latency_ms": 10.59722900390625,
       "top_score": 0.8975890599999999,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/caching.md",
@@ -433,7 +433,7 @@
       "difficulty": "easy",
       "precision": 0.25,
       "recall": 0.5,
-      "latency_ms": 13.865232467651367,
+      "latency_ms": 14.816045761108398,
       "top_score": 1.2153882,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/api-design.md",
@@ -461,7 +461,7 @@
       "difficulty": "hard",
       "precision": 1.0,
       "recall": 1.0,
-      "latency_ms": 40.92550277709961,
+      "latency_ms": 42.96135902404785,
       "top_score": 1.2951392,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/microservices.md",
@@ -499,7 +499,7 @@
       "difficulty": "hard",
       "precision": 0.875,
       "recall": 1.0,
-      "latency_ms": 37.92452812194824,
+      "latency_ms": 39.275169372558594,
       "top_score": 1.2887946399999999,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/authentication.md",
@@ -533,7 +533,7 @@
       "difficulty": "hard",
       "precision": 0.7692307692307693,
       "recall": 1.0,
-      "latency_ms": 44.17681694030762,
+      "latency_ms": 45.26209831237793,
       "top_score": 1.7596460600000001,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/authentication.md",
@@ -576,7 +576,7 @@
       "difficulty": "hard",
       "precision": 0.25,
       "recall": 0.3333333333333333,
-      "latency_ms": 13.034582138061523,
+      "latency_ms": 14.18161392211914,
       "top_score": 1.17036709,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/database-design.md",
@@ -601,7 +601,7 @@
       "difficulty": "hard",
       "precision": 0.6,
       "recall": 0.5,
-      "latency_ms": 24.60312843322754,
+      "latency_ms": 25.481462478637695,
       "top_score": 1.48312773,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/vector-databases.md",
@@ -631,7 +631,7 @@
       "difficulty": "hard",
       "precision": 0.0,
       "recall": 0.0,
-      "latency_ms": 14.329910278320312,
+      "latency_ms": 15.326499938964844,
       "top_score": 0.794115,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/caching.md",
@@ -646,7 +646,7 @@
       "difficulty": "medium",
       "precision": 1.0,
       "recall": 1.0,
-      "latency_ms": 10.415792465209961,
+      "latency_ms": 10.942220687866211,
       "top_score": 1.41709262,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/caching.md",
@@ -671,7 +671,7 @@
       "difficulty": "medium",
       "precision": 1.0,
       "recall": 1.0,
-      "latency_ms": 9.784936904907227,
+      "latency_ms": 10.525703430175781,
       "top_score": 1.1652044300000002,
       "retrieved_sources": [
         "tests/fixtures/sample_docs/authentication.md"
