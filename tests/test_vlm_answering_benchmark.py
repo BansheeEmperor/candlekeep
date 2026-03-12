@@ -1,4 +1,4 @@
-"""VLM answering benchmark — Option C: does VLM help agents answer visual queries?
+"""VLM answering benchmark: does VLM help agents answer visual queries?
 
 Measures whether an LLM can answer visual queries when given retrieved chunks.
 - Baseline (no VLM): LLM gets text chunks that say "refer to diagram" → can't answer

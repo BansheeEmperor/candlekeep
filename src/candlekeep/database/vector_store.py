@@ -1,5 +1,6 @@
 """ChromaDB vector store with authentication support."""
 import hashlib
+import os
 import sys
 from pathlib import Path
 import chromadb
@@ -145,8 +146,23 @@ class ChromaVectorStore(VectorDatabase):
 
         # Re-rank with metadata boosting (Bardic Inspiration)
         query_terms = set(query.lower().split())
+        
+        # Caption chunk boosting configuration
+        caption_boost_flat = float(os.getenv("CANDLEKEEP_CAPTION_BOOST", "0.0"))
+        caption_boost_adaptive = os.getenv("CANDLEKEEP_CAPTION_BOOST_ADAPTIVE", "false").lower() == "true"
+        
         for r in candidates:
             boost = 0
+            
+            # Caption chunk boost — helps surface visual content in agent context
+            if r.metadata.get("content_type") == "image_caption":
+                if caption_boost_adaptive:
+                    # Adaptive: boost proportional to similarity (only if already relevant)
+                    if r.score > 0.5:
+                        boost += min(r.score * 0.8, 1.0)
+                elif caption_boost_flat > 0:
+                    # Flat: constant boost for all caption chunks
+                    boost += caption_boost_flat
             
             # Title matching - High priority
             title = r.metadata.get("title", "").lower()
