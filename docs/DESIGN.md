@@ -38,33 +38,35 @@ Chunk expansion (returning adjacent chunks around each match) improved content m
 
 **Decision:** Every search path uses Arcane Recall. Optimized with per-document chunk lookup instead of full DB scan.
 
-```
-Without [Arcane Recall](GLOSSARY.md#arcane-recall) (fragmented):
-┌─────────────────────────────────────────┐
-│ Document: "Authentication Guide"       │
-├─────────────────────────────────────────┤
-│ Chunk 0: Introduction...                │
-│ Chunk 1: Prerequisites...               │
-│ Chunk 2: Token generation requires...   │ ← Match (returned alone)
-│ Chunk 3: Store tokens in environment... │
-│ Chunk 4: Example usage...               │
-└─────────────────────────────────────────┘
-         ↓
-   Agent receives incomplete context
+```mermaid
+graph TD
+    subgraph Fragmented ["Without Arcane Recall (fragmented)"]
+        direction TB
+        F0[Chunk 0: Introduction...]
+        F1[Chunk 1: Prerequisites...]
+        F2{Chunk 2: Token generation...}
+        F3[Chunk 3: Store tokens...]
+        F4[Chunk 4: Example usage...]
+        
+        F2 -- Match --> AgentF[Agent receives incomplete context]
+    end
 
-
-With [Arcane Recall](GLOSSARY.md#arcane-recall):
-┌─────────────────────────────────────────┐
-│ Document: "Authentication Guide"       │
-├─────────────────────────────────────────┤
-│ Chunk 0: Introduction...                │ ← Included (context)
-│ Chunk 1: Prerequisites...               │ ← Included (context)
-│ Chunk 2: Token generation requires...   │ ← Match (original result)
-│ Chunk 3: Store tokens in environment... │ ← Included (context)
-│ Chunk 4: Example usage...               │ ← Included (context)
-└─────────────────────────────────────────┘
-         ↓
-   Agent receives full section with setup + usage
+    subgraph Expanded ["With Arcane Recall"]
+        direction TB
+        E0[Chunk 0: Introduction...]
+        E1[Chunk 1: Prerequisites...]
+        E2{Chunk 2: Token generation...}
+        E3[Chunk 3: Store tokens...]
+        E4[Chunk 4: Example usage...]
+        
+        E0 -. Context .-> Window
+        E1 -. Context .-> Window
+        E2 -- Match --> Window
+        E3 -. Context .-> Window
+        E4 -. Context .-> Window
+        
+        Window[DIVINE WINDOW] --> AgentE[Agent receives full section]
+    end
 ```
 
 ### 3.4 [Bardic Knowledge](GLOSSARY.md#bardic-knowledge) at Ingestion Time

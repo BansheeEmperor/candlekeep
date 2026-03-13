@@ -70,3 +70,7 @@
 ### The Relevance Ward
 **Technical Name:** Cosine Similarity Thresholding
 **The Lore:** A protective barrier that prevents the library from guessing. If no scrolls are found with enough confidence (as defined by the [relevance threshold](ARCHITECTURE.md#tuned-parameters-reference)) to be considered true, the library remains silent rather than presenting false or irrelevant information.
+
+### True Sight
+**Technical Name:** Vision-Language Model (VLM) Image Captioning
+**The Lore:** The ability of the library to see and describe images found within the scrolls. By using a VLM to caption diagrams and charts at ingestion, the library transforms visual knowledge into searchable text, ensuring no detail — even a non-textual one — remains hidden from the seeker.
