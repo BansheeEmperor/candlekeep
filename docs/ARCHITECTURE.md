@@ -40,6 +40,10 @@ Candlekeep is a RAG (Retrieval-Augmented Generation) knowledge base server that 
 │  │ Quality  │→ │ Processor │→ │    Bardic    │          │
 │  │ Gate     │  │ (chunking)│  │  Knowledge   │          │
 │  └──────────┘  └───────────┘  └──────────────┘          │
+│                                      │                  │
+│                                      ▼                  │
+│                                [ TRUE SIGHT ]           │
+│                              (image captioning)         │
 │                                                         │
 │  Retrieval:                                             │
 │  ┌──────────┐  ┌───────────┐  ┌──────────────┐          │
@@ -477,15 +481,15 @@ All settings via environment variables (`.env` file):
 | CANDLEKEEP_RATE_LIMIT_WINDOW | 60 | Rate limit window in seconds (HTTP mode) |
 | CANDLEKEEP_LLM_PROVIDER | (empty) | LLM provider: `anthropic`, `openai`, `bedrock`, `openai_compat` |
 | CANDLEKEEP_LLM_MODEL | (per-provider) | Model name override for LLM provider |
-| CANDLEKEEP_VLM_PROVIDER | (empty) | Vision provider: `anthropic`, `openai`, `bedrock`, `openai_compat` |
-| CANDLEKEEP_VLM_MODEL | (per-provider) | Model name override for vision provider |
-| CANDLEKEEP_VLM_CONCURRENCY | 3 | Max concurrent VLM caption calls per document |
+| CANDLEKEEP_VLM_PROVIDER | (empty) | True Sight provider: `anthropic`, `openai`, `bedrock`, `openai_compat` |
+| CANDLEKEEP_VLM_MODEL | (per-provider) | Model name override for True Sight provider |
+| CANDLEKEEP_VLM_CONCURRENCY | 3 | Max concurrent True Sight calls per document |
 | CANDLEKEEP_VLM_MAX_COST_PER_DOC | 0.0 | Cost circuit breaker per document (0=unlimited) |
-| CANDLEKEEP_VLM_PDF_MAX_PAGES | 15 | Max figure pages to caption per PDF |
-| CANDLEKEEP_VLM_FETCH_REMOTE_IMAGES | false | Caption remote images in markdown (http/https URLs) |
-| CANDLEKEEP_CAPTION_BOOST | 0.0 | Flat boost for caption chunks in retrieval (0=disabled, 1.0=recommended) |
+| CANDLEKEEP_VLM_PDF_MAX_PAGES | 15 | Max figure pages to True Sight per PDF |
+| CANDLEKEEP_VLM_FETCH_REMOTE_IMAGES | false | True Sight remote images in markdown (http/https URLs) |
+| CANDLEKEEP_CAPTION_BOOST | 0.0 | Flat boost for True Sight chunks in retrieval (0=disabled, 1.0=recommended) |
 | CANDLEKEEP_LLM_BASE_URL | (empty) | Base URL for `openai_compat` LLM endpoint |
-| CANDLEKEEP_VLM_BASE_URL | (empty) | Base URL for `openai_compat` vision endpoint |
+| CANDLEKEEP_VLM_BASE_URL | (empty) | Base URL for `openai_compat` True Sight endpoint |
 | ANTHROPIC_API_KEY | (empty) | API key for Anthropic provider |
 | OPENAI_API_KEY | (empty) | API key for OpenAI provider |
 | AWS_REGION | us-east-1 | AWS region for Bedrock provider |
@@ -519,9 +523,9 @@ Canonical latency reference for the simple search path. All other latency figure
 
 The simple path performs no inference beyond the initial query embedding. Arcane Recall uses stored embeddings from ChromaDB for the Scholar's Discernment similarity checks — no bi-encoder calls during expansion.
 
-## LLM & Vision Providers
+## LLM & True Sight Providers
 
-Candlekeep uses a provider abstraction layer for runtime LLM calls (RAPTOR summaries) and vision calls (image captioning). Text and vision providers are independently configurable — use a cheap local model for summaries and a stronger hosted model for captioning without coupling.
+Candlekeep uses a provider abstraction layer for runtime LLM calls (RAPTOR summaries) and True Sight calls (image captioning). Text and True Sight providers are independently configurable — use a cheap local model for summaries and a stronger hosted model for True Sight without coupling.
 
 ### Provider Architecture
 
@@ -534,7 +538,7 @@ Both factory functions read from environment variables and use lazy imports, so 
 
 ### Available Providers
 
-| Provider | LLM | Vision | Install | Auth |
+| Provider | LLM | True Sight | Install | Auth |
 |----------|-----|--------|---------|------|
 | `anthropic` | ✓ | ✓ | `pip install anthropic` | `ANTHROPIC_API_KEY` |
 | `openai` | ✓ | ✓ | `pip install openai` | `OPENAI_API_KEY` |
@@ -552,7 +556,7 @@ CANDLEKEEP_LLM_MODEL=llama3.2
 CANDLEKEEP_LLM_BASE_URL=http://localhost:11434/v1
 ```
 
-Mixed (local LLM, hosted vision):
+Mixed (local LLM, hosted True Sight):
 ```bash
 CANDLEKEEP_LLM_PROVIDER=openai_compat
 CANDLEKEEP_LLM_MODEL=llama3.2
@@ -579,7 +583,7 @@ src/candlekeep/
 │   ├── vector_store.py      # ChromaDB implementation
 │   └── embeddings.py        # Model loading + caching
 ├── providers/
-│   ├── base.py              # LLMProvider / VisionProvider ABCs
+│   ├── base.py              # LLMProvider / VisionProvider ABCs (True Sight)
 │   ├── factory.py           # Env-driven provider instantiation
 │   ├── anthropic.py         # Anthropic (Claude) implementation
 │   ├── openai.py            # OpenAI implementation
