@@ -3269,3 +3269,88 @@ For an MCP tool serving an LLM agent, the quality of the returned context matter
 - `scripts/benchmark_competitors.py` — Registered `langchain-defaults` competitor
 - `tests/results/default_config_benchmark.json` — Raw results
 - `docs/charts/langchain-vs-candlekeep-out-of-the-box.png` — Radar chart
+
+
+---
+
+## Entry 55: The Rosetta Seal — Corpus-Derived BM25 Token Normalisation
+
+**Date:** 2026-03-13
+
+### Problem
+
+BM25 is an exact token matcher. The Centurion Set shows lexical queries are the weakest category at MRR 0.557. The root cause is surface-form variation: technical documentation uses `cross-encoder`, `crossencoder`, and `cross_encoder` interchangeably. When a query uses one form and the indexed document uses another, BM25 assigns zero overlap — a precision failure that vector search partially compensates for but never fully fixes.
+
+The failure mode is specific: separator variants. The tokenizer regex `[a-z0-9]+(?:[._-][a-z0-9]+)*` correctly preserves `cross-encoder` as a single token. But `crossencoder` (no separator) is a different token. BM25 sees zero overlap. Vector search recovers some of this via semantic similarity, but the BM25 signal is lost entirely.
+
+### Approach
+
+Automatically derive a corpus-specific normalisation map at `repopulate_database` time. Apply it symmetrically at index time and query time so BM25 token matching is surface-form agnostic. Zero manual curation. Zero operator intervention.
+
+**Map generation algorithm:**
+
+1. Extract all tokens from the BM25 corpus (already tokenised).
+2. For each token containing a separator (`-`, `.`, `_`), compute the stripped form (remove separators). If both forms appear in the corpus with frequency ≥ 2, they are a candidate pair.
+3. For each candidate pair: if normalised edit distance ≤ threshold AND embedding cosine similarity ≥ threshold → same cluster.
+4. Elect canonical form: most frequent token wins. Ties broken by longest form.
+5. Write the map to `normalisation_map.json` in `CANDLEKEEP_CACHE_DIR`.
+
+**Key design decision:** Only cluster separator-variant pairs (one form has a separator, the other is the stripped version). This keeps the candidate set small (dozens, not thousands), makes generation fast (< 0.1s on the current corpus), and avoids false positives from morphological noise (plurals, verb forms).
+
+**Application:** Inside `BM25Searcher._tokenize()`, apply the map before indexing and before query tokenisation. Single-point change; all BM25 code paths inherit it.
+
+### Benchmark Design
+
+Two corpora were required to validate the feature properly:
+
+**Corpus 1 (regression):** Existing `sample_docs` + `scale_docs` + `docs/` with the Centurion Set (108 queries). Proves normalisation does not degrade retrieval on normal queries.
+
+**Corpus 2 (uplift):** 8 synthetic documents in `tests/fixtures/normalisation_corpus/`. Each document uses one surface form exclusively. Queries use the alternate form. No semantic overlap — vector search gets near-zero signal, isolating the BM25 effect. Covers: separator-hyphen, separator-underscore, separator-dot, abbreviation-truncation, abbreviation-acronym, compound-split, compound-version-suffix, and mixed-form variants.
+
+**Threshold sweep:** 36 combinations across `edit_distance_threshold` ∈ [0.10, 0.15, 0.20, 0.25], `embedding_similarity_threshold` ∈ [0.75, 0.82, 0.90], `min_token_length` ∈ [3, 4, 5].
+
+**Metrics:** BM25-only MRR (primary — isolates normalisation from vector fusion), Hit@1, Hit@5, graded nDCG@5, map generation time, separator-pair coverage, query latency p50/p95, ingest latency delta.
+
+### Results (Python 3.12, 36 threshold combinations)
+
+| Embedding threshold | BM25 MRR uplift | Map size | Gen time | Regression delta |
+|:-------------------:|:---------------:|:--------:|:--------:|:----------------:|
+| 0.75 | **+19.8%** | 9–14 | 0.05–0.09s | +0.0000 |
+| 0.82 | **+15.7%** | 6–10 | 0.04–0.09s | +0.0000 |
+| 0.90 | +7.4% | 1–4 | 0.04–0.09s | +0.0000 |
+
+All 36 combinations pass the generation time target (≤ 5s). All 36 pass the regression check (zero degradation on Centurion Set). The embedding threshold is the decisive variable — edit distance threshold and min token length have no effect on this corpus because the separator-pair filtering dominates.
+
+**Recommended config (current defaults):** `ed=0.15, emb=0.82, min_len=4` → +15.7% BM25 MRR, zero regression, 0.07s generation.
+
+**Why emb=0.82 over emb=0.75:** The lower threshold (0.75) clusters more pairs (+19.8% MRR) but risks false positives on pairs that pass edit distance but are semantically unrelated. The 0.82 threshold is conservative enough to avoid this while still catching all separator variants in the current corpus.
+
+### Known Limitations
+
+1. **Abbreviation/acronym variants** (`postgres` → `postgresql`, `k8s` → `kubernetes`) have edit distance > 0.25 and won't cluster via edit distance alone. The embedding gate would catch them, but the embedding model has a dtype incompatibility on Python 3.14 that silently disables it. Run the benchmark on Python 3.12 where embeddings work correctly.
+
+2. **Space-separated variants** (`chroma db` → `chromadb`) are not a tokenisation problem that normalisation can solve. BM25 tokenises on spaces, so `chroma db` becomes two tokens `["chroma", "db"]` — no amount of token-level normalisation bridges that to the single token `chromadb`. This is a query expansion problem, not a normalisation problem.
+
+3. **Map generation on large corpora:** The separator-pair filtering keeps the candidate set small regardless of corpus size. On the current corpus (96 docs), generation takes 0.07s. On a 10,000-document corpus, the candidate set grows proportionally to the number of unique separator-variant pairs, not the total token count.
+
+### Production Behaviour
+
+The map rebuilds automatically in the background after every `ingest()` call. The rebuild is non-blocking — `ingest()` returns immediately and queries during the rebuild use the stale map. Once the rebuild completes, the new map is atomically swapped in. If a rebuild is already running when another `ingest()` arrives, the new request is a no-op: the in-flight thread reads ChromaDB at execution time so it will include the latest chunks.
+
+`repopulate_database` clears the map. The first `ingest()` after a repopulate triggers a background rebuild. Subsequent queries use the stale (empty) map until the rebuild completes — typically under 1s on the current corpus.
+
+`rebuild_normalisation_map()` MCP tool forces an immediate synchronous rebuild. Use it after bulk ingestion when you want to confirm the map is current before running queries.
+
+The `normalisation_map.json` file is written to `CANDLEKEEP_DATA_DIR`. On startup, if the file exists it is loaded; if not, BM25 runs without normalisation. The `get_stats` tool surfaces `normalisation_map_size` so operators can verify the map is loaded.
+
+### Files Changed
+
+- `src/candlekeep/rag/token_normalisation.py` — New module: NormalisationMap, generate/load/clear, clustering algorithm
+- `src/candlekeep/rag/hybrid.py` — `_tokenize()` applies map; `_token_re` alias exported
+- `src/candlekeep/config.py` — `normalisation_map_path` property; `CANDLEKEEP_DATA_DIR` env var support
+- `src/candlekeep/database/vector_store.py` — `clear()` invalidates map cache; `get_stats()` surfaces map size
+- `src/candlekeep/mcp/server.py` — `rebuild_normalisation_map()` MCP tool; `CANDLEKEEP_NORMALISE_ON_INGEST` support
+- `tests/fixtures/normalisation_corpus/` — 8 synthetic uplift corpus documents
+- `scripts/benchmark_normalisation.py` — Full benchmark suite: 30 uplift queries, threshold sweep, two corpora
+
+See [ARCHITECTURE.md § The Rosetta Seal](ARCHITECTURE.md#the-rosetta-seal-normalisation-map) for the operational reference, [DESIGN.md § 4.2](DESIGN.md#42-the-rosetta-seal-bm25-token-normalisation) for the design rationale, and [GLOSSARY.md](GLOSSARY.md#the-rosetta-seal) for the lore entry.

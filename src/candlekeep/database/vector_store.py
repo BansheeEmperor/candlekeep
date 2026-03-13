@@ -105,6 +105,12 @@ class ChromaVectorStore(VectorDatabase):
             for source in sources:
                 update_colbert_cache(new_search_results, removed_source=source)
 
+        # Schedule background normalisation map rebuild. Non-blocking —
+        # mirrors the ColBERT dirty-flag pattern. Queries use the stale
+        # map until the rebuild completes; no latency impact on ingest.
+        from candlekeep.rag.token_normalisation import schedule_background_rebuild
+        schedule_background_rebuild(self)
+
         return len(chunks)
 
     def search(self, query: str, n_results: int = 5, category: str | None = None) -> list[SearchResult]:
@@ -206,7 +212,9 @@ class ChromaVectorStore(VectorDatabase):
     def clear(self) -> None:
         """Clear all documents from the collection."""
         from candlekeep.rag.hybrid import clear_bm25_cache
+        from candlekeep.rag.token_normalisation import clear_normalisation_cache
         clear_bm25_cache()
+        clear_normalisation_cache()
         import os
         if os.getenv("CANDLEKEEP_SPARSE_BACKEND", "bm25") == "colbert":
             from candlekeep.rag.colbert import clear_colbert_cache
@@ -271,7 +279,12 @@ class ChromaVectorStore(VectorDatabase):
         stats["embed_cache_hits"] = cache_stats["embedding_cache_hits"]
         stats["embed_cache_misses"] = cache_stats["embedding_cache_misses"]
         stats["embed_cache_size"] = cache_stats["embedding_cache_size"]
-        
+
+        # Normalisation map size
+        from candlekeep.rag.token_normalisation import get_normalisation_map
+        norm_map = get_normalisation_map(self.settings.data_dir)
+        stats["normalisation_map_size"] = norm_map.size if norm_map is not None else 0
+
         return stats
 
 
