@@ -3335,9 +3335,13 @@ All 36 combinations pass the generation time target (≤ 5s). All 36 pass the re
 
 ### Production Behaviour
 
-Operators do nothing. The map is generated automatically during `repopulate_database` (via `rebuild_normalisation_map()` MCP tool after ingestion). The `normalisation_map.json` file is written to `CANDLEKEEP_DATA_DIR`. On startup, if the file exists it is loaded; if not, BM25 runs without normalisation. The `get_stats` tool surfaces `normalisation_map_size` so operators can verify the map is loaded.
+The map rebuilds automatically in the background after every `ingest()` call. The rebuild is non-blocking — `ingest()` returns immediately and queries during the rebuild use the stale map. Once the rebuild completes, the new map is atomically swapped in. If a rebuild is already running when another `ingest()` arrives, the new request is a no-op: the in-flight thread reads ChromaDB at execution time so it will include the latest chunks.
 
-`CANDLEKEEP_NORMALISE_ON_INGEST=true` (default: `false`) triggers regeneration after each `ingest()` call for small corpora where this is affordable.
+`repopulate_database` clears the map. The first `ingest()` after a repopulate triggers a background rebuild. Subsequent queries use the stale (empty) map until the rebuild completes — typically under 1s on the current corpus.
+
+`rebuild_normalisation_map()` MCP tool forces an immediate synchronous rebuild. Use it after bulk ingestion when you want to confirm the map is current before running queries.
+
+The `normalisation_map.json` file is written to `CANDLEKEEP_DATA_DIR`. On startup, if the file exists it is loaded; if not, BM25 runs without normalisation. The `get_stats` tool surfaces `normalisation_map_size` so operators can verify the map is loaded.
 
 ### Files Changed
 
