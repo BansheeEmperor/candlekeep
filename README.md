@@ -14,17 +14,17 @@ A RAG knowledge base server that gives AI agents the power to search, retrieve, 
 - [**Wild Magic**](docs/GLOSSARY.md#lexical-matching-bm25) — Hybrid retrieval merging Vector and BM25 (lexical) search, fixing "keyword blindness" for exact identifiers
 - [**Divine Insight**](docs/GLOSSARY.md#cross-encoder-reranking) — Cross-encoder reranking for when precision matters more than speed
 - [**The Relevance Ward**](docs/GLOSSARY.md#the-relevance-ward) — Results below a [configured threshold](docs/ARCHITECTURE.md#tuned-parameters-reference) are filtered, so the library says "I don't know" instead of guessing
-- **Vision Captioning** — Images in PDFs and markdown are captioned at ingestion via VLM, making diagram details searchable
+- **True Sight** — Images in PDFs and markdown are captioned at ingestion via VLM, making diagram details searchable
 
 ## Features
 
 - **[Adaptive Search Routing](docs/ARCHITECTURE.md#the-three-roads)**: Three paths — `simple` (Vector), `hybrid` (BM25+Vector), and `precise` (Reranked)
-- **VLM Image Captioning**: Opt-in vision captioning for PDFs and markdown images — deployment topologies, benchmark charts, and architecture diagrams become searchable
+- **True Sight**: Opt-in vision captioning for PDFs and markdown images — deployment topologies, benchmark charts, and architecture diagrams become searchable
 - **Statistical Rigor**: Validated against **The Centurion Set** (100+ multi-category queries)
 - **Quality Gate**: Documents must have frontmatter and structure to enter the library
 - **Embedding Protection**: Auto-detects model mismatch on remote databases
 - **8 MCP Tools**: Search, ingest, critique, generate docs, and more
-- **[LLM & Vision Providers](docs/ARCHITECTURE.md#llm--vision-providers)**: Pluggable `anthropic`, `openai`, `bedrock`, and `openai_compat` (Ollama/LM Studio/vLLM) — text and vision independently configurable
+- **[LLM & True Sight Providers](docs/ARCHITECTURE.md#llm--true-sight-providers)**: Pluggable `anthropic`, `openai`, `bedrock`, and `openai_compat` (Ollama/LM Studio/vLLM) — text and True Sight independently configurable
 - **Token Auth**: Bearer token authentication for remote ChromaDB
 
 ## Quick Start
@@ -138,7 +138,7 @@ pytest tests/test_router.py tests/test_quality_gate.py tests/test_arcane_recall_
 pytest tests/test_router_benchmark.py -v -s
 ```
 
-59 unit tests covering router, quality gate, chunk expansion, embedding protection, document processing, and LLM/vision providers. Benchmark tests include regression assertions that fail if precision or content match drops below 80%.
+59 unit tests covering router, quality gate, chunk expansion, embedding protection, document processing, and LLM/True Sight providers. Benchmark tests include regression assertions that fail if precision or content match drops below 80%.
 
 ## Requirements
 
