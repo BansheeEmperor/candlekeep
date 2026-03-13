@@ -482,7 +482,10 @@ def get_stats() -> str:
 **Embedding Cache**
 - Hits: {stats.get('embed_cache_hits', 0)}
 - Misses: {stats.get('embed_cache_misses', 0)}
-- Size: {stats.get('embed_cache_size', 0)}"""
+- Size: {stats.get('embed_cache_size', 0)}
+
+**BM25 Normalisation**
+- Normalisation map variants: {stats.get('normalisation_map_size', 0)}"""
 
 
 
@@ -683,15 +686,26 @@ def ingest(path: str, ctx: Context = CurrentContext()) -> str:
                     return msg
 
             if p.is_file():
-                chunks = get_processor().process(p)
+                result = get_processor().process(p)
             else:
-                chunks = get_processor().process_directory(p)
+                result = get_processor().process_directory(p)
 
-            if not chunks:
+            if not result.chunks:
                 return "No content found to ingest."
 
-            count = get_store().add_documents(chunks, collection="default")
-            return f"✓ Ingested {count} chunks from {path}"
+            count = get_store().add_documents(result.chunks, collection="default")
+            msg = f"✓ Ingested {count} chunks from {path}"
+            if result.images_captioned or result.images_from_cache:
+                msg += f" ({result.images_captioned} images captioned, {result.images_from_cache} from cache)"
+
+            # Schedule background normalisation map rebuild. Non-blocking —
+            # queries during rebuild use the stale map. If a rebuild is already
+            # running this is a no-op (the in-flight thread reads corpus at
+            # execution time so it will include these new chunks).
+            from candlekeep.rag.token_normalisation import schedule_background_rebuild
+            schedule_background_rebuild(get_store())
+
+            return msg
     except _WriteLockTimeout as e:
         return str(e)
     except chromadb.errors.AuthorizationError as e:
@@ -734,11 +748,35 @@ def repopulate_database(ctx: Context = CurrentContext()) -> str:
     try:
         with _write_guard():
             get_store().clear()
-            return "✓ Database cleared. Use ingest() to add documents."
+            return "✓ Database cleared. Use ingest() to add documents. The normalisation map rebuilds automatically in the background after each ingest."
     except _WriteLockTimeout as e:
         return str(e)
     except chromadb.errors.AuthorizationError as e:
         return f"❌ Write permission denied: {e}"
+    except Exception as e:
+        return f"❌ Error: {e}"
+
+
+@mcp.tool
+def rebuild_normalisation_map(ctx: Context = CurrentContext()) -> str:
+    """Force an immediate synchronous rebuild of the BM25 normalisation map.
+
+    The map normally rebuilds automatically in the background after each
+    ingest(). Use this tool to force an immediate rebuild and wait for
+    completion — useful after bulk ingestion when you want to confirm the
+    map is current before running queries.
+    """
+    if msg := _check_ready():
+        return msg
+    if msg := _rate_check(_write_limiter, ctx):
+        return msg
+
+    try:
+        from candlekeep.rag.token_normalisation import regenerate_normalisation_map
+        norm_map = regenerate_normalisation_map(get_store())
+        if norm_map is None:
+            return "⚠ Corpus is empty — no normalisation map generated."
+        return f"✓ Normalisation map rebuilt: {norm_map.size} variant → canonical mappings."
     except Exception as e:
         return f"❌ Error: {e}"
 

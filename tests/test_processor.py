@@ -23,12 +23,12 @@ def sample_docs_dir():
 def test_process_markdown_with_frontmatter(processor, sample_docs_dir):
     """Test processing markdown with YAML frontmatter."""
     doc_path = sample_docs_dir / "vector-databases.md"
-    chunks = processor.process(doc_path)
-    
-    assert len(chunks) > 0
-    
+    result = processor.process(doc_path)
+
+    assert len(result.chunks) > 0
+
     # Check metadata extraction
-    first_chunk = chunks[0]
+    first_chunk = result.chunks[0]
     assert first_chunk.metadata["title"] == "Introduction to Vector Databases"
     assert first_chunk.metadata["category"] == "database"
     assert "vector database" in first_chunk.metadata["keywords"]
@@ -37,20 +37,20 @@ def test_process_markdown_with_frontmatter(processor, sample_docs_dir):
 def test_process_plain_text(processor, sample_docs_dir):
     """Test processing plain text file."""
     doc_path = sample_docs_dir / "plain-text.txt"
-    chunks = processor.process(doc_path)
-    
-    assert len(chunks) > 0
-    assert all(chunk.text.strip() for chunk in chunks)
+    result = processor.process(doc_path)
+
+    assert len(result.chunks) > 0
+    assert all(chunk.text.strip() for chunk in result.chunks)
 
 
 def test_process_directory(processor, sample_docs_dir):
     """Test processing entire directory."""
-    chunks = processor.process_directory(sample_docs_dir)
-    
-    assert len(chunks) > 0
-    
+    result = processor.process_directory(sample_docs_dir)
+
+    assert len(result.chunks) > 0
+
     # Should have chunks from multiple files
-    sources = set(chunk.metadata["source"] for chunk in chunks)
+    sources = set(chunk.metadata["source"] for chunk in result.chunks)
     assert len(sources) >= 3  # At least 3 sample files
 
 

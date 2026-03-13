@@ -54,8 +54,8 @@ def seeded_store(vector_store, document_processor):
     ingested_count = 0
     for doc_file in test_docs.glob("*"):
         if doc_file.is_file() and doc_file.name in expected_sources:
-            chunks = document_processor.process(str(doc_file))
-            vector_store.add_documents(chunks)
+            result = document_processor.process(str(doc_file))
+            vector_store.add_documents(result.chunks)
             ingested_count += 1
             
     return vector_store

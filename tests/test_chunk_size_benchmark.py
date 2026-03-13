@@ -40,7 +40,7 @@ class TestChunkSizeBenchmark:
 
             for f in SAMPLE_DOCS.glob("*"):
                 if f.is_file():
-                    store.add_documents(proc.process(str(f)))
+                    store.add_documents(proc.process(str(f)).chunks)
 
             chunk_count = store.collection.count()
 

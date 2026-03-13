@@ -12,28 +12,60 @@ A RAG knowledge base server that gives AI agents the power to search, retrieve, 
 - [**Bardic Inspiration**](docs/GLOSSARY.md#bardic-inspiration) — Result-time metadata boosting that ensures specific technical guides outrank generic content
 - [**Arcane Recall**](docs/GLOSSARY.md#arcane-recall) — Intelligent expansion using [**Scholar's Discernment**](docs/GLOSSARY.md#the-scholars-discernment) and [**Arcane Coalescence**](docs/GLOSSARY.md#arcane-coalescence) to return full sections without token waste
 - [**Wild Magic**](docs/GLOSSARY.md#lexical-matching-bm25) — Hybrid retrieval merging Vector and BM25 (lexical) search, fixing "keyword blindness" for exact identifiers
+- [**The Rosetta Seal**](docs/GLOSSARY.md#the-rosetta-seal) — Corpus-derived BM25 token normalisation map that bridges surface-form variants (`crossencoder` ↔ `cross-encoder`), rebuilt automatically in the background after each ingest
 - [**Divine Insight**](docs/GLOSSARY.md#cross-encoder-reranking) — Cross-encoder reranking for when precision matters more than speed
 - [**The Relevance Ward**](docs/GLOSSARY.md#the-relevance-ward) — Results below a [configured threshold](docs/ARCHITECTURE.md#tuned-parameters-reference) are filtered, so the library says "I don't know" instead of guessing
+- **True Sight** — Images in PDFs and markdown are captioned at ingestion via VLM, making diagram details searchable
 
 ## Features
 
 - **[Adaptive Search Routing](docs/ARCHITECTURE.md#the-three-roads)**: Three paths — `simple` (Vector), `hybrid` (BM25+Vector), and `precise` (Reranked)
+- **True Sight**: Opt-in vision captioning for PDFs and markdown images — deployment topologies, benchmark charts, and architecture diagrams become searchable
 - **Statistical Rigor**: Validated against **The Centurion Set** (100+ multi-category queries)
 - **Quality Gate**: Documents must have frontmatter and structure to enter the library
 - **Embedding Protection**: Auto-detects model mismatch on remote databases
 - **8 MCP Tools**: Search, ingest, critique, generate docs, and more
-- **[LLM & Vision Providers](docs/ARCHITECTURE.md#llm--vision-providers)**: Pluggable `anthropic`, `openai`, `bedrock`, and `openai_compat` (Ollama/LM Studio/vLLM) — text and vision independently configurable
+- **[LLM & True Sight Providers](docs/ARCHITECTURE.md#llm--true-sight-providers)**: Pluggable `anthropic`, `openai`, `bedrock`, and `openai_compat` (Ollama/LM Studio/vLLM) — text and True Sight independently configurable
 - **Token Auth**: Bearer token authentication for remote ChromaDB
 
 ## Quick Start
 
+### PyPI (Recommended)
+
+The easiest way to get the library up and running for use with any MCP client:
+
 ```bash
-# Enter the library
+pip install candlekeep
+
+# Run in stdio mode (standard)
+candlekeep
+
+# Run in HTTP mode (recommended for better performance)
+CANDLEKEEP_TRANSPORT=http CANDLEKEEP_HTTP_PORT=8111 candlekeep
+```
+
+### Docker (Isolated)
+
+Run the server in a container. Note that if your ChromaDB is running on `localhost`, you'll need to use your host's internal IP (e.g., `host.docker.internal` on Docker Desktop):
+
+```bash
+docker run -p 8111:8111 \
+  -e CHROMA_URL=http://host.docker.internal:8000 \
+  ghcr.io/bansheeemperor/candlekeep:latest
+```
+
+### Local Development
+
+If you wish to contribute or modify the library's arcane secrets:
+
+```bash
+git clone https://github.com/raalgaw/candlekeep.git
+cd candlekeep
 pip install -e .
-./scripts/setup.sh       # Download the tomes (embedding models)
-./scripts/configure.sh   # Set your wards (configuration)
-./scripts/start_chroma.sh # Awaken the vault (ChromaDB)
-candlekeep               # Open the gates
+./scripts/setup.sh        # Download the tomes (embedding models)
+./scripts/configure.sh    # Set your wards (configuration)
+./scripts/start_chroma.sh  # Awaken the vault (ChromaDB)
+candlekeep                # Enter the library
 ```
 
 ### MCP Client Integration
@@ -91,6 +123,7 @@ See [Setup Guide](docs/SETUP.md) for auth configuration and production deploymen
 - **ingest** — Add documents with automatic quality validation
 - **delete_document** — Remove a tome from the index
 - **repopulate_database** — Clear and rebuild the library
+- **rebuild_normalisation_map** — Regenerate The Rosetta Seal from the current corpus after a full repopulate + ingest cycle
 
 Access to write tools is managed by your database permissions (configured via `CHROMA_AUTH_TOKEN`).
 
@@ -107,7 +140,7 @@ pytest tests/test_router.py tests/test_quality_gate.py tests/test_arcane_recall_
 pytest tests/test_router_benchmark.py -v -s
 ```
 
-59 unit tests covering router, quality gate, chunk expansion, embedding protection, document processing, and LLM/vision providers. Benchmark tests include regression assertions that fail if precision or content match drops below 80%.
+59 unit tests covering router, quality gate, chunk expansion, embedding protection, document processing, and LLM/True Sight providers. Benchmark tests include regression assertions that fail if precision or content match drops below 80%.
 
 ## Requirements
 

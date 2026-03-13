@@ -1,6 +1,6 @@
 [project]
 name = "candlekeep"
-version = "0.1.1"
+version = "1.0.0"
 description = "RAG knowledge base server with ChromaDB and MCP interface"
 readme = "README.md"
 requires-python = ">=3.10"

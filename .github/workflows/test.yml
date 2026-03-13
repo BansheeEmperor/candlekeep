@@ -2,9 +2,10 @@ name: Comprehensive Tests
 
 on:
   pull_request:
-    branches: [ production, master, main ]
-  push:
-    branches: [ production, master, main ]
+    branches: [ production, dev, master, main ]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
 
 permissions:
   pull-requests: write

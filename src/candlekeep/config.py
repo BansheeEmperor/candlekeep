@@ -51,6 +51,8 @@ load_dotenv()
 
 def get_data_dir() -> Path:
     """Get cross-platform data directory."""
+    if os.getenv("CANDLEKEEP_DATA_DIR"):
+        return Path(os.getenv("CANDLEKEEP_DATA_DIR"))
     if os.name == "nt":
         base = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local"))
     elif os.name == "posix" and "darwin" in os.uname().sysname.lower():
@@ -103,6 +105,12 @@ class Settings:
     llm_provider: str = field(default_factory=lambda: os.getenv("CANDLEKEEP_LLM_PROVIDER", ""))
     vlm_provider: str = field(default_factory=lambda: os.getenv("CANDLEKEEP_VLM_PROVIDER", ""))
 
+    # VLM captioning options
+    vlm_concurrency: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_VLM_CONCURRENCY", "3")))
+    vlm_max_cost_per_doc: float = field(default_factory=lambda: float(os.getenv("CANDLEKEEP_VLM_MAX_COST_PER_DOC", "0.0")))
+    vlm_fetch_remote_images: bool = field(default_factory=lambda: os.getenv("CANDLEKEEP_VLM_FETCH_REMOTE_IMAGES", "false").lower() == "true")
+    vlm_pdf_max_pages: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_VLM_PDF_MAX_PAGES", "15")))
+
     # Data directory
     data_dir: Path = field(default_factory=get_data_dir)
 
@@ -113,6 +121,8 @@ class Settings:
         self.data_dir.mkdir(parents=True, exist_ok=True)
         (self.data_dir / "models").mkdir(exist_ok=True)
         (self.data_dir / "chroma").mkdir(exist_ok=True)
+        if self.vlm_provider and self.vlm_provider != "none":
+            (self.data_dir / "image_captions").mkdir(exist_ok=True)
     
     @classmethod
     def from_env(cls) -> "Settings":
@@ -148,3 +158,11 @@ class Settings:
     @property
     def embedding_model_name(self) -> str:
         return EMBEDDING_MODELS[self.embedding_model]
+
+    @property
+    def image_caption_cache_dir(self) -> Path:
+        return self.data_dir / "image_captions"
+
+    @property
+    def normalisation_map_path(self) -> Path:
+        return self.data_dir / "normalisation_map.json"
