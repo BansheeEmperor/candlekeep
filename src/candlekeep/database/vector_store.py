@@ -105,6 +105,12 @@ class ChromaVectorStore(VectorDatabase):
             for source in sources:
                 update_colbert_cache(new_search_results, removed_source=source)
 
+        # Schedule background normalisation map rebuild. Non-blocking —
+        # mirrors the ColBERT dirty-flag pattern. Queries use the stale
+        # map until the rebuild completes; no latency impact on ingest.
+        from candlekeep.rag.token_normalisation import schedule_background_rebuild
+        schedule_background_rebuild(self)
+
         return len(chunks)
 
     def search(self, query: str, n_results: int = 5, category: str | None = None) -> list[SearchResult]:

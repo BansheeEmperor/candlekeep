@@ -697,17 +697,6 @@ def ingest(path: str, ctx: Context = CurrentContext()) -> str:
             msg = f"✓ Ingested {count} chunks from {path}"
             if result.images_captioned or result.images_from_cache:
                 msg += f" ({result.images_captioned} images captioned, {result.images_from_cache} from cache)"
-
-            import os
-            if os.getenv("CANDLEKEEP_NORMALISE_ON_INGEST", "false").lower() == "true":
-                try:
-                    from candlekeep.rag.token_normalisation import regenerate_normalisation_map
-                    norm_map = regenerate_normalisation_map(get_store())
-                    if norm_map is not None:
-                        msg += f" (normalisation map: {norm_map.size} variants)"
-                except Exception as norm_err:
-                    msg += f" (normalisation map generation failed: {norm_err})"
-
             return msg
     except _WriteLockTimeout as e:
         return str(e)
@@ -751,7 +740,7 @@ def repopulate_database(ctx: Context = CurrentContext()) -> str:
     try:
         with _write_guard():
             get_store().clear()
-            return "✓ Database cleared. Use ingest() to add documents, then rebuild_normalisation_map() once ingestion is complete."
+            return "✓ Database cleared. Use ingest() to add documents. The normalisation map rebuilds automatically in the background after each ingest."
     except _WriteLockTimeout as e:
         return str(e)
     except chromadb.errors.AuthorizationError as e:

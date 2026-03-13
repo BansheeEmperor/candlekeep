@@ -14,10 +14,12 @@ Architecture:
 - generate_normalisation_map(): Main generation entry point
 - get_normalisation_map(): Global singleton with thread-safe lazy loading
 - clear_normalisation_cache(): Clear for regeneration
+- schedule_background_rebuild(): Fire-and-forget background rebuild after ingest
+  (mirrors the ColBERT dirty-flag + background-thread pattern)
 
 Clustering algorithm:
 - Pre-filter tokens by length similarity (within 30%)
-- For each pair: if edit distance ≤ 0.15 AND embedding similarity ≥ 0.92 → same cluster
+- For each pair: if edit distance ≤ 0.15 AND embedding similarity ≥ 0.82 → same cluster
 - Elect canonical: most frequent wins, ties broken by longest form
 
 See: docs/RESEARCH_DIARY.md for implementation rationale.
@@ -402,6 +404,62 @@ def clear_normalisation_cache() -> None:
     global _normalisation_map
     with _map_lock:
         _normalisation_map = None
+
+
+# ── Background rebuild (mirrors ColBERT dirty-flag pattern) ─────────────────
+#
+# After each ingest(), schedule_background_rebuild() is called. It fires a
+# daemon thread that regenerates the map from the current corpus. Queries
+# during the rebuild use the stale map — no latency impact on either ingest
+# or query paths. If a rebuild is already running, the new call is a no-op:
+# the in-flight thread will finish with the latest corpus state anyway
+# (it reads from ChromaDB at execution time, not at scheduling time).
+
+_rebuild_building = False
+_rebuild_lock = threading.Lock()
+
+
+def schedule_background_rebuild(db) -> None:
+    """Schedule a background normalisation map rebuild after an ingest.
+
+    Non-blocking. If a rebuild is already in progress, this is a no-op —
+    the running thread will complete with the latest corpus state.
+
+    Args:
+        db: VectorDatabase instance (read at thread execution time)
+    """
+    global _rebuild_building
+
+    with _rebuild_lock:
+        if _rebuild_building:
+            return
+        _rebuild_building = True
+
+    thread = threading.Thread(
+        target=_rebuild_worker,
+        args=(db,),
+        daemon=True,
+        name="normalisation-map-rebuild",
+    )
+    thread.start()
+
+
+def _rebuild_worker(db) -> None:
+    """Background thread: regenerate map and update singleton."""
+    global _rebuild_building
+    try:
+        norm_map = regenerate_normalisation_map(db)
+        if norm_map is not None:
+            logger.info(
+                "[candlekeep] Background normalisation map rebuild complete "
+                "(%d variants)", norm_map.size
+            )
+    except Exception:
+        logger.exception("[candlekeep] Background normalisation map rebuild failed")
+    finally:
+        global _rebuild_building
+        with _rebuild_lock:
+            _rebuild_building = False
 
 
 def regenerate_normalisation_map(db) -> Optional[NormalisationMap]:
