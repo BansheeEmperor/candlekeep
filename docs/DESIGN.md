@@ -121,6 +121,7 @@ A comprehensive benchmark across n_results (3, 5, 10), pool multipliers (1×, 2�
 | Illusory Script (HyDE) | Unacceptable latency | ❌ Too slow |
 | [Wild Magic](GLOSSARY.md#lexical-matching-wild-magic) (BM25 hybrid) | Higher lexical quality | ✅ Hybrid path |
 | ColBERT (late interaction) | +0.033 lexical MRR, +0.015 CM | ✅ Opt-in hybrid sparse |
+| [The Rosetta Seal](GLOSSARY.md#the-rosetta-seal) (BM25 token normalisation) | +15.7% BM25 MRR on surface variants, zero regression | ✅ Hybrid path |
 | Scrying Window (sentence splitting) | Precision collapse | ❌ Rejected |
 
 *Note: The "Result" column references metrics from the retired 15-query legacy suite (Research Diary Entries 1–8). The current evaluation standard is the Centurion Set (108 queries, see [§8.2](#82-the-centurion-set-the-high-audit)) which uses MRR, nDCG@5, and Hit Rate@5.*
@@ -134,6 +135,16 @@ The following retrieval techniques were out of scope for the initial research ph
 - **SPLADE / learned sparse retrieval** — WordPiece tokenization fragments technical identifiers ("PostgreSQL" → "post", "##gre", "##q", "##l"), making it unlikely to improve over BM25 for exact-identifier matching. Not benchmarked. ColBERT's SentencePiece tokenization handles technical identifiers better and was chosen instead.
 
 - **LLM-generated chunk summaries (Contextual Retrieval)** — Generates a per-chunk context summary via LLM at ingestion time, prepended to each chunk before embedding. Similar to Bardic Knowledge but with richer, LLM-generated context instead of document-level metadata. Not evaluated because the ingestion cost is significant (one LLM call per chunk; ~2,770 calls at current corpus scale) and Bardic Knowledge already provides document-level context enrichment at zero cost. Revisit if content match on the Centurion Set plateaus and ingestion latency is not a constraint.
+
+### 4.2 The Rosetta Seal (BM25 Token Normalisation)
+
+BM25 is an exact token matcher. Technical documentation uses `cross-encoder`, `crossencoder`, and `cross_encoder` interchangeably. When a query uses one form and the indexed document uses another, BM25 assigns zero overlap.
+
+**Decision:** Automatically derive a corpus-specific normalisation map at `repopulate_database` time. Cluster separator-variant token pairs (`cross-encoder`/`crossencoder`) using normalised edit distance ≤ 0.15 and embedding cosine similarity ≥ 0.82. Elect canonical form by frequency. Apply symmetrically at index time and query time via a single change to `_tokenize()`.
+
+**Why separator-variants only:** Restricting the candidate set to pairs where one form has a separator and the other is the stripped version keeps generation fast (0.07s), avoids morphological noise (plurals, verb forms), and targets exactly the failure mode BM25 has.
+
+**Benchmark:** +15.7% BM25 MRR on surface-variant queries, zero regression on the Centurion Set across 36 threshold combinations. See Research Diary Entry 55.
 
 *Note: Embedding model fine-tuning is a user-side optimization for specific corpora, not an infrastructure change to Candlekeep. Users deploying against specialized domains should consider fine-tuning bge-small on their own query-document pairs. See [SETUP.md](SETUP.md) for embedding model configuration.*
 
