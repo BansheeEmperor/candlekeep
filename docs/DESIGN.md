@@ -40,32 +40,35 @@ Chunk expansion (returning adjacent chunks around each match) improved content m
 
 ```mermaid
 graph TD
-    subgraph Fragmented ["Without Arcane Recall (fragmented)"]
+    classDef chunk fill:#fff,stroke:#333,stroke-dasharray: 5 5;
+    classDef match fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
+    classDef context fill:#e1f5fe,stroke:#01579b,stroke-width:1px;
+    classDef result fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px;
+
+    subgraph Fragmented ["Without Arcane Recall (Fragmented)"]
         direction TB
-        F0[Chunk 0: Introduction...]
-        F1[Chunk 1: Prerequisites...]
-        F2{Chunk 2: Token generation...}
-        F3[Chunk 3: Store tokens...]
-        F4[Chunk 4: Example usage...]
+        F0[Chunk 0] --- F1[Chunk 1] --- F2[Chunk 2] --- F3[Chunk 3] --- F4[Chunk 4]
+        class F0,F1,F3,F4 chunk;
+        class F2 match;
         
-        F2 -- Match --> AgentF[Agent receives incomplete context]
+        F2 -- "Match Only" --> AgentF([Agent receives incomplete context])
+        class AgentF result;
     end
 
-    subgraph Expanded ["With Arcane Recall"]
+    subgraph Expanded ["With Arcane Recall (Expanded Context)"]
         direction TB
-        E0[Chunk 0: Introduction...]
-        E1[Chunk 1: Prerequisites...]
-        E2{Chunk 2: Token generation...}
-        E3[Chunk 3: Store tokens...]
-        E4[Chunk 4: Example usage...]
+        E0[Chunk 0] --- E1[Chunk 1] --- E2[Chunk 2] --- E3[Chunk 3] --- E4[Chunk 4]
+        class E0,E1,E3,E4 context;
+        class E2 match;
         
-        E0 -. Context .-> Window
-        E1 -. Context .-> Window
-        E2 -- Match --> Window
-        E3 -. Context .-> Window
-        E4 -. Context .-> Window
+        E0 -.-> Window
+        E1 -.-> Window
+        E2 --> Window
+        E3 -.-> Window
+        E4 -.-> Window
         
-        Window[DIVINE WINDOW] --> AgentE[Agent receives full section]
+        Window[DIVINE WINDOW] --> AgentE([Agent receives full section context])
+        class Window,AgentE result;
     end
 ```
 

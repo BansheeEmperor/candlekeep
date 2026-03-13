@@ -8,12 +8,18 @@ Candlekeep is a RAG (Retrieval-Augmented Generation) knowledge base server that 
 
 ```mermaid
 graph TD
+    classDef client fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef server fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef pipeline fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+    classDef db fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px;
+
     subgraph Client ["MCP Client (AI Agent)"]
         direction TB
         C1[Picks query_type]
         C2[Decomposes complex queries]
         C3[Synthesizes results]
     end
+    class Client client;
 
     Client -- "MCP Protocol (stdio or HTTP)" --> Server
 
@@ -26,31 +32,34 @@ graph TD
         end
         Decision{SEARCH ROUTER DECISION}
     end
+    class Server server;
 
     Server --> Pipeline
 
     subgraph Pipeline ["RAG Pipeline (Processing)"]
         direction TB
-        subgraph Ingestion
+        subgraph Ingestion ["Ingestion Flow"]
             QG[Quality Gate] --> Proc[Processor]
             Proc --> BK[Bardic Knowledge]
             BK --> TS[TRUE SIGHT]
         end
-        subgraph Retrieval
+        subgraph Retrieval ["Retrieval Flow"]
             VS[Vector Search] --> AR[Arcane Recall]
             AR --> DI[Divine Insight]
         end
     end
+    class Pipeline pipeline;
 
     Pipeline --> Database
 
     subgraph Database ["Database Layer (Storage)"]
         direction TB
-        CVDB[ChromaVectorDB]
+        CVDB[(ChromaVectorDB)]
         EM[EmbeddingManager]
     end
+    class Database db;
 
-    Database --> Chroma[ChromaDB]
+    Database --> Chroma[(ChromaDB)]
 ```
 
 ### Search Pipeline Components
@@ -68,24 +77,38 @@ The library routes queries to the optimal technique stack:
 
 ```mermaid
 graph TD
-    Query[INPUT QUERY] --> Neg[Negation Removal]
-    Neg --> Router{SEARCH ROUTER DECISION}
+    classDef start fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    classDef path fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef process fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+    classDef result fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px;
+    classDef decision fill:#fff3e0,stroke:#e65100,stroke-width:4px;
+
+    Query([INPUT QUERY]) --> Neg[Negation Removal]
+    Neg --> Router{SEARCH ROUTER}
+    class Query start;
+    class Router decision;
     
     Router -- ROAD 1: SIMPLE --> Simple[Vector Search]
     Router -- ROAD 2: HYBRID --> Hybrid[Vector Search + Sparse]
     Router -- ROAD 3: PRECISE --> Precise[Vector Search]
+    class Simple,Hybrid,Precise path;
     
     Hybrid --> Fusion[Rank Fusion]
+    class Fusion process;
     
     Simple --> Recall[Arcane Recall]
     Fusion --> Recall
     Precise --> Recall
+    class Recall process;
     
     Recall --> Ward{Relevance Ward}
+    class Ward decision;
     
-    Ward -- Pass --> Results[FINAL RESULTS]
+    Ward -- Pass --> Results([FINAL RESULTS])
     Ward -- Precise Path Only --> Divine[Divine Insight]
     Divine --> Results
+    class Results result;
+    class Divine process;
 ```
 
 ### [Arcane Recall](GLOSSARY.md#arcane-recall) (Similarity-Weighted Expansion)
@@ -93,23 +116,33 @@ Every search result undergoes a contextual ritual to expand its vision. Instead 
 
 ```mermaid
 graph TD
-    subgraph Source ["Document Source"]
+    classDef chunk fill:#fff,stroke:#333,stroke-dasharray: 5 5;
+    classDef match fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
+    classDef process fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+    classDef window fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px;
+
+    subgraph Source ["Document Source (Sequence of Chunks)"]
         direction LR
         C0[C0] --- C1[C1] --- C2[C2] --- C3[C3] --- C4[C4] --- C5[C5] --- C6[C6] --- C7[C7] --- C8[C8] --- C9[C9]
     end
+    class C0,C2,C4,C5,C6,C7,C9 chunk;
+    class C1,C3,C8 match;
 
     C1 --- M2[MATCH #2]
     C3 --- M1[MATCH #1]
     C8 --- M3[MATCH #3]
+    class M1,M2,M3 match;
 
     M1 --> Coalescence[ARCANE COALESCENCE]
     M2 --> Coalescence
     M3 --> Discernment[SCHOLAR'S DISCERNMENT]
+    class Coalescence,Discernment process;
 
     Coalescence --> Window1[DIVINE WINDOW: C0-C4]
     Discernment --> Window2[PRUNED WINDOW: C7-C8]
+    class Window1,Window2 window;
 
-    Window1 --> Final[FINAL RESULTS]
+    Window1 --> Final([FINAL RESULTS])
     Window2 --> Final
 ```
 
@@ -219,21 +252,30 @@ Even for small deployments (2–5 agents), HTTP mode via uvicorn is recommended 
 
 ```mermaid
 graph TD
-    subgraph Stdio ["stdio mode"]
+    classDef agent fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef server fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef infra fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px;
+    classDef db fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px;
+
+    subgraph Stdio ["1. Stdio Mode (One Agent per Process)"]
         direction TB
         A1[Agent A] --> CKA[Candlekeep A]
         A2[Agent B] --> CKB[Candlekeep B]
         A3[Agent C] --> CKC[Candlekeep C]
     end
+    class A1,A2,A3 agent;
+    class CKA,CKB,CKC server;
 
-    subgraph HttpSingle ["HTTP mode (single worker)"]
+    subgraph HttpSingle ["2. HTTP Mode (Shared Server)"]
         direction TB
-        HA1[Agent A] --> Shared[Candlekeep shared]
+        HA1[Agent A] --> Shared[Candlekeep Shared]
         HA2[Agent B] --> Shared
         HA3[Agent C] --> Shared
     end
+    class HA1,HA2,HA3 agent;
+    class Shared server;
 
-    subgraph HttpMulti ["HTTP mode (multi-worker)"]
+    subgraph HttpMulti ["3. HTTP Mode (Multi-worker, Balanced)"]
         direction TB
         MA1[Agent A] --> Uvicorn[uvicorn]
         MA2[Agent B] --> Uvicorn
@@ -245,6 +287,10 @@ graph TD
         Uvicorn --> W4[Worker 4] --> Chroma
         Chroma[(ChromaDB)]
     end
+    class MA1,MA2,MA3,MA4 agent;
+    class Uvicorn infra;
+    class W1,W2,W3,W4 server;
+    class Chroma db;
 ```
 
 **Concurrency controls in HTTP mode:**
