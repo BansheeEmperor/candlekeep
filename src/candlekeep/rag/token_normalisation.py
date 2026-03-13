@@ -32,7 +32,7 @@ logger = logging.getLogger("candlekeep")
 
 # Thresholds for clustering
 EDIT_DISTANCE_THRESHOLD = 0.15  # Normalized Levenshtein distance
-EMBEDDING_SIMILARITY_THRESHOLD = 0.92  # Cosine similarity
+EMBEDDING_SIMILARITY_THRESHOLD = 0.82  # Cosine similarity (lower for bare tokens vs sentences)
 LENGTH_RATIO_THRESHOLD = 0.30  # Max length difference ratio
 
 
@@ -97,6 +97,11 @@ def _cluster_tokens(
 ) -> Dict[str, str]:
     """Cluster tokens by surface-form similarity and elect canonical forms.
 
+    Two-pass strategy to keep embedding cost low:
+    1. Find all pairs that pass the edit-distance pre-filter (cheap, O(n²) string ops).
+    2. Embed only the tokens involved in at least one such pair (often <5% of corpus).
+    3. Re-check those pairs with cosine similarity to confirm the cluster.
+
     Args:
         tokens: Unique tokens from the corpus (appearing ≥ 2 times)
         frequencies: Token → frequency mapping
@@ -116,18 +121,43 @@ def _cluster_tokens(
             groups[first_char] = []
         groups[first_char].append(token)
 
-    # Compute embeddings for all tokens at once (batch is faster)
-    try:
-        embeddings = embed_fn(tokens)
-    except Exception as e:
-        logger.warning("[candlekeep] Token embedding failed, falling back to edit-distance-only: %s", e)
-        embeddings = None
+    # Pass 1: find candidate pairs that pass length + edit-distance filters.
+    # Collect only the tokens that appear in at least one candidate pair.
+    candidate_pairs: List[Tuple[str, str]] = []
+    tokens_needing_embed: Set[str] = set()
 
-    # Build token → embedding map
+    for group_tokens in groups.values():
+        n = len(group_tokens)
+        for i in range(n):
+            for j in range(i + 1, n):
+                t1, t2 = group_tokens[i], group_tokens[j]
+
+                len1, len2 = len(t1), len(t2)
+                if max(len1, len2) > 0:
+                    len_ratio = abs(len1 - len2) / max(len1, len2)
+                    if len_ratio > LENGTH_RATIO_THRESHOLD:
+                        continue
+
+                edit_dist = _normalized_edit_distance(t1, t2)
+                if edit_dist > EDIT_DISTANCE_THRESHOLD:
+                    continue
+
+                candidate_pairs.append((t1, t2))
+                tokens_needing_embed.add(t1)
+                tokens_needing_embed.add(t2)
+
+    # Pass 2: embed only the candidate tokens (typically a small fraction).
     embed_map: Dict[str, List[float]] = {}
-    if embeddings:
-        for token, emb in zip(tokens, embeddings):
-            embed_map[token] = emb
+    if candidate_pairs and tokens_needing_embed:
+        embed_list = list(tokens_needing_embed)
+        try:
+            embeddings = embed_fn(embed_list)
+            for token, emb in zip(embed_list, embeddings):
+                embed_map[token] = emb
+        except Exception as e:
+            logger.warning(
+                "[candlekeep] Token embedding failed, using edit-distance-only clustering: %s", e
+            )
 
     # Union-Find for clustering
     parent: Dict[str, str] = {t: t for t in tokens}
@@ -140,39 +170,18 @@ def _cluster_tokens(
     def union(t1: str, t2: str):
         p1, p2 = find(t1), find(t2)
         if p1 != p2:
-            # Union by rank (frequency as proxy)
             if frequencies.get(p1, 0) >= frequencies.get(p2, 0):
                 parent[p2] = p1
             else:
                 parent[p1] = p2
 
-    # Compare tokens within each group
-    for group_tokens in groups.values():
-        n = len(group_tokens)
-        for i in range(n):
-            for j in range(i + 1, n):
-                t1, t2 = group_tokens[i], group_tokens[j]
-
-                # Length pre-filter: skip if lengths differ by > 30%
-                len1, len2 = len(t1), len(t2)
-                if max(len1, len2) > 0:
-                    len_ratio = abs(len1 - len2) / max(len1, len2)
-                    if len_ratio > LENGTH_RATIO_THRESHOLD:
-                        continue
-
-                # Edit distance check
-                edit_dist = _normalized_edit_distance(t1, t2)
-                if edit_dist > EDIT_DISTANCE_THRESHOLD:
-                    continue
-
-                # Embedding similarity check (if available)
-                if embed_map:
-                    sim = _cosine_similarity(embed_map.get(t1, []), embed_map.get(t2, []))
-                    if sim < EMBEDDING_SIMILARITY_THRESHOLD:
-                        continue
-
-                # Same cluster
-                union(t1, t2)
+    for t1, t2 in candidate_pairs:
+        # Embedding similarity check (if available)
+        if embed_map:
+            sim = _cosine_similarity(embed_map.get(t1, []), embed_map.get(t2, []))
+            if sim < EMBEDDING_SIMILARITY_THRESHOLD:
+                continue
+        union(t1, t2)
 
     # Elect canonical for each cluster
     clusters: Dict[str, List[str]] = {}
@@ -307,8 +316,22 @@ def generate_normalisation_map(
     Returns:
         NormalisationMap instance
     """
-    # Filter to tokens appearing ≥ 2 times (reduces O(n²) clustering)
-    unique_tokens = [t for t, freq in token_frequencies.items() if freq >= 2]
+    # Filter to tokens appearing ≥ 2 times and length ≥ 4 chars.
+    # Only include tokens that contain separators OR whose stripped form
+    # also appears in the corpus — these are the only tokens where
+    # normalisation can bridge a surface-form gap.
+    separator_chars = set('-._')
+    candidate_set = set()
+    for t, freq in token_frequencies.items():
+        if freq < 2 or len(t) < 4:
+            continue
+        if any(c in t for c in separator_chars):
+            stripped = t.replace('-','').replace('.','').replace('_','')
+            if stripped != t and stripped in token_frequencies:
+                candidate_set.add(t)
+                candidate_set.add(stripped)
+
+    unique_tokens = list(candidate_set)
 
     if not unique_tokens:
         logger.info("[candlekeep] No tokens to cluster, creating empty normalisation map")
@@ -408,12 +431,18 @@ def regenerate_normalisation_map(db) -> Optional[NormalisationMap]:
 
     t0 = time.monotonic()
 
-    # Extract tokens and compute frequencies
+    # Extract tokens and compute frequencies — same expansion as _tokenize()
+    # so the map is built from the same token space used at query time.
     token_frequencies: Dict[str, int] = {}
     for chunk in chunks:
         text = chunk.text.lower()
         for token in _WORD_RE.findall(text):
             token_frequencies[token] = token_frequencies.get(token, 0) + 1
+            # Also count the stripped form
+            if any(c in token for c in "-._"):
+                stripped = token.replace("-", "").replace(".", "").replace("_", "")
+                if stripped != token:
+                    token_frequencies[stripped] = token_frequencies.get(stripped, 0) + 1
 
     if not token_frequencies:
         logger.info("[candlekeep] No tokens found in corpus")

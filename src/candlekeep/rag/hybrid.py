@@ -30,8 +30,9 @@ def _tokenize(text: str) -> List[str]:
     """Tokenize text for BM25: lowercase, extract words, filter stop words.
 
     Applies the corpus-derived normalisation map (if loaded) so that surface
-    variants like 'chroma-db' and 'chromadb' map to the same canonical token.
-    Preserves technical identifiers like 'bge-small', 'v3.4.1', 'ms-marco'.
+    variants map to the same canonical token. The map is built to include
+    separator-stripped forms (e.g. 'crossencoder' → 'cross-encoder'), so
+    queries using concatenated forms match documents using hyphenated forms.
     """
     from candlekeep.rag.token_normalisation import get_normalisation_map
     from candlekeep.config import get_data_dir

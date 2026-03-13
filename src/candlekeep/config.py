@@ -51,6 +51,8 @@ load_dotenv()
 
 def get_data_dir() -> Path:
     """Get cross-platform data directory."""
+    if os.getenv("CANDLEKEEP_DATA_DIR"):
+        return Path(os.getenv("CANDLEKEEP_DATA_DIR"))
     if os.name == "nt":
         base = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local"))
     elif os.name == "posix" and "darwin" in os.uname().sysname.lower():
