@@ -6,68 +6,51 @@ Candlekeep is a RAG (Retrieval-Augmented Generation) knowledge base server that 
 
 ## System Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                   MCP Client (AI Agent)                 │
-│                                                         │
-│  • Picks query_type (simple/hybrid/precise)             │
-│  • Decomposes complex queries into multiple searches    │
-│  • Synthesizes results across searches                  │
-└────────────────────────────┬────────────────────────────┘
-                             │ MCP Protocol (stdio or HTTP)
-┌────────────────────────────▼────────────────────────────┐
-│                  Candlekeep MCP Server                  │
-│                                                         │
-│  ┌──────────────────────────────────────────────────┐   │
-│  │  Read Tools              Write Tools             │   │
-│  │  • search              • ingest (+ quality gate) │   │
-│  │  • list_documents      • delete_document         │   │
-│  │  • get_stats           • repopulate_database     │   │
-│  │  • critique_document                             │   │
-│  │  • generate_documentation                        │   │
-│  └──────────────────────────┬───────────────────────┘   │
-└─────────────────────────────┼───────────────────────────┘
-                              │
-                    [ SEARCH ROUTER DECISION ]
-                    (simple | hybrid | precise)
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────┐
-│              RAG Pipeline (Processing)                  │
-│                                                         │
-│  Ingestion:                                             │
-│  ┌──────────┐  ┌───────────┐  ┌──────────────┐          │
-│  │ Quality  │→ │ Processor │→ │    Bardic    │          │
-│  │ Gate     │  │ (chunking)│  │  Knowledge   │          │
-│  └──────────┘  └───────────┘  └──────────────┘          │
-│                                      │                  │
-│                                      ▼                  │
-│                                [ TRUE SIGHT ]           │
-│                              (image captioning)         │
-│                                                         │
-│  Retrieval:                                             │
-│  ┌──────────┐  ┌───────────┐  ┌──────────────┐          │
-│  │ Vector   │→ │  Arcane   │→ │    Divine    │          │
-│  │ Search   │  │  Recall   │  │    Insight   │          │
-│  └──────────┘  └───────────┘  └──────────────┘          │
-└────────────────────────────┬────────────────────────────┘
-                             │
-                             ▼
-┌─────────────────────────────────────────────────────────┐
-│           Database Layer (Storage)                      │
-│  ┌────────────────┐  ┌────────────────────────┐         │
-│  │ ChromaVectorDB │  │ EmbeddingManager       │         │
-│  │ • search       │  │ • bge-small-en-v1.5    │         │
-│  │ • CRUD ops     │  │ • LRU Cache (Ledger)   │         │
-│  └────────────────┘  └────────────────────────┘         │
-└────────────────────────────┬────────────────────────────┘
-                             │
-                             ▼
-┌─────────────────────────────────────────────────────────┐
-│              ChromaDB (local or remote)                 │
-│  • HNSW cosine similarity index                         │
-│  • Collection metadata stores embedding_model           │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    subgraph Client ["MCP Client (AI Agent)"]
+        direction TB
+        C1[Picks query_type]
+        C2[Decomposes complex queries]
+        C3[Synthesizes results]
+    end
+
+    Client -- "MCP Protocol (stdio or HTTP)" --> Server
+
+    subgraph Server ["Candlekeep MCP Server"]
+        direction TB
+        subgraph Tools ["Tools"]
+            direction LR
+            RT[Read Tools]
+            WT[Write Tools]
+        end
+        Decision{SEARCH ROUTER DECISION}
+    end
+
+    Server --> Pipeline
+
+    subgraph Pipeline ["RAG Pipeline (Processing)"]
+        direction TB
+        subgraph Ingestion
+            QG[Quality Gate] --> Proc[Processor]
+            Proc --> BK[Bardic Knowledge]
+            BK --> TS[TRUE SIGHT]
+        end
+        subgraph Retrieval
+            VS[Vector Search] --> AR[Arcane Recall]
+            AR --> DI[Divine Insight]
+        end
+    end
+
+    Pipeline --> Database
+
+    subgraph Database ["Database Layer (Storage)"]
+        direction TB
+        CVDB[ChromaVectorDB]
+        EM[EmbeddingManager]
+    end
+
+    Database --> Chroma[ChromaDB]
 ```
 
 ### Search Pipeline Components
@@ -83,81 +66,51 @@ The library routes queries to the optimal technique stack:
 
 ## The [Three Roads](#the-three-roads)
 
-Candlekeep provides three distinct search paths through the library, allowing the agent to choose between speed, lexical precision, and semantic depth.
-
-```
-            [ INPUT QUERY ]
-                   │
-         ┌─────────▼─────────┐
-         │ Negation Removal  │
-         └─────────┬─────────┘
-                   │
-         SEARCH ROUTER DECISION
-         ┌─────────┼─────────┐
-         │         │         │
-  [ ROAD 1 ]    [ ROAD 2 ]    [ ROAD 3 ]
-  [ SIMPLE ]    [ HYBRID ]    [ PRECISE ]
-  (Fast Path)   (Lexical)     (Semantic)
-     │             │             │
-┌────▼────┐   ┌────▼────┐   ┌────▼────┐
-│ Vector  │   │ Vector  │   │ Vector  │
-│ Search  │   │   +     │   │ Search  │
-└────┬────┘   │ Sparse  │   └────┬────┘
-     │        │(BM25 or │
-     │        │ ColBERT)│
-     │        └────┬────┘        │
-     │             ▼             │
-     │        ┌─────────┐        │
-     │        │  Rank   │        │
-     │        │ Fusion  │        │
-     │        └────┬────┘        │
-     │             │             │
-┌────▼─────────────▼─────────────▼────┐
-│            Arcane Recall            │
-│        (Weighted Expansion)         │
-└────┬─────────────┬─────────────┬────┘
-     │             │             │
-┌────▼────┐   ┌────▼────┐        │
-│Relevance│   │Relevance│        │
-│  Ward   │   │  Ward   │        │
-└────┬────┘   └────┬────┘        │
-     │             │             │
-     │             │         ┌────▼────┐
-     │             │         │  Divine │
-     │             │         │ Insight │
-     │             │         └────┬────┘
-     │             │             │
-     └─────────────┼─────────────┘
-                   ▼
-            [ FINAL RESULTS ]
+```mermaid
+graph TD
+    Query[INPUT QUERY] --> Neg[Negation Removal]
+    Neg --> Router{SEARCH ROUTER DECISION}
+    
+    Router -- ROAD 1: SIMPLE --> Simple[Vector Search]
+    Router -- ROAD 2: HYBRID --> Hybrid[Vector Search + Sparse]
+    Router -- ROAD 3: PRECISE --> Precise[Vector Search]
+    
+    Hybrid --> Fusion[Rank Fusion]
+    
+    Simple --> Recall[Arcane Recall]
+    Fusion --> Recall
+    Precise --> Recall
+    
+    Recall --> Ward{Relevance Ward}
+    
+    Ward -- Pass --> Results[FINAL RESULTS]
+    Ward -- Precise Path Only --> Divine[Divine Insight]
+    Divine --> Results
 ```
 
 ### [Arcane Recall](GLOSSARY.md#arcane-recall) (Similarity-Weighted Expansion)
 Every search result undergoes a contextual ritual to expand its vision. Instead of a fixed window, Arcane Recall now uses [**The Scholar's Discernment**](GLOSSARY.md#the-scholars-discernment) and [**Arcane Coalescence**](GLOSSARY.md#arcane-coalescence) to provide context without bloat.
 
-```
-DOCUMENT SOURCE
-┌───────────────────────────────────────────────────────────────────────────┐
-│ [C0]  [C1]  [C2]  [C3]  [C4]  [C5]  [C6]  [C7]  [C8]  [C9]  [C10] [C11] ...
-└───────────────────────────────────────────────────────────────────────────┘
-          │           │                       │
-    MATCH #2 (C1)     MATCH #1 (C3)           MATCH #3 (C8)
-          ▼           ▼                       ▼
-    ┌───────────┐┌───────────┐          ┌───────────┐
-    │  Chunk 1  ││  Chunk 3  │          │  Chunk 8  │
-    └───────────┘└───────────┘          └───────────┘
-          │           │                       │
-          │     ARCANE COALESCENCE      SCHOLAR'S DISCERNMENT
-          ▼           ▼                       ▼
-    ┌───────────────────────┐          ┌─────────────┐
-    │    DIVINE WINDOW      │          │ PRUNED WIN  │
-    │ [C0][C1][C2][C3][C4]  │          │ [C7][C8]    │ (C9 rejected:
-    └───────────────────────┘          └─────────────┘  low similarity)
-                │                             │
-                └──────────────┬──────────────┘
-                               ▼
-                      [ FINAL RESULTS ]
-               (Exactly n_results sections)
+```mermaid
+graph TD
+    subgraph Source ["Document Source"]
+        direction LR
+        C0[C0] --- C1[C1] --- C2[C2] --- C3[C3] --- C4[C4] --- C5[C5] --- C6[C6] --- C7[C7] --- C8[C8] --- C9[C9]
+    end
+
+    C1 --- M2[MATCH #2]
+    C3 --- M1[MATCH #1]
+    C8 --- M3[MATCH #3]
+
+    M1 --> Coalescence[ARCANE COALESCENCE]
+    M2 --> Coalescence
+    M3 --> Discernment[SCHOLAR'S DISCERNMENT]
+
+    Coalescence --> Window1[DIVINE WINDOW: C0-C4]
+    Discernment --> Window2[PRUNED WINDOW: C7-C8]
+
+    Window1 --> Final[FINAL RESULTS]
+    Window2 --> Final
 ```
 
 - [**Arcane Coalescence**](GLOSSARY.md#arcane-coalescence): If multiple results come from the same section of a document, they are merged into a single cohesive Divine Window, preventing redundant text and saving tokens.
@@ -264,34 +217,34 @@ Candlekeep supports two transport modes with three deployment configurations:
 
 Even for small deployments (2–5 agents), HTTP mode via uvicorn is recommended over stdio. The benefits — shared model memory, no per-agent cold-start, connection multiplexing — apply at any scale. Use `--workers 1` for small pools and increase as needed.
 
-```
-stdio mode:                          HTTP mode (single worker):
-┌─────────┐   ┌──────────────┐       ┌─────────┐
-│ Agent A │──▶│ Candlekeep A │       │ Agent A │──┐
-└─────────┘   └──────────────┘       └─────────┘  │
-┌─────────┐   ┌──────────────┐       ┌─────────┐  │  ┌──────────────┐
-│ Agent B │──▶│ Candlekeep B │       │ Agent B │──┼─▶│ Candlekeep   │
-└─────────┘   └──────────────┘       └─────────┘  │  │ (shared)     │
-┌─────────┐   ┌──────────────┐       ┌─────────┐  │  └──────────────┘
-│ Agent C │──▶│ Candlekeep C │       │ Agent C │──┘
-└─────────┘   └──────────────┘       └─────────┘
-  3 processes, 3× model memory         1 process, 1× model memory
+```mermaid
+graph TD
+    subgraph Stdio ["stdio mode"]
+        direction TB
+        A1[Agent A] --> CKA[Candlekeep A]
+        A2[Agent B] --> CKB[Candlekeep B]
+        A3[Agent C] --> CKC[Candlekeep C]
+    end
 
+    subgraph HttpSingle ["HTTP mode (single worker)"]
+        direction TB
+        HA1[Agent A] --> Shared[Candlekeep shared]
+        HA2[Agent B] --> Shared
+        HA3[Agent C] --> Shared
+    end
 
-HTTP mode (multi-worker, recommended):
-┌─────────┐
-│ Agent A │──┐
-└─────────┘  │
-┌─────────┐  │  ┌─────────┐  ┌──────────────┐
-│ Agent B │──┼─▶│ uvicorn │─▶│ Worker 1     │──▶ ChromaDB
-└─────────┘  │  │ (load   │  ├──────────────┤
-┌─────────┐  │  │ balance)│  │ Worker 2     │──▶ ChromaDB
-│ Agent C │──┤  └─────────┘  ├──────────────┤
-└─────────┘  │               │ Worker 3     │──▶ ChromaDB
-┌─────────┐  │               ├──────────────┤
-│ Agent D │──┘               │ Worker 4     │──▶ ChromaDB
-└─────────┘                  └──────────────┘
-  N agents, W× model memory, N/W agents per event loop
+    subgraph HttpMulti ["HTTP mode (multi-worker)"]
+        direction TB
+        MA1[Agent A] --> Uvicorn[uvicorn]
+        MA2[Agent B] --> Uvicorn
+        MA3[Agent C] --> Uvicorn
+        MA4[Agent D] --> Uvicorn
+        Uvicorn --> W1[Worker 1] --> Chroma
+        Uvicorn --> W2[Worker 2] --> Chroma
+        Uvicorn --> W3[Worker 3] --> Chroma
+        Uvicorn --> W4[Worker 4] --> Chroma
+        Chroma[(ChromaDB)]
+    end
 ```
 
 **Concurrency controls in HTTP mode:**
@@ -529,9 +482,10 @@ Candlekeep uses a provider abstraction layer for runtime LLM calls (RAPTOR summa
 
 ### Provider Architecture
 
-```
-create_llm_provider()  ──→  LLMProvider.complete(prompt) ──→ str
-create_vision_provider() ──→ VisionProvider.caption(image_bytes) ──→ str
+```mermaid
+graph LR
+    F1[create_llm_provider] --> P1[LLMProvider.complete]
+    F2[create_vision_provider] --> P2[VisionProvider.caption]
 ```
 
 Both factory functions read from environment variables and use lazy imports, so provider dependencies are only required when that provider is selected. All provider errors are wrapped in `ProviderError(provider_name, message, cause)` for uniform error handling.
