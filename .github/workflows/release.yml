@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - production
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
 
 permissions:
   contents: write
