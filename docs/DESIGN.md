@@ -144,7 +144,7 @@ BM25 is an exact token matcher. Technical documentation uses `cross-encoder`, `c
 
 **Why separator-variants only:** Restricting the candidate set to pairs where one form has a separator and the other is the stripped version keeps generation fast (0.07s), avoids morphological noise (plurals, verb forms), and targets exactly the failure mode BM25 has.
 
-**Benchmark:** +15.7% BM25 MRR on surface-variant queries, zero regression on the Centurion Set across 36 threshold combinations. See Research Diary Entry 55.
+**Benchmark:** +15.7% BM25 MRR on surface-variant queries, zero regression on the Centurion Set across 36 threshold combinations. See [Research Diary Entry 55](RESEARCH_DIARY.md#entry-55-the-rosetta-seal--corpus-derived-bm25-token-normalisation) and [ARCHITECTURE.md § The Rosetta Seal](ARCHITECTURE.md#the-rosetta-seal-normalisation-map).
 
 *Note: Embedding model fine-tuning is a user-side optimization for specific corpora, not an infrastructure change to Candlekeep. Users deploying against specialized domains should consider fine-tuning bge-small on their own query-document pairs. See [SETUP.md](SETUP.md) for embedding model configuration.*
 

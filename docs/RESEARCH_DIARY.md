@@ -3348,3 +3348,5 @@ Operators do nothing. The map is generated automatically during `repopulate_data
 - `src/candlekeep/mcp/server.py` — `rebuild_normalisation_map()` MCP tool; `CANDLEKEEP_NORMALISE_ON_INGEST` support
 - `tests/fixtures/normalisation_corpus/` — 8 synthetic uplift corpus documents
 - `scripts/benchmark_normalisation.py` — Full benchmark suite: 30 uplift queries, threshold sweep, two corpora
+
+See [ARCHITECTURE.md § The Rosetta Seal](ARCHITECTURE.md#the-rosetta-seal-normalisation-map) for the operational reference, [DESIGN.md § 4.2](DESIGN.md#42-the-rosetta-seal-bm25-token-normalisation) for the design rationale, and [GLOSSARY.md](GLOSSARY.md#the-rosetta-seal) for the lore entry.
