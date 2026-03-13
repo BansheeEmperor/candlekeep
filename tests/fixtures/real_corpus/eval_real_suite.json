@@ -1,0 +1,502 @@
+[
+  {
+    "id": "real_01",
+    "query": "What port does the Redis replica listen on in the deployment topology?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/deploy-01.md"
+    ],
+    "category": "deploy",
+    "needs_review": false,
+    "answer": "6380"
+  },
+  {
+    "id": "real_02",
+    "query": "How many pods does the transaction processor run in the payment service deployment?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/deploy-02.md"
+    ],
+    "category": "deploy",
+    "needs_review": false,
+    "answer": "5"
+  },
+  {
+    "id": "real_03",
+    "query": "What heap size is allocated to each data node in the search cluster deployment?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/deploy-03.md"
+    ],
+    "category": "deploy",
+    "needs_review": false,
+    "answer": "32GB"
+  },
+  {
+    "id": "real_04",
+    "query": "How many pods does the push notification worker pool run in the notification service deployment?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/deploy-04.md"
+    ],
+    "category": "deploy",
+    "needs_review": false,
+    "answer": "6"
+  },
+  {
+    "id": "real_05",
+    "query": "What EC2 instance type is used for the GPU nodes in the ML inference deployment?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/deploy-05.md"
+    ],
+    "category": "deploy",
+    "needs_review": false,
+    "answer": "p3.2xlarge"
+  },
+  {
+    "id": "real_06",
+    "query": "What is the cache TTL value shown for the US region cache in the API gateway deployment?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/deploy-06.md"
+    ],
+    "category": "deploy",
+    "needs_review": false,
+    "answer": "300s"
+  },
+  {
+    "id": "real_07",
+    "query": "How many partitions does the events-raw Kafka topic have in the data pipeline deployment?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/deploy-07.md"
+    ],
+    "category": "deploy",
+    "needs_review": false,
+    "answer": "24"
+  },
+  {
+    "id": "real_08",
+    "query": "What CDN Point of Presence location is shown for the European edge node in the CDN deployment?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/deploy-08.md"
+    ],
+    "category": "deploy",
+    "needs_review": false,
+    "answer": "AMS"
+  },
+  {
+    "id": "real_09",
+    "query": "What connection pool size is configured on the PgBouncer instance in the database cluster deployment?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/deploy-09.md"
+    ],
+    "category": "deploy",
+    "needs_review": false,
+    "answer": "100"
+  },
+  {
+    "id": "real_10",
+    "query": "What version of the Envoy proxy is shown on the sidecar containers in the service mesh deployment?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/deploy-10.md"
+    ],
+    "category": "deploy",
+    "needs_review": false,
+    "answer": "1.28"
+  },
+  {
+    "id": "real_11",
+    "query": "What consumer group ID is assigned to the inventory service in the event-driven architecture?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/arch-01.md"
+    ],
+    "category": "arch",
+    "needs_review": false,
+    "answer": "inv-v2"
+  },
+  {
+    "id": "real_12",
+    "query": "What is the maximum projection lag threshold shown for the catalog projector in the CQRS architecture?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/arch-02.md"
+    ],
+    "category": "arch",
+    "needs_review": false,
+    "answer": "100ms"
+  },
+  {
+    "id": "real_13",
+    "query": "What time window is used for computing user features in the ML feature pipeline architecture?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/arch-03.md"
+    ],
+    "category": "arch",
+    "needs_review": false,
+    "answer": "1h"
+  },
+  {
+    "id": "real_14",
+    "query": "What port does the SPIRE server listen on in the zero-trust security architecture?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/arch-04.md"
+    ],
+    "category": "arch",
+    "needs_review": false,
+    "answer": "8081"
+  },
+  {
+    "id": "real_15",
+    "query": "What database schema name is assigned to tenant A in the multi-tenant SaaS architecture?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/arch-05.md"
+    ],
+    "category": "arch",
+    "needs_review": false,
+    "answer": "ta_prod"
+  },
+  {
+    "id": "real_16",
+    "query": "What sampling rate is applied to the traces pipeline in the observability stack architecture?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/arch-06.md"
+    ],
+    "category": "arch",
+    "needs_review": false,
+    "answer": "10%"
+  },
+  {
+    "id": "real_17",
+    "query": "What percentage of traffic is routed to the canary environment in the CI/CD pipeline architecture?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/arch-07.md"
+    ],
+    "category": "arch",
+    "needs_review": false,
+    "answer": "5%"
+  },
+  {
+    "id": "real_18",
+    "query": "What is the memory size of each Redis node in the L2 cache tier of the distributed cache architecture?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/arch-08.md"
+    ],
+    "category": "arch",
+    "needs_review": false,
+    "answer": "8GB"
+  },
+  {
+    "id": "real_19",
+    "query": "What timeout value is shown for the charge-payment step in the saga pattern architecture?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/arch-09.md"
+    ],
+    "category": "arch",
+    "needs_review": false,
+    "answer": "10s"
+  },
+  {
+    "id": "real_20",
+    "query": "What request rate limit is shown for the enterprise tier in the API rate limiting architecture?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/arch-10.md"
+    ],
+    "category": "arch",
+    "needs_review": false,
+    "answer": "10000 req/min"
+  },
+  {
+    "id": "real_21",
+    "query": "What CIDR range is assigned to the private subnet in availability zone 1a in the VPC network topology?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/net-01.md"
+    ],
+    "category": "net",
+    "needs_review": false,
+    "answer": "10.0.10.0/24"
+  },
+  {
+    "id": "real_22",
+    "query": "What BGP autonomous system number is used by the Calico CNI plugin in the Kubernetes cluster network topology?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/net-02.md"
+    ],
+    "category": "net",
+    "needs_review": false,
+    "answer": "64512"
+  },
+  {
+    "id": "real_23",
+    "query": "What traffic weight percentage is assigned to the v1 version of the product service in the service mesh network topology?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/net-03.md"
+    ],
+    "category": "net",
+    "needs_review": false,
+    "answer": "80%"
+  },
+  {
+    "id": "real_24",
+    "query": "What replication lag threshold is shown for the EU West replica in the multi-region network topology?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/net-04.md"
+    ],
+    "category": "net",
+    "needs_review": false,
+    "answer": "1s"
+  },
+  {
+    "id": "real_25",
+    "query": "What traffic weight percentage is assigned to the blue environment in the blue-green deployment network topology?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/net-05.md"
+    ],
+    "category": "net",
+    "needs_review": false,
+    "answer": "90%"
+  },
+  {
+    "id": "real_26",
+    "query": "What is the bandwidth of the Direct Connect circuit shown in the hybrid network topology?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/net-06.md"
+    ],
+    "category": "net",
+    "needs_review": false,
+    "answer": "1Gbps"
+  },
+  {
+    "id": "real_27",
+    "query": "What IP address and port does the central DNS resolver listen on in the DNS resolution topology?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/net-07.md"
+    ],
+    "category": "net",
+    "needs_review": false,
+    "answer": "10.0.0.2:53"
+  },
+  {
+    "id": "real_28",
+    "query": "What CloudFront distribution ID is shown in the load balancer topology?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/net-08.md"
+    ],
+    "category": "net",
+    "needs_review": false,
+    "answer": "E1A2B3C4"
+  },
+  {
+    "id": "real_29",
+    "query": "What VXLAN ID is assigned to the backend overlay network in the Docker Swarm container network topology?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/net-09.md"
+    ],
+    "category": "net",
+    "needs_review": false,
+    "answer": "4098"
+  },
+  {
+    "id": "real_30",
+    "query": "What security group ID is shown for the application layer in the firewall and security group topology?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/net-10.md"
+    ],
+    "category": "net",
+    "needs_review": false,
+    "answer": "sg-0e4f5g6h"
+  },
+  {
+    "id": "real_31",
+    "query": "What is the queries-per-second value shown for the partial-index with pool size 50 configuration in the database benchmark?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/bench-01.md"
+    ],
+    "category": "bench",
+    "needs_review": false,
+    "answer": "3891"
+  },
+  {
+    "id": "real_32",
+    "query": "What is the p99 latency in milliseconds for the cached routing configuration in the API gateway latency benchmark?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/bench-02.md"
+    ],
+    "category": "bench",
+    "needs_review": false,
+    "answer": "15"
+  },
+  {
+    "id": "real_33",
+    "query": "What cache hit rate does the SLRU eviction policy achieve with a 1GB cache size in the cache hit rate benchmark?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/bench-03.md"
+    ],
+    "category": "bench",
+    "needs_review": false,
+    "answer": "0.94"
+  },
+  {
+    "id": "real_34",
+    "query": "What throughput in messages per second is shown for the 12-partition Kafka configuration in the message queue benchmark?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/bench-04.md"
+    ],
+    "category": "bench",
+    "needs_review": false,
+    "answer": "412000"
+  },
+  {
+    "id": "real_35",
+    "query": "What inference latency in milliseconds is shown for the single A100 GPU configuration in the ML inference benchmark?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/bench-05.md"
+    ],
+    "category": "bench",
+    "needs_review": false,
+    "answer": "31"
+  },
+  {
+    "id": "real_36",
+    "query": "What read IOPS value is shown for the io2 volume with 64000 provisioned IOPS in the storage I/O benchmark?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/bench-06.md"
+    ],
+    "category": "bench",
+    "needs_review": false,
+    "answer": "64000"
+  },
+  {
+    "id": "real_37",
+    "query": "What achieved bandwidth in Gbps is shown for the c5n.18xlarge instance type in the network bandwidth benchmark?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/bench-07.md"
+    ],
+    "category": "bench",
+    "needs_review": false,
+    "answer": "98.1"
+  },
+  {
+    "id": "real_38",
+    "query": "What is the complex query p99 latency for the 6-shard configuration in the search index performance benchmark?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/bench-08.md"
+    ],
+    "category": "bench",
+    "needs_review": false,
+    "answer": "134"
+  },
+  {
+    "id": "real_39",
+    "query": "What is the application ready time in seconds for the native GraalVM image in the container startup time benchmark?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/bench-09.md"
+    ],
+    "category": "bench",
+    "needs_review": false,
+    "answer": "0.4"
+  },
+  {
+    "id": "real_40",
+    "query": "What cache hit rate is shown for the HTML pages content type in the CDN cache performance benchmark?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/bench-10.md"
+    ],
+    "category": "bench",
+    "needs_review": false,
+    "answer": "0.31"
+  },
+  {
+    "id": "real_41",
+    "query": "What was the exact RTO (recovery time objective) achieved during the database failover incident?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/inc-01.md"
+    ],
+    "category": "inc",
+    "needs_review": false,
+    "answer": "49m 53s"
+  },
+  {
+    "id": "real_42",
+    "query": "What was the cache hit rate after the CDN configuration error was deployed, before the rollback?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/inc-02.md"
+    ],
+    "category": "inc",
+    "needs_review": false,
+    "answer": "2%"
+  },
+  {
+    "id": "real_43",
+    "query": "What commit hash was deployed as the hotfix during the memory leak incident?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/inc-03.md"
+    ],
+    "category": "inc",
+    "needs_review": false,
+    "answer": "a3f7c9e2"
+  },
+  {
+    "id": "real_44",
+    "query": "What was the peak consumer lag value reached on the orders topic during the network partition incident?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/inc-04.md"
+    ],
+    "category": "inc",
+    "needs_review": false,
+    "answer": "183,291"
+  },
+  {
+    "id": "real_45",
+    "query": "How many payment transactions failed during the certificate expiry incident?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/inc-05.md"
+    ],
+    "category": "inc",
+    "needs_review": false,
+    "answer": "1,847"
+  },
+  {
+    "id": "real_46",
+    "query": "What error rate threshold triggered the automatic canary pause during the deployment rollback incident?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/inc-06.md"
+    ],
+    "category": "inc",
+    "needs_review": false,
+    "answer": "0.5%"
+  },
+  {
+    "id": "real_47",
+    "query": "What was the peak attack traffic volume in requests per minute during the DDoS incident?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/inc-07.md"
+    ],
+    "category": "inc",
+    "needs_review": false,
+    "answer": "8.7M"
+  },
+  {
+    "id": "real_48",
+    "query": "What Spark executor memory limit was set after the OOM failure in the data pipeline lag incident?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/inc-08.md"
+    ],
+    "category": "inc",
+    "needs_review": false,
+    "answer": "8GB"
+  },
+  {
+    "id": "real_49",
+    "query": "How many failed requests did the payment service experience during the secret rotation incident?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/inc-09.md"
+    ],
+    "category": "inc",
+    "needs_review": false,
+    "answer": "1,203"
+  },
+  {
+    "id": "real_50",
+    "query": "What was the connection pool size of the order service when it became exhausted during the cascading failure incident?",
+    "expected_sources": [
+      "tests/fixtures/real_corpus/inc-10.md"
+    ],
+    "category": "inc",
+    "needs_review": false,
+    "answer": "50"
+  }
+]

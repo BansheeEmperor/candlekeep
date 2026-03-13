@@ -51,7 +51,7 @@ class TestEmbeddingModelBenchmark:
             t0 = time.time()
             for f in SAMPLE_DOCS.glob("*"):
                 if f.is_file():
-                    store.add_documents(proc.process(str(f)))
+                    store.add_documents(proc.process(str(f)).chunks)
             ingest_time = time.time() - t0
 
             chunk_count = store.collection.count()

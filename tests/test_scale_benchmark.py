@@ -52,7 +52,7 @@ def scale_store():
     t0 = time.time()
     total_chunks = 0
     for f in sorted(SCALE_DOCS.glob("*.md")):
-        chunks = proc.process(str(f))
+        chunks = proc.process(str(f)).chunks
         store.add_documents(chunks)
         total_chunks += len(chunks)
     ingest_time = time.time() - t0

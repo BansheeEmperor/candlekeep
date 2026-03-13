@@ -6,71 +6,67 @@ Candlekeep is a RAG (Retrieval-Augmented Generation) knowledge base server that 
 
 ## System Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                   MCP Client (AI Agent)                 │
-│                                                         │
-│  • Picks query_type (simple/hybrid/precise)             │
-│  • Decomposes complex queries into multiple searches    │
-│  • Synthesizes results across searches                  │
-└────────────────────────────┬────────────────────────────┘
-                             │ MCP Protocol (stdio or HTTP)
-┌────────────────────────────▼────────────────────────────┐
-│                  Candlekeep MCP Server                  │
-│                                                         │
-│  ┌──────────────────────────────────────────────────┐   │
-│  │  Read Tools              Write Tools             │   │
-│  │  • search              • ingest (+ quality gate) │   │
-│  │  • list_documents      • delete_document         │   │
-│  │  • get_stats           • repopulate_database     │   │
-│  │  • critique_document                             │   │
-│  │  • generate_documentation                        │   │
-│  └──────────────────────────┬───────────────────────┘   │
-└─────────────────────────────┼───────────────────────────┘
-                              │
-                    [ SEARCH ROUTER DECISION ]
-                    (simple | hybrid | precise)
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────┐
-│              RAG Pipeline (Processing)                  │
-│                                                         │
-│  Ingestion:                                             │
-│  ┌──────────┐  ┌───────────┐  ┌──────────────┐          │
-│  │ Quality  │→ │ Processor │→ │    Bardic    │          │
-│  │ Gate     │  │ (chunking)│  │  Knowledge   │          │
-│  └──────────┘  └───────────┘  └──────────────┘          │
-│                                                         │
-│  Retrieval:                                             │
-│  ┌──────────┐  ┌───────────┐  ┌──────────────┐          │
-│  │ Vector   │→ │  Arcane   │→ │    Divine    │          │
-│  │ Search   │  │  Recall   │  │    Insight   │          │
-│  └──────────┘  └───────────┘  └──────────────┘          │
-└────────────────────────────┬────────────────────────────┘
-                             │
-                             ▼
-┌─────────────────────────────────────────────────────────┐
-│           Database Layer (Storage)                      │
-│  ┌────────────────┐  ┌────────────────────────┐         │
-│  │ ChromaVectorDB │  │ EmbeddingManager       │         │
-│  │ • search       │  │ • bge-small-en-v1.5    │         │
-│  │ • CRUD ops     │  │ • LRU Cache (Ledger)   │         │
-│  └────────────────┘  └────────────────────────┘         │
-└────────────────────────────┬────────────────────────────┘
-                             │
-                             ▼
-┌─────────────────────────────────────────────────────────┐
-│              ChromaDB (local or remote)                 │
-│  • HNSW cosine similarity index                         │
-│  • Collection metadata stores embedding_model           │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    classDef client fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef server fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef pipeline fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+    classDef db fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px;
+
+    subgraph Client ["MCP Client (AI Agent)"]
+        direction TB
+        C1[Picks query_type]
+        C2[Decomposes complex queries]
+        C3[Synthesizes results]
+    end
+    class Client client;
+
+    Client -- "MCP Protocol (stdio or HTTP)" --> Server
+
+    subgraph Server ["Candlekeep MCP Server"]
+        direction TB
+        subgraph Tools ["Tools"]
+            direction LR
+            RT[Read Tools]
+            WT[Write Tools]
+        end
+        Decision{SEARCH ROUTER DECISION}
+    end
+    class Server server;
+
+    Server --> Pipeline
+
+    subgraph Pipeline ["RAG Pipeline (Processing)"]
+        direction TB
+        subgraph Ingestion ["Ingestion Flow"]
+            QG[Quality Gate] --> Proc[Processor]
+            Proc --> BK[Bardic Knowledge]
+            BK --> TS[TRUE SIGHT]
+        end
+        subgraph Retrieval ["Retrieval Flow"]
+            VS[Vector Search] --> AR[Arcane Recall]
+            AR --> DI[Divine Insight]
+        end
+    end
+    class Pipeline pipeline;
+
+    Pipeline --> Database
+
+    subgraph Database ["Database Layer (Storage)"]
+        direction TB
+        CVDB[(ChromaVectorDB)]
+        EM[EmbeddingManager]
+    end
+    class Database db;
+
+    Database --> Chroma[(ChromaDB)]
 ```
 
 ### Search Pipeline Components
 
 The library routes queries to the optimal technique stack:
 *   **simple** → [Arcane Recall](GLOSSARY.md#arcane-recall) (Fast Path)
-*   **hybrid** → [Wild Magic](GLOSSARY.md#lexical-matching-wild-magic) (Lexical + Vector). The sparse signal is BM25 by default; an opt-in ColBERT backend (`CANDLEKEEP_SPARSE_BACKEND=colbert`) provides token-level matching for better lexical precision on technical identifiers. BM25 uses stop-word-filtered tokenization with a regex that preserves technical identifiers (e.g., `bge-small`, `v3.4.1`). ColBERT uses late interaction with `answerai-colbert-small-v1`. BM25 is always maintained as fallback during ColBERT index rebuilds.
+*   **hybrid** → [Wild Magic](GLOSSARY.md#lexical-matching-wild-magic) (Lexical + Vector). The sparse signal is BM25 by default; an opt-in ColBERT backend (`CANDLEKEEP_SPARSE_BACKEND=colbert`) provides token-level matching for better lexical precision on technical identifiers. BM25 uses stop-word-filtered tokenization with a regex that preserves technical identifiers (e.g., `bge-small`, `v3.4.1`). Before tokenization, [**The Rosetta Seal**](GLOSSARY.md#the-rosetta-seal) normalises surface-form variants (`crossencoder` → `cross-encoder`, `autoscaling` → `auto-scaling`) so BM25 token matching is separator-agnostic. The map is derived automatically from the corpus at `repopulate_database` time — zero manual curation. ColBERT uses late interaction with `answerai-colbert-small-v1`. BM25 is always maintained as fallback during ColBERT index rebuilds.
 *   **precise** → [Arcane Recall](GLOSSARY.md#arcane-recall) + [Divine Insight](GLOSSARY.md#cross-encoder-reranking) (Precise Path)
 *   **Negation preprocessing** applied to all paths.
 *   **[The Relevance Ward](GLOSSARY.md#the-relevance-ward)** filters low-confidence matches.
@@ -79,81 +75,75 @@ The library routes queries to the optimal technique stack:
 
 ## The [Three Roads](#the-three-roads)
 
-Candlekeep provides three distinct search paths through the library, allowing the agent to choose between speed, lexical precision, and semantic depth.
+```mermaid
+graph TD
+    classDef start fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    classDef path fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef process fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+    classDef result fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px;
+    classDef decision fill:#fff3e0,stroke:#e65100,stroke-width:4px;
 
-```
-            [ INPUT QUERY ]
-                   │
-         ┌─────────▼─────────┐
-         │ Negation Removal  │
-         └─────────┬─────────┘
-                   │
-         SEARCH ROUTER DECISION
-         ┌─────────┼─────────┐
-         │         │         │
-  [ ROAD 1 ]    [ ROAD 2 ]    [ ROAD 3 ]
-  [ SIMPLE ]    [ HYBRID ]    [ PRECISE ]
-  (Fast Path)   (Lexical)     (Semantic)
-     │             │             │
-┌────▼────┐   ┌────▼────┐   ┌────▼────┐
-│ Vector  │   │ Vector  │   │ Vector  │
-│ Search  │   │   +     │   │ Search  │
-└────┬────┘   │ Sparse  │   └────┬────┘
-     │        │(BM25 or │
-     │        │ ColBERT)│
-     │        └────┬────┘        │
-     │             ▼             │
-     │        ┌─────────┐        │
-     │        │  Rank   │        │
-     │        │ Fusion  │        │
-     │        └────┬────┘        │
-     │             │             │
-┌────▼─────────────▼─────────────▼────┐
-│            Arcane Recall            │
-│        (Weighted Expansion)         │
-└────┬─────────────┬─────────────┬────┘
-     │             │             │
-┌────▼────┐   ┌────▼────┐        │
-│Relevance│   │Relevance│        │
-│  Ward   │   │  Ward   │        │
-└────┬────┘   └────┬────┘        │
-     │             │             │
-     │             │         ┌────▼────┐
-     │             │         │  Divine │
-     │             │         │ Insight │
-     │             │         └────┬────┘
-     │             │             │
-     └─────────────┼─────────────┘
-                   ▼
-            [ FINAL RESULTS ]
+    Query([INPUT QUERY]) --> Neg[Negation Removal]
+    Neg --> Router{SEARCH ROUTER}
+    class Query start;
+    class Router decision;
+    
+    Router -- ROAD 1: SIMPLE --> Simple[Vector Search]
+    Router -- ROAD 2: HYBRID --> Hybrid[Vector Search + Sparse]
+    Router -- ROAD 3: PRECISE --> Precise[Vector Search]
+    class Simple,Hybrid,Precise path;
+    
+    Hybrid --> Fusion[Rank Fusion]
+    class Fusion process;
+    
+    Simple --> Recall[Arcane Recall]
+    Fusion --> Recall
+    Precise --> Recall
+    class Recall process;
+    
+    Recall --> Ward{Relevance Ward}
+    class Ward decision;
+    
+    Ward -- Pass --> Results([FINAL RESULTS])
+    Ward -- Precise Path Only --> Divine[Divine Insight]
+    Divine --> Results
+    class Results result;
+    class Divine process;
 ```
 
 ### [Arcane Recall](GLOSSARY.md#arcane-recall) (Similarity-Weighted Expansion)
 Every search result undergoes a contextual ritual to expand its vision. Instead of a fixed window, Arcane Recall now uses [**The Scholar's Discernment**](GLOSSARY.md#the-scholars-discernment) and [**Arcane Coalescence**](GLOSSARY.md#arcane-coalescence) to provide context without bloat.
 
-```
-DOCUMENT SOURCE
-┌───────────────────────────────────────────────────────────────────────────┐
-│ [C0]  [C1]  [C2]  [C3]  [C4]  [C5]  [C6]  [C7]  [C8]  [C9]  [C10] [C11] ...
-└───────────────────────────────────────────────────────────────────────────┘
-          │           │                       │
-    MATCH #2 (C1)     MATCH #1 (C3)           MATCH #3 (C8)
-          ▼           ▼                       ▼
-    ┌───────────┐┌───────────┐          ┌───────────┐
-    │  Chunk 1  ││  Chunk 3  │          │  Chunk 8  │
-    └───────────┘└───────────┘          └───────────┘
-          │           │                       │
-          │     ARCANE COALESCENCE      SCHOLAR'S DISCERNMENT
-          ▼           ▼                       ▼
-    ┌───────────────────────┐          ┌─────────────┐
-    │    DIVINE WINDOW      │          │ PRUNED WIN  │
-    │ [C0][C1][C2][C3][C4]  │          │ [C7][C8]    │ (C9 rejected:
-    └───────────────────────┘          └─────────────┘  low similarity)
-                │                             │
-                └──────────────┬──────────────┘
-                               ▼
-                      [ FINAL RESULTS ]
-               (Exactly n_results sections)
+```mermaid
+graph TD
+    classDef chunk fill:#fff,stroke:#333,stroke-dasharray: 5 5;
+    classDef match fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
+    classDef process fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+    classDef window fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px;
+
+    subgraph Source ["Document Source (Sequence of Chunks)"]
+        direction LR
+        C0[C0] --- C1[C1] --- C2[C2] --- C3[C3] --- C4[C4] --- C5[C5] --- C6[C6] --- C7[C7] --- C8[C8] --- C9[C9]
+    end
+    class C0,C2,C4,C5,C6,C7,C9 chunk;
+    class C1,C3,C8 match;
+
+    C1 --- M2[MATCH #2]
+    C3 --- M1[MATCH #1]
+    C8 --- M3[MATCH #3]
+    class M1,M2,M3 match;
+
+    M1 --> Coalescence[ARCANE COALESCENCE]
+    M2 --> Coalescence
+    M3 --> Discernment[SCHOLAR'S DISCERNMENT]
+    class Coalescence,Discernment process;
+
+    Coalescence --> Window1[DIVINE WINDOW: C0-C4]
+    Discernment --> Window2[PRUNED WINDOW: C7-C8]
+    class Window1,Window2 window;
+
+    Window1 --> Final([FINAL RESULTS])
+    Window2 --> Final
 ```
 
 - [**Arcane Coalescence**](GLOSSARY.md#arcane-coalescence): If multiple results come from the same section of a document, they are merged into a single cohesive Divine Window, preventing redundant text and saving tokens.
@@ -208,6 +198,9 @@ These values represent the optimal configuration identified through the Centurio
 | `CHUNK_OVERLAP` | 50 | Character overlap between fragments |
 | `CANDLEKEEP_SPARSE_BACKEND` | `bm25` | Sparse backend for hybrid path (`bm25` or `colbert`) |
 | `CANDLEKEEP_EMBEDDING_CACHE_SIZE` | 500 | Max entries in the query embedding LRU cache |
+| `EDIT_DISTANCE_THRESHOLD` | 0.15 | [Rosetta Seal](GLOSSARY.md#the-rosetta-seal) — max normalised Levenshtein distance for clustering |
+| `EMBEDDING_SIMILARITY_THRESHOLD` | 0.82 | [Rosetta Seal](GLOSSARY.md#the-rosetta-seal) — min cosine similarity for clustering (embedding gate) |
+| `CANDLEKEEP_NORMALISE_ON_INGEST` | `false` | [Rosetta Seal](GLOSSARY.md#the-rosetta-seal) — regenerate map after each `ingest()` call |
 
 The vector Ward uses an adaptive threshold: queries detected as lexical (version numbers, acronyms, technical identifiers) use a relaxed threshold of 0.65 to avoid filtering legitimate results that score in the 0.67–0.75 range. Non-lexical queries retain the 0.75 threshold. Cross-domain validation (Diary Entry 40) confirmed zero regressions on non-lexical queries and zero new adversarial leaks across legal, medical, and narrative corpora. See [DESIGN.md §8.10](DESIGN.md#810-adaptive-relevance-ward) for the full analysis.
 
@@ -260,34 +253,47 @@ Candlekeep supports two transport modes with three deployment configurations:
 
 Even for small deployments (2–5 agents), HTTP mode via uvicorn is recommended over stdio. The benefits — shared model memory, no per-agent cold-start, connection multiplexing — apply at any scale. Use `--workers 1` for small pools and increase as needed.
 
-```
-stdio mode:                          HTTP mode (single worker):
-┌─────────┐   ┌──────────────┐       ┌─────────┐
-│ Agent A │──▶│ Candlekeep A │       │ Agent A │──┐
-└─────────┘   └──────────────┘       └─────────┘  │
-┌─────────┐   ┌──────────────┐       ┌─────────┐  │  ┌──────────────┐
-│ Agent B │──▶│ Candlekeep B │       │ Agent B │──┼─▶│ Candlekeep   │
-└─────────┘   └──────────────┘       └─────────┘  │  │ (shared)     │
-┌─────────┐   ┌──────────────┐       ┌─────────┐  │  └──────────────┘
-│ Agent C │──▶│ Candlekeep C │       │ Agent C │──┘
-└─────────┘   └──────────────┘       └─────────┘
-  3 processes, 3× model memory         1 process, 1× model memory
+```mermaid
+graph TD
+    classDef agent fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef server fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef infra fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px;
+    classDef db fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px;
 
+    subgraph Stdio ["1. Stdio Mode (One Agent per Process)"]
+        direction TB
+        A1[Agent A] --> CKA[Candlekeep A]
+        A2[Agent B] --> CKB[Candlekeep B]
+        A3[Agent C] --> CKC[Candlekeep C]
+    end
+    class A1,A2,A3 agent;
+    class CKA,CKB,CKC server;
 
-HTTP mode (multi-worker, recommended):
-┌─────────┐
-│ Agent A │──┐
-└─────────┘  │
-┌─────────┐  │  ┌─────────┐  ┌──────────────┐
-│ Agent B │──┼─▶│ uvicorn │─▶│ Worker 1     │──▶ ChromaDB
-└─────────┘  │  │ (load   │  ├──────────────┤
-┌─────────┐  │  │ balance)│  │ Worker 2     │──▶ ChromaDB
-│ Agent C │──┤  └─────────┘  ├──────────────┤
-└─────────┘  │               │ Worker 3     │──▶ ChromaDB
-┌─────────┐  │               ├──────────────┤
-│ Agent D │──┘               │ Worker 4     │──▶ ChromaDB
-└─────────┘                  └──────────────┘
-  N agents, W× model memory, N/W agents per event loop
+    subgraph HttpSingle ["2. HTTP Mode (Shared Server)"]
+        direction TB
+        HA1[Agent A] --> Shared[Candlekeep Shared]
+        HA2[Agent B] --> Shared
+        HA3[Agent C] --> Shared
+    end
+    class HA1,HA2,HA3 agent;
+    class Shared server;
+
+    subgraph HttpMulti ["3. HTTP Mode (Multi-worker, Balanced)"]
+        direction TB
+        MA1[Agent A] --> Uvicorn[uvicorn]
+        MA2[Agent B] --> Uvicorn
+        MA3[Agent C] --> Uvicorn
+        MA4[Agent D] --> Uvicorn
+        Uvicorn --> W1[Worker 1] --> Chroma
+        Uvicorn --> W2[Worker 2] --> Chroma
+        Uvicorn --> W3[Worker 3] --> Chroma
+        Uvicorn --> W4[Worker 4] --> Chroma
+        Chroma[(ChromaDB)]
+    end
+    class MA1,MA2,MA3,MA4 agent;
+    class Uvicorn infra;
+    class W1,W2,W3,W4 server;
+    class Chroma db;
 ```
 
 **Concurrency controls in HTTP mode:**
@@ -304,6 +310,8 @@ HTTP mode (multi-worker, recommended):
 Read operations (simple search, hybrid search, list_documents, get_stats) run without locks against ChromaDB, which handles its own collection-level consistency.
 
 **BM25 cache updates:** After a write, the BM25 cache is updated incrementally — old chunks for the affected source are removed and new chunks are added to the in-memory tokenized corpus, then BM25Okapi IDF statistics are recomputed. This avoids the ChromaDB round-trip and re-tokenization of a full cache rebuild. The IDF recomputation is O(N) arithmetic over pre-tokenized data, which is a constant-factor improvement over the previous approach (O(N) network fetch + O(N) tokenization + O(N) IDF). At 2,770 chunks the difference is small; at 50k+ chunks the network fetch elimination becomes significant. Full cache invalidation (`clear_bm25_cache`) is used only for `repopulate_database`. True O(k) incremental IDF updates would require switching to a library with native support (e.g., `whoosh`, `tantivy`).
+
+**[The Rosetta Seal](GLOSSARY.md#the-rosetta-seal) (normalisation map):** At `repopulate_database` time, the map is cleared. After each `ingest()`, a background daemon thread regenerates the map from the current corpus — non-blocking, zero latency impact on ingest or query paths. Queries during the rebuild use the stale map (bounded degradation, not silent failure). Once complete, the new map is atomically swapped in. The map is saved to `CANDLEKEEP_DATA_DIR/normalisation_map.json` and loaded lazily on first query. Benchmark: +15.7% BM25 MRR on surface-variant queries, zero regression on the Centurion Set, 0.07s generation time. See [Research Diary Entry 55](RESEARCH_DIARY.md#entry-55-the-rosetta-seal--corpus-derived-bm25-token-normalisation) for the full analysis.
 
 **ColBERT cache updates (opt-in):** When `CANDLEKEEP_SPARSE_BACKEND=colbert`, writes mark the ColBERT index dirty for lazy rebuild on the next query. Unlike BM25 (which supports incremental IDF recomputation), ColBERT requires a full index rebuild because the late interaction scoring depends on global token statistics. Single-file ingestion marks dirty; batch ingestion (`repopulate_database`) rebuilds once at the end. During rebuild, queries silently fall back to BM25 with a warning log. BM25 is always maintained regardless of the sparse backend setting.
 
@@ -477,10 +485,15 @@ All settings via environment variables (`.env` file):
 | CANDLEKEEP_RATE_LIMIT_WINDOW | 60 | Rate limit window in seconds (HTTP mode) |
 | CANDLEKEEP_LLM_PROVIDER | (empty) | LLM provider: `anthropic`, `openai`, `bedrock`, `openai_compat` |
 | CANDLEKEEP_LLM_MODEL | (per-provider) | Model name override for LLM provider |
-| CANDLEKEEP_VLM_PROVIDER | (empty) | Vision provider: `anthropic`, `openai`, `bedrock`, `openai_compat` |
-| CANDLEKEEP_VLM_MODEL | (per-provider) | Model name override for vision provider |
+| CANDLEKEEP_VLM_PROVIDER | (empty) | True Sight provider: `anthropic`, `openai`, `bedrock`, `openai_compat` |
+| CANDLEKEEP_VLM_MODEL | (per-provider) | Model name override for True Sight provider |
+| CANDLEKEEP_VLM_CONCURRENCY | 3 | Max concurrent True Sight calls per document |
+| CANDLEKEEP_VLM_MAX_COST_PER_DOC | 0.0 | Cost circuit breaker per document (0=unlimited) |
+| CANDLEKEEP_VLM_PDF_MAX_PAGES | 15 | Max figure pages to True Sight per PDF |
+| CANDLEKEEP_VLM_FETCH_REMOTE_IMAGES | false | True Sight remote images in markdown (http/https URLs) |
+| CANDLEKEEP_CAPTION_BOOST | 0.0 | Flat boost for True Sight chunks in retrieval (0=disabled, 1.0=recommended) |
 | CANDLEKEEP_LLM_BASE_URL | (empty) | Base URL for `openai_compat` LLM endpoint |
-| CANDLEKEEP_VLM_BASE_URL | (empty) | Base URL for `openai_compat` vision endpoint |
+| CANDLEKEEP_VLM_BASE_URL | (empty) | Base URL for `openai_compat` True Sight endpoint |
 | ANTHROPIC_API_KEY | (empty) | API key for Anthropic provider |
 | OPENAI_API_KEY | (empty) | API key for OpenAI provider |
 | AWS_REGION | us-east-1 | AWS region for Bedrock provider |
@@ -514,22 +527,23 @@ Canonical latency reference for the simple search path. All other latency figure
 
 The simple path performs no inference beyond the initial query embedding. Arcane Recall uses stored embeddings from ChromaDB for the Scholar's Discernment similarity checks — no bi-encoder calls during expansion.
 
-## LLM & Vision Providers
+## LLM & True Sight Providers
 
-Candlekeep uses a provider abstraction layer for runtime LLM calls (RAPTOR summaries) and vision calls (image captioning). Text and vision providers are independently configurable — use a cheap local model for summaries and a stronger hosted model for captioning without coupling.
+Candlekeep uses a provider abstraction layer for runtime LLM calls (RAPTOR summaries) and True Sight calls (image captioning). Text and True Sight providers are independently configurable — use a cheap local model for summaries and a stronger hosted model for True Sight without coupling.
 
 ### Provider Architecture
 
-```
-create_llm_provider()  ──→  LLMProvider.complete(prompt) ──→ str
-create_vision_provider() ──→ VisionProvider.caption(image_bytes) ──→ str
+```mermaid
+graph LR
+    F1[create_llm_provider] --> P1[LLMProvider.complete]
+    F2[create_vision_provider] --> P2[VisionProvider.caption]
 ```
 
 Both factory functions read from environment variables and use lazy imports, so provider dependencies are only required when that provider is selected. All provider errors are wrapped in `ProviderError(provider_name, message, cause)` for uniform error handling.
 
 ### Available Providers
 
-| Provider | LLM | Vision | Install | Auth |
+| Provider | LLM | True Sight | Install | Auth |
 |----------|-----|--------|---------|------|
 | `anthropic` | ✓ | ✓ | `pip install anthropic` | `ANTHROPIC_API_KEY` |
 | `openai` | ✓ | ✓ | `pip install openai` | `OPENAI_API_KEY` |
@@ -547,7 +561,7 @@ CANDLEKEEP_LLM_MODEL=llama3.2
 CANDLEKEEP_LLM_BASE_URL=http://localhost:11434/v1
 ```
 
-Mixed (local LLM, hosted vision):
+Mixed (local LLM, hosted True Sight):
 ```bash
 CANDLEKEEP_LLM_PROVIDER=openai_compat
 CANDLEKEEP_LLM_MODEL=llama3.2
@@ -574,7 +588,7 @@ src/candlekeep/
 │   ├── vector_store.py      # ChromaDB implementation
 │   └── embeddings.py        # Model loading + caching
 ├── providers/
-│   ├── base.py              # LLMProvider / VisionProvider ABCs
+│   ├── base.py              # LLMProvider / VisionProvider ABCs (True Sight)
 │   ├── factory.py           # Env-driven provider instantiation
 │   ├── anthropic.py         # Anthropic (Claude) implementation
 │   ├── openai.py            # OpenAI implementation
