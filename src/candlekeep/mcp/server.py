@@ -482,7 +482,10 @@ def get_stats() -> str:
 **Embedding Cache**
 - Hits: {stats.get('embed_cache_hits', 0)}
 - Misses: {stats.get('embed_cache_misses', 0)}
-- Size: {stats.get('embed_cache_size', 0)}"""
+- Size: {stats.get('embed_cache_size', 0)}
+
+**BM25 Normalisation**
+- Normalisation map variants: {stats.get('normalisation_map_size', 0)}"""
 
 
 
@@ -694,6 +697,17 @@ def ingest(path: str, ctx: Context = CurrentContext()) -> str:
             msg = f"✓ Ingested {count} chunks from {path}"
             if result.images_captioned or result.images_from_cache:
                 msg += f" ({result.images_captioned} images captioned, {result.images_from_cache} from cache)"
+
+            import os
+            if os.getenv("CANDLEKEEP_NORMALISE_ON_INGEST", "false").lower() == "true":
+                try:
+                    from candlekeep.rag.token_normalisation import regenerate_normalisation_map
+                    norm_map = regenerate_normalisation_map(get_store())
+                    if norm_map is not None:
+                        msg += f" (normalisation map: {norm_map.size} variants)"
+                except Exception as norm_err:
+                    msg += f" (normalisation map generation failed: {norm_err})"
+
             return msg
     except _WriteLockTimeout as e:
         return str(e)
@@ -737,11 +751,38 @@ def repopulate_database(ctx: Context = CurrentContext()) -> str:
     try:
         with _write_guard():
             get_store().clear()
-            return "✓ Database cleared. Use ingest() to add documents."
+            return "✓ Database cleared. Use ingest() to add documents, then rebuild_normalisation_map() once ingestion is complete."
     except _WriteLockTimeout as e:
         return str(e)
     except chromadb.errors.AuthorizationError as e:
         return f"❌ Write permission denied: {e}"
+    except Exception as e:
+        return f"❌ Error: {e}"
+
+
+@mcp.tool
+def rebuild_normalisation_map(ctx: Context = CurrentContext()) -> str:
+    """Rebuild the BM25 token normalisation map from the current corpus.
+
+    Clusters surface-form variants (e.g. 'chromadb' / 'chroma-db') so BM25
+    matches them as the same token. Run this after a full repopulate_database
+    + ingest cycle. The map is saved to disk and loaded automatically on
+    subsequent queries.
+
+    Set CANDLEKEEP_NORMALISE_ON_INGEST=true to regenerate automatically after
+    each ingest() call (suitable for small corpora).
+    """
+    if msg := _check_ready():
+        return msg
+    if msg := _rate_check(_write_limiter, ctx):
+        return msg
+
+    try:
+        from candlekeep.rag.token_normalisation import regenerate_normalisation_map
+        norm_map = regenerate_normalisation_map(get_store())
+        if norm_map is None:
+            return "⚠ Corpus is empty — no normalisation map generated."
+        return f"✓ Normalisation map rebuilt: {norm_map.size} variant → canonical mappings."
     except Exception as e:
         return f"❌ Error: {e}"
 

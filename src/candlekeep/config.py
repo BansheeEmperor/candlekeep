@@ -160,3 +160,7 @@ class Settings:
     @property
     def image_caption_cache_dir(self) -> Path:
         return self.data_dir / "image_captions"
+
+    @property
+    def normalisation_map_path(self) -> Path:
+        return self.data_dir / "normalisation_map.json"

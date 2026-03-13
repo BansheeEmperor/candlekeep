@@ -22,13 +22,24 @@ STOP_WORDS = frozenset({
 
 _WORD_RE = re.compile(r"[a-z0-9]+(?:[._-][a-z0-9]+)*")
 
+# Alias used by token_normalisation.py when extracting corpus tokens
+_token_re = _WORD_RE
+
 
 def _tokenize(text: str) -> List[str]:
     """Tokenize text for BM25: lowercase, extract words, filter stop words.
 
+    Applies the corpus-derived normalisation map (if loaded) so that surface
+    variants like 'chroma-db' and 'chromadb' map to the same canonical token.
     Preserves technical identifiers like 'bge-small', 'v3.4.1', 'ms-marco'.
     """
-    return [w for w in _WORD_RE.findall(text.lower()) if w not in STOP_WORDS]
+    from candlekeep.rag.token_normalisation import get_normalisation_map
+    from candlekeep.config import get_data_dir
+    tokens = [w for w in _WORD_RE.findall(text.lower()) if w not in STOP_WORDS]
+    norm_map = get_normalisation_map(get_data_dir())
+    if norm_map is not None:
+        tokens = norm_map.normalise_all(tokens)
+    return tokens
 
 
 def reciprocal_rank_fusion(
