@@ -6,7 +6,7 @@ on:
     paths-ignore:
       - 'tests/results/archive/**'
       - 'docs/**'
-      - 'README.md'
+      - '**.md'
   workflow_dispatch:
     inputs:
       reason:
