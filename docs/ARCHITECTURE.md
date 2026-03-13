@@ -66,7 +66,7 @@ graph TD
 
 The library routes queries to the optimal technique stack:
 *   **simple** → [Arcane Recall](GLOSSARY.md#arcane-recall) (Fast Path)
-*   **hybrid** → [Wild Magic](GLOSSARY.md#lexical-matching-wild-magic) (Lexical + Vector). The sparse signal is BM25 by default; an opt-in ColBERT backend (`CANDLEKEEP_SPARSE_BACKEND=colbert`) provides token-level matching for better lexical precision on technical identifiers. BM25 uses stop-word-filtered tokenization with a regex that preserves technical identifiers (e.g., `bge-small`, `v3.4.1`). ColBERT uses late interaction with `answerai-colbert-small-v1`. BM25 is always maintained as fallback during ColBERT index rebuilds.
+*   **hybrid** → [Wild Magic](GLOSSARY.md#lexical-matching-wild-magic) (Lexical + Vector). The sparse signal is BM25 by default; an opt-in ColBERT backend (`CANDLEKEEP_SPARSE_BACKEND=colbert`) provides token-level matching for better lexical precision on technical identifiers. BM25 uses stop-word-filtered tokenization with a regex that preserves technical identifiers (e.g., `bge-small`, `v3.4.1`). Before tokenization, [**The Rosetta Seal**](GLOSSARY.md#the-rosetta-seal) normalises surface-form variants (`crossencoder` → `cross-encoder`, `autoscaling` → `auto-scaling`) so BM25 token matching is separator-agnostic. The map is derived automatically from the corpus at `repopulate_database` time — zero manual curation. ColBERT uses late interaction with `answerai-colbert-small-v1`. BM25 is always maintained as fallback during ColBERT index rebuilds.
 *   **precise** → [Arcane Recall](GLOSSARY.md#arcane-recall) + [Divine Insight](GLOSSARY.md#cross-encoder-reranking) (Precise Path)
 *   **Negation preprocessing** applied to all paths.
 *   **[The Relevance Ward](GLOSSARY.md#the-relevance-ward)** filters low-confidence matches.
@@ -198,6 +198,9 @@ These values represent the optimal configuration identified through the Centurio
 | `CHUNK_OVERLAP` | 50 | Character overlap between fragments |
 | `CANDLEKEEP_SPARSE_BACKEND` | `bm25` | Sparse backend for hybrid path (`bm25` or `colbert`) |
 | `CANDLEKEEP_EMBEDDING_CACHE_SIZE` | 500 | Max entries in the query embedding LRU cache |
+| `EDIT_DISTANCE_THRESHOLD` | 0.15 | [Rosetta Seal](GLOSSARY.md#the-rosetta-seal) — max normalised Levenshtein distance for clustering |
+| `EMBEDDING_SIMILARITY_THRESHOLD` | 0.82 | [Rosetta Seal](GLOSSARY.md#the-rosetta-seal) — min cosine similarity for clustering (embedding gate) |
+| `CANDLEKEEP_NORMALISE_ON_INGEST` | `false` | [Rosetta Seal](GLOSSARY.md#the-rosetta-seal) — regenerate map after each `ingest()` call |
 
 The vector Ward uses an adaptive threshold: queries detected as lexical (version numbers, acronyms, technical identifiers) use a relaxed threshold of 0.65 to avoid filtering legitimate results that score in the 0.67–0.75 range. Non-lexical queries retain the 0.75 threshold. Cross-domain validation (Diary Entry 40) confirmed zero regressions on non-lexical queries and zero new adversarial leaks across legal, medical, and narrative corpora. See [DESIGN.md §8.10](DESIGN.md#810-adaptive-relevance-ward) for the full analysis.
 
@@ -307,6 +310,8 @@ graph TD
 Read operations (simple search, hybrid search, list_documents, get_stats) run without locks against ChromaDB, which handles its own collection-level consistency.
 
 **BM25 cache updates:** After a write, the BM25 cache is updated incrementally — old chunks for the affected source are removed and new chunks are added to the in-memory tokenized corpus, then BM25Okapi IDF statistics are recomputed. This avoids the ChromaDB round-trip and re-tokenization of a full cache rebuild. The IDF recomputation is O(N) arithmetic over pre-tokenized data, which is a constant-factor improvement over the previous approach (O(N) network fetch + O(N) tokenization + O(N) IDF). At 2,770 chunks the difference is small; at 50k+ chunks the network fetch elimination becomes significant. Full cache invalidation (`clear_bm25_cache`) is used only for `repopulate_database`. True O(k) incremental IDF updates would require switching to a library with native support (e.g., `whoosh`, `tantivy`).
+
+**[The Rosetta Seal](GLOSSARY.md#the-rosetta-seal) (normalisation map):** At `repopulate_database` time, the map is cleared. After each `ingest()`, a background daemon thread regenerates the map from the current corpus — non-blocking, zero latency impact on ingest or query paths. Queries during the rebuild use the stale map (bounded degradation, not silent failure). Once complete, the new map is atomically swapped in. The map is saved to `CANDLEKEEP_DATA_DIR/normalisation_map.json` and loaded lazily on first query. Benchmark: +15.7% BM25 MRR on surface-variant queries, zero regression on the Centurion Set, 0.07s generation time. See [Research Diary Entry 55](RESEARCH_DIARY.md#entry-55-the-rosetta-seal--corpus-derived-bm25-token-normalisation) for the full analysis.
 
 **ColBERT cache updates (opt-in):** When `CANDLEKEEP_SPARSE_BACKEND=colbert`, writes mark the ColBERT index dirty for lazy rebuild on the next query. Unlike BM25 (which supports incremental IDF recomputation), ColBERT requires a full index rebuild because the late interaction scoring depends on global token statistics. Single-file ingestion marks dirty; batch ingestion (`repopulate_database`) rebuilds once at the end. During rebuild, queries silently fall back to BM25 with a warning log. BM25 is always maintained regardless of the sparse backend setting.
 
