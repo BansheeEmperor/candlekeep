@@ -457,7 +457,6 @@ def _rebuild_worker(db) -> None:
     except Exception:
         logger.exception("[candlekeep] Background normalisation map rebuild failed")
     finally:
-        global _rebuild_building
         with _rebuild_lock:
             _rebuild_building = False
 

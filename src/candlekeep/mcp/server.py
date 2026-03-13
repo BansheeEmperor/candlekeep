@@ -697,6 +697,14 @@ def ingest(path: str, ctx: Context = CurrentContext()) -> str:
             msg = f"✓ Ingested {count} chunks from {path}"
             if result.images_captioned or result.images_from_cache:
                 msg += f" ({result.images_captioned} images captioned, {result.images_from_cache} from cache)"
+
+            # Schedule background normalisation map rebuild. Non-blocking —
+            # queries during rebuild use the stale map. If a rebuild is already
+            # running this is a no-op (the in-flight thread reads corpus at
+            # execution time so it will include these new chunks).
+            from candlekeep.rag.token_normalisation import schedule_background_rebuild
+            schedule_background_rebuild(get_store())
+
             return msg
     except _WriteLockTimeout as e:
         return str(e)
@@ -751,15 +759,12 @@ def repopulate_database(ctx: Context = CurrentContext()) -> str:
 
 @mcp.tool
 def rebuild_normalisation_map(ctx: Context = CurrentContext()) -> str:
-    """Rebuild the BM25 token normalisation map from the current corpus.
+    """Force an immediate synchronous rebuild of the BM25 normalisation map.
 
-    Clusters surface-form variants (e.g. 'chromadb' / 'chroma-db') so BM25
-    matches them as the same token. Run this after a full repopulate_database
-    + ingest cycle. The map is saved to disk and loaded automatically on
-    subsequent queries.
-
-    Set CANDLEKEEP_NORMALISE_ON_INGEST=true to regenerate automatically after
-    each ingest() call (suitable for small corpora).
+    The map normally rebuilds automatically in the background after each
+    ingest(). Use this tool to force an immediate rebuild and wait for
+    completion — useful after bulk ingestion when you want to confirm the
+    map is current before running queries.
     """
     if msg := _check_ready():
         return msg
