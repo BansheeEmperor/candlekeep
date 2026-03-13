@@ -1,12 +1,6 @@
 name: Update Performance Baselines
 
 on:
-  push:
-    branches: [ dev ]
-    paths-ignore:
-      - 'tests/results/archive/**'
-      - 'docs/**'
-      - '**.md'
   workflow_dispatch:
     inputs:
       reason:
