@@ -18,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Get all tags and history for the changelog
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -25,8 +27,9 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
 
-      - name: Install hatch
-        run: pip install hatch
+      - name: Install dependencies
+        run: |
+          pip install hatch google-generativeai
 
       - name: Get version
         id: get_version
@@ -35,6 +38,14 @@ jobs:
       - name: Build wheel and source dist
         run: hatch build
 
+      - name: Generate Arcane Release Notes
+        id: scribe
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          CANDLEKEEP_VERSION: ${{ steps.get_version.outputs.VERSION }}
+        run: |
+          python scripts/generate_release_notes.py > release_notes.md
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -42,7 +53,8 @@ jobs:
           files: |
             dist/*.whl
             dist/*.tar.gz
-          generate_release_notes: true
+          body_path: release_notes.md
+          generate_release_notes: false # We use our own AI-generated notes
           draft: false
           prerelease: false
         continue-on-error: true # Skip if release already exists
