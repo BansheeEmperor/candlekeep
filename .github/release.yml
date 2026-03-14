@@ -1,0 +1,32 @@
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+      - duplicate
+      - invalid
+      - wontfix
+  categories:
+    - title: "Features"
+      labels:
+        - enhancement
+        - retrieval
+        - ranking
+        - ingestion
+        - index-time
+        - query-time
+        - signal-quality
+        - coverage-expansion
+        - knowledge-graph
+    - title: "Infrastructure & Distribution"
+      labels:
+        - infrastructure
+        - performance
+    - title: "Documentation"
+      labels:
+        - documentation
+        - research
+    - title: "Chores & Fixes"
+      labels:
+        - bug
+        - chore
+        - automated-pr

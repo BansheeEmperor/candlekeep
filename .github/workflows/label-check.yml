@@ -1,0 +1,19 @@
+name: Label Check
+
+on:
+  pull_request:
+    types: [opened, labeled, unlabeled, synchronize]
+
+jobs:
+  check-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify PR has at least one label
+        if: github.event.pull_request.labels[0] == null
+        run: |
+          echo "❌ This Pull Request has no labels!"
+          echo "Please add at least one label (e.g., 'feature', 'bug', 'docs') so it's included in the release notes."
+          exit 1
+      - name: Success
+        if: github.event.pull_request.labels[0] != null
+        run: echo "✅ PR is labeled and ready for categorization."
