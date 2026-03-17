@@ -3354,3 +3354,81 @@ The `normalisation_map.json` file is written to `CANDLEKEEP_DATA_DIR`. On startu
 - `scripts/benchmark_normalisation.py` — Full benchmark suite: 30 uplift queries, threshold sweep, two corpora
 
 See [ARCHITECTURE.md § The Rosetta Seal](ARCHITECTURE.md#the-rosetta-seal-normalisation-map) for the operational reference, [DESIGN.md § 4.2](DESIGN.md#42-the-rosetta-seal-bm25-token-normalisation) for the design rationale, and [GLOSSARY.md](GLOSSARY.md#the-rosetta-seal) for the lore entry.
+
+## Entry 56: Divination — Entity Expansion via Co-occurrence Graph
+
+**Date:** 2026-03-17
+
+### Problem
+
+Standard search (vector + BM25) only finds documents that share vocabulary with the query. When a user asks about entity A, documents about related entity B — which co-occurs with A in the corpus but uses different vocabulary — are invisible. The entity co-occurrence graph knows these relationships, but the original 3-way RRF fusion (vector + BM25 + graph) buried graph results because vector and BM25 always agreed on the same candidates (2 votes vs 1).
+
+### Research Journey
+
+**Corpus selection.** Started with a purpose-built synthetic corpus — failed because queries containing entity names gave vector search trivial vocabulary overlap (100% hit rate both ways). Switched to NFCorpus (BEIR, 3,633 biomedical abstracts). Discovered the entity extraction pipeline (`_tech_tokens`) only matches CamelCase/SCREAMING_SNAKE patterns — useless on biomedical text. Fixed by bootstrapping a domain-specific entity ruler (101 biomedical terms, doc_freq ≥ 5) from corpus term frequencies.
+
+**Ground truth.** First attempt reused NFCorpus qrels from different original queries — 12/25 queries had mismatched ground truth. Fixed by deriving ground truth from entity co-occurrence: relevant docs = docs containing both query entities in the same chunk. Self-consistent with what the graph tracks.
+
+**Benchmark design.** Three scenarios:
+1. **Expansion** (scenario 1): Query names entity A only. Ground truth = B-only docs (contain B but not A, where A↔B co-occur). Measures the graph's ability to surface docs invisible to vector search.
+2. **Ranking quality** (scenario 3): Query names both entities. Graded NDCG@5 with Jaccard as relevance (both max and sum reported). Measures whether the graph degrades ranking.
+3. **Regression**: Standard NFCorpus queries with existing qrels. Measures whether the graph hurts standard retrieval.
+
+**3-way RRF failure.** With graph as a third RRF signal alongside vector+BM25, expansion recall was 20% but NDCG degraded by 1.2%. The graph found B-only docs when called directly (2-8 per pair) but RRF buried them — vector+BM25 always outvoted the graph 2-to-1.
+
+**Knob sweep.** Swept RRF k ∈ {20, 60} × graph_mult ∈ {2, 6} × related_top_n ∈ {5, 15} (8 combinations). Results: `top_n` had zero effect (Jaccard drops off after top-5). `graph_mult=6` hurt expansion (more noise diluted good B-only docs). `k=20` slightly better NDCG than `k=60`. The 2-to-1 voting problem is structural, not tunable.
+
+**Option C (additive fusion).** Instead of including graph in RRF, reserve M slots for unique graph expansion docs after standard 2-way RRF. Swept M ∈ {0, 1, 2, 3}:
+
+| M | Expansion recall | NDCG@5 | Regression |
+|---|---|---|---|
+| 0 | 0% | 0.908 | 64% |
+| 1 | 10% | 0.769 | 64% |
+| 2 | 50% | 0.668 | 64% |
+| 3 | 80% | 0.604 | 60% |
+
+M=2 sweet spot: 50% expansion, regression holds. But NDCG dropped 0.24 — the graph displaced high-Jaccard co-occurrence docs with expansion docs that don't match the stated query.
+
+**Smart expansion.** The NDCG cost came from expanding entities that already had a co-occurring partner in the query. Fix: before expanding, check if each query entity has a co-occurring partner (any edge in the graph). If paired, skip expansion. Result: NDCG cost dropped from 0.24 to 0.014 while expansion recall stayed at 40%.
+
+**Pairing threshold.** Initial threshold of Jaccard ≥ 0.05 was too high for rare entities (sulforaphane: 24 docs, cancer: 732 → Jaccard 0.012). Lowered to 0 (any co-occurrence edge = paired). NDCG degradation: 1.4%.
+
+**Multi-hop research.** Checked whether 2-hop traversal (A→B→C) reaches B-only docs that 1-hop misses. Result: zero additional B-only docs across all 5 tested pairs. 1-hop `get_related(top_n=5)` already includes entity B directly. Multi-hop not needed.
+
+**Architecture decision.** Replaced `simple` (vector-only) query type with `explore` (Divination). The 50ms latency savings of vector-only didn't justify keyword blindness risk. Three intent-based query types: `hybrid` (default), `precise` (reranking), `explore` (entity expansion).
+
+### Final Design
+
+`explore` path:
+1. Extract entities from query
+2. Identify paired entities (co-occurring partners already in query)
+3. Expand only unpaired entities via `get_related(top_n=5)`
+4. Vector+BM25 RRF → top-3 results
+5. Fill 2 slots with unique graph expansion docs (not in fused set)
+6. Fallback: if graph has <2 unique docs, fill from RRF
+7. Total: always 5 results
+
+### Final Metrics (NFCorpus, 3,633 docs)
+
+| Metric | Hybrid | Explore | Delta |
+|---|---|---|---|
+| Expansion recall@5 | 0% | 40% | +40% |
+| NDCG@5 (max-Jaccard) | 0.905 | 0.891 | -1.4% |
+| NDCG@5 (sum-Jaccard) | 0.898 | 0.884 | -1.4% |
+| Regression Hit Rate@5 | 60% | 60% | 0% |
+| Latency no-match p50 | — | 2.5ms | — |
+| Latency hot p50 | — | 31ms | — |
+| Entity precision | — | 100% | — |
+
+Graph infrastructure: 17,520 entities, 31,083 co-occurrence edges, 101 biomedical ruler patterns.
+
+### Files Changed
+
+- `src/candlekeep/rag/hybrid.py` — `explore_search()` with smart expansion; graph removed from `hybrid_search()`
+- `src/candlekeep/rag/router.py` — `explore` query type replaces `simple`; default changed to `hybrid`
+- `src/candlekeep/mcp/server.py` — Search tool description updated for 3 query types
+- `tests/test_graph_augment_benchmark.py` — 6 benchmark tests: regression, expansion, NDCG, latency, entity precision
+- `tests/nfcorpus_relationship_queries.py` — 10 expansion queries + 25 relationship queries
+- `tests/conftest_nfcorpus.py` — NFCorpus fixture with biomedical entity ruler bootstrap
+
+See [ARCHITECTURE.md § Divination](ARCHITECTURE.md#divination-entity-expansion) for the operational reference, [DESIGN.md § 3.1](DESIGN.md#31-three-search-paths) for the design rationale, and [GLOSSARY.md](GLOSSARY.md#divination) for the lore entry.

@@ -35,6 +35,9 @@
 ### Cross-Encoder Reranking
 **The Lore:** A slow but incredibly thorough study of the candidate scrolls. While the initial search is fast and broad, the reranker takes each scroll and compares it word-for-word against thy query, re-ordering them with divine precision.
 
+### Divination
+**The Lore:** The art of revealing hidden connections between scrolls that no direct search could find. When a seeker names an entity, Divination traces the threads of the entity co-occurrence graph to discover related entities — and retrieves scrolls about those related entities that standard search would never surface. A smart ward ensures Divination only activates when the seeker's query contains entities with no known partner in the query itself; when all entities are already connected, the library trusts the standard roads. See [ARCHITECTURE.md § Divination](ARCHITECTURE.md#divination-entity-expansion) and [DESIGN.md § 3.1](DESIGN.md#31-three-search-paths).
+
 ---
 
 ## 🏰 Library Terms
