@@ -14,17 +14,22 @@ AI agents need access to domain-specific knowledge that isn't in their training 
 
 ## 3. Design Decisions
 
-### 3.1 Three [Search Paths](ARCHITECTURE.md#the-three-roads), Not Two
+### 3.1 Three [Search Paths](ARCHITECTURE.md#the-three-roads)
 
-Early designs proposed 2 query types (simple and precise). Benchmarking on the Centurion Set showed that "Keyword Blindness" was a significant issue for exact technical identifiers.
+Early designs proposed 2 query types (simple and precise). Benchmarking on the Centurion Set showed that "Keyword Blindness" was a significant issue for exact technical identifiers. Later, the `simple` (vector-only) path was replaced by `explore` (entity expansion via [Divination](GLOSSARY.md#divination)) — the 50ms latency savings of vector-only didn't justify the keyword blindness risk, and the entity co-occurrence graph provided a genuinely new retrieval capability that vector+BM25 couldn't replicate.
 
-**Decision:** Three paths — `simple`, `hybrid`, and `precise`. The agent picks. See [ARCHITECTURE.md § The Three Roads](ARCHITECTURE.md#the-three-roads) for the full pipeline diagram and component descriptions.
+**Decision:** Three paths — `hybrid` (default), `precise`, and `explore`. The agent picks. See [ARCHITECTURE.md § The Three Roads](ARCHITECTURE.md#the-three-roads) for the full pipeline diagram and component descriptions. See [Research Diary Entry 56](RESEARCH_DIARY.md) for the full benchmark journey.
 
 Use cases:
-- Simple: "What's the API endpoint for search?"
-- Hybrid: "How do I fix error 0xEF or version mismatch?"
+- Hybrid: "What's the API endpoint for search?" / "How do I fix error 0xEF?"
 - Precise: "Compare authentication methods and recommend one"
+- Explore: "What are the effects of curcumin?" / "How does folate affect health?"
 - Agent decomp: "How do I set up, configure, and deploy?"
+
+**Explore path metrics** (NFCorpus, 3,633 docs):
+- 40% expansion recall — surfaces docs invisible to hybrid on 4/10 entity expansion queries
+- 1.4% NDCG@5 degradation — smart expansion (paired entity detection) preserves ranking quality
+- 0% regression on standard retrieval queries
 
 ### 3.2 Agent Decomposes, Tool Searches
 
@@ -249,11 +254,12 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 
 #### Domain Performance (MRR / nDCG)
 
-| Category | Simple (Vector) | Hybrid (BM25+Vector) | Precise (Reranked) | Note |
-|----------|-----------------|----------------------|--------------------|------|
-| **Lexical** (Identifiers) | 0.42 / 0.44 | **0.53 / 0.55 (+15–26%)** | 0.42 / 0.42 | Fixing "Keyword Blindness" |
-| **Semantic** (Concepts) | 0.87 / 0.87 | **0.89 / 0.90 (+2%)** | 0.87 / 0.87 | Stable semantic depth |
+| Category | Hybrid (BM25+Vector) | Precise (Reranked) | Explore (Divination) | Note |
+|----------|----------------------|--------------------|----------------------|------|
+| **Lexical** (Identifiers) | **0.53 / 0.55** | 0.42 / 0.42 | 0.53 / 0.55 | Fixing "Keyword Blindness" |
+| **Semantic** (Concepts) | **0.89 / 0.90** | 0.87 / 0.87 | 0.89 / 0.90 | Stable semantic depth |
 | **Adversarial** (Noise) | 0.0 / 0.0 | 0.0 / 0.0 | 0.0 / 0.0 | Warded ¹ |
+| **Expansion** (Entity) | — | — | **40% recall** | [Divination](GLOSSARY.md#divination) |
 
 ¹ MRR of 0.0 means no adversarial query surfaced a relevant result in the top position. The hybrid path fully filters adversarial queries via the RRF threshold (Hit Rate@5 = 0.0). The precise path filters 70% of adversarial queries via the combined pre-reranking vector Ward and post-reranking cross-encoder Ward (`MIN_RERANKER_SCORE`); the remaining 30% contain technical terms that genuinely match corpus documents. The simple path relies solely on the vector threshold (Hit Rate@5 = 0.40).
 
