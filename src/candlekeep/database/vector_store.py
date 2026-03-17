@@ -85,6 +85,27 @@ class ChromaVectorStore(VectorDatabase):
         embeddings = self.embedder.embed(texts)
         metadatas = [{**c.metadata, "collection": collection, "chunk_index": c.chunk_index} for c in chunks]
 
+        # Entity extraction — add entities array to metadata and populate graph
+        try:
+            from candlekeep.rag.extractor import get_extractor
+            from candlekeep.database.graph_store import get_graph_store, schedule_graph_rebuild
+            extractor = get_extractor(ruler_path=self.settings.entity_ruler_path)
+            graph_store = get_graph_store(self.settings)
+            mentions: list[tuple[str, str, int]] = []
+            for meta, text, chunk in zip(metadatas, texts, chunks):
+                entities = extractor.extract(text)
+                if entities:
+                    meta["entities"] = entities
+                    if graph_store:
+                        source = meta["source"]
+                        idx = chunk.chunk_index
+                        mentions.extend((e, source, idx) for e in entities)
+            if graph_store and mentions:
+                graph_store.add_mentions(mentions)
+                schedule_graph_rebuild(graph_store)
+        except Exception:
+            pass  # entity extraction must never block ingestion
+
         self.collection.upsert(ids=ids, embeddings=embeddings, documents=texts, metadatas=metadatas)
 
         # Incrementally update BM25 cache: remove old source chunks, add new ones.
@@ -197,11 +218,15 @@ class ChromaVectorStore(VectorDatabase):
     def delete_by_source(self, source: str) -> int:
         """Delete all chunks from a source file."""
         from candlekeep.rag.hybrid import remove_from_bm25_cache
-        
+        from candlekeep.database.graph_store import get_graph_store
+
         results = self.collection.get(where={"source": source})
         if results["ids"]:
             self.collection.delete(ids=results["ids"])
             remove_from_bm25_cache(source)
+            gs = get_graph_store(self.settings)
+            if gs:
+                gs.remove_by_source(source)
             import os
             if os.getenv("CANDLEKEEP_SPARSE_BACKEND", "bm25") == "colbert":
                 from candlekeep.rag.colbert import remove_from_colbert_cache
@@ -213,8 +238,13 @@ class ChromaVectorStore(VectorDatabase):
         """Clear all documents from the collection."""
         from candlekeep.rag.hybrid import clear_bm25_cache
         from candlekeep.rag.token_normalisation import clear_normalisation_cache
+        from candlekeep.database.graph_store import get_graph_store, clear_graph_store_cache
         clear_bm25_cache()
         clear_normalisation_cache()
+        gs = get_graph_store(self.settings)
+        if gs:
+            gs.clear()
+        clear_graph_store_cache()
         import os
         if os.getenv("CANDLEKEEP_SPARSE_BACKEND", "bm25") == "colbert":
             from candlekeep.rag.colbert import clear_colbert_cache
