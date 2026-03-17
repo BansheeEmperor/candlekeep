@@ -1,0 +1,427 @@
+{
+  "regression": {
+    "hr_with_graph": 0.6,
+    "hr_without_graph": 0.6,
+    "drop_pct": 0.0,
+    "n_queries": 25,
+    "passed": true
+  },
+  "expansion": {
+    "recall_explore": 0.4,
+    "recall_hybrid": 0.0,
+    "n_queries": 10,
+    "per_query": [
+      {
+        "query": "what are the health benefits of curcumin supplementation?",
+        "entity_a": "curcumin",
+        "entity_b": "turmeric",
+        "b_only_pool": 4,
+        "explore_b_only": 1,
+        "hybrid_b_only": 0
+      },
+      {
+        "query": "how do carotenoids protect against oxidative damage?",
+        "entity_a": "carotenoids",
+        "entity_b": "lycopene",
+        "b_only_pool": 6,
+        "explore_b_only": 1,
+        "hybrid_b_only": 0
+      },
+      {
+        "query": "what is the role of folate in preventing neural tube defects?",
+        "entity_a": "folate",
+        "entity_b": "homocysteine",
+        "b_only_pool": 19,
+        "explore_b_only": 1,
+        "hybrid_b_only": 0
+      },
+      {
+        "query": "how does cholesterol affect cardiovascular disease risk?",
+        "entity_a": "cholesterol",
+        "entity_b": "triglycerides",
+        "b_only_pool": 18,
+        "explore_b_only": 0,
+        "hybrid_b_only": 0
+      },
+      {
+        "query": "what causes myocardial infarction in young adults?",
+        "entity_a": "myocardial",
+        "entity_b": "stroke",
+        "b_only_pool": 58,
+        "explore_b_only": 0,
+        "hybrid_b_only": 0
+      },
+      {
+        "query": "what triggers apoptosis in tumor cells?",
+        "entity_a": "apoptosis",
+        "entity_b": "proliferation",
+        "b_only_pool": 58,
+        "explore_b_only": 0,
+        "hybrid_b_only": 0
+      },
+      {
+        "query": "what are the dietary sources and benefits of magnesium?",
+        "entity_a": "magnesium",
+        "entity_b": "zinc",
+        "b_only_pool": 17,
+        "explore_b_only": 0,
+        "hybrid_b_only": 0
+      },
+      {
+        "query": "how do prebiotics improve gut microbiome health?",
+        "entity_a": "prebiotics",
+        "entity_b": "probiotics",
+        "b_only_pool": 12,
+        "explore_b_only": 0,
+        "hybrid_b_only": 0
+      },
+      {
+        "query": "what is the relationship between diabetes and metabolic syndrome?",
+        "entity_a": "diabetes",
+        "entity_b": "obesity",
+        "b_only_pool": 146,
+        "explore_b_only": 0,
+        "hybrid_b_only": 0
+      },
+      {
+        "query": "how does selenium deficiency affect immune function?",
+        "entity_a": "selenium",
+        "entity_b": "zinc",
+        "b_only_pool": 20,
+        "explore_b_only": 2,
+        "hybrid_b_only": 0
+      }
+    ],
+    "passed": true
+  },
+  "improvement": {
+    "ndcg_max_explore": 0.891,
+    "ndcg_max_hybrid": 0.9051,
+    "ndcg_max_delta": -0.0141,
+    "ndcg_sum_explore": 0.8839,
+    "ndcg_sum_hybrid": 0.898,
+    "ndcg_sum_delta": -0.0141,
+    "n_queries": 25,
+    "per_query": [
+      {
+        "query": "what is the connection between cholesterol metabolism and breast cancer prognosis?",
+        "entity_pair": [
+          "cholesterol",
+          "breast"
+        ],
+        "ndcg_max_explore": 0.9062,
+        "ndcg_max_hybrid": 0.9062,
+        "ndcg_sum_explore": 0.9117,
+        "ndcg_sum_hybrid": 0.9117
+      },
+      {
+        "query": "how do cholesterol levels influence breast tumor development?",
+        "entity_pair": [
+          "cholesterol",
+          "breast"
+        ],
+        "ndcg_max_explore": 0.5,
+        "ndcg_max_hybrid": 0.8529,
+        "ndcg_sum_explore": 0.5,
+        "ndcg_sum_hybrid": 0.8529
+      },
+      {
+        "query": "how does curcumin affect inflammation in arthritis patients?",
+        "entity_pair": [
+          "curcumin",
+          "inflammation"
+        ],
+        "ndcg_max_explore": 0.9967,
+        "ndcg_max_hybrid": 0.9967,
+        "ndcg_sum_explore": 0.8736,
+        "ndcg_sum_hybrid": 0.8736
+      },
+      {
+        "query": "what role does curcumin play in reducing inflammation and joint disease?",
+        "entity_pair": [
+          "curcumin",
+          "inflammation"
+        ],
+        "ndcg_max_explore": 0.906,
+        "ndcg_max_hybrid": 0.906,
+        "ndcg_sum_explore": 0.906,
+        "ndcg_sum_hybrid": 0.906
+      },
+      {
+        "query": "curcumin and inflammation pathways in osteoarthritis treatment",
+        "entity_pair": [
+          "curcumin",
+          "inflammation"
+        ],
+        "ndcg_max_explore": 0.8529,
+        "ndcg_max_hybrid": 0.8529,
+        "ndcg_sum_explore": 0.8529,
+        "ndcg_sum_hybrid": 0.8529
+      },
+      {
+        "query": "relationship between insulin resistance and glucose in type 2 diabetes",
+        "entity_pair": [
+          "insulin",
+          "glucose"
+        ],
+        "ndcg_max_explore": 1.0,
+        "ndcg_max_hybrid": 1.0,
+        "ndcg_sum_explore": 1.0,
+        "ndcg_sum_hybrid": 1.0
+      },
+      {
+        "query": "how do insulin and glucose interact in diabetes pathogenesis?",
+        "entity_pair": [
+          "insulin",
+          "glucose"
+        ],
+        "ndcg_max_explore": 1.0,
+        "ndcg_max_hybrid": 1.0,
+        "ndcg_sum_explore": 1.0,
+        "ndcg_sum_hybrid": 1.0
+      },
+      {
+        "query": "insulin glucose metabolism and diabetes risk factors",
+        "entity_pair": [
+          "insulin",
+          "glucose"
+        ],
+        "ndcg_max_explore": 0.8536,
+        "ndcg_max_hybrid": 0.8536,
+        "ndcg_sum_explore": 0.7849,
+        "ndcg_sum_hybrid": 0.7849
+      },
+      {
+        "query": "does folate lower homocysteine and reduce cognitive decline?",
+        "entity_pair": [
+          "homocysteine",
+          "folate"
+        ],
+        "ndcg_max_explore": 1.0,
+        "ndcg_max_hybrid": 1.0,
+        "ndcg_sum_explore": 1.0,
+        "ndcg_sum_hybrid": 1.0
+      },
+      {
+        "query": "homocysteine folate and brain atrophy in aging populations",
+        "entity_pair": [
+          "homocysteine",
+          "folate"
+        ],
+        "ndcg_max_explore": 0.6797,
+        "ndcg_max_hybrid": 0.6797,
+        "ndcg_sum_explore": 0.6797,
+        "ndcg_sum_hybrid": 0.6797
+      },
+      {
+        "query": "relationship between homocysteine levels and folate supplementation",
+        "entity_pair": [
+          "homocysteine",
+          "folate"
+        ],
+        "ndcg_max_explore": 1.0,
+        "ndcg_max_hybrid": 1.0,
+        "ndcg_sum_explore": 1.0,
+        "ndcg_sum_hybrid": 1.0
+      },
+      {
+        "query": "how do polyphenols act as antioxidants in cardiovascular disease prevention?",
+        "entity_pair": [
+          "polyphenols",
+          "cardiovascular"
+        ],
+        "ndcg_max_explore": 0.6509,
+        "ndcg_max_hybrid": 0.6509,
+        "ndcg_sum_explore": 0.6509,
+        "ndcg_sum_hybrid": 0.6509
+      },
+      {
+        "query": "polyphenol effects on cardiovascular risk markers and endothelial function",
+        "entity_pair": [
+          "polyphenols",
+          "cardiovascular"
+        ],
+        "ndcg_max_explore": 0.8048,
+        "ndcg_max_hybrid": 0.8048,
+        "ndcg_sum_explore": 0.8048,
+        "ndcg_sum_hybrid": 0.8048
+      },
+      {
+        "query": "does sulforaphane induce apoptosis in cancer cells?",
+        "entity_pair": [
+          "sulforaphane",
+          "cancer"
+        ],
+        "ndcg_max_explore": 0.9527,
+        "ndcg_max_hybrid": 0.9527,
+        "ndcg_sum_explore": 0.9654,
+        "ndcg_sum_hybrid": 0.9654
+      },
+      {
+        "query": "sulforaphane and cancer cell proliferation mechanisms",
+        "entity_pair": [
+          "sulforaphane",
+          "cancer"
+        ],
+        "ndcg_max_explore": 0.7501,
+        "ndcg_max_hybrid": 0.7501,
+        "ndcg_sum_explore": 0.7383,
+        "ndcg_sum_hybrid": 0.7383
+      },
+      {
+        "query": "do flavonoids trigger apoptosis in cancer cells?",
+        "entity_pair": [
+          "flavonoids",
+          "cancer"
+        ],
+        "ndcg_max_explore": 0.8723,
+        "ndcg_max_hybrid": 0.8723,
+        "ndcg_sum_explore": 0.8885,
+        "ndcg_sum_hybrid": 0.8885
+      },
+      {
+        "query": "flavonoid effects on cancer cell apoptosis and proliferation",
+        "entity_pair": [
+          "flavonoids",
+          "cancer"
+        ],
+        "ndcg_max_explore": 0.9999,
+        "ndcg_max_hybrid": 0.9999,
+        "ndcg_sum_explore": 0.9999,
+        "ndcg_sum_hybrid": 0.9999
+      },
+      {
+        "query": "how do triglycerides and cholesterol contribute to coronary heart disease?",
+        "entity_pair": [
+          "triglycerides",
+          "coronary"
+        ],
+        "ndcg_max_explore": 0.9542,
+        "ndcg_max_hybrid": 0.9542,
+        "ndcg_sum_explore": 0.9712,
+        "ndcg_sum_hybrid": 0.9712
+      },
+      {
+        "query": "triglyceride levels and coronary artery disease risk factors",
+        "entity_pair": [
+          "triglycerides",
+          "coronary"
+        ],
+        "ndcg_max_explore": 0.906,
+        "ndcg_max_hybrid": 0.906,
+        "ndcg_sum_explore": 0.906,
+        "ndcg_sum_hybrid": 0.906
+      },
+      {
+        "query": "how does obesity affect insulin sensitivity and diabetes development?",
+        "entity_pair": [
+          "obesity",
+          "diabetes"
+        ],
+        "ndcg_max_explore": 0.9944,
+        "ndcg_max_hybrid": 0.9944,
+        "ndcg_sum_explore": 0.9692,
+        "ndcg_sum_hybrid": 0.9692
+      },
+      {
+        "query": "obesity insulin resistance and type 2 diabetes pathways",
+        "entity_pair": [
+          "obesity",
+          "diabetes"
+        ],
+        "ndcg_max_explore": 1.0,
+        "ndcg_max_hybrid": 1.0,
+        "ndcg_sum_explore": 1.0,
+        "ndcg_sum_hybrid": 1.0
+      },
+      {
+        "query": "how does the mediterranean diet affect cardiovascular disease risk?",
+        "entity_pair": [
+          "mediterranean",
+          "cardiovascular"
+        ],
+        "ndcg_max_explore": 1.0,
+        "ndcg_max_hybrid": 1.0,
+        "ndcg_sum_explore": 1.0,
+        "ndcg_sum_hybrid": 1.0
+      },
+      {
+        "query": "mediterranean diet and cardiovascular health outcomes in clinical trials",
+        "entity_pair": [
+          "mediterranean",
+          "cardiovascular"
+        ],
+        "ndcg_max_explore": 1.0,
+        "ndcg_max_hybrid": 1.0,
+        "ndcg_sum_explore": 1.0,
+        "ndcg_sum_hybrid": 1.0
+      },
+      {
+        "query": "curcumin supplementation for arthritis pain and joint stiffness",
+        "entity_pair": [
+          "curcumin",
+          "arthritis"
+        ],
+        "ndcg_max_explore": 1.0,
+        "ndcg_max_hybrid": 1.0,
+        "ndcg_sum_explore": 1.0,
+        "ndcg_sum_hybrid": 1.0
+      },
+      {
+        "query": "antioxidant intake and cardiovascular disease prevention mechanisms",
+        "entity_pair": [
+          "antioxidant",
+          "cardiovascular"
+        ],
+        "ndcg_max_explore": 0.6934,
+        "ndcg_max_hybrid": 0.6934,
+        "ndcg_sum_explore": 0.6934,
+        "ndcg_sum_hybrid": 0.6934
+      }
+    ],
+    "passed": true
+  },
+  "latency": {
+    "cold_ms": 344.5200000423938,
+    "no_match_p50_ms": 2.674209012184292,
+    "hot_p50_ms": 26.701374968979508,
+    "hot_p95_ms": 45.25612498400733,
+    "passed": true
+  },
+  "entity_precision": {
+    "sampled": 50,
+    "genuine": 50,
+    "precision": 1.0,
+    "ruler_vocab_size": 101,
+    "sample": [
+      "statins",
+      "cardiovascular",
+      "breast",
+      "cancer",
+      "statin",
+      "tumor",
+      "biomarkers",
+      "calcium",
+      "vitamin",
+      "kidney",
+      "apoptosis",
+      "coronary",
+      "endothelial",
+      "osteoporosis",
+      "flavonoid",
+      "diabetes",
+      "vegetarian",
+      "ginger",
+      "cytokines",
+      "antioxidant"
+    ],
+    "passed": true
+  },
+  "benchmark_params": {
+    "corpus": "NFCorpus (BEIR)",
+    "corpus_size": 3633,
+    "n_expansion_queries": 10,
+    "n_relationship_queries": 25,
+    "entity_ruler": "biomedical (curated, doc_freq >= 5)"
+  }
+}
