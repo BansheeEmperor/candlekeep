@@ -348,6 +348,7 @@ def explore_search(
     try:
         from candlekeep.database.graph_store import get_graph_store
         from candlekeep.rag.extractor import get_extractor
+        from candlekeep.rag.graph_augment import get_graph_chunks
 
         settings = getattr(db, "settings", None)
         if settings:
@@ -371,35 +372,13 @@ def explore_search(
                     expand = [e for e in query_entities if e not in paired]
 
                     if expand:
-                        related: dict[str, float] = {}
-                        for qe in expand:
-                            for entity, score in gs.get_related(qe, top_n=5):
-                                if entity not in related or score > related[entity]:
-                                    related[entity] = score
-
-                        if related:
-                            fused_ids = {r.doc_id for r in fused[:n_results * 4]}
-                            for entity, jaccard in sorted(
-                                related.items(), key=lambda x: x[1], reverse=True
-                            ):
-                                try:
-                                    raw = db.collection.get(
-                                        where={"entities": {"$contains": entity}},
-                                        limit=n_results,
-                                    )
-                                except Exception:
-                                    continue
-                                for doc_id, text, meta in zip(
-                                    raw["ids"], raw["documents"], raw["metadatas"]
-                                ):
-                                    if doc_id not in fused_ids:
-                                        fused_ids.add(doc_id)
-                                        graph_unique.append(SearchResult(
-                                            text=text, metadata=meta,
-                                            score=jaccard, doc_id=doc_id,
-                                        ))
-                                if len(graph_unique) >= m_slots:
-                                    break
+                        graph_results = get_graph_chunks(
+                            db, gs, query,
+                            n_results=n_results * 2,
+                            entity_filter=expand,
+                        )
+                        fused_ids = {r.doc_id for r in fused[:n_results * 4]}
+                        graph_unique = [r for r in graph_results if r.doc_id not in fused_ids]
     except Exception:
         pass  # graph expansion must never break search
 
