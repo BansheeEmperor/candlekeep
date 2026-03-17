@@ -46,7 +46,7 @@ class TestChunkSizeBenchmark:
 
             def make_fn(s):
                 def fn(query, n_results):
-                    return search_with_routing(s, query, n_results, query_type="simple")
+                    return search_with_routing(s, query, n_results, query_type="hybrid")
                 return fn
 
             benchmark = RAGBenchmark(make_fn(store), BENCHMARK_QUERIES)

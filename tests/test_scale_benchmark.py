@@ -69,7 +69,7 @@ class TestScaleBenchmark:
         print(f"SCALE BENCHMARK — {chunk_count} chunks")
         print(f"{'='*70}")
 
-        for qt in ["simple", "precise"]:
+        for qt in ["hybrid", "precise"]:
             times = []
             result_counts = []
             for q in SCALE_QUERIES:

@@ -82,7 +82,7 @@ def pool_results(store, query: str, k: int = 5) -> dict:
     where paths is the set of search paths that returned this chunk.
     """
     pool = {}
-    for path_name in ("simple", "hybrid", "precise"):
+    for path_name in ("hybrid", "precise", "explore"):
         try:
             results = search_with_routing(store, query, n_results=k, query_type=path_name)
         except (SystemExit, Exception) as e:

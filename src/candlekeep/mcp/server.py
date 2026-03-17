@@ -578,7 +578,7 @@ def _explore_entity_impl(entity_name: str) -> str:
 
     gs = get_graph_store(_settings)
     if gs is None:
-        return "⚠ Entity graph is disabled (CANDLEKEEP_GRAPH_AUGMENT=false) or not yet built."
+        return "⚠ Entity graph is disabled (CANDLEKEEP_GRAPH_AUGMENT=false) or not yet built. The explore search path requires the graph."
 
     norm = normalise_entity(entity_name)
 

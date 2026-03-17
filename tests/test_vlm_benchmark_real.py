@@ -196,7 +196,7 @@ class TestRealCorpusVLMBenchmark:
         cap_ranks: list[int] = []
 
         for q in queries:
-            results = search_with_routing(store, q["query"], n_results=20, query_type="simple")
+            results = search_with_routing(store, q["query"], n_results=20, query_type="hybrid")
             for rank, r in enumerate(results, 1):
                 if not _source_matches(r.metadata.get("source", ""), q["expected_sources"]):
                     continue
