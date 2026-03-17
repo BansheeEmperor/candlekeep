@@ -8,7 +8,6 @@ on:
       - '**.md'
 
 permissions:
-  pull-requests: write
   contents: read
 
 jobs:
@@ -129,11 +128,16 @@ jobs:
           echo "" >> pr_comment.md
           echo "*Updated at: $(date -u)*" >> pr_comment.md
 
-      - name: Post PR Comment
-        uses: marocchino/sticky-pull-request-comment@v2
+      - name: Save PR Number
         if: github.event_name == 'pull_request' && always()
+        run: |
+          echo ${{ github.event.number }} > pr_number.txt
+
+      - name: Upload PR Comment Artifact
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/upload-artifact@v4
         with:
-          header: test-results
-          path: pr_comment.md
-          recreate: true
-          only_if_last_comment_is_not_from_bot: true
+          name: pr_comment
+          path: |
+            pr_comment.md
+            pr_number.txt
