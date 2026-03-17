@@ -166,3 +166,11 @@ class Settings:
     @property
     def normalisation_map_path(self) -> Path:
         return self.data_dir / "normalisation_map.json"
+
+    @property
+    def graph_db_path(self) -> Path:
+        return self.data_dir / "graph.db"
+
+    @property
+    def entity_ruler_path(self) -> Path:
+        return self.data_dir / "entity_ruler.jsonl"
