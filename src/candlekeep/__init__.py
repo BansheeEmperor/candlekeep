@@ -34,3 +34,4 @@ if sqlite3.sqlite_version_info < (3, 35, 0):
 from candlekeep.mcp.server import mcp, main
 
 __all__ = ["mcp", "main"]
+# Trigger CI
