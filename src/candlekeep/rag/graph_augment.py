@@ -8,12 +8,13 @@ def get_graph_chunks(
     graph_store: GraphStore,
     query: str,
     n_results: int = 5,
+    entity_filter: list[str] | None = None,
 ) -> list[SearchResult]:
     """Return chunks related to query entities via the co-occurrence graph.
 
     Steps:
-    1. Extract entities from query.
-    2. For each query entity, fetch top-5 related entities by Jaccard.
+    1. Extract entities from query (or use entity_filter if provided).
+    2. For each entity, fetch top-5 related entities by Jaccard.
     3. For each related entity, retrieve chunks via ChromaDB metadata filter.
     4. Deduplicate and return.
     """
@@ -21,8 +22,13 @@ def get_graph_chunks(
     from candlekeep.config import Settings
 
     settings = getattr(db, "settings", None) or Settings.from_env()
-    extractor = get_extractor(ruler_path=settings.entity_ruler_path)
-    query_entities = extractor.extract(query)
+
+    if entity_filter is not None:
+        query_entities = entity_filter
+    else:
+        extractor = get_extractor(ruler_path=settings.entity_ruler_path)
+        query_entities = extractor.extract(query)
+
     if not query_entities:
         return []
 
