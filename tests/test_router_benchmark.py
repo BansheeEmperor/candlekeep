@@ -12,7 +12,7 @@ pytestmark = [pytest.mark.benchmark]
 class TestRouterBenchmark:
     """Benchmark quality and latency for both router paths."""
     
-    @pytest.mark.parametrize("query_type", ["simple", "precise", "hybrid"])
+    @pytest.mark.parametrize("query_type", ["hybrid", "precise", "explore"])
     def test_router_quality(self, seeded_store, query_type):
         """Run quality benchmark for a specific router path."""
         print(f"\n🚀 Benchmarking Path: {query_type.upper()}")
@@ -40,7 +40,7 @@ class TestRouterBenchmark:
         # 3. Agent queries (multi-part) are included in the average to ensure the engine 
         #    at least finds *some* relevant context, though 100% is only expected 
         #    via agent-side decomposition.
-        if query_type == "simple":
+        if query_type == "hybrid":
             assert summary['avg_precision'] > 0.7, f"Simple overall precision ({summary['avg_precision']:.1%}) dropped below 70%"
             assert summary['avg_latency_ms'] < 100, "Simple path latency too high"
         elif query_type == "hybrid":

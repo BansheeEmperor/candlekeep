@@ -329,7 +329,7 @@ def run_sweep(search_ef_values: list[int]):
                 print(f"    Falling back to default search_ef")
 
             def search_fn(query: str, k: int):
-                return search_with_routing(store, query, n_results=k, query_type="simple")
+                return search_with_routing(store, query, n_results=k, query_type="hybrid")
 
             runner = BenchmarkRunner(search_fn)
             results = runner.run_suite(queries, k=5)
