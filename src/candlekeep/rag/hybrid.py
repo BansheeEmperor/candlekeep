@@ -223,7 +223,8 @@ def hybrid_search(
     the ColBERT index is rebuilding.
 
     When CANDLEKEEP_GRAPH_AUGMENT=true (default) and the entity co-occurrence
-    graph is available, adds a third RRF signal from graph-related chunks.
+    graph is available, the explore path uses smart graph expansion to surface
+    related documents invisible to standard vector+BM25 search.
 
     Args:
         db: VectorDatabase instance.

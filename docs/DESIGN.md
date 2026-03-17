@@ -168,7 +168,7 @@ BM25 is an exact token matcher. Technical documentation uses `cross-encoder`, `c
 
 ### 6.1 Sub-linear Scaling
 
-The simple search path maintains consistent performance as the knowledge base grows. Testing with a significant increase in data showed only minimal latency increase.
+The hybrid search path maintains consistent performance as the knowledge base grows. Testing with a significant increase in data showed only minimal latency increase.
 
 All latency numbers measured on a warm model (after initial inference) using `bge-small` (`BAAI/bge-small-en-v1.5`), the recommended embedding model. Cold-start adds overhead to the first few queries as the embedding model warms its inference path. Latency varies by query length: short keyword queries hit lower latencies, while full sentences reach slightly higher due to tokenization overhead.
 
@@ -189,7 +189,7 @@ The Relevance Ward filters low-confidence results based on a [configured thresho
 
 **Behavior:** Queries below the threshold return empty results. The library says "I don't know" instead of guessing.
 
-The Ward prevents false negatives (legitimate queries returning empty). It does not guarantee zero results for all adversarial queries — the simple path relies solely on the vector threshold, and the precise path's combined Wards (pre-reranking vector + post-reranking cross-encoder) filter 70% of all adversarial queries (the remaining 30% contain technical terms that genuinely match corpus documents). The hybrid path's BM25 component provides the strongest adversarial filtering — see [§8.2](#82-the-centurion-set-the-high-audit) for per-path adversarial filtering rates.
+The Ward prevents false negatives (legitimate queries returning empty). It does not guarantee zero results for all adversarial queries — the precise path's combined Wards (pre-reranking vector + post-reranking cross-encoder) filter 70% of all adversarial queries (the remaining 30% contain technical terms that genuinely match corpus documents). The hybrid and explore paths' BM25+RRF threshold provides the strongest adversarial filtering — see [§8.2](#82-the-centurion-set-the-high-audit) for per-path adversarial filtering rates.
 
 See [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference) for threshold values and [Threshold Calibration](ARCHITECTURE.md#threshold-calibration) for the recalibration procedure when deploying against a new corpus.
 
@@ -261,7 +261,7 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 | **Adversarial** (Noise) | 0.0 / 0.0 | 0.0 / 0.0 | 0.0 / 0.0 | Warded ¹ |
 | **Expansion** (Entity) | — | — | **40% recall** | [Divination](GLOSSARY.md#divination) |
 
-¹ MRR of 0.0 means no adversarial query surfaced a relevant result in the top position. The hybrid path fully filters adversarial queries via the RRF threshold (Hit Rate@5 = 0.0). The precise path filters 70% of adversarial queries via the combined pre-reranking vector Ward and post-reranking cross-encoder Ward (`MIN_RERANKER_SCORE`); the remaining 30% contain technical terms that genuinely match corpus documents. The simple path relies solely on the vector threshold (Hit Rate@5 = 0.40).
+¹ MRR of 0.0 means no adversarial query surfaced a relevant result in the top position. The hybrid and explore paths fully filter adversarial queries via the RRF threshold (Hit Rate@5 = 0.0). The precise path filters 70% of adversarial queries via the combined pre-reranking vector Ward and post-reranking cross-encoder Ward (`MIN_RERANKER_SCORE`); the remaining 30% contain technical terms that genuinely match corpus documents.
 
 *The lexical improvement range (15–26%) varies by HNSW index instantiation. See [ARCHITECTURE.md § Agent Misrouting](ARCHITECTURE.md#agent-misrouting) for the variance analysis and path selection guidance.*
 
@@ -287,7 +287,7 @@ To ensure the library remains a reliable source of wisdom, we have transitioned 
 
 #### [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (Thresholding)
 **Implementation:** A score-based filter applied to all retrieval results (see [Tuned Parameters](ARCHITECTURE.md#tuned-parameters-reference)).
-**Analysis:** Filters out out-of-domain "noise". No adversarial query surfaced a relevant result in the top position (MRR=0.0 across all paths). The hybrid path fully filters adversarial queries. The precise path filters 70% of all adversarial queries via the combined vector and cross-encoder Wards (54% from the post-reranking Ward alone). The simple path relies on the vector threshold alone.
+**Analysis:** Filters out out-of-domain "noise". No adversarial query surfaced a relevant result in the top position (MRR=0.0 across all paths). The hybrid and explore paths fully filter adversarial queries via the RRF threshold. The precise path filters 70% of all adversarial queries via the combined vector and cross-encoder Wards (54% from the post-reranking Ward alone).
 
 Threshold values and calibration procedure: [ARCHITECTURE.md](ARCHITECTURE.md#tuned-parameters-reference).
 
@@ -297,7 +297,7 @@ Multi-part queries (e.g., "authentication + caching + microservices") are design
 1. **The Mock**: The simulated benchmark (Entry 20) uses pre-defined sub-query splits to measure ideal decomposition. Source coverage: 92.5%.
 2. **The Real Agent**: A frontier LLM agent connected via MCP over HTTP was benchmarked on 8 multi-document queries (Entry 37). The agent decomposed 100% of queries into an average of 3.1 focused searches, achieving 72% source coverage and 91% keyword coverage.
 3. **Path Selection**: The agent chose `hybrid` for 40% of search calls, predominantly on queries with technical identifiers. This confirms the search tool's `query_type` guidance is effective.
-4. **Recommendation**: Agents should decompose complex queries into multiple `simple` or `hybrid` searches rather than using a single `precise` search.
+4. **Recommendation**: Agents should decompose complex queries into multiple `hybrid` searches rather than using a single `precise` search.
 
 | Metric | Simulated (Entry 20) | Real Agent (Entry 37) | Single Search (Entry 19) |
 |--------|:--------------------:|:---------------------:|:------------------------:|
@@ -422,7 +422,7 @@ The Relevance Ward at 0.75 filters 5 legitimate lexical queries on the technical
 
 ### 10.1 Hardware-Accelerated Inference
 
-The precise path latency is capped by the host environment, not by the tool. The simple path runs fast on any hardware because vector lookup dominates. The [cross-encoder](GLOSSARY.md#cross-encoder-reranking), however, runs inference through PyTorch, and its latency scales directly with available compute.
+The precise path latency is capped by the host environment, not by the tool. The hybrid and explore paths run fast on any hardware because vector lookup and BM25 dominate. The [cross-encoder](GLOSSARY.md#cross-encoder-reranking), however, runs inference through PyTorch, and its latency scales directly with available compute.
 
 **Current architecture:**
 - `src/candlekeep/database/embeddings.py` — `SentenceTransformer` loads models on the best available device (`cuda`, `mps`, or `cpu`).

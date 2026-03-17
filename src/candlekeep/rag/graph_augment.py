@@ -1,4 +1,4 @@
-"""Query-time graph augmentation: entity lookup → related chunks → RRF signal."""
+"""Query-time graph augmentation: entity lookup → related chunks for the explore path."""
 from candlekeep.database.interface import SearchResult, VectorDatabase
 from candlekeep.database.graph_store import GraphStore
 
