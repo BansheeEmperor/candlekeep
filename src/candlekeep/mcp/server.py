@@ -307,6 +307,26 @@ threading.Thread(target=_background_init, daemon=True).start()
 
 # --- Quality gate for ingestion ---
 
+def _find_body_start(lines: list[str]) -> int:
+    """Return the line index where the document body begins (after frontmatter)."""
+    if not lines or lines[0].strip() != "---":
+        return 0
+    for i in range(1, len(lines)):
+        if lines[i].strip() == "---":
+            return i + 1
+    return 0
+
+
+def _count_setext_headers(lines: list[str], start: int) -> int:
+    """Count setext-style headers (underline with === or ---) starting from a line index."""
+    count = 0
+    for i in range(max(start, 1), len(lines)):
+        line = lines[i].strip()
+        if line and len(line) >= 3 and all(c in '=-' for c in line) and lines[i - 1].strip():
+            count += 1
+    return count
+
+
 def check_document_quality(path: Path) -> list[str]:
     """Check document quality for RAG suitability. Returns list of issues (empty = OK)."""
     content = path.read_text(encoding="utf-8", errors="replace")
@@ -314,15 +334,20 @@ def check_document_quality(path: Path) -> list[str]:
     words = len(content.split())
     issues = []
 
-    if not content.startswith("---"):
+    has_frontmatter = content.startswith("---")
+    if not has_frontmatter:
         issues.append("Missing YAML frontmatter (title, description, keywords, category, tags)")
-    if sum(1 for l in lines if l.startswith("#")) < 2:
-        issues.append("Insufficient structure (fewer than 2 markdown headers)")
-    if words < 100:
-        issues.append("Too short (< 100 words) — consider combining with related content")
+
+    body_start = _find_body_start(lines)
+    md_headers = sum(1 for l in lines[body_start:] if l.startswith("#"))
+    setext_headers = _count_setext_headers(lines, body_start)
+    if (md_headers + setext_headers) < 2 and not has_frontmatter:
+        issues.append("Insufficient structure (fewer than 2 headers)")
+    if words < 50:
+        issues.append("Too short (< 50 words) — consider combining with related content")
     if words > 10000:
         issues.append("Too long (> 10k words) — consider splitting into focused documents")
-    if content.count("```") % 2 != 0:
+    if sum(1 for l in lines if l.strip().startswith("```")) % 2 != 0:
         issues.append("Unclosed code block (mismatched ``` markers)")
 
     return issues
@@ -611,8 +636,8 @@ ingest() will reject documents that fail these checks:
 
 - **YAML frontmatter required** — must start with `---` and include:
   title, description, keywords, category, tags
-- **At least 2 markdown headers** (## or ###)
-- **Between 100 and 10,000 words**
+- **At least 2 headers** (ATX `#` or setext `===`/`---` style) — or YAML frontmatter as proof of curation
+- **Between 50 and 10,000 words**
 - **No unclosed code blocks** (matched ``` pairs)
 
 Frontmatter template:
@@ -660,8 +685,8 @@ def ingest(path: str, ctx: Context = CurrentContext()) -> str:
 
     Validates document quality before ingestion. Documents must have:
     - YAML frontmatter (title, description, keywords)
-    - At least 2 markdown headers
-    - Between 100 and 10,000 words
+    - At least 2 headers (ATX or setext) — or frontmatter as proof of curation
+    - Between 50 and 10,000 words
 
     Supports: txt, md, pdf, rst, json, yaml files.
     """
