@@ -1,0 +1,40 @@
+name: Post PR Comment
+
+on:
+  workflow_run:
+    workflows: ["Comprehensive Tests"]
+    types:
+      - completed
+
+jobs:
+  post-comment:
+    runs-on: ubuntu-latest
+    # Run only if the triggering workflow was a PR and wasn't skipped
+    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion != 'skipped'
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: pr_comment
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read PR Number
+        id: pr_number
+        run: |
+          if [ -f pr_number.txt ]; then
+            echo "number=$(cat pr_number.txt)" >> $GITHUB_OUTPUT
+          else
+            echo "No pr_number.txt found"
+            exit 1
+          fi
+
+      - name: Post Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: test-results
+          path: pr_comment.md
+          number: ${{ steps.pr_number.outputs.number }}
+          recreate: true
