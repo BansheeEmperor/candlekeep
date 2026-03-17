@@ -456,7 +456,7 @@ The embedding model must exist in the local cache before startup. If missing, th
 
 Complex multi-document queries are the agent's responsibility to decompose. The search tool description instructs the agent:
 
-> "For complex multi-part questions, make multiple simple searches (one per sub-question) and synthesize the results yourself."
+> "For complex multi-part questions, make multiple hybrid searches (one per sub-question) and synthesize the results yourself."
 
 Benchmarked: Agent decomposition achieves significantly higher content match on multi-doc queries compared to a single search (simulated benchmark, Entry 20; see Entry 25 for qualitative production validation). The agent fires searches in parallel and synthesizes across results.
 

@@ -50,38 +50,20 @@ def test_get_graph_chunks_empty_when_no_relations(tmp_path):
 
 
 @pytest.mark.unit
-def test_hybrid_search_graceful_without_graph(monkeypatch):
-    """hybrid_search should work normally when graph store is unavailable."""
-    monkeypatch.setenv("CANDLEKEEP_GRAPH_AUGMENT", "false")
-
+def test_hybrid_search_no_graph_signal():
+    """hybrid_search should not include any graph signal (graph lives in explore)."""
     db = MagicMock()
     db.search.return_value = [_sr("vector result", "v1")]
     db.settings = MagicMock()
 
-    with patch("candlekeep.rag.hybrid._get_sparse_results", return_value=[_sr("bm25 result", "b1")]), \
-         patch("candlekeep.rag.arcane_recall.expand_results", side_effect=lambda db, r, **kw: r):
-        from candlekeep.rag.hybrid import hybrid_search
-        results = hybrid_search(db, "test query", n_results=5)
-
-    assert len(results) > 0
-
-
-@pytest.mark.unit
-def test_hybrid_search_graph_augment_disabled(monkeypatch):
-    """CANDLEKEEP_GRAPH_AUGMENT=false should skip graph signal entirely."""
-    monkeypatch.setenv("CANDLEKEEP_GRAPH_AUGMENT", "false")
-
-    db = MagicMock()
-    db.search.return_value = [_sr("result", "r1")]
-    db.settings = MagicMock()
-
     graph_chunks_called = []
 
-    with patch("candlekeep.rag.hybrid._get_sparse_results", return_value=[]), \
+    with patch("candlekeep.rag.hybrid._get_sparse_results", return_value=[_sr("bm25 result", "b1")]), \
          patch("candlekeep.rag.arcane_recall.expand_results", side_effect=lambda db, r, **kw: r), \
          patch("candlekeep.rag.graph_augment.get_graph_chunks",
                side_effect=lambda *a, **kw: graph_chunks_called.append(1) or []):
         from candlekeep.rag.hybrid import hybrid_search
-        hybrid_search(db, "test query", n_results=5)
+        results = hybrid_search(db, "test query", n_results=5)
 
-    assert not graph_chunks_called, "graph_augment should not be called when disabled"
+    assert len(results) > 0
+    assert not graph_chunks_called, "hybrid_search must not call graph_augment (graph lives in explore)"
