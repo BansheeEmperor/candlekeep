@@ -5,7 +5,7 @@ from typing import List, Literal
 from candlekeep.database.interface import VectorDatabase, SearchResult
 from candlekeep.rag.search import preprocess_negation
 
-QueryType = Literal["simple", "precise", "hybrid"]
+QueryType = Literal["explore", "precise", "hybrid"]
 
 # ── The Relevance Ward thresholds ────────────────────────────────────
 
@@ -94,7 +94,7 @@ def search_with_routing(
     query: str,
     n_results: int = 5,
     category: str | None = None,
-    query_type: QueryType = "simple",
+    query_type: QueryType = "hybrid",
 ) -> List[SearchResult]:
     """Route search to optimal technique stack based on query type.
 
@@ -107,9 +107,9 @@ def search_with_routing(
     threshold.
 
     Stacks:
-        simple  -> Arcane Recall -> Ward
-        hybrid  -> BM25+Vector+RRF+Arcane Recall -> Ward
+        hybrid  -> BM25+Vector+RRF+Arcane Recall -> Ward  (default)
         precise -> Arcane Recall -> Ward -> Divine Insight -> Ward
+        explore -> BM25+Vector+RRF+Smart Graph Expansion+Arcane Recall -> Ward
 
     For complex multi-part questions, the agent should decompose into
     multiple simple searches and synthesize the results itself.
@@ -139,10 +139,15 @@ def search_with_routing(
         # The Relevance Ward (hybrid RRF scores)
         results = [r for r in results if r.score >= HYBRID_RELEVANCE_THRESHOLD]
 
+    elif query_type == "explore":
+        from candlekeep.rag.hybrid import explore_search
+        results = explore_search(db, processed, n_results, category=category)
+        results = [r for r in results if r.score >= HYBRID_RELEVANCE_THRESHOLD]
+
     else:
-        results = search_with_arcane_recall(db, processed, n_results)
-        # The Relevance Ward (adaptive threshold for lexical queries)
-        threshold = _get_vector_threshold(processed)
-        results = [r for r in results if r.score >= threshold]
+        # Default: hybrid
+        from candlekeep.rag.hybrid import hybrid_search
+        results = hybrid_search(db, processed, n_results, category=category)
+        results = [r for r in results if r.score >= HYBRID_RELEVANCE_THRESHOLD]
 
     return results
