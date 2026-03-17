@@ -115,19 +115,22 @@ class DocumentProcessor:
             raise RuntimeError(f"Failed to extract PDF: {e}")
 
     HEADER_PATTERN = re.compile(r"^(#{1,6})\s+(.+)$", re.MULTILINE)
+    SETEXT_PATTERN = re.compile(r"^(.+)\n([=\-]{3,})$", re.MULTILINE)
 
     def _chunk_text(self, text: str) -> list[str]:
         if not text.strip():
             return []
 
         size, overlap = self.settings.chunk_size, self.settings.chunk_overlap
-        headers = list(self.HEADER_PATTERN.finditer(text))
+        atx_headers = [(m.start(), m.group()) for m in self.HEADER_PATTERN.finditer(text)]
+        setext_headers = [(m.start(), m.group()) for m in self.SETEXT_PATTERN.finditer(text)]
+        headers = sorted(atx_headers + setext_headers, key=lambda x: x[0])
 
         if not headers:
             return self._fixed_chunk(text, size, overlap)
 
         chunks = []
-        positions = [m.start() for m in headers]
+        positions = [pos for pos, _ in headers]
 
         if positions[0] > 0:
             preamble = text[:positions[0]].strip()
