@@ -14,15 +14,15 @@ def generate_html():
     data = {
         "labels": [d.upper() for d in difficulties],
         "precision": {
-            "simple": [simple["summary"]["by_difficulty"][d]["precision"] * 100 for d in difficulties],
+            "hybrid": [simple["summary"]["by_difficulty"][d]["precision"] * 100 for d in difficulties],
             "precise": [precise["summary"]["by_difficulty"][d]["precision"] * 100 for d in difficulties]
         },
         "recall": {
-            "simple": [simple["summary"]["by_difficulty"][d]["recall"] * 100 for d in difficulties],
+            "hybrid": [simple["summary"]["by_difficulty"][d]["recall"] * 100 for d in difficulties],
             "precise": [precise["summary"]["by_difficulty"][d]["recall"] * 100 for d in difficulties]
         },
         "latency": {
-            "simple": [simple["summary"]["by_difficulty"][d]["latency_ms"] for d in difficulties],
+            "hybrid": [simple["summary"]["by_difficulty"][d]["latency_ms"] for d in difficulties],
             "precise": [precise["summary"]["by_difficulty"][d]["latency_ms"] for d in difficulties]
         }
     }

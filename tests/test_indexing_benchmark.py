@@ -42,7 +42,7 @@ def _create_store(hnsw_m=16, hnsw_ef_construction=100, hnsw_ef_search=10, space=
 
 def _run_benchmark(store):
     def search_fn(query, n_results):
-        return search_with_routing(store, query, n_results, query_type="simple")
+        return search_with_routing(store, query, n_results, query_type="hybrid")
     benchmark = RAGBenchmark(search_fn, BENCHMARK_QUERIES)
     results = benchmark.run(n_results=5)
     s = benchmark.summarize(results)

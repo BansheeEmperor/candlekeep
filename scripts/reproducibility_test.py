@@ -64,7 +64,7 @@ def run_single(query_type: str) -> dict:
 def main():
     parser = argparse.ArgumentParser(description="HNSW reproducibility test")
     parser.add_argument("--runs", type=int, default=5, help="Number of fresh ingestion cycles")
-    parser.add_argument("--query-type", default="simple", help="Search path to test")
+    parser.add_argument("--query-type", default="hybrid", help="Search path to test")
     args = parser.parse_args()
 
     metrics_keys = ["mrr", "avg_ndcg_5", "avg_hit_rate_5", "avg_latency_ms", "avg_tokens"]
