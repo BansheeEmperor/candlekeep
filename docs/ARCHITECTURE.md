@@ -65,9 +65,9 @@ graph TD
 ### Search Pipeline Components
 
 The library routes queries to the optimal technique stack:
-*   **simple** → [Arcane Recall](GLOSSARY.md#arcane-recall) (Fast Path)
 *   **hybrid** → [Wild Magic](GLOSSARY.md#lexical-matching-wild-magic) (Lexical + Vector). The sparse signal is BM25 by default; an opt-in ColBERT backend (`CANDLEKEEP_SPARSE_BACKEND=colbert`) provides token-level matching for better lexical precision on technical identifiers. BM25 uses stop-word-filtered tokenization with a regex that preserves technical identifiers (e.g., `bge-small`, `v3.4.1`). Before tokenization, [**The Rosetta Seal**](GLOSSARY.md#the-rosetta-seal) normalises surface-form variants (`crossencoder` → `cross-encoder`, `autoscaling` → `auto-scaling`) so BM25 token matching is separator-agnostic. The map is derived automatically from the corpus at `repopulate_database` time — zero manual curation. ColBERT uses late interaction with `answerai-colbert-small-v1`. BM25 is always maintained as fallback during ColBERT index rebuilds.
 *   **precise** → [Arcane Recall](GLOSSARY.md#arcane-recall) + [Divine Insight](GLOSSARY.md#cross-encoder-reranking) (Precise Path)
+*   **explore** → [Divination](GLOSSARY.md#divination) (Entity Expansion). Smart graph expansion via the entity co-occurrence graph. Extracts entities from the query, identifies unpaired entities (those without a co-occurring partner in the query), and expands them to related entities. Top-3 results from standard RRF, plus 2 reserved slots for unique graph expansion docs. Falls back to RRF when the graph has nothing new to add.
 *   **Negation preprocessing** applied to all paths.
 *   **[The Relevance Ward](GLOSSARY.md#the-relevance-ward)** filters low-confidence matches.
 *   **[Bardic Knowledge](GLOSSARY.md#bardic-knowledge)**: Ingestion-time context enrichment.
@@ -88,16 +88,20 @@ graph TD
     class Query start;
     class Router decision;
     
-    Router -- ROAD 1: SIMPLE --> Simple[Vector Search]
-    Router -- ROAD 2: HYBRID --> Hybrid[Vector Search + Sparse]
-    Router -- ROAD 3: PRECISE --> Precise[Vector Search]
-    class Simple,Hybrid,Precise path;
+    Router -- ROAD 1: HYBRID --> Hybrid[Vector Search + Sparse]
+    Router -- ROAD 2: PRECISE --> Precise[Vector Search]
+    Router -- ROAD 3: EXPLORE --> Explore[Vector Search + Sparse]
+    class Hybrid,Precise,Explore path;
     
     Hybrid --> Fusion[Rank Fusion]
-    class Fusion process;
+    Explore --> Fusion2[Rank Fusion]
+    class Fusion,Fusion2 process;
     
-    Simple --> Recall[Arcane Recall]
-    Fusion --> Recall
+    Fusion2 --> Graph[Divination]
+    class Graph process;
+    
+    Fusion --> Recall[Arcane Recall]
+    Graph --> Recall
     Precise --> Recall
     class Recall process;
     
@@ -159,13 +163,23 @@ graph TD
 ### 4. [Divine Insight](GLOSSARY.md#cross-encoder-reranking) (cross-encoder reranking) — precise path only
 Cross-encoder (`ms-marco-MiniLM-L-6-v2`) rescores all candidates by examining query-document pairs individually. Higher precision but trades content match and adds latency.
 
+### Divination (Entity Expansion) — explore path only
+
+[Divination](GLOSSARY.md#divination) traces the entity co-occurrence graph to surface documents that standard search cannot find. When a query mentions entity A, Divination discovers that A co-occurs with entity B in the corpus and retrieves B-only documents — documents containing B but not A — that have zero vocabulary overlap with the query.
+
+**Smart expansion:** Before expanding, Divination checks whether each query entity already has a co-occurring partner in the query. Paired entities (those with any edge in the co-occurrence graph connecting them to another query entity) are skipped. Only unpaired entities are expanded. This preserves ranking quality on relationship queries (where both entities are named) while enabling expansion on discovery queries (where only one entity is named).
+
+**Slot allocation:** The explore path reserves 2 of 5 result slots for unique graph expansion docs. The remaining 3 come from standard vector+BM25 RRF. If the graph has fewer than 2 unique docs, the empty slots fall back to RRF results.
+
+**Benchmark results** ([Research Diary Entry 56](RESEARCH_DIARY.md)): 40% expansion recall (vs 0% hybrid), 1.4% NDCG@5 degradation, 0% regression.
+
 ### 5. [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (Filtering)
 Results below a configured threshold are filtered to prevent the AI agent from hallucinating based on low-confidence "junk" matches. The Ward operates on all three paths, each with its own score scale:
 
 | Path | Threshold | Score Type |
 |------|-----------|------------|
-| simple | `MIN_RELEVANCE_SCORE` (0.75) | Vector cosine similarity |
 | hybrid | `HYBRID_RELEVANCE_THRESHOLD` (0.015) | RRF fusion score |
+| explore | `HYBRID_RELEVANCE_THRESHOLD` (0.015) | RRF fusion score |
 | precise (pre-reranking) | `MIN_RELEVANCE_SCORE` (0.75) | Vector cosine similarity |
 | precise (post-reranking) | `MIN_RERANKER_SCORE` (-10.0) | Cross-encoder logits |
 
