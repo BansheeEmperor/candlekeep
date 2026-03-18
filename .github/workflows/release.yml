@@ -7,6 +7,9 @@ on:
     paths-ignore:
       - 'docs/**'
       - '**.md'
+  schedule:
+    - cron: '0 0 * * *' # Midnight UTC
+  workflow_dispatch: # Allow manual trigger for testing
 
 permissions:
   contents: write
@@ -15,6 +18,7 @@ permissions:
 jobs:
   release:
     name: GitHub Release
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -63,6 +67,7 @@ jobs:
     name: Upload to PyPI
     runs-on: ubuntu-latest
     needs: release
+    if: github.event_name == 'push'
     environment:
       name: pypi
       url: https://pypi.org/p/candlekeep
@@ -105,8 +110,13 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            type=pep440,pattern={{version}}
-            type=raw,value=latest
+            type=raw,value=nightly,enable=${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+            type=raw,value=nightly-{{date 'YYYYMMDD'}},enable=${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+            type=pep440,pattern={{version}},enable=${{ github.event_name == 'push' }}
+            type=raw,value=latest,enable=${{ github.event_name == 'push' }}
+          labels: |
+            org.opencontainers.image.title=${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'Candlekeep (Nightly)' || 'Candlekeep' }}
+            org.opencontainers.image.description=${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'Nightly development build of the Candlekeep RAG server.' || 'Production build of the Candlekeep RAG server.' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
