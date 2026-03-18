@@ -18,7 +18,7 @@ import pytest
 from tests.conftest_nfcorpus import nfcorpus_store, load_nfcorpus
 from tests.nfcorpus_relationship_queries import EXPANSION_QUERIES, RELATIONSHIP_QUERIES
 
-pytestmark = [pytest.mark.benchmark]
+pytestmark = [pytest.mark.benchmark, pytest.mark.slow]
 
 RESULTS_PATH = Path(__file__).parent / "results" / "graph_augment_benchmark.json"
 _results: dict = {}
