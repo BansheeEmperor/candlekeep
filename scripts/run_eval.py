@@ -20,7 +20,7 @@ from candlekeep.rag.router import search_with_routing
 from candlekeep.eval.runner import BenchmarkRunner, EvalQuery
 
 
-def run_evaluation(query_type: str = "simple"):
+def run_evaluation(query_type: str = "hybrid"):
     print(f"🚀 Starting Centurion Eval (Path: {query_type.upper()})")
     
     # 1. Setup temporary database
@@ -98,7 +98,7 @@ def run_evaluation(query_type: str = "simple"):
 
 
 if __name__ == "__main__":
-    query_type = "simple"
+    query_type="hybrid"
     if len(sys.argv) > 1:
         query_type = sys.argv[1]
     run_evaluation(query_type)

@@ -263,7 +263,7 @@ class TestConcurrentReads:
 
         async def search(query):
             async with Client(noauth_server) as c:
-                r = await c.call_tool("search", {"query": query, "n_results": 2, "query_type": "simple"})
+                r = await c.call_tool("search", {"query": query, "n_results": 2, "query_type": "hybrid"})
                 return r.content[0].text
 
         async def go():
@@ -286,7 +286,7 @@ class TestConcurrentReads:
                 return r.content[0].text
 
         async def go():
-            results = await asyncio.gather(*[do_search(qt) for qt in ["simple", "hybrid", "precise"]])
+            results = await asyncio.gather(*[do_search(qt) for qt in ["hybrid", "precise", "explore"]])
             assert len(results) == 3
 
         _run_async(go())
@@ -366,7 +366,7 @@ class TestReadDuringWrite:
                     return await c.call_tool("search", {
                         "query": "authentication",
                         "n_results": 1,
-                        "query_type": "simple",
+                        "query_type": "hybrid",
                     })
 
             _, search_result = await asyncio.gather(do_ingest(), do_search())
