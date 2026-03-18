@@ -8,7 +8,7 @@ This benchmark isolates whether the gain comes from:
   (c) Both
 
 Runs three pipelines on the Centurion Set lexical queries (n=30):
-  1. simple (full pipeline): search_with_routing(query_type="simple")
+  1. hybrid (full pipeline): search_with_routing(query_type="hybrid")
   2. bm25-only: BM25Searcher.search() + Arcane Recall (no Ward, no Dispersal)
   3. hybrid (full pipeline): search_with_routing(query_type="hybrid")
 
@@ -164,9 +164,9 @@ def evaluate_pipeline(label: str, store, bm25: BM25Searcher | None,
         t0 = time.time()
         processed = preprocess_negation(query)
 
-        if mode == "simple":
+        if mode == "hybrid":
             results = search_with_routing(store, query, n_results=5,
-                                          query_type="simple")
+                                          query_type="hybrid")
         elif mode == "bm25":
             # BM25-only: get BM25 results, then expand with Arcane Recall
             raw = bm25.search(processed, n_results=20)
@@ -267,7 +267,7 @@ def main():
 
         # Run three pipelines
         pipelines = [
-            ("simple (full)", "simple"),
+            ("hybrid (full)", "hybrid"),
             ("bm25-only", "bm25"),
             ("hybrid (full)", "hybrid"),
         ]

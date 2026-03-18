@@ -19,7 +19,7 @@ A RAG knowledge base server that gives AI agents the power to search, retrieve, 
 
 ## Features
 
-- **[Adaptive Search Routing](docs/ARCHITECTURE.md#the-three-roads)**: Three paths — `simple` (Vector), `hybrid` (BM25+Vector), and `precise` (Reranked)
+- **[Adaptive Search Routing](docs/ARCHITECTURE.md#the-three-roads)**: Three paths — `hybrid` (BM25+Vector), `precise` (Reranked), and `explore` ([Divination](docs/GLOSSARY.md#divination) — entity expansion)
 - **True Sight**: Opt-in vision captioning for PDFs and markdown images — deployment topologies, benchmark charts, and architecture diagrams become searchable
 - **Statistical Rigor**: Validated against **The Centurion Set** (100+ multi-category queries)
 - **Quality Gate**: Documents must have frontmatter and structure to enter the library

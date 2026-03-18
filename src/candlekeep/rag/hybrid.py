@@ -222,6 +222,10 @@ def hybrid_search(
     uses ColBERT late interaction instead. Falls back to BM25 transparently if
     the ColBERT index is rebuilding.
 
+    When CANDLEKEEP_GRAPH_AUGMENT=true (default) and the entity co-occurrence
+    graph is available, the explore path uses smart graph expansion to surface
+    related documents invisible to standard vector+BM25 search.
+
     Args:
         db: VectorDatabase instance.
         query: Search query.
@@ -235,17 +239,13 @@ def hybrid_search(
     
     # 2. Get sparse results (ColBERT or BM25)
     sparse_results = _get_sparse_results(db, query, n_results * 4, category)
-        
-    # 3. Combine with RRF
-    # Fetch 4x candidates to allow for merging and backfilling
+
+    # 3. Combine with RRF (2-way: vector + sparse)
     fused_results = reciprocal_rank_fusion(
-        [vector_results, sparse_results],
-        k=60,
-        top_n=n_results * 4
+        [vector_results, sparse_results], k=60, top_n=n_results * 4,
     )
     
-    # 4. Apply Arcane Recall (context expansion)
-    # n_results is the final cap for the sections returned to the agent
+    # 5. Apply Arcane Recall (context expansion)
     expanded = expand_results(db, fused_results, n_results=n_results, query=query)
     
     return expanded
@@ -307,3 +307,94 @@ def _colbert_sparse(
     if category:
         results = [r for r in results if r.metadata.get("category") == category]
     return results
+
+
+# ── Explore search (smart graph expansion) ────────────────────────────────
+
+_PAIRED_JACCARD_THRESHOLD = 0.0  # any co-occurrence edge = paired
+
+
+def explore_search(
+    db,
+    query: str,
+    n_results: int = 5,
+    category: str | None = None,
+) -> List[SearchResult]:
+    """Hybrid search with smart graph expansion.
+
+    1. Extract entities from query.
+    2. Identify paired entities (co-occurring partners already in query).
+    3. Expand only unpaired entities via the co-occurrence graph.
+    4. Vector+BM25 RRF → top-(n_results - M) results.
+    5. Fill M slots with unique graph expansion docs.
+    6. Fallback: if graph has fewer than M unique docs, fill from RRF.
+
+    M=2 reserved graph slots based on benchmark sweep (Option C, M=2:
+    50% expansion recall, 0% NDCG degradation with smart expansion).
+    """
+    from candlekeep.rag.arcane_recall import expand_results
+
+    m_slots = 2
+
+    # Standard 2-way RRF
+    vector_results = db.search(query, n_results=n_results * 4, category=category)
+    sparse_results = _get_sparse_results(db, query, n_results * 4, category)
+    fused = reciprocal_rank_fusion(
+        [vector_results, sparse_results], k=60, top_n=n_results * 4,
+    )
+
+    # Smart graph expansion
+    graph_unique = []
+    try:
+        from candlekeep.database.graph_store import get_graph_store
+        from candlekeep.rag.extractor import get_extractor
+        from candlekeep.rag.graph_augment import get_graph_chunks
+
+        settings = getattr(db, "settings", None)
+        if settings:
+            gs = get_graph_store(settings)
+            if gs:
+                extractor = get_extractor(settings.entity_ruler_path)
+                query_entities = extractor.extract(query)
+
+                if query_entities:
+                    # Identify paired entities
+                    paired = set()
+                    for i, e1 in enumerate(query_entities):
+                        for e2 in query_entities[i + 1:]:
+                            for ent, jac in gs.get_related(e1, top_n=50):
+                                if ent == e2 and jac >= _PAIRED_JACCARD_THRESHOLD:
+                                    paired.add(e1)
+                                    paired.add(e2)
+                                    break
+
+                    # Expand only unpaired entities
+                    expand = [e for e in query_entities if e not in paired]
+
+                    if expand:
+                        graph_results = get_graph_chunks(
+                            db, gs, query,
+                            n_results=n_results * 2,
+                            entity_filter=expand,
+                        )
+                        fused_ids = {r.doc_id for r in fused[:n_results * 4]}
+                        graph_unique = [r for r in graph_results if r.doc_id not in fused_ids]
+    except Exception:
+        pass  # graph expansion must never break search
+
+    # Assemble: top-(n-M) from RRF + up to M graph unique + fallback
+    rrf_slots = n_results - min(len(graph_unique), m_slots)
+    final = list(fused[:rrf_slots])
+    final.extend(graph_unique[:m_slots])
+
+    if len(final) < n_results:
+        used_ids = {r.doc_id for r in final}
+        for r in fused[rrf_slots:]:
+            if r.doc_id not in used_ids:
+                final.append(r)
+                used_ids.add(r.doc_id)
+            if len(final) >= n_results:
+                break
+
+    expanded = expand_results(db, final, n_results=n_results, query=query)
+    return expanded

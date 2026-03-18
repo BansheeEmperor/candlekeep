@@ -38,7 +38,7 @@ class TestMultiDocBenchmark:
         """Benchmark multi-document queries on scale corpus."""
 
         def search_fn(query, n_results):
-            return search_with_routing(scale_store, query, n_results, query_type="simple")
+            return search_with_routing(scale_store, query, n_results, query_type="hybrid")
 
         benchmark = RAGBenchmark(search_fn, MULTI_DOC_QUERIES)
         results = benchmark.run(n_results=5)

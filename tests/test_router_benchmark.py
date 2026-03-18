@@ -1,4 +1,4 @@
-"""Benchmark for the search router (simple vs precise)."""
+"""Benchmark for the search router (hybrid, precise, explore)."""
 import pytest
 from pathlib import Path
 
@@ -12,7 +12,7 @@ pytestmark = [pytest.mark.benchmark]
 class TestRouterBenchmark:
     """Benchmark quality and latency for both router paths."""
     
-    @pytest.mark.parametrize("query_type", ["simple", "precise", "hybrid"])
+    @pytest.mark.parametrize("query_type", ["hybrid", "precise", "explore"])
     def test_router_quality(self, seeded_store, query_type):
         """Run quality benchmark for a specific router path."""
         print(f"\n🚀 Benchmarking Path: {query_type.upper()}")
@@ -40,12 +40,12 @@ class TestRouterBenchmark:
         # 3. Agent queries (multi-part) are included in the average to ensure the engine 
         #    at least finds *some* relevant context, though 100% is only expected 
         #    via agent-side decomposition.
-        if query_type == "simple":
-            assert summary['avg_precision'] > 0.7, f"Simple overall precision ({summary['avg_precision']:.1%}) dropped below 70%"
-            assert summary['avg_latency_ms'] < 100, "Simple path latency too high"
-        elif query_type == "hybrid":
+        if query_type == "hybrid":
             assert summary['avg_precision'] > 0.6, f"Hybrid overall precision ({summary['avg_precision']:.1%}) dropped below 60%"
             assert summary['avg_latency_ms'] < 200, "Hybrid path latency too high"
+        elif query_type == "explore":
+            assert summary['avg_precision'] > 0.6, f"Explore overall precision ({summary['avg_precision']:.1%}) dropped below 60%"
+            assert summary['avg_latency_ms'] < 200, "Explore path latency too high"
         else:
             assert summary['avg_precision'] > 0.6, f"Precise overall precision ({summary['avg_precision']:.1%}) dropped below 60%"
             assert summary['avg_latency_ms'] < 5000, "Precise path latency too high"

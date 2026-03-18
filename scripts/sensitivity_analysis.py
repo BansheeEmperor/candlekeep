@@ -43,7 +43,7 @@ def run_sensitivity_sweep():
         EvalQuery(q.query, q.expected_sources, q.category, q.difficulty)
         for q in BENCHMARK_QUERIES
     ]
-    runner = BenchmarkRunner(lambda query, k: search_with_routing(vector_store, query, n_results=k, query_type="simple"))
+    runner = BenchmarkRunner(lambda query, k: search_with_routing(vector_store, query, n_results=k, query_type="hybrid"))
     orig_summary = runner.summarize(runner.run_suite(orig_queries))
     print(f"Original 23-Query MRR: {orig_summary['mrr']:.4f}")
     

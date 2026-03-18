@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Benchmark individual pipeline stages of the simple search path.
+"""Benchmark individual pipeline stages of the hybrid search path.
 
 Produces a single authoritative latency breakdown for the simple path,
 measured end-to-end on the Centurion Set corpus.  All other latency
@@ -242,7 +242,7 @@ def run_staged_benchmark(
         # Stage 6: Full end-to-end via search_with_routing
         t0 = time.perf_counter()
         _e2e = search_with_routing(
-            db, query, n_results=n_results, query_type="simple"
+            db, query, n_results=n_results, query_type="hybrid"
         )
         timings["end_to_end_ms"] = (time.perf_counter() - t0) * 1000
 
@@ -302,7 +302,7 @@ def main():
         # Warmup
         print(f"Warming up ({args.warmup} queries)...", file=sys.stderr)
         for i in range(min(args.warmup, len(queries))):
-            search_with_routing(db, queries[i], n_results=5, query_type="simple")
+            search_with_routing(db, queries[i], n_results=5, query_type="hybrid")
         print("Warmup complete.", file=sys.stderr)
 
         # Benchmark
