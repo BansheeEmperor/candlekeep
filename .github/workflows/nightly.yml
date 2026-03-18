@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: dev # Always build from the dev branch
+          ref: development # Always build from the development branch
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
