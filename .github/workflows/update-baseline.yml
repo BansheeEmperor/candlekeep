@@ -85,14 +85,14 @@ jobs:
         with:
           branch: chore/update-baselines-${{ github.sha }}
           delete-branch: true
-          base: dev
+          base: development
           title: "chore: update performance baselines"
           body: |
             ### 🚀 Automated Baseline Update
             
             **Reason:** ${{ github.event.inputs.reason || 'Standard development synchronization' }}
             
-            This PR updates the performance baselines in `tests/results/archive/` to match the current state of the `dev` branch.
+            This PR updates the performance baselines in `tests/results/archive/` to match the current state of the `development` branch.
             
             Please review the changes to ensure the new performance metrics are acceptable before merging.
           commit-message: "chore: update performance baselines"

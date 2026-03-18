@@ -2,7 +2,7 @@ name: Comprehensive Tests
 
 on:
   pull_request:
-    branches: [ production, dev, master, main ]
+    branches: [ production, development, master, main ]
     paths-ignore:
       - 'docs/**'
       - '**.md'
