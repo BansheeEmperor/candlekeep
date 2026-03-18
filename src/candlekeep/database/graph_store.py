@@ -139,11 +139,12 @@ class GraphStore:
 
 _rebuild_building = False
 _rebuild_lock = threading.Lock()
+_rebuild_thread: threading.Thread | None = None
 
 
 def schedule_graph_rebuild(graph_store: GraphStore) -> None:
     """Fire-and-forget background co-occurrence rebuild. No-op if already running."""
-    global _rebuild_building
+    global _rebuild_building, _rebuild_thread
     with _rebuild_lock:
         if _rebuild_building:
             return
@@ -155,7 +156,18 @@ def schedule_graph_rebuild(graph_store: GraphStore) -> None:
         daemon=True,
         name="graph-cooccurrence-rebuild",
     )
+    _rebuild_thread = thread
     thread.start()
+
+
+def _join_rebuild_thread():
+    """Join the rebuild thread at interpreter shutdown to avoid C++ abort."""
+    if _rebuild_thread is not None and _rebuild_thread.is_alive():
+        _rebuild_thread.join(timeout=5)
+
+
+import atexit
+atexit.register(_join_rebuild_thread)
 
 
 def _rebuild_worker(graph_store: GraphStore) -> None:
