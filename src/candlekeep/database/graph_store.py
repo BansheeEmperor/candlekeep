@@ -153,7 +153,7 @@ def schedule_graph_rebuild(graph_store: GraphStore) -> None:
     thread = threading.Thread(
         target=_rebuild_worker,
         args=(graph_store,),
-        daemon=True,
+        daemon=False,
         name="graph-cooccurrence-rebuild",
     )
     _rebuild_thread = thread

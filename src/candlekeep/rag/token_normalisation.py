@@ -417,6 +417,16 @@ def clear_normalisation_cache() -> None:
 
 _rebuild_building = False
 _rebuild_lock = threading.Lock()
+_rebuild_thread: threading.Thread | None = None
+
+
+def _join_rebuild_thread():
+    if _rebuild_thread is not None and _rebuild_thread.is_alive():
+        _rebuild_thread.join(timeout=5)
+
+
+import atexit
+atexit.register(_join_rebuild_thread)
 
 
 def schedule_background_rebuild(db) -> None:
@@ -428,20 +438,20 @@ def schedule_background_rebuild(db) -> None:
     Args:
         db: VectorDatabase instance (read at thread execution time)
     """
-    global _rebuild_building
+    global _rebuild_building, _rebuild_thread
 
     with _rebuild_lock:
         if _rebuild_building:
             return
         _rebuild_building = True
 
-    thread = threading.Thread(
+    _rebuild_thread = threading.Thread(
         target=_rebuild_worker,
         args=(db,),
-        daemon=True,
+        daemon=False,
         name="normalisation-map-rebuild",
     )
-    thread.start()
+    _rebuild_thread.start()
 
 
 def _rebuild_worker(db) -> None:
