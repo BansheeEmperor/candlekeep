@@ -112,7 +112,7 @@ class TestVLMAnsweringBenchmark:
         print("-" * 90)
 
         for q in queries:
-            results = search_with_routing(store, q["query"], n_results=10, query_type="simple")
+            results = search_with_routing(store, q["query"], n_results=10, query_type="hybrid")
             answer = _ask_llm(llm, q["query"], results)
             is_correct = _answer_matches(answer, q["answer"])
             if is_correct:
@@ -150,7 +150,7 @@ class TestVLMAnsweringBenchmark:
         print("-" * 90)
 
         for q in queries:
-            results = search_with_routing(store, q["query"], n_results=10, query_type="simple")
+            results = search_with_routing(store, q["query"], n_results=10, query_type="hybrid")
             answer = _ask_llm(llm, q["query"], results)
             is_correct = _answer_matches(answer, q["answer"])
             if is_correct:

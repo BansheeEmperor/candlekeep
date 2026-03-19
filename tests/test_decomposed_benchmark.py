@@ -66,7 +66,7 @@ class TestDecomposedBenchmark:
 
             # --- Single search (baseline) ---
             single_results = search_with_routing(
-                scale_store, dq.original, n_results=5, query_type="simple"
+                scale_store, dq.original, n_results=5, query_type="hybrid"
             )
             single_text = " ".join(r.text for r in single_results).lower()
             single_found = [c for c in dq.expected_content if c.lower() in single_text]
@@ -80,7 +80,7 @@ class TestDecomposedBenchmark:
             all_decomposed = []
             for sq in dq.sub_queries:
                 results = search_with_routing(
-                    scale_store, sq, n_results=3, query_type="simple"
+                    scale_store, sq, n_results=3, query_type="hybrid"
                 )
                 all_decomposed.extend(results)
 

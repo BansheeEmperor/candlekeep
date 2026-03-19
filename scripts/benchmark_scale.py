@@ -34,11 +34,11 @@ from fastmcp import Client
 
 DEFAULT_URL = "http://localhost:8111/mcp"
 
-# Realistic query type distribution based on diary Entry 37:
-# agents use simple ~50%, hybrid ~40%, precise ~10%
+# Realistic query type distribution:
+# agents use hybrid ~60%, explore ~30%, precise ~10%
 QUERY_TYPE_WEIGHTS = {
-    "simple": 0.50,
-    "hybrid": 0.40,
+    "hybrid": 0.60,
+    "explore": 0.30,
     "precise": 0.10,
 }
 
@@ -173,7 +173,7 @@ def _pick_query_type() -> str:
         cumulative += weight
         if r <= cumulative:
             return qt
-    return "simple"
+    return "hybrid"
 
 
 def _pick_query(query_type: str) -> str:
@@ -311,7 +311,7 @@ async def _agent_loop_persistent(
         # Connection failed entirely — record one error
         records.append(RequestRecord(
             agent_id=agent_id, query="[connection_failed]",
-            query_type="simple", latency_ms=0, success=False,
+            query_type="hybrid", latency_ms=0, success=False,
             error=str(e), timestamp=time.perf_counter() - start_time,
         ))
 
@@ -385,7 +385,7 @@ async def run_benchmark(config: BenchmarkConfig) -> BenchmarkResult:
 
     # Per-path breakdown
     by_path: Dict[str, PathSummary] = {}
-    for qt in ("simple", "hybrid", "precise"):
+    for qt in ("hybrid", "explore", "precise"):
         path_records = [r for r in search_records if r.query_type == qt]
         summary = PathSummary(
             count=len(path_records),
@@ -482,7 +482,7 @@ def print_result(result: BenchmarkResult):
     hdr = f"  {'Path':<10} {'Count':>6} {'Errors':>7} {'p50':>8} {'p95':>8} {'p99':>8} {'Mean':>8}"
     print(hdr)
     print("  " + "─" * (len(hdr) - 2))
-    for qt in ("simple", "hybrid", "precise"):
+    for qt in ("hybrid", "explore", "precise"):
         p = result.by_path.get(qt, {})
         if not p or p.get("count", 0) == 0:
             continue
@@ -555,7 +555,7 @@ async def main_async():
 
     # Warmup: verify server is reachable
     print("Verifying server connection...", file=sys.stderr)
-    result = await _single_search(args.url, "test query", "simple")
+    result = await _single_search(args.url, "test query", "hybrid")
     if not result["ok"]:
         print(f"Server unreachable: {result['error']}", file=sys.stderr)
         print("Start with: CANDLEKEEP_TRANSPORT=http candlekeep", file=sys.stderr)

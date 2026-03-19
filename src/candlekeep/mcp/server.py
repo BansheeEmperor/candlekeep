@@ -307,6 +307,26 @@ threading.Thread(target=_background_init, daemon=True).start()
 
 # --- Quality gate for ingestion ---
 
+def _find_body_start(lines: list[str]) -> int:
+    """Return the line index where the document body begins (after frontmatter)."""
+    if not lines or lines[0].strip() != "---":
+        return 0
+    for i in range(1, len(lines)):
+        if lines[i].strip() == "---":
+            return i + 1
+    return 0
+
+
+def _count_setext_headers(lines: list[str], start: int) -> int:
+    """Count setext-style headers (underline with === or ---) starting from a line index."""
+    count = 0
+    for i in range(max(start, 1), len(lines)):
+        line = lines[i].strip()
+        if line and len(line) >= 3 and all(c in '=-' for c in line) and lines[i - 1].strip():
+            count += 1
+    return count
+
+
 def check_document_quality(path: Path) -> list[str]:
     """Check document quality for RAG suitability. Returns list of issues (empty = OK)."""
     content = path.read_text(encoding="utf-8", errors="replace")
@@ -314,15 +334,20 @@ def check_document_quality(path: Path) -> list[str]:
     words = len(content.split())
     issues = []
 
-    if not content.startswith("---"):
+    has_frontmatter = content.startswith("---")
+    if not has_frontmatter:
         issues.append("Missing YAML frontmatter (title, description, keywords, category, tags)")
-    if sum(1 for l in lines if l.startswith("#")) < 2:
-        issues.append("Insufficient structure (fewer than 2 markdown headers)")
-    if words < 100:
-        issues.append("Too short (< 100 words) — consider combining with related content")
+
+    body_start = _find_body_start(lines)
+    md_headers = sum(1 for l in lines[body_start:] if l.startswith("#"))
+    setext_headers = _count_setext_headers(lines, body_start)
+    if (md_headers + setext_headers) < 2 and not has_frontmatter:
+        issues.append("Insufficient structure (fewer than 2 headers)")
+    if words < 50:
+        issues.append("Too short (< 50 words) — consider combining with related content")
     if words > 10000:
         issues.append("Too long (> 10k words) — consider splitting into focused documents")
-    if content.count("```") % 2 != 0:
+    if sum(1 for l in lines if l.strip().startswith("```")) % 2 != 0:
         issues.append("Unclosed code block (mismatched ``` markers)")
 
     return issues
@@ -399,8 +424,6 @@ def search(
         n_results: Number of results to return (default: 5)
         category: Optional category filter
         query_type: Controls search strategy. One of:
-            - "simple": Fast semantic lookup (~57ms). Best for conceptual
-              questions like "how does caching work?" or "explain auth flow".
             - "hybrid": Lexical + semantic fusion (~82ms). USE THIS when
               your query contains terms that must match literally rather
               than semantically — exact names, version strings, error codes,
@@ -410,8 +433,13 @@ def search(
             - "precise": Semantic reranking (~920ms). Best for comparative
               or analytical questions where ranking quality matters more
               than speed — e.g. "compare OAuth2 and SAML for mobile apps".
+            - "explore": Semantic + entity expansion (~130ms). Best for
+              discovery queries about entity relationships — e.g.
+              "what are the effects of curcumin?" or "how does folate
+              affect health?". Expands to related entities via the
+              co-occurrence graph, surfacing docs that hybrid misses.
 
-        For complex multi-part questions, make multiple simple searches
+        For complex multi-part questions, make multiple hybrid searches
         (one per sub-question) and synthesize the results yourself.
     """
     if msg := _check_ready():
@@ -464,6 +492,20 @@ def get_stats() -> str:
     tokens_per_query = stats['tokens_per_query']
     tokens_saved = queries * (stats['estimated_tokens'] - tokens_per_query)
 
+    graph_section = ""
+    try:
+        from candlekeep.database.graph_store import get_graph_store
+        gs = get_graph_store(_settings)
+        if gs:
+            gs_stats = gs.get_stats()
+            graph_section = f"""
+**Entity Co-occurrence Graph**
+- Entities: {gs_stats['entity_count']}
+- Co-occurrence edges: {gs_stats['cooccurrence_edge_count']}
+- Entity ruler vocabulary: {gs_stats['entity_ruler_vocabulary_size']}"""
+    except Exception:
+        pass
+
     return f"""**Knowledge Base Statistics**
 - Total chunks: {stats['total_chunks']}
 - Total documents: {stats['total_documents']}
@@ -485,7 +527,7 @@ def get_stats() -> str:
 - Size: {stats.get('embed_cache_size', 0)}
 
 **BM25 Normalisation**
-- Normalisation map variants: {stats.get('normalisation_map_size', 0)}"""
+- Normalisation map variants: {stats.get('normalisation_map_size', 0)}{graph_section}"""
 
 
 
@@ -529,8 +571,63 @@ def critique_document(path: str) -> str:
     return "\n".join(output)
 
 
+def _explore_entity_impl(entity_name: str) -> str:
+    """Core logic for explore_entity, extracted for testability."""
+    from candlekeep.rag.entity_normalise import normalise_entity
+    from candlekeep.database.graph_store import get_graph_store
+
+    gs = get_graph_store(_settings)
+    if gs is None:
+        return "⚠ Entity graph is disabled (CANDLEKEEP_GRAPH_AUGMENT=false) or not yet built. The explore search path requires the graph."
+
+    norm = normalise_entity(entity_name)
+
+    related = gs.get_related(norm, top_n=10)
+    if not related:
+        return f"No co-occurrence data found for '{entity_name}' (normalised: '{norm}'). Run ingest() to build the graph."
+
+    lines = [f"**Entity: `{entity_name}`** (normalised: `{norm}`)\n"]
+
+    lines.append("**Top co-occurring entities:**")
+    for entity, score in related:
+        lines.append(f"- `{entity}`: Jaccard {score:.3f}")
+
+    # Fetch chunks mentioning this entity
+    try:
+        raw = get_store().collection.get(
+            where={"entities": {"$contains": norm}},
+            limit=10,
+        )
+        if raw["ids"]:
+            sources = sorted({m.get("source", "?") for m in raw["metadatas"]})
+            lines.append(f"\n**Source documents ({len(sources)}):**")
+            for s in sources:
+                lines.append(f"- {s}")
+            lines.append(f"\n**Chunks mentioning `{norm}` ({len(raw['ids'])}):**")
+            for text, meta in zip(raw["documents"], raw["metadatas"]):
+                lines.append(f"\n*{meta.get('filename', '?')}*")
+                lines.append(f"```\n{text[:300]}{'...' if len(text) > 300 else ''}\n```")
+    except Exception as e:
+        lines.append(f"\n⚠ Could not fetch chunks: {e}")
+
+    return "\n".join(lines)
+
+
 @mcp.tool
-def generate_documentation(directory_path: str) -> str:
+def explore_entity(entity_name: str) -> str:
+    """Explore an entity in the co-occurrence graph.
+
+    Returns top-10 co-occurring entities with Jaccard scores, all chunks
+    mentioning the entity, and the source documents they belong to.
+
+    Designed for exploratory research — not a search replacement.
+    """
+    if msg := _check_ready():
+        return msg
+    return _explore_entity_impl(entity_name)
+
+
+
     """Analyze a project directory and return a structured documentation plan.
 
     Validates the path exists and returns a two-phase prompt: survey first,
@@ -611,8 +708,8 @@ ingest() will reject documents that fail these checks:
 
 - **YAML frontmatter required** — must start with `---` and include:
   title, description, keywords, category, tags
-- **At least 2 markdown headers** (## or ###)
-- **Between 100 and 10,000 words**
+- **At least 2 headers** (ATX `#` or setext `===`/`---` style) — or YAML frontmatter as proof of curation
+- **Between 50 and 10,000 words**
 - **No unclosed code blocks** (matched ``` pairs)
 
 Frontmatter template:
@@ -660,8 +757,8 @@ def ingest(path: str, ctx: Context = CurrentContext()) -> str:
 
     Validates document quality before ingestion. Documents must have:
     - YAML frontmatter (title, description, keywords)
-    - At least 2 markdown headers
-    - Between 100 and 10,000 words
+    - At least 2 headers (ATX or setext) — or frontmatter as proof of curation
+    - Between 50 and 10,000 words
 
     Supports: txt, md, pdf, rst, json, yaml files.
     """
