@@ -14,7 +14,7 @@ def main():
     archive_dir.mkdir(parents=True, exist_ok=True)
     
     # Files to promote
-    paths = ["simple", "hybrid", "precise"]
+    paths = ["hybrid", "precise", "explore"]
     updated = []
     
     for path in paths:

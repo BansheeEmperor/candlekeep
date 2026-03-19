@@ -56,8 +56,14 @@ keywords: ["test"]
 ---
 
 This document has frontmatter but no markdown headers at all. It is just
-a flat block of text with no structure. The quality gate should reject it
-because it needs at least two headers for proper chunking to work well.
+a flat block of text with no structure. Because it has frontmatter the
+quality gate trusts it as curated content and allows it through.
+"""
+
+NO_HEADERS_NO_FRONTMATTER = """This document has no YAML frontmatter and no markdown headers at all.
+It is just a flat block of text with no structure. The quality gate should
+reject it because it has neither frontmatter nor headers to prove curation.
+We need enough words here to avoid the too-short check triggering as well.
 """
 
 TOO_SHORT = """---
@@ -70,7 +76,7 @@ keywords: ["test"]
 
 ## Very Short
 
-Too few words here.
+Too few words.
 """
 
 UNCLOSED_CODE = """---
@@ -108,9 +114,16 @@ class TestQualityGate:
         assert any("frontmatter" in i.lower() for i in issues)
 
     def test_missing_headers_rejected(self):
-        path = _write_temp(NO_HEADERS)
+        """No frontmatter + no headers = rejected."""
+        path = _write_temp(NO_HEADERS_NO_FRONTMATTER)
         issues = check_document_quality(path)
         assert any("header" in i.lower() or "structure" in i.lower() for i in issues)
+
+    def test_frontmatter_no_headers_passes(self):
+        """Frontmatter acts as proof of curation - headers not required."""
+        path = _write_temp(NO_HEADERS)
+        issues = check_document_quality(path)
+        assert not any("header" in i.lower() or "structure" in i.lower() for i in issues)
 
     def test_too_short_rejected(self):
         path = _write_temp(TOO_SHORT)

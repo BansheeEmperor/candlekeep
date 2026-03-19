@@ -65,9 +65,9 @@ graph TD
 ### Search Pipeline Components
 
 The library routes queries to the optimal technique stack:
-*   **simple** → [Arcane Recall](GLOSSARY.md#arcane-recall) (Fast Path)
 *   **hybrid** → [Wild Magic](GLOSSARY.md#lexical-matching-wild-magic) (Lexical + Vector). The sparse signal is BM25 by default; an opt-in ColBERT backend (`CANDLEKEEP_SPARSE_BACKEND=colbert`) provides token-level matching for better lexical precision on technical identifiers. BM25 uses stop-word-filtered tokenization with a regex that preserves technical identifiers (e.g., `bge-small`, `v3.4.1`). Before tokenization, [**The Rosetta Seal**](GLOSSARY.md#the-rosetta-seal) normalises surface-form variants (`crossencoder` → `cross-encoder`, `autoscaling` → `auto-scaling`) so BM25 token matching is separator-agnostic. The map is derived automatically from the corpus at `repopulate_database` time — zero manual curation. ColBERT uses late interaction with `answerai-colbert-small-v1`. BM25 is always maintained as fallback during ColBERT index rebuilds.
 *   **precise** → [Arcane Recall](GLOSSARY.md#arcane-recall) + [Divine Insight](GLOSSARY.md#cross-encoder-reranking) (Precise Path)
+*   **explore** → [Divination](GLOSSARY.md#divination) (Entity Expansion). Smart graph expansion via the entity co-occurrence graph. Extracts entities from the query, identifies unpaired entities (those without a co-occurring partner in the query), and expands them to related entities. Top-3 results from standard RRF, plus 2 reserved slots for unique graph expansion docs. Falls back to RRF when the graph has nothing new to add.
 *   **Negation preprocessing** applied to all paths.
 *   **[The Relevance Ward](GLOSSARY.md#the-relevance-ward)** filters low-confidence matches.
 *   **[Bardic Knowledge](GLOSSARY.md#bardic-knowledge)**: Ingestion-time context enrichment.
@@ -88,16 +88,20 @@ graph TD
     class Query start;
     class Router decision;
     
-    Router -- ROAD 1: SIMPLE --> Simple[Vector Search]
-    Router -- ROAD 2: HYBRID --> Hybrid[Vector Search + Sparse]
-    Router -- ROAD 3: PRECISE --> Precise[Vector Search]
-    class Simple,Hybrid,Precise path;
+    Router -- ROAD 1: HYBRID --> Hybrid[Vector Search + Sparse]
+    Router -- ROAD 2: PRECISE --> Precise[Vector Search]
+    Router -- ROAD 3: EXPLORE --> Explore[Vector Search + Sparse]
+    class Hybrid,Precise,Explore path;
     
     Hybrid --> Fusion[Rank Fusion]
-    class Fusion process;
+    Explore --> Fusion2[Rank Fusion]
+    class Fusion,Fusion2 process;
     
-    Simple --> Recall[Arcane Recall]
-    Fusion --> Recall
+    Fusion2 --> Graph[Divination]
+    class Graph process;
+    
+    Fusion --> Recall[Arcane Recall]
+    Graph --> Recall
     Precise --> Recall
     class Recall process;
     
@@ -159,18 +163,28 @@ graph TD
 ### 4. [Divine Insight](GLOSSARY.md#cross-encoder-reranking) (cross-encoder reranking) — precise path only
 Cross-encoder (`ms-marco-MiniLM-L-6-v2`) rescores all candidates by examining query-document pairs individually. Higher precision but trades content match and adds latency.
 
+### Divination (Entity Expansion) — explore path only
+
+[Divination](GLOSSARY.md#divination) traces the entity co-occurrence graph to surface documents that standard search cannot find. When a query mentions entity A, Divination discovers that A co-occurs with entity B in the corpus and retrieves B-only documents — documents containing B but not A — that have zero vocabulary overlap with the query.
+
+**Smart expansion:** Before expanding, Divination checks whether each query entity already has a co-occurring partner in the query. Paired entities (those with any edge in the co-occurrence graph connecting them to another query entity) are skipped. Only unpaired entities are expanded. This preserves ranking quality on relationship queries (where both entities are named) while enabling expansion on discovery queries (where only one entity is named).
+
+**Slot allocation:** The explore path reserves 2 of 5 result slots for unique graph expansion docs. The remaining 3 come from standard vector+BM25 RRF. If the graph has fewer than 2 unique docs, the empty slots fall back to RRF results.
+
+**Benchmark results** ([Research Diary Entry 56](RESEARCH_DIARY.md)): 40% expansion recall (vs 0% hybrid), 1.4% NDCG@5 degradation, 0% regression.
+
 ### 5. [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (Filtering)
 Results below a configured threshold are filtered to prevent the AI agent from hallucinating based on low-confidence "junk" matches. The Ward operates on all three paths, each with its own score scale:
 
 | Path | Threshold | Score Type |
 |------|-----------|------------|
-| simple | `MIN_RELEVANCE_SCORE` (0.75) | Vector cosine similarity |
 | hybrid | `HYBRID_RELEVANCE_THRESHOLD` (0.015) | RRF fusion score |
+| explore | `HYBRID_RELEVANCE_THRESHOLD` (0.015) | RRF fusion score |
 | precise (pre-reranking) | `MIN_RELEVANCE_SCORE` (0.75) | Vector cosine similarity |
 | precise (post-reranking) | `MIN_RERANKER_SCORE` (-10.0) | Cross-encoder logits |
 
 - **Adversarial queries:** Score significantly lower than legitimate ones across all paths.
-- **Status:** Zero false negatives on all paths (no legitimate query returns empty results). The hybrid path fully filters adversarial queries (Hit Rate@5 = 0.0). The precise path's post-reranking Ward filters 54% of adversarial queries that pass the pre-reranking vector Ward; the remaining adversarial results score deeply negative (-1.8 to -10.0). The simple path relies solely on the vector threshold.
+- **Status:** Zero false negatives on all paths (no legitimate query returns empty results). The hybrid and explore paths fully filter adversarial queries via the RRF threshold (Hit Rate@5 = 0.0). The precise path's post-reranking Ward filters 54% of adversarial queries that pass the pre-reranking vector Ward; the remaining adversarial results score deeply negative (-1.8 to -10.0).
 - **Calibration:** Run `scripts/analyze_reranker_scores.py` on a new corpus to recalibrate `MIN_RERANKER_SCORE`. See [Threshold Calibration](#threshold-calibration) for the vector and hybrid thresholds.
 
 ### 6. The Great Repository's Ledger (Query Embedding LRU Cache)
@@ -224,7 +238,7 @@ The Relevance Ward thresholds are corpus-dependent heuristics. When deploying ag
 Candlekeep is designed for sub-linear scaling, ensuring that search performance remains stable even as the knowledge base grows by orders of magnitude.
 
 ### Performance at Scale
-Benchmark results demonstrate that the `simple` search path is highly resilient to corpus growth:
+Benchmark results demonstrate that the `hybrid` search path is highly resilient to corpus growth:
 - **Small Corpus (9 docs, ~178 chunks):** ~30ms avg latency
 - **Medium Corpus (89 docs, ~2,770 chunks):** ~36ms avg latency
 - **Scaling Efficiency:** A 15× increase in data resulted in less than 2× increase in latency.
@@ -442,7 +456,7 @@ The embedding model must exist in the local cache before startup. If missing, th
 
 Complex multi-document queries are the agent's responsibility to decompose. The search tool description instructs the agent:
 
-> "For complex multi-part questions, make multiple simple searches (one per sub-question) and synthesize the results yourself."
+> "For complex multi-part questions, make multiple hybrid searches (one per sub-question) and synthesize the results yourself."
 
 Benchmarked: Agent decomposition achieves significantly higher content match on multi-doc queries compared to a single search (simulated benchmark, Entry 20; see Entry 25 for qualitative production validation). The agent fires searches in parallel and synthesizes across results.
 
@@ -452,13 +466,11 @@ This pattern assumes the calling agent is a frontier-class LLM (e.g., Claude, GP
 
 ### Agent Misrouting
 
-The agent selects the search path (`simple`, `hybrid`, or `precise`) based on its interpretation of the query. If the agent selects `simple` for a query containing exact technical identifiers where `hybrid` would be more appropriate, retrieval quality degrades silently.
+The agent selects the search path (`hybrid`, `precise`, or `explore`) based on its interpretation of the query. Misrouting is less likely now that `simple` (vector-only) has been replaced — `hybrid` is the default and handles both semantic and lexical queries. The remaining risk is the agent choosing `explore` when `hybrid` would suffice, which adds ~30ms latency for the graph lookup but does not degrade ranking quality (smart expansion skips expansion when all query entities are already paired).
 
-**Measured impact:** On the Centurion Set, lexical queries (containing version numbers, error codes, technical identifiers) show MRR of 0.42 on the simple path vs 0.53 on the hybrid path — a 15–26% gap depending on HNSW index instantiation (see note below). Semantic queries show no meaningful difference between paths.
+**Historical context:** On the Centurion Set, lexical queries showed MRR of 0.42 on the former simple (vector-only) path vs 0.53 on hybrid — a 15–26% gap. This gap was the primary motivation for replacing simple with explore, which inherits hybrid's BM25 matching.
 
-*Note: HNSW index construction is non-deterministic. The 26% figure is from the Centurion Set main run (§8.2); an independent run with a separate PersistentClient (Entry 44) measured +15.4%. The improvement is directionally consistent — hybrid outperforms simple on lexical queries across all tested instances.*
-
-**When to prefer hybrid:** Queries containing exact identifiers (`bge-small`, `v3.4.1`), error codes (`0xEF`, `ECONNREFUSED`), version strings, or technical terms that must match literally rather than semantically.
+**When to prefer explore:** Queries about a single entity where the user wants to discover related concepts ("what are the effects of curcumin?"). The graph expands to co-occurring entities invisible to standard search.
 
 **No feedback mechanism:** The system does not signal to the agent whether its path selection was optimal. The agent cannot learn from misroutes within a session. Integrators should include path selection guidance in the agent's system prompt. The search tool description includes explicit examples of when to use each path — see the `query_type` parameter documentation in `mcp/server.py`.
 
@@ -514,18 +526,20 @@ All settings via environment variables (`.env` file):
 
 ### Simple Path Stage Breakdown
 
-Canonical latency reference for the simple search path. All other latency figures in the documentation reference this table. Measured on the Centurion Set (108 queries, 89 docs / ~2,770 chunks, warm model, PersistentClient, `bge-small-en-v1.5`). Reproducible via `scripts/benchmark_pipeline_stages.py`.
+Canonical latency reference for the hybrid search path. All other latency figures in the documentation reference this table. Measured on the Centurion Set (108 queries, 89 docs / ~2,770 chunks, warm model, PersistentClient, `bge-small-en-v1.5`). Reproducible via `scripts/benchmark_pipeline_stages.py`.
 
 | Stage | CPU (p50) | MPS (p50) |
 |-------|----------:|----------:|
 | Negation preprocessing | <0.1ms | <0.1ms |
 | Query embedding (bge-small) | 13ms | 11ms |
 | ChromaDB vector search (HNSW) | 15ms | 13ms |
+| BM25 sparse search | ~5ms | ~5ms |
+| Rank fusion (RRF) | <0.1ms | <0.1ms |
 | Arcane Recall (expansion) | 21ms | 20ms |
 | Relevance Ward | <0.1ms | <0.1ms |
-| Full simple pipeline | **36ms** | **36ms** |
+| Full hybrid pipeline | **~55ms** | **~50ms** |
 
-The simple path performs no inference beyond the initial query embedding. Arcane Recall uses stored embeddings from ChromaDB for the Scholar's Discernment similarity checks — no bi-encoder calls during expansion.
+The hybrid path performs no inference beyond the initial query embedding. BM25 uses pre-tokenized in-memory indices. Arcane Recall uses stored embeddings from ChromaDB for the Scholar's Discernment similarity checks — no bi-encoder calls during expansion.
 
 ## LLM & True Sight Providers
 

@@ -223,13 +223,13 @@ def parse_agent_output(raw: str) -> tuple[list[SearchCall], list[str]]:
     sources: list[str] = []
 
     current_query = ""
-    current_type = "simple"
+    current_type = "hybrid"
 
     for i, line in enumerate(lines):
         # Detect tool call start
         if _TOOL_CALL_RE.search(line):
             current_query = ""
-            current_type = "simple"
+            current_type = "hybrid"
             # Scan ahead for params and completion
             for j in range(i + 1, min(i + 15, len(lines))):
                 qm = _QUERY_PARAM_RE.search(lines[j])
