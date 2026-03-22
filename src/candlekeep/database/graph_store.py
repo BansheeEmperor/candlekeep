@@ -58,24 +58,27 @@ class GraphStore:
             # Compute pairwise co-occurrence counts and Jaccard similarity.
             # Jaccard(A,B) = |chunks(A) ∩ chunks(B)| / |chunks(A) ∪ chunks(B)|
             #              = cooccurrence_count / (|A| + |B| - cooccurrence_count)
+            # We use COUNT(DISTINCT ...) to ensure that multiple mentions of the
+            # same entity in a single chunk don't inflate the counts or cause
+            # the denominator to become zero/negative.
             self._conn.execute("""
                 INSERT INTO entity_cooccurrence (entity_a, entity_b, cooccurrence_count, jaccard_similarity)
                 SELECT
                     a.entity,
                     b.entity,
-                    COUNT(*) AS cooc,
-                    CAST(COUNT(*) AS REAL) / (
+                    COUNT(DISTINCT a.source || '|' || CAST(a.chunk_idx AS TEXT)) AS cooc,
+                    CAST(COUNT(DISTINCT a.source || '|' || CAST(a.chunk_idx AS TEXT)) AS REAL) / (
                         (SELECT COUNT(DISTINCT source || '|' || CAST(chunk_idx AS TEXT))
                          FROM entity_mentions WHERE entity = a.entity)
                         + (SELECT COUNT(DISTINCT source || '|' || CAST(chunk_idx AS TEXT))
                            FROM entity_mentions WHERE entity = b.entity)
-                        - COUNT(*)
+                        - COUNT(DISTINCT a.source || '|' || CAST(a.chunk_idx AS TEXT))
                     )
                 FROM entity_mentions a
                 JOIN entity_mentions b
                     ON a.source = b.source AND a.chunk_idx = b.chunk_idx AND a.entity < b.entity
                 GROUP BY a.entity, b.entity
-                HAVING COUNT(*) >= 2
+                HAVING cooc >= 2
             """)
             self._conn.commit()
 
