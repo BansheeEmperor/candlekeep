@@ -70,6 +70,15 @@ class LangChainRAG(Competitor):
         self._vectorstore: Chroma | None = None
         self._collection_name = f"lc_{self.name}_bench"
 
+        if self._hybrid:
+            from transformers import AutoModelForSequenceClassification, AutoTokenizer
+            import torch
+            model_name = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+            self._rerank_tokenizer = AutoTokenizer.from_pretrained(model_name)
+            self._rerank_model = AutoModelForSequenceClassification.from_pretrained(model_name)
+            self._rerank_model.to("mps" if torch.backends.mps.is_available() else "cpu")
+            self._rerank_model.eval()
+
     def ingest(self, doc_paths: list[Path]) -> int:
         all_docs = []
         for path in doc_paths:
@@ -112,20 +121,13 @@ class LangChainRAG(Competitor):
             # 1. Fetch more candidates
             docs = self._vectorstore.similarity_search(query, k=k*4)
             
-            # 2. Manual Cross-Encoder Rerank (using same model as CK)
-            from transformers import AutoModelForSequenceClassification, AutoTokenizer
+            # 2. Manual Cross-Encoder Rerank using pre-loaded model
             import torch
-            
-            model_name = "cross-encoder/ms-marco-MiniLM-L-6-v2"
-            tokenizer = AutoTokenizer.from_pretrained(model_name)
-            model = AutoModelForSequenceClassification.from_pretrained(model_name)
-            model.to("mps" if torch.backends.mps.is_available() else "cpu")
-            model.eval()
             
             pairs = [[query, doc.page_content] for doc in docs]
             with torch.no_grad():
-                inputs = tokenizer(pairs, padding=True, truncation=True, return_tensors="pt").to(model.device)
-                logits = model(**inputs).logits.flatten().tolist()
+                inputs = self._rerank_tokenizer(pairs, padding=True, truncation=True, return_tensors="pt").to(self._rerank_model.device)
+                logits = self._rerank_model(**inputs).logits.flatten().tolist()
             
             # Sort by score
             scored_docs = sorted(zip(logits, docs), key=lambda x: x[0], reverse=True)[:k]

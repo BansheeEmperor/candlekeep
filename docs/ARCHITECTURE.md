@@ -512,6 +512,8 @@ All settings via environment variables (`.env` file):
 
 ## Performance Characteristics
 
+For detailed scientific quality comparisons (RAGAS) against LlamaIndex and LangChain, see **[BENCHMARKING.md](BENCHMARKING.md)**.
+
 | Metric | Target Value |
 |--------|-------|
 | Simple search latency (local) | < 100ms (~36ms measured) |

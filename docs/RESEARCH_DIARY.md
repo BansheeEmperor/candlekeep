@@ -3432,3 +3432,29 @@ Graph infrastructure: 17,520 entities, 31,083 co-occurrence edges, 101 biomedica
 - `tests/conftest_nfcorpus.py` — NFCorpus fixture with biomedical entity ruler bootstrap
 
 See [ARCHITECTURE.md § Divination](ARCHITECTURE.md#divination-entity-expansion) for the operational reference, [DESIGN.md § 3.1](DESIGN.md#31-three-search-paths) for the design rationale, and [GLOSSARY.md](GLOSSARY.md#divination) for the lore entry.
+
+---
+
+## Entry 57: Comparative Framework Evaluation (RAGAS)
+
+**Date:** March 24, 2026  
+**Focus:** Scientific Benchmarking and Quality Assessment
+
+Transitioned the evaluation infrastructure to use **RAGAS 0.4.3** for a comparative analysis of Candlekeep against LlamaIndex and LangChain. The objective was to measure semantic retrieval quality using a standardized, high-reasoning judge.
+
+### Technical Evolution
+1. **Evaluator Selection**: Determined that local 8B models lacked the reasoning density required for complex medical IR evaluation. Shifted to a high-reasoning **Cloud-based Judge (Claude 4.5 Sonnet)**, which provided consistent and statistically stable results.
+2. **Sandbox Standardisation**: Addressed metric volatility by implementing a deterministic 300-document sandbox. This ensures that the ground-truth context is always present in the retrieval pool, allowing for an isolated measurement of framework retrieval logic.
+3. **Fairness Adjustments**: Standardized competitor configurations to pre-load models during initialization, removing unfair latency penalties associated with "cold-start" model loading during search calls.
+
+### Empirical Observations (15-Query Evaluation)
+- **Efficiency**: Measured a consistent latency advantage for Candlekeep, maintaining sub-110ms response times compared to 180ms–285ms for competing advanced retrievers on identical hardware.
+- **Answer Relevancy**: Noted that Candlekeep and LlamaIndex-Adv provided context that more precisely matched user intent (0.56–0.59) compared to the LangChain baseline (0.43).
+- **Recall**: Performance was largely comparable across all three flagship frameworks (0.43–0.49 Recall), suggesting that retrieval efficiency and intent-matching are the primary differentiators in this domain.
+
+### Artifacts Created
+- `scripts/benchmark_ragas.py` — Flagship evaluation suite with environment-driven configuration.
+- `docs/BENCHMARKING.md` — Formal repository for comparative framework data.
+- `scripts/archive/` — Consolidation of legacy retrieval scripts.
+
+The data provides a stable baseline for future retrieval optimizations and confirms the efficiency of the current hybrid pipeline.

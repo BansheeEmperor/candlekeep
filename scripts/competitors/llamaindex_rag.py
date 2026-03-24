@@ -39,6 +39,15 @@ class LlamaIndexRAG(Competitor):
         
         self._index = None
 
+        if self._hybrid:
+            from transformers import AutoModelForSequenceClassification, AutoTokenizer
+            import torch
+            model_name = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+            self._rerank_tokenizer = AutoTokenizer.from_pretrained(model_name)
+            self._rerank_model = AutoModelForSequenceClassification.from_pretrained(model_name)
+            self._rerank_model.to("mps" if torch.backends.mps.is_available() else "cpu")
+            self._rerank_model.eval()
+
     def ingest(self, doc_paths: list[Path]) -> int:
         documents = []
         for path in doc_paths:
@@ -77,20 +86,13 @@ class LlamaIndexRAG(Competitor):
             retriever = self._index.as_retriever(similarity_top_k=k*4)
             nodes = retriever.retrieve(query)
             
-            # Manual Cross-Encoder Rerank
-            from transformers import AutoModelForSequenceClassification, AutoTokenizer
+            # Manual Cross-Encoder Rerank using pre-loaded model
             import torch
-            
-            model_name = "cross-encoder/ms-marco-MiniLM-L-6-v2"
-            tokenizer = AutoTokenizer.from_pretrained(model_name)
-            model = AutoModelForSequenceClassification.from_pretrained(model_name)
-            model.to("mps" if torch.backends.mps.is_available() else "cpu")
-            model.eval()
             
             pairs = [[query, node.text] for node in nodes]
             with torch.no_grad():
-                inputs = tokenizer(pairs, padding=True, truncation=True, return_tensors="pt").to(model.device)
-                scores = model(**inputs).logits.flatten().tolist()
+                inputs = self._rerank_tokenizer(pairs, padding=True, truncation=True, return_tensors="pt").to(self._rerank_model.device)
+                scores = self._rerank_model(**inputs).logits.flatten().tolist()
             
             # Sort by score
             scored_nodes = sorted(zip(scores, nodes), key=lambda x: x[0], reverse=True)[:k]
