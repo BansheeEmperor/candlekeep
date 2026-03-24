@@ -56,3 +56,6 @@ infra/
 
 # Gemini
 GEMINI.md
+.gemini/
+venv*/
+.venv*/

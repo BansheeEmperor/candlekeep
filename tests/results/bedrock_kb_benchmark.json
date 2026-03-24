@@ -1,0 +1,1567 @@
+{
+  "summary": {
+    "rows": [
+      {
+        "system": "candlekeep-explore",
+        "n": 35,
+        "mrr": 0.007142857142857143,
+        "recall_5": 0.02857142857142857,
+        "precision_3": 0.0,
+        "ndcg_5": 0.004173381424077327,
+        "neg_rejection": 0.0,
+        "p50_ms": 14.87541600363329,
+        "p95_ms": 55.6260829907842
+      },
+      {
+        "system": "bedrock-default",
+        "n": 35,
+        "mrr": 0.0,
+        "recall_5": 0.0,
+        "precision_3": 0.0,
+        "ndcg_5": 0.0,
+        "neg_rejection": 0.0,
+        "p50_ms": 422.2692909534089,
+        "p95_ms": 496.69116601580754
+      }
+    ]
+  },
+  "results": [
+    {
+      "system": "candlekeep-explore",
+      "query": "what are the health benefits of curcumin supplementation?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1110.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-951.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1112.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 16.126417031046003,
+      "latency_p95": 46.79412499535829,
+      "latency_p99": 46.79412499535829
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "how do carotenoids protect against oxidative damage?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-953.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 13.427124998997897,
+      "latency_p95": 44.58400001749396,
+      "latency_p99": 44.58400001749396
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "what is the role of folate in preventing neural tube defects?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-850.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-993.md"
+      ],
+      "expected": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-980.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-981.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-984.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-985.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-992.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-994.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1258.md"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 17.17083400581032,
+      "latency_p95": 55.6260829907842,
+      "latency_p99": 55.6260829907842
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "how does cholesterol affect cardiovascular disease risk?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-751.md"
+      ],
+      "expected": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-839.md"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 13.283625012263656,
+      "latency_p95": 50.950000004377216,
+      "latency_p99": 50.950000004377216
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "what causes myocardial infarction in young adults?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-877.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-966.md"
+      ],
+      "expected": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-991.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1019.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1232.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1233.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1318.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1329.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1352.md"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 14.363833994138986,
+      "latency_p95": 45.16529099782929,
+      "latency_p99": 45.16529099782929
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "what triggers apoptosis in tumor cells?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-903.md"
+      ],
+      "expected": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-865.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1180.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1184.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1317.md"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 11.534749995917082,
+      "latency_p95": 41.11683304654434,
+      "latency_p99": 41.11683304654434
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "what are the dietary sources and benefits of magnesium?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1234.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1137.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-951.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 17.139208037406206,
+      "latency_p95": 43.52908401051536,
+      "latency_p99": 43.52908401051536
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "how do prebiotics improve gut microbiome health?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1299.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-706.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1337.md"
+      ],
+      "expected": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1006.md"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 15.55862498935312,
+      "latency_p95": 53.36933402577415,
+      "latency_p99": 53.36933402577415
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "what is the relationship between diabetes and metabolic syndrome?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1236.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1322.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-711.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1061.md"
+      ],
+      "expected": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-816.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-823.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-831.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-888.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1061.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1068.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1072.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1149.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1208.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1227.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1230.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1298.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1302.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1308.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1309.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1328.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1331.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1334.md"
+      ],
+      "rr": 0.25,
+      "hit_5": 1.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.14606834984270645,
+      "neg_rejected": false,
+      "latency_p50": 18.524416023865342,
+      "latency_p95": 48.40949998470023,
+      "latency_p99": 48.40949998470023
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "how does selenium deficiency affect immune function?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1292.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1291.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1293.md"
+      ],
+      "expected": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1137.md"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 17.900125007145107,
+      "latency_p95": 41.86383401975036,
+      "latency_p99": 41.86383401975036
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "what is the connection between cholesterol metabolism and breast cancer prognosis?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-10.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-14.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 15.0031250086613,
+      "latency_p95": 48.685917048715055,
+      "latency_p99": 48.685917048715055
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "how do cholesterol levels influence breast tumor development?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-753.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-754.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-963.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 20.498915982898325,
+      "latency_p95": 57.63837497215718,
+      "latency_p99": 57.63837497215718
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "how does curcumin affect inflammation in arthritis patients?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1110.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1131.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 17.039750004187226,
+      "latency_p95": 52.14437504764646,
+      "latency_p99": 52.14437504764646
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "what role does curcumin play in reducing inflammation and joint disease?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1110.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1112.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 16.192249953746796,
+      "latency_p95": 51.96791695198044,
+      "latency_p99": 51.96791695198044
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "curcumin and inflammation pathways in osteoarthritis treatment",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1110.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1112.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 12.371166958473623,
+      "latency_p95": 38.527917000465095,
+      "latency_p99": 38.527917000465095
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "relationship between insulin resistance and glucose in type 2 diabetes",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1236.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1237.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1062.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 16.693750047124922,
+      "latency_p95": 47.38837503828108,
+      "latency_p99": 47.38837503828108
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "how do insulin and glucose interact in diabetes pathogenesis?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1062.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-894.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 13.128249964211136,
+      "latency_p95": 48.07379096746445,
+      "latency_p99": 48.07379096746445
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "insulin glucose metabolism and diabetes risk factors",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1333.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1322.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1236.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1238.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 18.027084006462246,
+      "latency_p95": 42.23291698144749,
+      "latency_p99": 42.23291698144749
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "does folate lower homocysteine and reduce cognitive decline?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-990.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-986.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-980.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 15.499665983952582,
+      "latency_p95": 48.733500007074326,
+      "latency_p99": 48.733500007074326
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "homocysteine folate and brain atrophy in aging populations",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-980.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 10.713374998886138,
+      "latency_p95": 41.30537499440834,
+      "latency_p99": 41.30537499440834
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "relationship between homocysteine levels and folate supplementation",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-993.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-990.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-987.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-986.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 17.126458988059312,
+      "latency_p95": 48.535542038735,
+      "latency_p99": 48.535542038735
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "how do polyphenols act as antioxidants in cardiovascular disease prevention?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-876.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-967.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 12.847708945628256,
+      "latency_p95": 44.613624981138855,
+      "latency_p99": 44.613624981138855
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "polyphenol effects on cardiovascular risk markers and endothelial function",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-878.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-330.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-967.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 15.720250026788563,
+      "latency_p95": 44.25262496806681,
+      "latency_p99": 44.25262496806681
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "does sulforaphane induce apoptosis in cancer cells?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-903.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 10.113416996318847,
+      "latency_p95": 41.523166990373284,
+      "latency_p99": 41.523166990373284
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "sulforaphane and cancer cell proliferation mechanisms",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1180.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 10.346082970499992,
+      "latency_p95": 43.98620902793482,
+      "latency_p99": 43.98620902793482
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "do flavonoids trigger apoptosis in cancer cells?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-903.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 10.352166020311415,
+      "latency_p95": 37.903624994214624,
+      "latency_p99": 37.903624994214624
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "flavonoid effects on cancer cell apoptosis and proliferation",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1180.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-868.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 13.796415994875133,
+      "latency_p95": 46.657999977469444,
+      "latency_p99": 46.657999977469444
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "how do triglycerides and cholesterol contribute to coronary heart disease?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1257.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1190.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1205.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 15.161374991293997,
+      "latency_p95": 40.72658397490159,
+      "latency_p99": 40.72658397490159
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "triglyceride levels and coronary artery disease risk factors",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1061.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 10.608958953525871,
+      "latency_p95": 37.35137503826991,
+      "latency_p99": 37.35137503826991
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "how does obesity affect insulin sensitivity and diabetes development?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1069.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1062.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 13.288082962390035,
+      "latency_p95": 44.30437501287088,
+      "latency_p99": 44.30437501287088
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "obesity insulin resistance and type 2 diabetes pathways",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1062.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1236.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 14.409333991352469,
+      "latency_p95": 39.95145903900266,
+      "latency_p99": 39.95145903900266
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "how does the mediterranean diet affect cardiovascular disease risk?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-826.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-999.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1374.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 20.149291958659887,
+      "latency_p95": 52.150583011098206,
+      "latency_p99": 52.150583011098206
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "mediterranean diet and cardiovascular health outcomes in clinical trials",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1363.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1374.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-876.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 14.87541600363329,
+      "latency_p95": 45.36870896117762,
+      "latency_p99": 45.36870896117762
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "curcumin supplementation for arthritis pain and joint stiffness",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1127.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1123.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1110.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 14.452167029958218,
+      "latency_p95": 45.27337499894202,
+      "latency_p99": 45.27337499894202
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "antioxidant intake and cardiovascular disease prevention mechanisms",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1327.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-876.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 12.644833012018353,
+      "latency_p95": 40.296792052686214,
+      "latency_p99": 40.296792052686214
+    },
+    {
+      "system": "bedrock-default",
+      "query": "what are the health benefits of curcumin supplementation?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1110.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1110.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1112.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1113.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1112.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 437.63783399481326,
+      "latency_p95": 446.5147909941152,
+      "latency_p99": 446.5147909941152
+    },
+    {
+      "system": "bedrock-default",
+      "query": "how do carotenoids protect against oxidative damage?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1195.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-859.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1200.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1259.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-756.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 430.24675000924617,
+      "latency_p95": 460.70704102749005,
+      "latency_p99": 460.70704102749005
+    },
+    {
+      "system": "bedrock-default",
+      "query": "what is the role of folate in preventing neural tube defects?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-850.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1202.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1201.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-850.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1201.md"
+      ],
+      "expected": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-980.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-981.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-984.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-985.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-992.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-994.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1258.md"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 423.0596669949591,
+      "latency_p95": 445.7090419600718,
+      "latency_p99": 445.7090419600718
+    },
+    {
+      "system": "bedrock-default",
+      "query": "how does cholesterol affect cardiovascular disease risk?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-751.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-751.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1193.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1193.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1207.md"
+      ],
+      "expected": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-839.md"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 429.9752910155803,
+      "latency_p95": 433.68616700172424,
+      "latency_p99": 433.68616700172424
+    },
+    {
+      "system": "bedrock-default",
+      "query": "what causes myocardial infarction in young adults?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1231.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1231.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-751.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1231.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1340.md"
+      ],
+      "expected": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-991.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1019.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1232.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1233.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1318.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1329.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1352.md"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 408.1652910099365,
+      "latency_p95": 425.3775409888476,
+      "latency_p99": 425.3775409888476
+    },
+    {
+      "system": "bedrock-default",
+      "query": "what triggers apoptosis in tumor cells?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1062.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-903.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1060.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1068.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-838.md"
+      ],
+      "expected": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-865.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1180.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1184.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1317.md"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 427.62379202758893,
+      "latency_p95": 445.3135409858078,
+      "latency_p99": 445.3135409858078
+    },
+    {
+      "system": "bedrock-default",
+      "query": "what are the dietary sources and benefits of magnesium?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1109.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1291.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1363.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1374.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-756.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 427.741999970749,
+      "latency_p95": 437.4751669820398,
+      "latency_p99": 437.4751669820398
+    },
+    {
+      "system": "bedrock-default",
+      "query": "how do prebiotics improve gut microbiome health?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1124.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1124.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1131.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1131.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1008.md"
+      ],
+      "expected": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1006.md"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 420.7716250093654,
+      "latency_p95": 441.7295000166632,
+      "latency_p99": 441.7295000166632
+    },
+    {
+      "system": "bedrock-default",
+      "query": "what is the relationship between diabetes and metabolic syndrome?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1236.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1330.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1236.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1063.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1238.md"
+      ],
+      "expected": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-816.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-823.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-831.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-888.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1061.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1068.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1072.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1149.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1208.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1227.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1230.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1298.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1302.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1308.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1309.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1328.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1331.md",
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1334.md"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 422.2692909534089,
+      "latency_p95": 448.8442080328241,
+      "latency_p99": 448.8442080328241
+    },
+    {
+      "system": "bedrock-default",
+      "query": "how does selenium deficiency affect immune function?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-921.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1291.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1293.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-985.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1292.md"
+      ],
+      "expected": [
+        "/var/folders/3g/lryhw59s0tn6gl1zz6pd17x80000gr/T/ck_nfcorpus_iis08rtw/MED-1137.md"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 423.8593329791911,
+      "latency_p95": 432.92925000423566,
+      "latency_p99": 432.92925000423566
+    },
+    {
+      "system": "bedrock-default",
+      "query": "what is the connection between cholesterol metabolism and breast cancer prognosis?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1207.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-10.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1204.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-751.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-14.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 443.8439579680562,
+      "latency_p95": 496.69116601580754,
+      "latency_p99": 496.69116601580754
+    },
+    {
+      "system": "bedrock-default",
+      "query": "how do cholesterol levels influence breast tumor development?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1207.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1204.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1207.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1205.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1319.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 443.4974159812555,
+      "latency_p95": 461.781041987706,
+      "latency_p99": 461.781041987706
+    },
+    {
+      "system": "bedrock-default",
+      "query": "how does curcumin affect inflammation in arthritis patients?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1112.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1110.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1110.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1113.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1112.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 429.06216700794175,
+      "latency_p95": 464.57491599721834,
+      "latency_p99": 464.57491599721834
+    },
+    {
+      "system": "bedrock-default",
+      "query": "what role does curcumin play in reducing inflammation and joint disease?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1112.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1110.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1110.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1113.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1112.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 398.2298750197515,
+      "latency_p95": 421.4225000469014,
+      "latency_p99": 421.4225000469014
+    },
+    {
+      "system": "bedrock-default",
+      "query": "curcumin and inflammation pathways in osteoarthritis treatment",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1112.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1110.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1110.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1113.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1112.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 455.8804170228541,
+      "latency_p95": 493.89229202643037,
+      "latency_p99": 493.89229202643037
+    },
+    {
+      "system": "bedrock-default",
+      "query": "relationship between insulin resistance and glucose in type 2 diabetes",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1322.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1333.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1320.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1061.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1236.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 416.2673330283724,
+      "latency_p95": 448.7594579695724,
+      "latency_p99": 448.7594579695724
+    },
+    {
+      "system": "bedrock-default",
+      "query": "how do insulin and glucose interact in diabetes pathogenesis?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1236.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1333.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1238.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1236.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1237.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 426.23545799870044,
+      "latency_p95": 433.40983300004154,
+      "latency_p99": 433.40983300004154
+    },
+    {
+      "system": "bedrock-default",
+      "query": "insulin glucose metabolism and diabetes risk factors",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1333.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1238.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1238.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1061.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1236.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 417.09533403627574,
+      "latency_p95": 458.7804170441814,
+      "latency_p99": 458.7804170441814
+    },
+    {
+      "system": "bedrock-default",
+      "query": "does folate lower homocysteine and reduce cognitive decline?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-986.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-990.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-980.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-990.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-982.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 430.2562910015695,
+      "latency_p95": 441.0529999877326,
+      "latency_p99": 441.0529999877326
+    },
+    {
+      "system": "bedrock-default",
+      "query": "homocysteine folate and brain atrophy in aging populations",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-980.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-980.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-980.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-990.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-990.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 359.0873750508763,
+      "latency_p95": 374.16837498312816,
+      "latency_p99": 374.16837498312816
+    },
+    {
+      "system": "bedrock-default",
+      "query": "relationship between homocysteine levels and folate supplementation",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-992.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-986.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-990.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-988.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-981.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 426.1550839873962,
+      "latency_p95": 447.6937080034986,
+      "latency_p99": 447.6937080034986
+    },
+    {
+      "system": "bedrock-default",
+      "query": "how do polyphenols act as antioxidants in cardiovascular disease prevention?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1234.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-897.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1181.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-712.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1200.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 401.9062909646891,
+      "latency_p95": 424.7447079978883,
+      "latency_p99": 424.7447079978883
+    },
+    {
+      "system": "bedrock-default",
+      "query": "polyphenol effects on cardiovascular risk markers and endothelial function",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-878.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1234.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1373.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-880.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1373.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 400.8282090071589,
+      "latency_p95": 473.86083303717896,
+      "latency_p99": 473.86083303717896
+    },
+    {
+      "system": "bedrock-default",
+      "query": "does sulforaphane induce apoptosis in cancer cells?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1184.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-895.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-838.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-903.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1180.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 387.8172080148943,
+      "latency_p95": 416.84945800807327,
+      "latency_p99": 416.84945800807327
+    },
+    {
+      "system": "bedrock-default",
+      "query": "sulforaphane and cancer cell proliferation mechanisms",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1184.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1180.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-895.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1184.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1112.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 438.1010830402374,
+      "latency_p95": 443.44849995104596,
+      "latency_p99": 443.44849995104596
+    },
+    {
+      "system": "bedrock-default",
+      "query": "do flavonoids trigger apoptosis in cancer cells?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-838.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-752.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1180.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-903.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-887.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 398.5961669823155,
+      "latency_p95": 436.7274999967776,
+      "latency_p99": 436.7274999967776
+    },
+    {
+      "system": "bedrock-default",
+      "query": "flavonoid effects on cancer cell apoptosis and proliferation",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1180.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-838.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1180.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-752.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-850.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 461.2147079897113,
+      "latency_p95": 535.3795840055682,
+      "latency_p99": 535.3795840055682
+    },
+    {
+      "system": "bedrock-default",
+      "query": "how do triglycerides and cholesterol contribute to coronary heart disease?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1257.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-751.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1061.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-751.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-726.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 423.7206659745425,
+      "latency_p95": 435.8889169525355,
+      "latency_p99": 435.8889169525355
+    },
+    {
+      "system": "bedrock-default",
+      "query": "triglyceride levels and coronary artery disease risk factors",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-726.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-751.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-907.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1061.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-726.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 380.4948750184849,
+      "latency_p95": 427.8627500170842,
+      "latency_p99": 427.8627500170842
+    },
+    {
+      "system": "bedrock-default",
+      "query": "how does obesity affect insulin sensitivity and diabetes development?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1238.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1238.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1298.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1236.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1333.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 397.3740410292521,
+      "latency_p95": 421.57662502722815,
+      "latency_p99": 421.57662502722815
+    },
+    {
+      "system": "bedrock-default",
+      "query": "obesity insulin resistance and type 2 diabetes pathways",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1236.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1236.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1298.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1237.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1062.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 402.99179102294147,
+      "latency_p95": 435.0843339925632,
+      "latency_p99": 435.0843339925632
+    },
+    {
+      "system": "bedrock-default",
+      "query": "how does the mediterranean diet affect cardiovascular disease risk?",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1362.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1363.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1374.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1366.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1371.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 419.9604169698432,
+      "latency_p95": 424.8922079568729,
+      "latency_p99": 424.8922079568729
+    },
+    {
+      "system": "bedrock-default",
+      "query": "mediterranean diet and cardiovascular health outcomes in clinical trials",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1362.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1374.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1371.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1363.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1366.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 386.95541699416935,
+      "latency_p95": 419.92316697724164,
+      "latency_p99": 419.92316697724164
+    },
+    {
+      "system": "bedrock-default",
+      "query": "curcumin supplementation for arthritis pain and joint stiffness",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1110.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1110.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1112.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1113.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1112.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 372.53770901588723,
+      "latency_p95": 380.693125014659,
+      "latency_p99": 380.693125014659
+    },
+    {
+      "system": "bedrock-default",
+      "query": "antioxidant intake and cardiovascular disease prevention mechanisms",
+      "category": "relationship",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/benchmark/MED-1234.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1195.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-876.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-756.md",
+        "s3://nala-security-knowledge-base/benchmark/MED-1200.md"
+      ],
+      "expected": [],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 378.804708016105,
+      "latency_p95": 453.97641602903605,
+      "latency_p99": 453.97641602903605
+    }
+  ]
+}
