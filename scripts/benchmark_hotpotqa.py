@@ -356,7 +356,8 @@ def ingest_phase(config: BenchmarkConfig):
     if os.environ.get("CANDLEKEEP_ALIAS_LINKER", "false").lower() == "true":
         llm = UnifiedLLMBridge(config)
 
-    store.add_documents(all_chunks, llm=llm)
+    # Use the High-Resolution Transformer model for the benchmark
+    store.add_documents(all_chunks, llm=llm, extractor_model="en_core_web_trf")
 
     # 3. Ingest LlamaIndex
     if not config.skip_li:

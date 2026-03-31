@@ -68,7 +68,7 @@ class ChromaVectorStore(VectorDatabase):
         content = f"{chunk.metadata['source']}:{chunk.chunk_index}:{chunk.text[:100]}"
         return hashlib.sha256(content.encode()).hexdigest()[:16]
 
-    def add_documents(self, chunks: list[Chunk], collection: str = "default", llm: Any = None) -> int:
+    def add_documents(self, chunks: list[Chunk], collection: str = "default", llm: Any = None, extractor_model: str = "en_core_web_sm") -> int:
         """Add chunks to the vector store."""
         if not chunks:
             return 0
@@ -89,7 +89,7 @@ class ChromaVectorStore(VectorDatabase):
         try:
             from candlekeep.rag.extractor import get_extractor
             from candlekeep.database.graph_store import get_graph_store, schedule_graph_rebuild
-            extractor = get_extractor(ruler_path=self.settings.entity_ruler_path)
+            extractor = get_extractor(ruler_path=self.settings.entity_ruler_path, model_name=extractor_model)
             graph_store = get_graph_store(self.settings)
             mentions: list[tuple[str, str, int]] = []
             for meta, text, chunk in zip(metadatas, texts, chunks):
