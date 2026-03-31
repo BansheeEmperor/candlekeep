@@ -3,6 +3,7 @@ import hashlib
 import os
 import sys
 from pathlib import Path
+from typing import Any
 import chromadb
 import chromadb.errors
 from candlekeep.config import Settings
@@ -67,13 +68,12 @@ class ChromaVectorStore(VectorDatabase):
         content = f"{chunk.metadata['source']}:{chunk.chunk_index}:{chunk.text[:100]}"
         return hashlib.sha256(content.encode()).hexdigest()[:16]
 
-    def add_documents(self, chunks: list[Chunk], collection: str = "default") -> int:
+    def add_documents(self, chunks: list[Chunk], collection: str = "default", llm: Any = None) -> int:
         """Add chunks to the vector store."""
         if not chunks:
             return 0
 
-        # Delete existing chunks from same sources (without touching BM25 cache —
-        # we handle the cache update atomically below).
+        # Delete existing chunks from same sources
         sources = set(c.metadata["source"] for c in chunks)
         for source in sources:
             results = self.collection.get(where={"source": source})
@@ -106,25 +106,26 @@ class ChromaVectorStore(VectorDatabase):
         except Exception:
             pass  # entity extraction must never block ingestion
 
-        self.collection.upsert(ids=ids, embeddings=embeddings, documents=texts, metadatas=metadatas)
+        # Batch upsert to avoid exceeding maximum batch size (e.g. 5461 in Chroma)
+        batch_size = 1000
+        for i in range(0, len(ids), batch_size):
+            end = i + batch_size
+            self.collection.upsert(
+                ids=ids[i:end], 
+                embeddings=embeddings[i:end], 
+                documents=texts[i:end], 
+                metadatas=metadatas[i:end]
+            )
 
-        # Incrementally update BM25 cache: remove old source chunks, add new ones.
-        # This avoids the full ChromaDB fetch + re-tokenization of clear_bm25_cache().
-        from candlekeep.rag.hybrid import update_bm25_cache
-        from candlekeep.database.interface import SearchResult
-        new_search_results = [
-            SearchResult(text=t, metadata=m, score=1.0, doc_id=doc_id)
-            for doc_id, t, m in zip(ids, texts, metadatas)
-        ]
-        for source in sources:
-            update_bm25_cache(new_search_results, removed_source=source)
+        # Reset sparse caches for lazy rebuild on next search.
+        from candlekeep.rag.hybrid import clear_bm25_cache
+        clear_bm25_cache()
 
         # If ColBERT backend is active, mark its index dirty for lazy rebuild.
         import os
         if os.getenv("CANDLEKEEP_SPARSE_BACKEND", "bm25") == "colbert":
-            from candlekeep.rag.colbert import update_colbert_cache
-            for source in sources:
-                update_colbert_cache(new_search_results, removed_source=source)
+            from candlekeep.rag.colbert import mark_colbert_dirty
+            mark_colbert_dirty()
 
         # Schedule background normalisation map rebuild. Non-blocking —
         # mirrors the ColBERT dirty-flag pattern. Queries use the stale
