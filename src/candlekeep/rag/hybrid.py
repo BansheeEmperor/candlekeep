@@ -43,6 +43,12 @@ def update_bm25_cache(db):
     _bm25_cache = BM25Okapi(tokenized_corpus)
     return _bm25_cache, _corpus_ids
 
+def remove_from_bm25_cache(source: str):
+    """Clear BM25 cache when a source is removed."""
+    global _bm25_cache, _corpus_ids
+    _bm25_cache = None
+    _corpus_ids = None
+
 def _tokenize(text: str) -> List[str]:
     """Surgical tokenization for technical documentation."""
     # Preserves: versions (v1.2), flags (--flag), paths (/var/log)

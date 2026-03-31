@@ -28,8 +28,9 @@ def _tech_tokens(text: str) -> list[str]:
 class EntityExtractor:
     """Extract technical entities using spaCy NER + entity ruler + pattern matching."""
 
-    def __init__(self, ruler_path: Path | None = None):
+    def __init__(self, ruler_path: Path | None = None, model_name: str = "en_core_web_sm"):
         self._ruler_path = ruler_path
+        self._model_name = model_name
         self._nlp = None
 
     @property
@@ -37,17 +38,12 @@ class EntityExtractor:
         if self._nlp is None:
             import spacy
             try:
-                # Upgrade to transformer-based model for high-resolution NER (MuSiQue names/titles)
-                # If not available, fall back to small model but enable parser for better noun chunking.
-                self._nlp = spacy.load("en_core_web_trf", disable=["lemmatizer"])
+                # Default to small model for speed, but keep parser enabled for noun chunks
+                self._nlp = spacy.load(self._model_name, disable=["lemmatizer"])
             except OSError:
-                print("  ⚠ en_core_web_trf not found, falling back to en_core_web_sm with parser.")
-                try:
-                    self._nlp = spacy.load("en_core_web_sm", disable=["lemmatizer"])
-                except OSError:
-                    from spacy.cli import download
-                    download("en_core_web_sm")
-                    self._nlp = spacy.load("en_core_web_sm", disable=["lemmatizer"])
+                from spacy.cli import download
+                download(self._model_name)
+                self._nlp = spacy.load(self._model_name, disable=["lemmatizer"])
 
             if self._ruler_path and self._ruler_path.exists():
                 ruler = self._nlp.add_pipe("entity_ruler", before="ner")
@@ -88,10 +84,10 @@ class EntityExtractor:
 _extractor: EntityExtractor | None = None
 
 
-def get_extractor(ruler_path: Path | None = None) -> EntityExtractor:
+def get_extractor(ruler_path: Path | None = None, model_name: str = "en_core_web_sm") -> EntityExtractor:
     global _extractor
-    if _extractor is None:
-        _extractor = EntityExtractor(ruler_path)
+    if _extractor is None or _extractor._model_name != model_name:
+        _extractor = EntityExtractor(ruler_path, model_name=model_name)
     return _extractor
 
 
