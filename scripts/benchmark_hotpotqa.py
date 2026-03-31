@@ -1,8 +1,14 @@
 """
-Scientific Multi-Hop RAG Benchmark (HotpotQA).
-Optimized Comparison: LlamaIndex-Graph vs Candlekeep-Explore.
-All judge/logic tasks powered by Claude 4.5 Sonnet.
-FAIRNESS: Removed hidden LLM synonym expansion from LlamaIndex to match CK speed.
+Scientific Multi-Hop RAG Benchmark (HotpotQA & MuSiQue).
+
+Standardized suite for comparing Candlekeep against LlamaIndex using a normalized 
+evaluation methodology:
+1.  Context Normalization: Caps retrieved context at 8,000 characters to compare 
+    information density/precision rather than raw volume.
+2.  Economic Tracking: Measures automated API costs per 1,000 queries to highlight 
+    architectural efficiency trade-offs.
+3.  Recursive Support: Benchmarks deep reasoning chains (3+ hops) via dataset-aware 
+    graph traversal controls.
 """
 
 import argparse
