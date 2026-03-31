@@ -133,11 +133,20 @@ def explore_search(
     category: str | None = None,
     depth: int = 1,
 ) -> List[SearchResult]:
-    """Hybrid search with recursive smart graph expansion."""
+    """Hybrid search with recursive smart graph expansion and path scoring.
+
+    1. Extract entities from query.
+    2. Identify unpaired entities (co-occurring partners not in query).
+    3. Recursively expand entities up to 'depth' with Path Scoring.
+    4. Dynamically allocate M slots for graph results based on depth.
+    5. Fill slots with unique graph docs sorted by cumulative path similarity.
+    """
     from candlekeep.rag.arcane_recall import expand_results
     from candlekeep.rag.extractor import get_extractor
 
-    m_slots = 2
+    # Dynamic slots: ensure enough room for deep chains, but keep RRF anchor
+    # e.g. depth 1 (2-hop) -> 3 slots; depth 3 (4-hop) -> 6 slots
+    m_slots = min(n_results - 2, (depth + 1) * 2)
 
     # Standard 2-way RRF
     vector_results = db.search(query, n_results=n_results * 4, category=category)
@@ -150,7 +159,9 @@ def explore_search(
     extractor = get_extractor()
     query_entities = set(extractor.extract(query))
     
-    # 1. Identify unpaired entities in the query
+    # 1. Identify "seeds" for expansion: entities in the query
+    # We prioritize expansion for entities that don't have their co-occurring 
+    # partners already present in the query (unpaired).
     unpaired = set()
     for ent in query_entities:
         neighbors = db.graph_store.get_related(ent, top_n=50)
@@ -158,49 +169,74 @@ def explore_search(
         if not is_paired:
             unpaired.add(ent)
 
-    # 2. Expand recursively up to 'depth'
-    to_expand = unpaired
-    discovered_entities = set()
+    # 2. Expand recursively with Path Scoring
+    # entity_scores: {entity: cumulative_jaccard_score}
+    entity_scores = {ent: 1.0 for ent in unpaired}
+    to_expand = list(unpaired)
     
     for _ in range(depth):
-        level_discovered = set()
+        level_discovered = {}
         for ent in to_expand:
-            neighbors = db.graph_store.get_related(ent, top_n=5)
-            for n_ent, _ in neighbors:
-                if n_ent not in query_entities and n_ent not in discovered_entities:
-                    level_discovered.add(n_ent)
+            parent_score = entity_scores[ent]
+            # Large fan-out for reranking
+            neighbors = db.graph_store.get_related(ent, top_n=20)
+            for n_ent, jaccard in neighbors:
+                if n_ent in query_entities: continue
+                
+                # Path Scoring: Score = Path Similarity * Edge Similarity
+                path_score = parent_score * jaccard
+                if path_score > level_discovered.get(n_ent, 0):
+                    level_discovered[n_ent] = path_score
         
         if not level_discovered:
             break
             
-        discovered_entities.update(level_discovered)
-        to_expand = level_discovered
+        # Merge level results into main score map
+        for ent, score in level_discovered.items():
+            if score > entity_scores.get(ent, 0):
+                entity_scores[ent] = score
+        
+        # Next level expansion: follow only the top paths to control noise
+        to_expand = sorted(level_discovered.keys(), key=lambda x: level_discovered[x], reverse=True)[:5]
 
     # 3. Collect unique documents from discovered entities
+    # doc_id -> highest path score that reached it
+    candidate_docs = {}
+    for ent, score in entity_scores.items():
+        if ent in query_entities: continue # Don't pull query docs into graph slots
+        
+        mentions = db.graph_store.get_entity_mentions(ent, limit=5)
+        for doc_id, _ in mentions:
+            if score > candidate_docs.get(doc_id, 0):
+                candidate_docs[doc_id] = score
+
+    # Sort candidate documents by their best path score
+    sorted_doc_ids = sorted(candidate_docs.keys(), key=lambda x: candidate_docs[x], reverse=True)
+    
     graph_unique = []
     seen_ids = {r.doc_id for r in fused[:n_results - m_slots]}
     
-    for ent in discovered_entities:
-        mentions = db.graph_store.get_entity_mentions(ent, limit=5)
-        for doc_id, _ in mentions:
-            if doc_id not in seen_ids:
-                # Fetch full doc data
-                data = db.collection.get(ids=[doc_id])
-                if data['documents']:
+    # 4. Fill slots with batch-fetched docs for efficiency
+    if sorted_doc_ids:
+        to_fetch = [did for did in sorted_doc_ids if did not in seen_ids][:m_slots * 2]
+        if to_fetch:
+            data = db.collection.get(ids=to_fetch)
+            doc_data_map = {did: (txt, meta) for did, txt, meta in zip(data['ids'], data['documents'], data['metadatas'])}
+            
+            for did in to_fetch:
+                if did in doc_data_map:
+                    txt, meta = doc_data_map[did]
                     res = SearchResult(
-                        doc_id=doc_id,
-                        text=data['documents'][0],
-                        metadata=data['metadatas'][0],
-                        score=0.1  # Heuristic score for graph matches
+                        doc_id=did,
+                        text=txt,
+                        metadata=meta,
+                        score=candidate_docs[did] # Graph-specific path score
                     )
                     graph_unique.append(res)
-                    seen_ids.add(doc_id)
-            if len(graph_unique) >= m_slots:
-                break
-        if len(graph_unique) >= m_slots:
-            break
+                    if len(graph_unique) >= m_slots:
+                        break
 
-    # 4. Fill slots
+    # 5. Combine RRF results with Graph results
     final = fused[:n_results - m_slots]
     final.extend(graph_unique)
     

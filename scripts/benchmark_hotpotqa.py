@@ -56,7 +56,14 @@ class BenchmarkConfig:
     concurrency: int = 8
     use_cloud: bool = False
     no_recall: bool = False
-    top_k: int = 15 # Initial retrieval k; results are subsequently trimmed by character count.
+    skip_li: bool = False
+    
+    # Hybrid Graph Toggles
+    use_mknn: bool = False
+    use_orphan_grounding: bool = False
+    use_clustering: bool = False
+    
+    top_k: int = 25 # Initial retrieval k; results are subsequently trimmed by character count.
     
     # Recursive Depth for graph traversal
     # HotpotQA: 1 hop (2 docs)
@@ -299,7 +306,7 @@ def ingest_phase(config: BenchmarkConfig):
             doc = json.loads(line)
             corpus_map[doc["_id"]] = doc["text"]
 
-    sandbox_dir = Path("tests/fixtures/hotpot_sandbox")
+    sandbox_dir = Path(f"tests/fixtures/{config.dataset}_sandbox")
     sandbox_dir.mkdir(exist_ok=True)
     for f in sandbox_dir.glob("*.md"): f.unlink()
 
@@ -319,45 +326,58 @@ def ingest_phase(config: BenchmarkConfig):
 
     # 2. Ingest Candlekeep
     print("  (Ingesting Candlekeep...)")
+    os.environ["CANDLEKEEP_MIN_COOCCURRENCE"] = "1"
+    os.environ["CANDLEKEEP_USE_MKNN"] = "true" if config.use_mknn else "false"
+    os.environ["CANDLEKEEP_USE_ORPHAN_GROUNDING"] = "true" if config.use_orphan_grounding else "false"
+    os.environ["CANDLEKEEP_USE_CLUSTERING"] = "true" if config.use_clustering else "false"
+    
     settings = Settings.from_env()
     settings.device = "mps"
     settings.data_dir = Path(config.ck_dir)
     settings.data_dir.mkdir(parents=True, exist_ok=True)
     store = ChromaVectorStore(settings)
-    try: store.client.delete_collection("hotpot_flagship")
-    except Exception: pass
-    store.collection = store.client.get_or_create_collection("hotpot_flagship")
+    collection_name = f"{config.dataset}_flagship"
+    try: store.client.delete_collection(collection_name)
+    except: pass
+    store.collection = store.client.get_or_create_collection(collection_name)
     processor = DocumentProcessor(settings)
     all_chunks = []
     for path in doc_paths:
         res = processor.process(path)
         all_chunks.extend(res.chunks)
-    store.add_documents(all_chunks)
+    # Initialize LLM bridge for Alias Linker if needed
+    llm = None
+    if os.environ.get("CANDLEKEEP_ALIAS_LINKER", "false").lower() == "true":
+        llm = UnifiedLLMBridge(config)
+
+    store.add_documents(all_chunks, llm=llm)
 
     # 3. Ingest LlamaIndex
-    print(f"  (Ingesting LlamaIndex Graph for {len(doc_paths)} docs...)")
-    from llama_index.core import PropertyGraphIndex, Document
-    from llama_index.core.indices.property_graph import SimpleLLMPathExtractor
-    from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+    if not config.skip_li:
+        print(f"  (Ingesting LlamaIndex Graph for {len(doc_paths)} docs...)")
+        from llama_index.core import PropertyGraphIndex, Document
+        from llama_index.core.indices.property_graph import SimpleLLMPathExtractor
+        from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+        
+        documents = [Document(text=p.read_text(), id_=p.stem, metadata={"file_name": p.name}) for p in doc_paths]
+        li_llm = UnifiedLLMBridge(config)
+        li_embed = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5", device="mps")
+        extractor = SimpleLLMPathExtractor(llm=li_llm, max_paths_per_chunk=10, num_workers=8)
+        
+        # Stable pattern: Let PropertyGraphIndex handle the orchestration
+        # We use show_progress to keep the socket alive and see what's happening
+        index = PropertyGraphIndex.from_documents(
+            documents,
+            llm=li_llm,
+            embed_model=li_embed,
+            property_graph_extractors=[extractor],
+            show_progress=True
+        )
+        
+        shutil.rmtree(config.li_dir, ignore_errors=True)
+        os.makedirs(config.li_dir, exist_ok=True)
+        index.storage_context.persist(persist_dir=config.li_dir)
     
-    documents = [Document(text=p.read_text(), id_=p.stem, metadata={"file_name": p.name}) for p in doc_paths]
-    li_llm = UnifiedLLMBridge(config)
-    li_embed = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5", device="mps")
-    extractor = SimpleLLMPathExtractor(llm=li_llm, max_paths_per_chunk=10, num_workers=4)
-    
-    # Stable pattern: Let PropertyGraphIndex handle the orchestration
-    # We use show_progress to keep the socket alive and see what's happening
-    index = PropertyGraphIndex.from_documents(
-        documents,
-        llm=li_llm,
-        embed_model=li_embed,
-        property_graph_extractors=[extractor],
-        show_progress=True
-    )
-    
-    shutil.rmtree(config.li_dir, ignore_errors=True)
-    os.makedirs(config.li_dir, exist_ok=True)
-    index.storage_context.persist(persist_dir=config.li_dir)
     print("  ✓ All Indexes Persisted.")
 
 def generate_answer(query: str, contexts: List[str], config: BenchmarkConfig) -> str:
@@ -389,7 +409,10 @@ def benchmark_phase(config: BenchmarkConfig):
     settings.device = "mps"
     settings.data_dir = Path(config.ck_dir)
     ck_store = ChromaVectorStore(settings)
-    ck_store.collection = ck_store.client.get_or_create_collection("hotpot_flagship")
+    
+    # Use a dataset-specific collection name
+    collection_name = f"{config.dataset}_flagship"
+    ck_store.collection = ck_store.client.get_or_create_collection(collection_name)
 
     # Initialize graph store
     from candlekeep.database.graph_store import GraphStore
@@ -400,21 +423,24 @@ def benchmark_phase(config: BenchmarkConfig):
     search_with_routing(ck_store, "warmup query", n_results=1, query_type="explore")
     
     # 2. Load LlamaIndex (LEAN CONFIGURATION)
-    from llama_index.core import StorageContext, load_index_from_storage
-    from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-    from llama_index.core.indices.property_graph import VectorContextRetriever
-    
-    li_embed = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5", device="mps")
-    li_llm = UnifiedLLMBridge(config)
-    li_storage = StorageContext.from_defaults(persist_dir=config.li_dir)
-    # MUST PASS LLM HERE AS WELL
-    li_index = load_index_from_storage(storage_context=li_storage, llm=li_llm, embed_model=li_embed)
-    
-    # Use Default Retriever (includes LLM Synonym Expansion) for true out-of-the-box comparison
-    li_retriever = li_index.as_retriever(
-        similarity_top_k=config.top_k,
-        path_depth=config.path_depth
-    )
+    li_llm = None
+    if not config.skip_li:
+        from llama_index.core import StorageContext, load_index_from_storage
+        from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+        
+        li_embed = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5", device="mps")
+        li_llm = UnifiedLLMBridge(config)
+        li_storage = StorageContext.from_defaults(persist_dir=config.li_dir)
+        # MUST PASS LLM HERE AS WELL
+        li_index = load_index_from_storage(storage_context=li_storage, llm=li_llm, embed_model=li_embed)
+        
+        # Use Default Retriever (includes LLM Synonym Expansion) for true out-of-the-box comparison
+        li_retriever = li_index.as_retriever(
+            similarity_top_k=config.top_k,
+            path_depth=config.path_depth
+        )
+    else:
+        li_retriever = None
 
     def calculate_hop(contexts, titles):
         text = "\n\n".join(contexts).lower()
@@ -474,25 +500,11 @@ def benchmark_phase(config: BenchmarkConfig):
             
         return results_data, retrieval_cost
 
-    # Isolate the Graph-Only retriever for LlamaIndex
-    from llama_index.core.indices.property_graph import LLMSynonymRetriever
-    li_graph_only = li_index.as_retriever(
-        sub_retrievers=[
-            LLMSynonymRetriever(
-                li_index.property_graph_store,
-                llm=li_llm,
-                include_text=True,
-                similarity_top_k=config.top_k,
-                path_depth=config.path_depth
-            )
-        ]
-    )
-
     frameworks = {
         "Candlekeep-Explore": (ck_store, "candlekeep"), 
-        "LlamaIndex-Graph": (li_retriever, "llamaindex"),
-        "LlamaIndex-Graph-Only": (li_graph_only, "llamaindex-graph-only")
     }
+    if not config.skip_li:
+        frameworks["LlamaIndex-Graph"] = (li_retriever, "llamaindex")
     
     final_report = {}
     for name, (runner, type_id) in frameworks.items():
@@ -550,6 +562,13 @@ def main():
     parser.add_argument("--provider", type=str, default="bedrock", choices=["bedrock", "openai", "gemini"])
     parser.add_argument("--dataset", type=str, default="hotpotqa", choices=["hotpotqa", "musique"])
     parser.add_argument("--depth", type=int, default=1, help="Recursive traversal depth")
+    parser.add_argument("--skip-li", action="store_true", help="Skip LlamaIndex ingestion/benchmark")
+    
+    # Hybrid Graph Flags
+    parser.add_argument("--mknn", action="store_true", help="Enable Mutual K-Nearest Neighbors links")
+    parser.add_argument("--og", action="store_true", help="Enable Orphan Grounding (vector search for unlinked entities)")
+    parser.add_argument("--ec", action="store_true", help="Enable Entity Clustering (semantic canonicalization)")
+    
     parser.add_argument("--eval-model", type=str, help="Override evaluator model ID")
     parser.add_argument("--gen-model", type=str, help="Override generator model ID")
     args = parser.parse_args()
@@ -561,7 +580,11 @@ def main():
         use_cloud=args.cloud,
         provider=args.provider,
         dataset=args.dataset,
-        path_depth=args.depth
+        path_depth=args.depth,
+        skip_li=args.skip_li,
+        use_mknn=args.mknn,
+        use_orphan_grounding=args.og,
+        use_clustering=args.ec
     )
     if args.eval_model: config.evaluator_model = args.eval_model
     if args.gen_model: config.generator_model = args.gen_model
