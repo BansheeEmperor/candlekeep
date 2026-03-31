@@ -1,186 +1,126 @@
-"""Sweep expansion_chunks and similarity threshold on the Centurion Set.
 
-Runs two independent sweeps against the full 108-query evaluation suite:
-  1. expansion_chunks: ±1, ±2, ±3 (with default threshold 0.92)
-  2. similarity_threshold: 0.85, 0.88, 0.90, 0.92, 0.95 (with default ±2)
-
-Results are saved to tests/results/ for diary entry.
-"""
 import sys
 import os
-
-os.environ["CANDLEKEEP_DEVICE"] = "cpu"
-
 import json
-import tempfile
-import shutil
+import time
+import asyncio
 from pathlib import Path
-from unittest.mock import patch
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-sys.path.append(str(Path(__file__).parent.parent / "src"))
-
+from scripts.benchmark_hotpotqa import BenchmarkConfig, load_benchmark_queries
 from candlekeep.config import Settings
 from candlekeep.database.vector_store import ChromaVectorStore
-from candlekeep.rag.processor import DocumentProcessor
-from candlekeep.rag.router import search_with_routing
-from candlekeep.rag.arcane_recall import search_with_arcane_recall, should_expand
-from candlekeep.eval.runner import BenchmarkRunner, EvalQuery
+from candlekeep.database.graph_store import GraphStore
+from candlekeep.rag.extractor import get_extractor
+from candlekeep.rag.hybrid import _get_sparse_results, reciprocal_rank_fusion
 
+def run_parametrized_search(db, q, config, breadth, neighbor_depth, mentions_limit, score_threshold):
+    query = q['query']
+    required_titles = {t.lower() for t in q['required_titles']}
+    depth = config.path_depth
+    
+    # Standard 2-way RRF (Baseline)
+    vector_results = db.search(query, n_results=25 * 4)
+    sparse_results = _get_sparse_results(db, query, 25 * 4)
+    fused = reciprocal_rank_fusion(
+        [vector_results, sparse_results], k=60, top_n=25 * 4,
+    )
 
-def setup_database():
-    """Create and seed a temporary database. Returns (vector_store, temp_dir)."""
-    temp_dir = tempfile.mkdtemp(prefix="candlekeep_sweep_")
+    # 1. Extraction
+    extractor = get_extractor()
+    query_entities = set(extractor.extract(query))
+
+    # 2. Expansion Seeds
+    unpaired = set()
+    for ent in query_entities:
+        neighbors = db.graph_store.get_related(ent, top_n=50)
+        is_paired = any(n[0] in query_entities for n in neighbors)
+        if not is_paired:
+            unpaired.add(ent)
+
+    # 3. Recursive Expansion
+    entity_scores = {ent: 1.0 for ent in unpaired}
+    to_expand = list(unpaired)
+    
+    for d in range(depth):
+        level_discovered = {}
+        for ent in to_expand:
+            parent_score = entity_scores[ent]
+            neighbors = db.graph_store.get_related(ent, top_n=neighbor_depth)
+            for n_ent, jaccard in neighbors:
+                if n_ent in query_entities: continue
+                path_score = parent_score * jaccard
+                if path_score < score_threshold: continue
+                if path_score > level_discovered.get(n_ent, 0):
+                    level_discovered[n_ent] = path_score
+        
+        if not level_discovered: break
+        for ent, score in level_discovered.items():
+            if score > entity_scores.get(ent, 0):
+                entity_scores[ent] = score
+        to_expand = sorted(level_discovered.keys(), key=lambda x: level_discovered[x], reverse=True)[:breadth]
+
+    # 4. Final Document Gathering
+    candidate_docs = {}
+    for ent, score in entity_scores.items():
+        if ent in query_entities: continue
+        mentions = db.graph_store.get_entity_mentions(ent, limit=mentions_limit)
+        for doc_id, _ in mentions:
+            if score > candidate_docs.get(doc_id, 0):
+                candidate_docs[doc_id] = score
+    
+    sorted_doc_ids = sorted(candidate_docs.keys(), key=lambda x: candidate_docs[x], reverse=True)
+    
+    # 5. Combine RRF results with Graph results
+    m_slots = min(25 - 2, (depth + 1) * 2)
+    final_results = fused[:25 - m_slots]
+    
+    graph_results = []
+    if sorted_doc_ids:
+        to_fetch = [did for did in sorted_doc_ids][:m_slots]
+        res = db.collection.get(ids=to_fetch)
+        docs = res.get('documents', [])
+        for txt in docs:
+            graph_results.append(txt)
+            
+    context_text = "\n\n".join([r.text for r in final_results] + graph_results).lower()
+    found = sum(1 for t in required_titles if t in context_text)
+    return found / len(required_titles)
+
+async def sweep():
+    config = BenchmarkConfig(dataset="musique", subset_n=50, path_depth=3, sandbox_size=5000)
+    queries = load_benchmark_queries(config)
+    
     settings = Settings.from_env()
-    settings.chroma_path = temp_dir
-    vector_store = ChromaVectorStore(settings)
-    processor = DocumentProcessor(settings)
+    settings.data_dir = Path(config.ck_dir)
+    db = ChromaVectorStore(settings)
+    db.collection = db.client.get_collection(f"{config.dataset}_flagship")
+    db.graph_store = GraphStore(settings.data_dir / "graph.db")
 
-    fixtures_dir = Path(__file__).parent.parent / "tests" / "fixtures"
-    for doc_path in list((fixtures_dir / "sample_docs").glob("*")) + \
-                     list((fixtures_dir / "scale_docs").glob("*")):
-        if doc_path.is_file():
-            chunks = processor.process(str(doc_path))
-            vector_store.add_documents(chunks)
+    base = {"breadth": 5, "neigh": 20, "mentions": 5, "thresh": 0.0}
+    knobs = {
+        "Expansion Breadth": ("breadth", [5, 10, 15, 20]),
+        "Neighbor Depth": ("neigh", [20, 40, 60, 100]),
+        "Mention Coverage": ("mentions", [5, 10, 15, 20]),
+        "Score Threshold": ("thresh", [0.0, 0.02, 0.05, 0.1])
+    }
 
-    return vector_store, temp_dir
+    print("="*60)
+    print(f"SWEEPING MUSIQUE (50 QUERIES, DEPTH 3)")
+    print("="*60)
 
-
-def load_queries():
-    """Load the Centurion evaluation suite."""
-    suite_path = Path(__file__).parent.parent / "tests" / "fixtures" / "eval_suite_100.json"
-    with open(suite_path) as f:
-        suite_data = json.load(f)
-    return [
-        EvalQuery(
-            query=q["query"],
-            expected_sources=q["expected_sources"],
-            category=q["category"],
-            difficulty=q["difficulty"],
-        )
-        for q in suite_data["queries"]
-    ]
-
-
-def run_expansion_chunks_sweep(vector_store, queries):
-    """Sweep expansion_chunks ±1, ±2, ±3 with default threshold."""
-    print("\n" + "=" * 60)
-    print("SWEEP 1: expansion_chunks (similarity threshold fixed at 0.92)")
-    print("=" * 60)
-
-    all_results = {}
-    for chunks in [1, 2, 3]:
-        print(f"\n--- expansion_chunks = ±{chunks} ---")
-
-        def make_search_fn(ec):
-            def search_fn(query, k):
-                return search_with_arcane_recall(vector_store, query, n_results=k, expansion_chunks=ec)
-            return search_fn
-
-        runner = BenchmarkRunner(make_search_fn(chunks))
-        results = runner.run_suite(queries, k=5)
-        summary = runner.summarize(results)
-
-        print(f"  MRR:        {summary['mrr']:.4f}")
-        print(f"  nDCG@5:     {summary['avg_ndcg_5']:.4f}")
-        print(f"  Hit Rate@5: {summary['avg_hit_rate_5']:.4f}")
-        print(f"  Latency:    {summary['avg_latency_ms']:.0f}ms")
-        print(f"  Avg Tokens: {summary['avg_tokens']:.0f}")
-
-        all_results[f"expansion_{chunks}"] = {
-            "expansion_chunks": chunks,
-            "similarity_threshold": 0.92,
-            "summary": summary,
-        }
-
-    return all_results
-
-
-def make_threshold_should_expand(threshold):
-    """Create a patched should_expand with a custom similarity threshold."""
-    import numpy as np
-
-    def calculate_cosine_similarity(vec1, vec2):
-        a = np.array(vec1)
-        b = np.array(vec2)
-        return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
-
-    def patched_should_expand(match_chunk, neighbor_chunk, query_embedding,
-                              match_embedding, neighbor_embedding):
-        text = neighbor_chunk.text.strip()
-        continuation_prefixes = ("- ", "* ", "+ ", "> ", "  ")
-        if text.startswith(continuation_prefixes):
-            return True
-
-        if query_embedding is not None and match_embedding is not None and neighbor_embedding is not None:
-            match_sim = calculate_cosine_similarity(query_embedding, match_embedding)
-            neighbor_sim = calculate_cosine_similarity(query_embedding, neighbor_embedding)
-            if neighbor_sim >= (match_sim * threshold):
-                return True
-            return False
-
-        return True
-
-    return patched_should_expand
-
-
-def run_threshold_sweep(vector_store, queries):
-    """Sweep similarity threshold with default ±2 expansion."""
-    print("\n" + "=" * 60)
-    print("SWEEP 2: similarity_threshold (expansion_chunks fixed at ±2)")
-    print("=" * 60)
-
-    all_results = {}
-    for threshold in [0.85, 0.88, 0.90, 0.92, 0.95]:
-        print(f"\n--- similarity_threshold = {threshold} ---")
-
-        patched_fn = make_threshold_should_expand(threshold)
-
-        def make_search_fn(pfn):
-            def search_fn(query, k):
-                with patch("candlekeep.rag.arcane_recall.should_expand", pfn):
-                    return search_with_arcane_recall(vector_store, query, n_results=k, expansion_chunks=2)
-            return search_fn
-
-        runner = BenchmarkRunner(make_search_fn(patched_fn))
-        results = runner.run_suite(queries, k=5)
-        summary = runner.summarize(results)
-
-        print(f"  MRR:        {summary['mrr']:.4f}")
-        print(f"  nDCG@5:     {summary['avg_ndcg_5']:.4f}")
-        print(f"  Hit Rate@5: {summary['avg_hit_rate_5']:.4f}")
-        print(f"  Latency:    {summary['avg_latency_ms']:.0f}ms")
-        print(f"  Avg Tokens: {summary['avg_tokens']:.0f}")
-
-        all_results[f"threshold_{threshold}"] = {
-            "expansion_chunks": 2,
-            "similarity_threshold": threshold,
-            "summary": summary,
-        }
-
-    return all_results
-
-
-def main():
-    print("Setting up database...")
-    vector_store, temp_dir = setup_database()
-    queries = load_queries()
-    print(f"Loaded {len(queries)} queries.")
-
-    try:
-        chunk_results = run_expansion_chunks_sweep(vector_store, queries)
-        threshold_results = run_threshold_sweep(vector_store, queries)
-
-        combined = {
-            "expansion_chunks_sweep": chunk_results,
-            "similarity_threshold_sweep": threshold_results,
-        }
-
-        output_path = Path(__file__).parent.parent / "tests" / "results" / "expansion_sweep_benchmark.json"
-        output_path.write_text(json.dumps(combined, indent=2))
-        print(f"\n✅ Results saved to {output_path}")
-    finally:
-        shutil.rmtree(temp_dir)
-
+    for label, (key, values) in knobs.items():
+        print(f"\nKnob: {label}")
+        print(f"{'Value':>10} | {'Hop Rate':>10} | {'Latency':>10}")
+        print("-" * 35)
+        for val in values:
+            p = base.copy()
+            p[key] = val
+            t0 = time.perf_counter()
+            scores = [run_parametrized_search(db, q, config, p["breadth"], p["neigh"], p["mentions"], p["thresh"]) for q in queries]
+            lat = (time.perf_counter() - t0) * 1000 / len(queries)
+            avg_hop = sum(scores) / len(scores)
+            print(f"{val:>10} | {avg_hop:>10.4f} | {lat:>8.1f}ms")
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(sweep())

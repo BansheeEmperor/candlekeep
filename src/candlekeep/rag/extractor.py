@@ -2,6 +2,7 @@
 import json
 import re
 from pathlib import Path
+from typing import Any
 
 from candlekeep.rag.entity_normalise import normalise_entity
 
@@ -36,11 +37,17 @@ class EntityExtractor:
         if self._nlp is None:
             import spacy
             try:
-                self._nlp = spacy.load("en_core_web_sm", disable=["parser", "lemmatizer"])
+                # Upgrade to transformer-based model for high-resolution NER (MuSiQue names/titles)
+                # If not available, fall back to small model but enable parser for better noun chunking.
+                self._nlp = spacy.load("en_core_web_trf", disable=["lemmatizer"])
             except OSError:
-                from spacy.cli import download
-                download("en_core_web_sm")
-                self._nlp = spacy.load("en_core_web_sm", disable=["parser", "lemmatizer"])
+                print("  ⚠ en_core_web_trf not found, falling back to en_core_web_sm with parser.")
+                try:
+                    self._nlp = spacy.load("en_core_web_sm", disable=["lemmatizer"])
+                except OSError:
+                    from spacy.cli import download
+                    download("en_core_web_sm")
+                    self._nlp = spacy.load("en_core_web_sm", disable=["lemmatizer"])
 
             if self._ruler_path and self._ruler_path.exists():
                 ruler = self._nlp.add_pipe("entity_ruler", before="ner")

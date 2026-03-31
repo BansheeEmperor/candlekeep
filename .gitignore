@@ -44,6 +44,8 @@ chroma_data/
 storage/
 tests/fixtures/beir/
 tests/fixtures/hotpot_sandbox/
+tests/fixtures/musique_sandbox/
+tests/fixtures/*_backup_high_res_5k/
 
 # Logs and artifacts
 *.log
