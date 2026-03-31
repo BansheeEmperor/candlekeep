@@ -95,6 +95,7 @@ def search_with_routing(
     n_results: int = 5,
     category: str | None = None,
     query_type: QueryType = "hybrid",
+    depth: int = 1,
 ) -> List[SearchResult]:
     """Route search to optimal technique stack based on query type.
 
@@ -115,6 +116,10 @@ def search_with_routing(
     multiple simple searches and synthesize the results itself.
     """
     from candlekeep.rag.arcane_recall import search_with_arcane_recall
+    import os
+    # CANDLEKEEP_NO_RECALL: Primarily used for scientific ablation studies to isolate 
+    # the impact of the co-occurrence graph without proximity-based window expansion.
+    no_recall = os.environ.get("CANDLEKEEP_NO_RECALL", "false").lower() == "true"
 
     processed = preprocess_negation(query)
 
@@ -124,7 +129,10 @@ def search_with_routing(
         device = device.device if device else "cpu"
         threshold = _get_vector_threshold(processed)
         # Fetch candidates and apply threshold before slow reranking
-        results = search_with_arcane_recall(db, processed, n_results * 3)
+        if no_recall:
+            results = db.search(processed, n_results=n_results * 3)
+        else:
+            results = search_with_arcane_recall(db, processed, n_results * 3)
         results = [r for r in results if r.score >= threshold]
 
         if results:
@@ -141,7 +149,7 @@ def search_with_routing(
 
     elif query_type == "explore":
         from candlekeep.rag.hybrid import explore_search
-        results = explore_search(db, processed, n_results, category=category)
+        results = explore_search(db, processed, n_results, category=category, depth=depth)
         results = [r for r in results if r.score >= HYBRID_RELEVANCE_THRESHOLD]
 
     else:

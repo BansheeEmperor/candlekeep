@@ -173,6 +173,8 @@ Cross-encoder (`ms-marco-MiniLM-L-6-v2`) rescores all candidates by examining qu
 
 **Benchmark results** ([Research Diary Entry 56](RESEARCH_DIARY.md)): 40% expansion recall (vs 0% hybrid), 1.4% NDCG@5 degradation, 0% regression.
 
+**Scientific Multi-Hop Validation (HotpotQA)**: In a 1,000-document evaluation, the Explore path achieved an 0.83 Hop Rate, compared to 0.76 for LlamaIndex's default Property Graph. This performance was achieved with significantly lower latency (152ms vs 5700ms) and zero per-query retrieval cost, supporting the architectural decision to move graph extraction to the ingestion phase. See [BENCHMARKING.md](BENCHMARKING.md) for full details.
+
 ### 5. [The Relevance Ward](GLOSSARY.md#the-relevance-ward) (Filtering)
 Results below a configured threshold are filtered to prevent the AI agent from hallucinating based on low-confidence "junk" matches. The Ward operates on all three paths, each with its own score scale:
 

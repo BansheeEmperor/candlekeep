@@ -8,7 +8,10 @@ class GraphStore:
     """Stores entity mentions and materializes co-occurrence with Jaccard similarity."""
 
     def __init__(self, db_path: Path | str):
-        self._path = str(db_path)
+        self._path = Path(db_path)
+        # Ensure parent directory exists
+        self._path.parent.mkdir(parents=True, exist_ok=True)
+        self._path = str(self._path)
         self._lock = threading.Lock()
         self._conn = sqlite3.connect(self._path, check_same_thread=False)
         self._init_schema()
@@ -51,7 +54,16 @@ class GraphStore:
             self._conn.execute("DELETE FROM entity_mentions WHERE source = ?", (source,))
             self._conn.commit()
 
-    def rebuild_cooccurrence(self):
+    def get_entity_mentions(self, entity: str, limit: int = 5) -> list[tuple[str, int]]:
+        """Return list of (source, chunk_idx) where entity is mentioned."""
+        with self._lock:
+            rows = self._conn.execute(
+                "SELECT source, chunk_idx FROM entity_mentions WHERE entity = ? LIMIT ?",
+                (entity, limit),
+            ).fetchall()
+        return [(row[0], row[1]) for row in rows]
+
+    def rebuild_cooccurrence(self, min_cooccurrence: int = 2):
         """Recompute entity_cooccurrence table from entity_mentions."""
         with self._lock:
             self._conn.execute("DELETE FROM entity_cooccurrence")
@@ -78,8 +90,8 @@ class GraphStore:
                 JOIN entity_mentions b
                     ON a.source = b.source AND a.chunk_idx = b.chunk_idx AND a.entity < b.entity
                 GROUP BY a.entity, b.entity
-                HAVING cooc >= 2
-            """)
+                HAVING cooc >= ?
+            """, (min_cooccurrence,))
             self._conn.commit()
 
     def get_related(self, entity: str, top_n: int = 5) -> list[tuple[str, float]]:
@@ -175,11 +187,13 @@ atexit.register(_join_rebuild_thread)
 
 def _rebuild_worker(graph_store: GraphStore) -> None:
     import logging
+    import os
     global _rebuild_building
     try:
-        graph_store.rebuild_cooccurrence()
+        min_cooc = int(os.environ.get("CANDLEKEEP_MIN_COOCCURRENCE", "2"))
+        graph_store.rebuild_cooccurrence(min_cooccurrence=min_cooc)
         logging.getLogger("candlekeep").info(
-            "[candlekeep] Graph co-occurrence rebuild complete"
+            f"[candlekeep] Graph co-occurrence rebuild complete (min_cooc={min_cooc})"
         )
     except Exception:
         logging.getLogger("candlekeep").exception(

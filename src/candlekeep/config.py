@@ -79,7 +79,7 @@ class Settings:
     
     # Document processing
     chunk_size: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_CHUNK_SIZE", "512")))
-    chunk_overlap: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_CHUNK_OVERLAP", "50")))
+    chunk_overlap: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_CHUNK_OVERLAP", "100")))
     
     # Personality
     spice: bool = field(default_factory=lambda: os.getenv("CANDLEKEEP_SPICE", "false").lower() == "true")

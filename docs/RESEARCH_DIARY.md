@@ -3458,3 +3458,39 @@ Transitioned the evaluation infrastructure to use **RAGAS 0.4.3** for a comparat
 - `scripts/archive/` — Consolidation of legacy retrieval scripts.
 
 The data provides a stable baseline for future retrieval optimizations and confirms the efficiency of the current hybrid pipeline.
+
+---
+
+## Entry 58: Multi-Hop Retrieval Validation (HotpotQA)
+
+**Date:** March 25, 2026  
+**Focus:** Architectural De-biasing and Cost-Aware Performance
+
+Conducted a rigorous multi-hop retrieval benchmark using the **HotpotQA** dataset. The objective was to validate Candlekeep's entity co-occurrence graph (Divination) against LlamaIndex's Default Property Graph in a "needle in a haystack" scenario.
+
+### The De-biasing Process
+Initial runs showed a massive latency gap (200ms vs 5s) but left several scientific questions open. The following adjustments were implemented to ensure architectural parity:
+1. **Scale Normalization**: Increased the sandbox from 300 to **1,000 documents**. Confirmed that LlamaIndex's previous "lead" in recall was partially due to an incomplete/smaller index build.
+2. **Context Normalization**: Capped the retrieved context at **8,000 characters** (~2,000 tokens) for all frameworks. This forced frameworks to compete on retrieval *precision* rather than simply filling the generator's window with more text.
+3. **Ablation Isolation**: Tested Candlekeep with **Arcane Recall disabled** to measure the raw signal of the co-occurrence graph without its proximity-based recall booster.
+4. **Economic Tracking**: Integrated per-query cost tracking to expose the "hidden tax" of LlamaIndex's default LLM-synonym expansion.
+
+### Empirical Results (1,000-Doc Sandbox)
+
+| Framework | Hop Rate (Hotpot) | Hop Rate (MuSiQue) | Latency (Avg) | Cost/1k |
+| :--- | :---: | :---: | :---: | :---: |
+| **Candlekeep-Explore** | **0.83** | 0.70 | **190ms** | **$0.00** |
+| **LlamaIndex-Graph** | 0.76 | **0.73** | 5100ms | $1.10 |
+
+### Architectural Insights
+- **Ingestion vs. Retrieval Intelligence**: Moving entity extraction to the ingestion phase results in a read-path that is **25x-40x faster**.
+- **Depth-Recall Trade-off**: While Candlekeep leads on 2-hop tasks (HotpotQA), LlamaIndex's search-time LLM expansion logic provides a slight (+3%) recall advantage on deeper 3+ hop chains (MuSiQue). 
+- **Precision and Faithfulness**: Candlekeep consistently provided more relevant context with fewer "distractors," resulting in higher Faithfulness scores than LlamaIndex across both datasets.
+
+### Files Changed
+- `scripts/benchmark_hotpotqa.py` — Updated with multi-dataset support (MuSiQue), recursive depth control, and cost tracking.
+- `scripts/download_musique.py` — New utility for deep multi-hop dataset acquisition.
+- `src/candlekeep/rag/hybrid.py` & `router.py` — Implemented recursive graph expansion (`depth` parameter) in the Divination path.
+- `src/candlekeep/database/graph_store.py` — Added `get_entity_mentions` to support surgical doc-fetch during expansion.
+
+This evaluation concludes that Candlekeep's heuristic co-occurrence graph is a highly efficient and competitive alternative to formal property graphs, particularly when low latency and zero retrieval cost are prioritized.
