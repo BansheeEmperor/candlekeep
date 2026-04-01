@@ -56,7 +56,7 @@ def _tokenize(text: str) -> List[str]:
     return [t for t in tokens if t not in STOP_WORDS and len(t) > 1]
 
 def reciprocal_rank_fusion(results_lists: List[List[SearchResult]], k: int = 60, top_n: int = 5) -> List[SearchResult]:
-    """Combines multiple search rankings using Reciprocal Rank Fusion."""
+    """Combines multiple search rankings using Reciprocal Rank Fusion with deduplication."""
     scores = {}
     doc_map = {}
 
@@ -67,13 +67,34 @@ def reciprocal_rank_fusion(results_lists: List[List[SearchResult]], k: int = 60,
                 doc_map[res.doc_id] = res
             scores[res.doc_id] += 1.0 / (k + rank + 1)
 
-    sorted_ids = sorted(scores.items(), key=lambda x: x[1], reverse=True)[:top_n]
+    sorted_ids = sorted(scores.items(), key=lambda x: x[1], reverse=True)
     
+    # STRUCTURAL DEDUPLICATION
+    # If chunks from the same source overlap significantly, keep only the highest ranked.
     final_results = []
+    seen_sources = {} # source -> list of (text, rank)
+
     for doc_id, score in sorted_ids:
         res = doc_map[doc_id]
-        res.score = score  # Overwrite with fused score
-        final_results.append(res)
+        source = res.metadata.get("source", doc_id)
+        
+        is_duplicate = False
+        if source in seen_sources:
+            # Check for high text overlap with already accepted chunks from same source
+            for prev_text in seen_sources[source]:
+                # Simple substring check for overlap (since we know overlap is at start/end)
+                if res.text in prev_text or prev_text in res.text:
+                    is_duplicate = True
+                    break
+        
+        if not is_duplicate:
+            res.score = score
+            final_results.append(res)
+            if source not in seen_sources: seen_sources[source] = []
+            seen_sources[source].append(res.text)
+            
+        if len(final_results) >= top_n:
+            break
     
     return final_results
 

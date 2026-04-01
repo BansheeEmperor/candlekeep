@@ -34,12 +34,15 @@ class ChromaVectorStore(VectorDatabase):
         
         # Connect to ChromaDB
         try:
-            self.client = chromadb.HttpClient(
-                host=self.settings.chroma_host,
-                port=self.settings.chroma_port,
-                headers=headers if headers else None,
-                ssl=self.settings.chroma_ssl
-            )
+            if self.settings.chroma_path:
+                self.client = chromadb.PersistentClient(path=str(self.settings.chroma_path))
+            else:
+                self.client = chromadb.HttpClient(
+                    host=self.settings.chroma_host,
+                    port=self.settings.chroma_port,
+                    headers=headers if headers else None,
+                    ssl=self.settings.chroma_ssl
+                )
             self.collection = self.client.get_or_create_collection(
                 name="candlekeep",
                 metadata={"hnsw:space": "cosine", "embedding_model": self.settings.embedding_model}
@@ -62,6 +65,20 @@ class ChromaVectorStore(VectorDatabase):
         
         # Metrics
         self._query_count = 0
+        self._graph_store = None
+
+    @property
+    def graph_store(self) -> Any:
+        """Access the associated graph database."""
+        if self._graph_store is None:
+            from candlekeep.database.graph_store import get_graph_store
+            self._graph_store = get_graph_store(self.settings)
+        return self._graph_store
+
+    @graph_store.setter
+    def graph_store(self, value: Any) -> None:
+        """Set the associated graph database."""
+        self._graph_store = value
 
     def _generate_id(self, chunk: Chunk) -> str:
         """Generate unique ID for a chunk."""

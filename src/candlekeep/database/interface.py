@@ -24,6 +24,18 @@ class Chunk:
 class VectorDatabase(ABC):
     """Abstract interface for vector database operations."""
     
+    @property
+    @abstractmethod
+    def graph_store(self) -> Any:
+        """Access the associated graph database."""
+        pass
+
+    @graph_store.setter
+    @abstractmethod
+    def graph_store(self, value: Any) -> None:
+        """Set the associated graph database."""
+        pass
+
     @abstractmethod
     def search(self, query: str, n_results: int = 5, category: str | None = None) -> List[SearchResult]:
         """Search for similar documents."""
