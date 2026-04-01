@@ -70,3 +70,11 @@ class TestRouter:
             mock.return_value = []
             results = search_with_routing(MagicMock(), "nonsense", query_type="hybrid")
             assert results == []
+
+    def test_explore_path_calls_explore_search_with_depth(self):
+        with patch("candlekeep.rag.hybrid.explore_search") as mock:
+            mock.return_value = [_make_result(score=0.02)]
+            db = MagicMock()
+            results = search_with_routing(db, "test", query_type="explore", depth=3)
+            mock.assert_called_once_with(db, "test", 5, category=None, depth=3)
+            assert len(results) == 1
