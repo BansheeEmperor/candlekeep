@@ -2,6 +2,7 @@
 import json
 import re
 from pathlib import Path
+from typing import Any
 
 from candlekeep.rag.entity_normalise import normalise_entity
 
@@ -27,8 +28,9 @@ def _tech_tokens(text: str) -> list[str]:
 class EntityExtractor:
     """Extract technical entities using spaCy NER + entity ruler + pattern matching."""
 
-    def __init__(self, ruler_path: Path | None = None):
+    def __init__(self, ruler_path: Path | None = None, model_name: str = "en_core_web_sm"):
         self._ruler_path = ruler_path
+        self._model_name = model_name
         self._nlp = None
 
     @property
@@ -36,11 +38,12 @@ class EntityExtractor:
         if self._nlp is None:
             import spacy
             try:
-                self._nlp = spacy.load("en_core_web_sm", disable=["parser", "lemmatizer"])
+                # Default to small model for speed, but keep parser enabled for noun chunks
+                self._nlp = spacy.load(self._model_name, disable=["lemmatizer"])
             except OSError:
                 from spacy.cli import download
-                download("en_core_web_sm")
-                self._nlp = spacy.load("en_core_web_sm", disable=["parser", "lemmatizer"])
+                download(self._model_name)
+                self._nlp = spacy.load(self._model_name, disable=["lemmatizer"])
 
             if self._ruler_path and self._ruler_path.exists():
                 ruler = self._nlp.add_pipe("entity_ruler", before="ner")
@@ -81,10 +84,10 @@ class EntityExtractor:
 _extractor: EntityExtractor | None = None
 
 
-def get_extractor(ruler_path: Path | None = None) -> EntityExtractor:
+def get_extractor(ruler_path: Path | None = None, model_name: str = "en_core_web_sm") -> EntityExtractor:
     global _extractor
-    if _extractor is None:
-        _extractor = EntityExtractor(ruler_path)
+    if _extractor is None or _extractor._model_name != model_name:
+        _extractor = EntityExtractor(ruler_path, model_name=model_name)
     return _extractor
 
 

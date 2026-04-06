@@ -34,12 +34,12 @@ from scripts.competitors.base import (
 _lc_embeddings: HuggingFaceEmbeddings | None = None
 
 
-def _get_lc_embeddings() -> HuggingFaceEmbeddings:
+def _get_lc_embeddings(device: str = "mps") -> HuggingFaceEmbeddings:
     global _lc_embeddings
     if _lc_embeddings is None:
         _lc_embeddings = HuggingFaceEmbeddings(
             model_name="BAAI/bge-small-en-v1.5",
-            model_kwargs={"device": "cpu"},
+            model_kwargs={"device": device},
             encode_kwargs={"normalize_embeddings": True},
         )
     return _lc_embeddings
@@ -54,18 +54,30 @@ class LangChainRAG(Competitor):
 
     name = "langchain"
 
-    def __init__(self, use_mmr: bool = False):
+    def __init__(self, use_mmr: bool = False, device: str = "mps", hybrid: bool = False):
         self._use_mmr = use_mmr
-        if use_mmr:
+        self._hybrid = hybrid
+        if hybrid:
+            self.name = "langchain-advanced"
+        elif use_mmr:
             self.name = "langchain-mmr"
-        self._embeddings = _get_lc_embeddings()
+        self._embeddings = _get_lc_embeddings(device=device)
         self._splitter = RecursiveCharacterTextSplitter(
             chunk_size=CHUNK_SIZE,
             chunk_overlap=CHUNK_OVERLAP,
             separators=["\n## ", "\n### ", "\n#### ", "\n\n", "\n", " ", ""],
         )
         self._vectorstore: Chroma | None = None
-        self._collection_name = f"lc_{'mmr' if use_mmr else 'default'}_bench"
+        self._collection_name = f"lc_{self.name}_bench"
+
+        if self._hybrid:
+            from transformers import AutoModelForSequenceClassification, AutoTokenizer
+            import torch
+            model_name = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+            self._rerank_tokenizer = AutoTokenizer.from_pretrained(model_name)
+            self._rerank_model = AutoModelForSequenceClassification.from_pretrained(model_name)
+            self._rerank_model.to("mps" if torch.backends.mps.is_available() else "cpu")
+            self._rerank_model.eval()
 
     def ingest(self, doc_paths: list[Path]) -> int:
         all_docs = []
@@ -89,7 +101,7 @@ class LangChainRAG(Competitor):
         if not all_docs:
             return 0
 
-        # Create Chroma vectorstore from documents (LangChain's standard API)
+        # Create Chroma vectorstore from documents
         self._vectorstore = Chroma.from_documents(
             documents=all_docs,
             embedding=self._embeddings,
@@ -101,19 +113,45 @@ class LangChainRAG(Competitor):
         if self._vectorstore is None:
             return []
 
-        if self._use_mmr:
-            # MMR: LangChain's built-in diversity mechanism
-            # fetch_k=k*3 matches the candidate pool ratio used by
-            # Prismatic Dispersal for fair comparison
-            docs = self._vectorstore.max_marginal_relevance_search(
-                query, k=k, fetch_k=k * 3, lambda_mult=0.7,
-            )
-            # MMR doesn't return scores, so use position-based scoring
+        if self._hybrid:
+            # Advanced path: Vector + Rerank
+            # (Note: LangChain EnsembleRetriever requires a separate BM25 instance,
+            # for this benchmark we'll focus on the Reranker step which is the main lag)
+            
+            # 1. Fetch more candidates
+            docs = self._vectorstore.similarity_search(query, k=k*4)
+            
+            # 2. Manual Cross-Encoder Rerank using pre-loaded model
+            import torch
+            
+            pairs = [[query, doc.page_content] for doc in docs]
+            with torch.no_grad():
+                inputs = self._rerank_tokenizer(pairs, padding=True, truncation=True, return_tensors="pt").to(self._rerank_model.device)
+                logits = self._rerank_model(**inputs).logits.flatten().tolist()
+            
+            # Sort by score
+            scored_docs = sorted(zip(logits, docs), key=lambda x: x[0], reverse=True)[:k]
+            
             return [
                 SearchResult(
                     text=doc.page_content,
                     metadata=doc.metadata,
-                    score=1.0 - (i * 0.1),  # position-based
+                    score=float(score),
+                    doc_id=doc.metadata.get("source", ""),
+                )
+                for score, doc in scored_docs
+            ]
+
+        elif self._use_mmr:
+            # MMR diversity search
+            docs = self._vectorstore.max_marginal_relevance_search(
+                query, k=k, fetch_k=k * 3, lambda_mult=0.7,
+            )
+            return [
+                SearchResult(
+                    text=doc.page_content,
+                    metadata=doc.metadata,
+                    score=1.0 - (i * 0.1),
                     doc_id=doc.metadata.get("source", ""),
                 )
                 for i, doc in enumerate(docs)

@@ -1,4 +1,5 @@
 """Candlekeep MCP Server with authentication and conditional tool registration."""
+import os
 import sys
 import time
 import threading
@@ -19,6 +20,21 @@ _processor = None
 _loading = True
 _read_access = False
 _write_access = False
+
+# Concurrency controls
+_ALLOW_PRINTING = not os.environ.get("CANDLEKEEP_LOGGED")
+_MASTER_PID = os.getpid()
+
+
+def _log(*args, **kwargs):
+    """Print to stderr if not already logged by another process."""
+    if not _ALLOW_PRINTING:
+        return
+    if os.getpid() != _MASTER_PID:
+        return
+    kwargs.setdefault("file", sys.stderr)
+    print(*args, **kwargs)
+
 
 # Concurrency controls (safe in both stdio and HTTP modes)
 _write_lock = threading.Lock()
@@ -66,7 +82,6 @@ def _estimate_semaphore_value() -> int:
     Used immediately for stdio mode (no boot cost). HTTP mode refines
     this via _calibrate_semaphore() during background init.
     """
-    import os
     cores = os.cpu_count() or 4
     return max(1, cores // 3)
 
@@ -187,10 +202,10 @@ def _verify_read_access() -> bool:
         get_store().collection.count()
         return True
     except chromadb.errors.AuthorizationError as e:
-        print(f"[candlekeep] ❌ Read access denied: {e}", file=sys.stderr)
+        _log(f"[candlekeep] ❌ Read access denied: {e}")
         return False
     except Exception as e:
-        print(f"[candlekeep] ❌ Connection failed: {e}", file=sys.stderr)
+        _log(f"[candlekeep] ❌ Connection failed: {e}")
         return False
 
 
@@ -212,7 +227,6 @@ def _calibrate_semaphore():
     picks the N with the highest throughput. Stops early when throughput
     drops. Runs during HTTP-mode background init after models are warm.
     """
-    import os
     import time
     import concurrent.futures
     global _reranker_semaphore
@@ -257,27 +271,105 @@ def _calibrate_semaphore():
             break
 
     _reranker_semaphore = threading.Semaphore(best_n)
-    print(f"[candlekeep] ✓ Precise-path concurrency: {best_n} "
-          f"({best_throughput:.1f} qps)", file=sys.stderr)
+    _log(f"[candlekeep] ✓ Precise-path concurrency: {best_n} "
+         f"({best_throughput:.1f} qps)")
+
+
+_BANNER_PRINTED = False
+
+
+def _log_config():
+    """Print grouped startup configuration banner."""
+    global _BANNER_PRINTED
+    if not _ALLOW_PRINTING or _BANNER_PRINTED:
+        return
+    _BANNER_PRINTED = True
+
+    s = _settings
+    _p = lambda *a: _log(*a)
+    _on = lambda v: "✓ enabled" if v else "✗ disabled"
+    _val = lambda v, secret=False: ("***" if v else "not set") if secret else (v or "not set")
+
+    _p("[candlekeep] ╔══════════════════════════════════════════╗")
+    _p("[candlekeep] ║         Candlekeep Configuration         ║")
+    _p("[candlekeep] ╚══════════════════════════════════════════╝")
+
+    _p("[candlekeep]")
+    _p("[candlekeep] ── Database ──")
+    _p(f"[candlekeep]   CHROMA_URL              = {s.chroma_url}")
+    _p(f"[candlekeep]   CHROMA_AUTH_TOKEN        = {_val(s.chroma_auth_token, secret=True)}")
+
+    _p("[candlekeep]")
+    _p("[candlekeep] ── Transport ──")
+    _p(f"[candlekeep]   TRANSPORT                = {s.transport}")
+    if s.transport == "http":
+        _p(f"[candlekeep]   HTTP_HOST                = {s.http_host}")
+        _p(f"[candlekeep]   HTTP_PORT                = {s.http_port}")
+        _p(f"[candlekeep]   MCP_TOKEN                = {_val(s.mcp_token, secret=True)}")
+
+    _p("[candlekeep]")
+    _p("[candlekeep] ── Embedding & Models ──")
+    _p(f"[candlekeep]   EMBEDDING                = {s.embedding_model}")
+    _p(f"[candlekeep]   EMBEDDING_CACHE_SIZE     = {s.embedding_cache_size}")
+    _p(f"[candlekeep]   DEVICE                   = {s.device}")
+
+    _p("[candlekeep]")
+    _p("[candlekeep] ── Document Processing ──")
+    _p(f"[candlekeep]   CHUNK_SIZE               = {s.chunk_size}")
+    _p(f"[candlekeep]   CHUNK_OVERLAP            = {s.chunk_overlap}")
+    _p(f"[candlekeep]   BARDIC_KNOWLEDGE         = {_on(s.bardic_knowledge)}")
+
+    _p("[candlekeep]")
+    _p("[candlekeep] ── Search & Retrieval ──")
+    _p(f"[candlekeep]   SPARSE_BACKEND           = {s.sparse_backend}")
+    graph = os.getenv("CANDLEKEEP_GRAPH_AUGMENT", "true").lower() != "false"
+    _p(f"[candlekeep]   GRAPH_AUGMENT            = {_on(graph)}")
+    caption_boost = float(os.getenv("CANDLEKEEP_CAPTION_BOOST", "0.0"))
+    caption_adaptive = os.getenv("CANDLEKEEP_CAPTION_BOOST_ADAPTIVE", "false").lower() == "true"
+    _p(f"[candlekeep]   CAPTION_BOOST            = {caption_boost}")
+    _p(f"[candlekeep]   CAPTION_BOOST_ADAPTIVE   = {_on(caption_adaptive)}")
+
+    _p("[candlekeep]")
+    _p("[candlekeep] ── LLM / True Sight ──")
+    _p(f"[candlekeep]   LLM_PROVIDER             = {_val(s.llm_provider)}")
+    _p(f"[candlekeep]   VLM_PROVIDER             = {_val(s.vlm_provider)}")
+    if s.vlm_provider:
+        _p(f"[candlekeep]   VLM_CONCURRENCY          = {s.vlm_concurrency}")
+        _p(f"[candlekeep]   VLM_MAX_COST_PER_DOC     = ${s.vlm_max_cost_per_doc:.2f}")
+        _p(f"[candlekeep]   VLM_FETCH_REMOTE_IMAGES  = {_on(s.vlm_fetch_remote_images)}")
+        _p(f"[candlekeep]   VLM_PDF_MAX_PAGES        = {s.vlm_pdf_max_pages}")
+
+    if s.transport == "http":
+        _p("[candlekeep]")
+        _p("[candlekeep] ── Rate Limiting ──")
+        _p(f"[candlekeep]   RATE_LIMIT_SEARCH        = {s.rate_limit_search}/window")
+        _p(f"[candlekeep]   RATE_LIMIT_WRITE         = {s.rate_limit_write}/window")
+        _p(f"[candlekeep]   RATE_LIMIT_WINDOW        = {s.rate_limit_window}s")
+
+    _p("[candlekeep]")
+    _p("[candlekeep] ── Storage & Personality ──")
+    _p(f"[candlekeep]   DATA_DIR                 = {s.data_dir}")
+    _p(f"[candlekeep]   SPICE                    = {_on(s.spice)}")
+    _p("[candlekeep]")
 
 
 def _background_init():
     global _loading, _read_access, _write_access
     _read_access = _verify_read_access()
     if not _read_access:
-        print("[candlekeep] ❌ Authentication failed. Check CHROMA_URL and CHROMA_AUTH_TOKEN", file=sys.stderr)
+        _log("[candlekeep] ❌ Authentication failed. Check CHROMA_URL and CHROMA_AUTH_TOKEN")
         _loading = False
         return
-    print(f"[candlekeep] ✓ Connected to {_settings.chroma_url}", file=sys.stderr)
-    print(f"[candlekeep] ✓ Device: {_settings.device}", file=sys.stderr)
+    _log(f"[candlekeep] ✓ Connected to {_settings.chroma_url}")
+    _log(f"[candlekeep] ✓ Device: {_settings.device}")
     _write_access = _verify_write_access()
     if _write_access:
-        print("[candlekeep] ✓ Write access enabled", file=sys.stderr)
+        _log("[candlekeep] ✓ Write access enabled")
     else:
-        print("[candlekeep] ⚠ Read-only mode (write access denied)", file=sys.stderr)
+        _log("[candlekeep] ⚠ Read-only mode (write access denied)")
     
     # Warm up models
-    print("[candlekeep] 🕯 Warming up the tomes...", file=sys.stderr)
+    _log("[candlekeep] 🕯 Warming up the tomes...")
     get_store().embedder.get_model()
     from candlekeep.rag.reranker import warm_up
     warm_up(_settings.device)
@@ -287,17 +379,16 @@ def _background_init():
         try:
             _calibrate_semaphore()
         except Exception as e:
-            print(f"[candlekeep] ⚠ Semaphore calibration failed, using default: {e}",
-                  file=sys.stderr)
+            _log(f"[candlekeep] ⚠ Semaphore calibration failed, using default: {e}")
 
         # Log rate limit configuration
         if _search_limiter.enabled or _write_limiter.enabled:
-            print(f"[candlekeep] ✓ Rate limits: "
-                  f"{_settings.rate_limit_search} search/{_settings.rate_limit_window}s, "
-                  f"{_settings.rate_limit_write} write/{_settings.rate_limit_window}s "
-                  f"(per session)", file=sys.stderr)
+            _log(f"[candlekeep] ✓ Rate limits: "
+                 f"{_settings.rate_limit_search} search/{_settings.rate_limit_window}s, "
+                 f"{_settings.rate_limit_write} write/{_settings.rate_limit_window}s "
+                 f"(per session)")
         else:
-            print("[candlekeep] ⚠ Rate limiting disabled", file=sys.stderr)
+            _log("[candlekeep] ⚠ Rate limiting disabled")
     
     get_store()
     _loading = False
@@ -372,22 +463,21 @@ def _create_mcp() -> FastMCP:
         auth = StaticTokenVerifier(
             tokens={_settings.mcp_token: {"client_id": "candlekeep-agent", "scopes": []}}
         )
-        print("[candlekeep] ✓ Bearer token auth enabled", file=sys.stderr)
+        _log("[candlekeep] ✓ Bearer token auth enabled")
 
         # Warn if token auth is active on a non-localhost bind address
         bind = _settings.http_host
         if bind not in ("127.0.0.1", "localhost", "::1"):
-            print(
+            _log(
                 f"[candlekeep] ⚠ Token auth is active but HTTP host is {bind}. "
                 "Token will be transmitted in plaintext. Use a TLS-terminating "
-                "reverse proxy for non-localhost deployments.",
-                file=sys.stderr,
+                "reverse proxy for non-localhost deployments."
             )
 
         return FastMCP("candlekeep", instructions=instructions, auth=auth)
     
     if _settings.transport == "http":
-        print("[candlekeep] ⚠ No auth configured (set CANDLEKEEP_MCP_TOKEN to enable)", file=sys.stderr)
+        _log("[candlekeep] ⚠ No auth configured (set CANDLEKEEP_MCP_TOKEN to enable)")
     
     return FastMCP("candlekeep", instructions=instructions)
 
@@ -886,11 +976,22 @@ app = mcp.http_app(stateless_http=True)
 
 def main():
     """Entry point for candlekeep command."""
+    _log_config()
     if _settings.transport == "http":
-        print(f"[candlekeep] 🌐 Starting HTTP server on {_settings.http_host}:{_settings.http_port}", file=sys.stderr)
+        os.environ["CANDLEKEEP_LOGGED"] = "1"
+        _log(f"[candlekeep] 🌐 Starting HTTP server on {_settings.http_host}:{_settings.http_port}")
         mcp.run(transport="http", host=_settings.http_host, port=_settings.http_port)
     else:
         mcp.run()
+
+
+# Guard for multi-worker HTTP deployments to ensure banner/status only print once.
+# In uvicorn mode, the master process imports this, prints, then forks workers.
+# Workers inherit CANDLEKEEP_LOGGED=1 and stay silent.
+if _settings.transport == "http":
+    _log_config()
+    if __name__ != "__main__":
+        os.environ["CANDLEKEEP_LOGGED"] = "1"
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@ import hashlib
 import os
 import sys
 from pathlib import Path
+from typing import Any
 import chromadb
 import chromadb.errors
 from candlekeep.config import Settings
@@ -33,12 +34,15 @@ class ChromaVectorStore(VectorDatabase):
         
         # Connect to ChromaDB
         try:
-            self.client = chromadb.HttpClient(
-                host=self.settings.chroma_host,
-                port=self.settings.chroma_port,
-                headers=headers if headers else None,
-                ssl=self.settings.chroma_ssl
-            )
+            if self.settings.chroma_path:
+                self.client = chromadb.PersistentClient(path=str(self.settings.chroma_path))
+            else:
+                self.client = chromadb.HttpClient(
+                    host=self.settings.chroma_host,
+                    port=self.settings.chroma_port,
+                    headers=headers if headers else None,
+                    ssl=self.settings.chroma_ssl
+                )
             self.collection = self.client.get_or_create_collection(
                 name="candlekeep",
                 metadata={"hnsw:space": "cosine", "embedding_model": self.settings.embedding_model}
@@ -61,19 +65,32 @@ class ChromaVectorStore(VectorDatabase):
         
         # Metrics
         self._query_count = 0
+        self._graph_store = None
+
+    @property
+    def graph_store(self) -> Any:
+        """Access the associated graph database."""
+        if self._graph_store is None:
+            from candlekeep.database.graph_store import get_graph_store
+            self._graph_store = get_graph_store(self.settings)
+        return self._graph_store
+
+    @graph_store.setter
+    def graph_store(self, value: Any) -> None:
+        """Set the associated graph database."""
+        self._graph_store = value
 
     def _generate_id(self, chunk: Chunk) -> str:
         """Generate unique ID for a chunk."""
         content = f"{chunk.metadata['source']}:{chunk.chunk_index}:{chunk.text[:100]}"
         return hashlib.sha256(content.encode()).hexdigest()[:16]
 
-    def add_documents(self, chunks: list[Chunk], collection: str = "default") -> int:
+    def add_documents(self, chunks: list[Chunk], collection: str = "default", llm: Any = None, extractor_model: str = "en_core_web_sm") -> int:
         """Add chunks to the vector store."""
         if not chunks:
             return 0
 
-        # Delete existing chunks from same sources (without touching BM25 cache —
-        # we handle the cache update atomically below).
+        # Delete existing chunks from same sources
         sources = set(c.metadata["source"] for c in chunks)
         for source in sources:
             results = self.collection.get(where={"source": source})
@@ -89,7 +106,7 @@ class ChromaVectorStore(VectorDatabase):
         try:
             from candlekeep.rag.extractor import get_extractor
             from candlekeep.database.graph_store import get_graph_store, schedule_graph_rebuild
-            extractor = get_extractor(ruler_path=self.settings.entity_ruler_path)
+            extractor = get_extractor(ruler_path=self.settings.entity_ruler_path, model_name=extractor_model)
             graph_store = get_graph_store(self.settings)
             mentions: list[tuple[str, str, int]] = []
             for meta, text, chunk in zip(metadatas, texts, chunks):
@@ -106,25 +123,26 @@ class ChromaVectorStore(VectorDatabase):
         except Exception:
             pass  # entity extraction must never block ingestion
 
-        self.collection.upsert(ids=ids, embeddings=embeddings, documents=texts, metadatas=metadatas)
+        # Batch upsert to avoid exceeding maximum batch size (e.g. 5461 in Chroma)
+        batch_size = 1000
+        for i in range(0, len(ids), batch_size):
+            end = i + batch_size
+            self.collection.upsert(
+                ids=ids[i:end], 
+                embeddings=embeddings[i:end], 
+                documents=texts[i:end], 
+                metadatas=metadatas[i:end]
+            )
 
-        # Incrementally update BM25 cache: remove old source chunks, add new ones.
-        # This avoids the full ChromaDB fetch + re-tokenization of clear_bm25_cache().
-        from candlekeep.rag.hybrid import update_bm25_cache
-        from candlekeep.database.interface import SearchResult
-        new_search_results = [
-            SearchResult(text=t, metadata=m, score=1.0, doc_id=doc_id)
-            for doc_id, t, m in zip(ids, texts, metadatas)
-        ]
-        for source in sources:
-            update_bm25_cache(new_search_results, removed_source=source)
+        # Reset sparse caches for lazy rebuild on next search.
+        from candlekeep.rag.hybrid import clear_bm25_cache
+        clear_bm25_cache()
 
         # If ColBERT backend is active, mark its index dirty for lazy rebuild.
         import os
         if os.getenv("CANDLEKEEP_SPARSE_BACKEND", "bm25") == "colbert":
-            from candlekeep.rag.colbert import update_colbert_cache
-            for source in sources:
-                update_colbert_cache(new_search_results, removed_source=source)
+            from candlekeep.rag.colbert import mark_colbert_dirty
+            mark_colbert_dirty()
 
         # Schedule background normalisation map rebuild. Non-blocking —
         # mirrors the ColBERT dirty-flag pattern. Queries use the stale

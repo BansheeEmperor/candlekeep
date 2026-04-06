@@ -21,6 +21,8 @@ DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/candlekeep/chroma"
 # Use venv chroma
 if [ -d "$PROJECT_DIR/.venv" ]; then
     CHROMA="$PROJECT_DIR/.venv/bin/chroma"
+elif [ -d "$PROJECT_DIR/venv312" ]; then
+    CHROMA="$PROJECT_DIR/venv312/bin/chroma"
 else
     CHROMA="chroma"
 fi

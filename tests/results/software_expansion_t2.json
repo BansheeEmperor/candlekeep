@@ -1,0 +1,546 @@
+{
+  "summary": {
+    "rows": [
+      {
+        "system": "candlekeep-explore",
+        "n": 10,
+        "mrr": 0.6,
+        "recall_5": 0.6,
+        "precision_3": 0.43333333333333335,
+        "ndcg_5": 0.36236934705623786,
+        "neg_rejection": null,
+        "p50_ms": 31.465687497984618,
+        "p95_ms": 68.72637500055134
+      },
+      {
+        "system": "bedrock-graphrag",
+        "n": 10,
+        "mrr": 0.36666666666666664,
+        "recall_5": 0.5,
+        "precision_3": 0.3,
+        "ndcg_5": 0.21045208422622377,
+        "neg_rejection": null,
+        "p50_ms": 978.4142915159464,
+        "p95_ms": 1523.7041669897735
+      }
+    ]
+  },
+  "results": [
+    {
+      "system": "candlekeep-explore",
+      "query": "How do I implement OAuth 2.0 authorization in a web application?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/scale_docs/api-security.md"
+      ],
+      "expected": [
+        "authentication",
+        "security-audit-checklist",
+        "owasp-top-10"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.6666666666666666,
+      "ndcg_5": 0.7653606369886217,
+      "neg_rejected": false,
+      "latency_p50": 34.49579095467925,
+      "latency_p95": 61.71708297915757,
+      "latency_p99": 61.71708297915757
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How does CloudWatch help with monitoring distributed systems?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/monitoring-observability.md"
+      ],
+      "expected": [
+        "well-architected-framework",
+        "security-audit-checklist",
+        "serverless-architecture"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 27.728333021514118,
+      "latency_p95": 44.024957926012576,
+      "latency_p99": 44.024957926012576
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How do I use SparkSession to process large datasets?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/data-pipeline-design.md",
+        "tests/fixtures/sample_docs/document-processing.md",
+        "tests/fixtures/scale_docs/data-serialization.md",
+        "tests/fixtures/scale_docs/stream-processing.md"
+      ],
+      "expected": [
+        "stream-processing",
+        "data-lake-architecture",
+        "data-pipeline-design"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.3333333333333333,
+      "ndcg_5": 0.6713860725233041,
+      "neg_rejected": false,
+      "latency_p50": 43.00383396912366,
+      "latency_p95": 60.007625026628375,
+      "latency_p99": 60.007625026628375
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "What are RESTful API design best practices?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/sample_docs/api-design.md"
+      ],
+      "expected": [
+        "well-architected-framework",
+        "security-audit-checklist",
+        "serverless-architecture"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 19.272750010713935,
+      "latency_p95": 39.828458917327225,
+      "latency_p99": 39.828458917327225
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How does auto-scaling work with ScalingAdjustment policies?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/auto-scaling.md",
+        "tests/fixtures/scale_docs/auto-scaling.md"
+      ],
+      "expected": [
+        "helm-charts",
+        "monitoring-observability",
+        "ssh-configuration",
+        "ci-cd-pipelines",
+        "infrastructure-as-code",
+        "chaos-engineering",
+        "configuration-management",
+        "incident-response",
+        "connection-pooling",
+        "container-fundamentals",
+        "kubernetes-architecture",
+        "auto-scaling",
+        "secrets-management"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.3391602052736161,
+      "neg_rejected": false,
+      "latency_p50": 17.630583024583757,
+      "latency_p95": 41.531666996888816,
+      "latency_p99": 41.531666996888816
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "What security considerations apply when using AppArmor for container isolation?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/container-security.md",
+        "tests/fixtures/scale_docs/container-security.md",
+        "tests/fixtures/scale_docs/security-audit-checklist.md"
+      ],
+      "expected": [
+        "monitoring-observability",
+        "database-sharding",
+        "http2-http3",
+        "multi-region-deployment",
+        "data-serialization",
+        "owasp-top-10",
+        "functional-programming",
+        "event-driven-architecture",
+        "websocket-protocol",
+        "testing-strategies",
+        "concurrency-patterns",
+        "api-security",
+        "serverless-architecture"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 32.14875003322959,
+      "latency_p95": 54.09958399832249,
+      "latency_p99": 54.09958399832249
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How do I configure WatermarkStrategy for event-time processing in streaming?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/stream-processing.md",
+        "tests/fixtures/scale_docs/stream-processing.md"
+      ],
+      "expected": [
+        "stream-processing",
+        "data-lake-architecture",
+        "data-pipeline-design"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.46927872602275644,
+      "neg_rejected": false,
+      "latency_p50": 24.381957948207855,
+      "latency_p95": 48.63166599534452,
+      "latency_p99": 48.63166599534452
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "What are best practices for using KafkaSink in stream processing pipelines?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/stream-processing.md",
+        "tests/fixtures/scale_docs/stream-processing.md",
+        "tests/fixtures/scale_docs/stream-processing.md",
+        "tests/fixtures/scale_docs/data-pipeline-design.md",
+        "tests/fixtures/scale_docs/stream-processing.md"
+      ],
+      "expected": [
+        "stream-processing",
+        "data-lake-architecture",
+        "data-pipeline-design"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.7653606369886217,
+      "neg_rejected": false,
+      "latency_p50": 30.782624962739646,
+      "latency_p95": 55.7289170101285,
+      "latency_p99": 55.7289170101285
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How does CloudFormation handle infrastructure deployment and rollback?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/infrastructure-as-code.md",
+        "tests/fixtures/scale_docs/well-architected-framework.md",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md",
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/ci-cd-pipelines.md"
+      ],
+      "expected": [
+        "penetration-testing-methodology",
+        "disaster-recovery",
+        "serverless-architecture"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 48.40133304242045,
+      "latency_p95": 68.72637500055134,
+      "latency_p99": 68.72637500055134
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "What are the security implications of HttpOnly cookies in web applications?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/scale_docs/owasp-top-10.md"
+      ],
+      "expected": [
+        "security-audit-checklist",
+        "container-security"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.3333333333333333,
+      "ndcg_5": 0.6131471927654584,
+      "neg_rejected": false,
+      "latency_p50": 32.19949989579618,
+      "latency_p95": 54.90645905956626,
+      "latency_p99": 54.90645905956626
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How do I implement OAuth 2.0 authorization in a web application?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/api-security.md",
+        "s3://nala-security-knowledge-base/source-code/software/api-security.md"
+      ],
+      "expected": [
+        "authentication",
+        "security-audit-checklist",
+        "owasp-top-10"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 990.380791015923,
+      "latency_p95": 1001.7151670763269,
+      "latency_p99": 1001.7151670763269
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How does CloudWatch help with monitoring distributed systems?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/linux-logging.md",
+        "s3://nala-security-knowledge-base/source-code/software/kubernetes-architecture.md",
+        "s3://nala-security-knowledge-base/source-code/software/monitoring-observability.md",
+        "s3://nala-security-knowledge-base/source-code/software/monitoring-observability.md"
+      ],
+      "expected": [
+        "well-architected-framework",
+        "security-audit-checklist",
+        "serverless-architecture"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 1021.7033749213442,
+      "latency_p95": 1204.7982499934733,
+      "latency_p99": 1204.7982499934733
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How do I use SparkSession to process large datasets?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/spark-fundamentals.md",
+        "s3://nala-security-knowledge-base/source-code/software/spark-fundamentals.md",
+        "s3://nala-security-knowledge-base/source-code/software/data-pipeline-design.md"
+      ],
+      "expected": [
+        "stream-processing",
+        "data-lake-architecture",
+        "data-pipeline-design"
+      ],
+      "rr": 0.3333333333333333,
+      "hit_5": 1.0,
+      "precision_3": 0.3333333333333333,
+      "ndcg_5": 0.2960819109658652,
+      "neg_rejected": false,
+      "latency_p50": 995.8950420841575,
+      "latency_p95": 1052.5140829849988,
+      "latency_p99": 1052.5140829849988
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "What are RESTful API design best practices?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/api-gateway-patterns.md",
+        "s3://nala-security-knowledge-base/source-code/software/api-security.md",
+        "s3://nala-security-knowledge-base/source-code/software/security-audit-checklist.md",
+        "s3://nala-security-knowledge-base/source-code/software/api-design.md"
+      ],
+      "expected": [
+        "well-architected-framework",
+        "security-audit-checklist",
+        "serverless-architecture"
+      ],
+      "rr": 0.3333333333333333,
+      "hit_5": 1.0,
+      "precision_3": 0.3333333333333333,
+      "ndcg_5": 0.23463936301137822,
+      "neg_rejected": false,
+      "latency_p50": 1424.0616250317544,
+      "latency_p95": 1523.7041669897735,
+      "latency_p99": 1523.7041669897735
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How does auto-scaling work with ScalingAdjustment policies?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/auto-scaling.md",
+        "s3://nala-security-knowledge-base/source-code/software/cost-optimization.md",
+        "s3://nala-security-knowledge-base/source-code/software/auto-scaling.md"
+      ],
+      "expected": [
+        "helm-charts",
+        "monitoring-observability",
+        "ssh-configuration",
+        "ci-cd-pipelines",
+        "infrastructure-as-code",
+        "chaos-engineering",
+        "configuration-management",
+        "incident-response",
+        "connection-pooling",
+        "container-fundamentals",
+        "kubernetes-architecture",
+        "auto-scaling",
+        "secrets-management"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.6666666666666666,
+      "ndcg_5": 0.3391602052736161,
+      "neg_rejected": false,
+      "latency_p50": 939.7768749622628,
+      "latency_p95": 1123.7406670115888,
+      "latency_p99": 1123.7406670115888
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "What security considerations apply when using AppArmor for container isolation?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/container-security.md",
+        "s3://nala-security-knowledge-base/source-code/software/container-security.md",
+        "s3://nala-security-knowledge-base/source-code/software/container-security.md"
+      ],
+      "expected": [
+        "monitoring-observability",
+        "database-sharding",
+        "http2-http3",
+        "multi-region-deployment",
+        "data-serialization",
+        "owasp-top-10",
+        "functional-programming",
+        "event-driven-architecture",
+        "websocket-protocol",
+        "testing-strategies",
+        "concurrency-patterns",
+        "api-security",
+        "serverless-architecture"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 888.4841660037637,
+      "latency_p95": 1010.2286250330508,
+      "latency_p99": 1010.2286250330508
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How do I configure WatermarkStrategy for event-time processing in streaming?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/stream-processing.md",
+        "s3://nala-security-knowledge-base/source-code/software/stream-processing.md"
+      ],
+      "expected": [
+        "stream-processing",
+        "data-lake-architecture",
+        "data-pipeline-design"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.46927872602275644,
+      "neg_rejected": false,
+      "latency_p50": 911.9513330515474,
+      "latency_p95": 991.1144999787211,
+      "latency_p99": 991.1144999787211
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "What are best practices for using KafkaSink in stream processing pipelines?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/stream-processing.md",
+        "s3://nala-security-knowledge-base/source-code/software/data-pipeline-design.md",
+        "s3://nala-security-knowledge-base/source-code/software/apache-kafka.md"
+      ],
+      "expected": [
+        "stream-processing",
+        "data-lake-architecture",
+        "data-pipeline-design"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.6666666666666666,
+      "ndcg_5": 0.7653606369886217,
+      "neg_rejected": false,
+      "latency_p50": 853.1160419806838,
+      "latency_p95": 1221.2887920904905,
+      "latency_p99": 1221.2887920904905
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How does CloudFormation handle infrastructure deployment and rollback?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/database-migrations.md",
+        "s3://nala-security-knowledge-base/source-code/software/well-architected-framework.md"
+      ],
+      "expected": [
+        "penetration-testing-methodology",
+        "disaster-recovery",
+        "serverless-architecture"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 966.4477920159698,
+      "latency_p95": 984.3301670625806,
+      "latency_p99": 984.3301670625806
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "What are the security implications of HttpOnly cookies in web applications?",
+      "category": "expansion",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/owasp-top-10.md",
+        "s3://nala-security-knowledge-base/source-code/software/owasp-top-10.md"
+      ],
+      "expected": [
+        "security-audit-checklist",
+        "container-security"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 1011.6843329742551,
+      "latency_p95": 1036.015541991219,
+      "latency_p99": 1036.015541991219
+    }
+  ]
+}
