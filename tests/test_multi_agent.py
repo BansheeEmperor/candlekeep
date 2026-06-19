@@ -189,6 +189,23 @@ class TestMainEntrypoint:
         """main() with stdio transport calls mcp.run() with no args."""
         mock_settings = MagicMock()
         mock_settings.transport = "stdio"
+        # Configure attributes needed by _log_config
+        mock_settings.chroma_url = "http://localhost:8000"
+        mock_settings.chroma_auth_token = ""
+        mock_settings.http_host = "127.0.0.1"
+        mock_settings.http_port = 8111
+        mock_settings.mcp_token = ""
+        mock_settings.embedding_model = "bge-small"
+        mock_settings.embedding_cache_size = 500
+        mock_settings.device = "cpu"
+        mock_settings.chunk_size = 512
+        mock_settings.chunk_overlap = 100
+        mock_settings.bardic_knowledge = True
+        mock_settings.sparse_backend = "bm25"
+        mock_settings.llm_provider = ""
+        mock_settings.vlm_provider = ""
+        mock_settings.data_dir = "/tmp/candlekeep"
+        mock_settings.spice = False
 
         with patch.object(mcp_server, "_settings", mock_settings), \
              patch.object(mcp_server, "mcp") as mock_mcp:
@@ -201,6 +218,21 @@ class TestMainEntrypoint:
         mock_settings.transport = "http"
         mock_settings.http_host = "0.0.0.0"
         mock_settings.http_port = 8111
+        # Configure attributes needed by _log_config
+        mock_settings.chroma_url = "http://localhost:8000"
+        mock_settings.chroma_auth_token = ""
+        mock_settings.mcp_token = ""
+        mock_settings.embedding_model = "bge-small"
+        mock_settings.embedding_cache_size = 500
+        mock_settings.device = "cpu"
+        mock_settings.chunk_size = 512
+        mock_settings.chunk_overlap = 100
+        mock_settings.bardic_knowledge = True
+        mock_settings.sparse_backend = "bm25"
+        mock_settings.llm_provider = ""
+        mock_settings.vlm_provider = ""
+        mock_settings.data_dir = "/tmp/candlekeep"
+        mock_settings.spice = False
 
         with patch.object(mcp_server, "_settings", mock_settings), \
              patch.object(mcp_server, "mcp") as mock_mcp:

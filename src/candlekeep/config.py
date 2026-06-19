@@ -17,6 +17,10 @@ EMBEDDING_MODELS = {
 
 def detect_device() -> str:
     """Detect best available compute device."""
+    import os
+    if os.environ.get("CANDLEKEEP_CI") == "1":
+        return "cpu"
+    
     import torch
     if torch.cuda.is_available():
         return "cuda"
@@ -69,6 +73,7 @@ class Settings:
     # ChromaDB connection
     chroma_url: str = field(default_factory=lambda: os.getenv("CHROMA_URL", "http://localhost:8000"))
     chroma_auth_token: str = field(default_factory=lambda: os.getenv("CHROMA_AUTH_TOKEN", ""))
+    chroma_path: str | None = None
     
     # Embedding settings
     embedding_model: EmbeddingModel = field(default_factory=lambda: os.getenv("CANDLEKEEP_EMBEDDING", "bge-small"))
@@ -79,7 +84,7 @@ class Settings:
     
     # Document processing
     chunk_size: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_CHUNK_SIZE", "512")))
-    chunk_overlap: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_CHUNK_OVERLAP", "50")))
+    chunk_overlap: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_CHUNK_OVERLAP", "100")))
     
     # Personality
     spice: bool = field(default_factory=lambda: os.getenv("CANDLEKEEP_SPICE", "false").lower() == "true")
