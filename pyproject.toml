@@ -23,6 +23,12 @@ colbert = [
 bedrock = [
     "boto3>=1.34.0",
 ]
+openai = [
+    "llama-index-llms-openai>=0.1.0",
+]
+gemini = [
+    "llama-index-llms-gemini>=0.1.0",
+]
 dev = [
     "pytest>=8.0.0",
     "pytest-cov>=4.0.0",

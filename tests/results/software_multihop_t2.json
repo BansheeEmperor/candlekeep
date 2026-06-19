@@ -1,0 +1,1476 @@
+{
+  "summary": {
+    "rows": [
+      {
+        "system": "candlekeep-explore",
+        "n": 30,
+        "mrr": 0.6194444444444445,
+        "recall_5": 0.7666666666666667,
+        "precision_3": 0.5055555555555555,
+        "ndcg_5": 0.383972420943338,
+        "neg_rejection": null,
+        "p50_ms": 38.208562473300844,
+        "p95_ms": 91.10075002536178
+      },
+      {
+        "system": "bedrock-graphrag",
+        "n": 30,
+        "mrr": 0.7194444444444444,
+        "recall_5": 0.8,
+        "precision_3": 0.6,
+        "ndcg_5": 0.4718835620031989,
+        "neg_rejection": null,
+        "p50_ms": 957.9659170121886,
+        "p95_ms": 1594.4022909970954
+      }
+    ]
+  },
+  "results": [
+    {
+      "system": "candlekeep-explore",
+      "query": "How can I ensure that only authorized services can communicate with each other in a microservices environment without relying on network-level IP filtering?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/microservices.md"
+      ],
+      "expected": [
+        "zero-trust-architecture",
+        "service-mesh",
+        "tls-ssl"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 21.472625085152686,
+      "latency_p95": 48.50299993995577,
+      "latency_p99": 48.50299993995577
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "If my application needs to process a high volume of sensor data in real-time while also maintaining a historical record for long-term trend analysis, what architectural components should I use to handle both needs efficiently?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/monitoring-observability.md",
+        "tests/fixtures/scale_docs/data-pipeline-design.md",
+        "tests/fixtures/scale_docs/nosql-patterns.md",
+        "tests/fixtures/scale_docs/cloud-design-patterns.md"
+      ],
+      "expected": [
+        "stream-processing",
+        "data-lake-architecture",
+        "apache-kafka"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 54.577458067797124,
+      "latency_p95": 73.56991700362414,
+      "latency_p99": 73.56991700362414
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "What strategies can I use to prevent a single slow database query from exhausting all available connections and impacting the overall availability of my web application?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/database-replication.md",
+        "tests/fixtures/scale_docs/connection-pooling.md",
+        "tests/fixtures/scale_docs/connection-pooling.md"
+      ],
+      "expected": [
+        "connection-pooling",
+        "error-handling-patterns",
+        "load-balancing"
+      ],
+      "rr": 0.5,
+      "hit_5": 1.0,
+      "precision_3": 0.6666666666666666,
+      "ndcg_5": 0.2960819109658652,
+      "neg_rejected": false,
+      "latency_p50": 32.71625004708767,
+      "latency_p95": 57.98466596752405,
+      "latency_p99": 57.98466596752405
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How can I protect my containerized applications from vulnerabilities in their base images while also ensuring that compromised containers cannot easily access the host system's kernel?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/container-fundamentals.md",
+        "tests/fixtures/scale_docs/dependency-injection.md",
+        "tests/fixtures/scale_docs/container-fundamentals.md"
+      ],
+      "expected": [
+        "container-security",
+        "kubernetes-architecture"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 50.89145805686712,
+      "latency_p95": 71.08404103200883,
+      "latency_p99": 71.08404103200883
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "If I'm building a globally distributed application that needs to minimize latency for users in different continents while still providing a consistent view of the data, what patterns should I consider for both the network and the database?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/event-driven-architecture.md",
+        "tests/fixtures/scale_docs/database-migrations.md",
+        "tests/fixtures/scale_docs/event-driven-architecture.md",
+        "tests/fixtures/scale_docs/connection-pooling.md",
+        "tests/fixtures/scale_docs/nosql-patterns.md"
+      ],
+      "expected": [
+        "cdn-architecture",
+        "database-replication",
+        "multi-region-deployment"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 56.3357500359416,
+      "latency_p95": 107.14154201559722,
+      "latency_p99": 107.14154201559722
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How can I implement a system that automatically scales based on traffic spikes but also ensures that I don't exceed my budget by spinning up too many resources?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/cost-optimization.md",
+        "tests/fixtures/scale_docs/monitoring-observability.md",
+        "tests/fixtures/scale_docs/well-architected-framework.md",
+        "tests/fixtures/scale_docs/well-architected-framework.md"
+      ],
+      "expected": [
+        "auto-scaling",
+        "cost-optimization",
+        "monitoring-observability"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.6666666666666666,
+      "ndcg_5": 0.7653606369886217,
+      "neg_rejected": false,
+      "latency_p50": 48.935791943222284,
+      "latency_p95": 87.56658295169473,
+      "latency_p99": 87.56658295169473
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "What are the best practices for managing sensitive information like database passwords in a CI/CD pipeline so they are never stored in plain text or committed to version control?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/ci-cd-pipelines.md",
+        "tests/fixtures/scale_docs/ci-cd-pipelines.md",
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/sample_docs/authentication.md",
+        "tests/fixtures/scale_docs/ci-cd-pipelines.md"
+      ],
+      "expected": [
+        "secrets-management",
+        "ci-cd-pipelines",
+        "infrastructure-as-code"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.6666666666666666,
+      "ndcg_5": 0.46927872602275644,
+      "neg_rejected": false,
+      "latency_p50": 46.750959008932114,
+      "latency_p95": 73.09612503740937,
+      "latency_p99": 73.09612503740937
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "When migrating a monolithic application to microservices, how can I handle transactions that span multiple services without using a traditional two-phase commit?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/scale_docs/migration-strategies.md"
+      ],
+      "expected": [
+        "microservices",
+        "event-driven-architecture",
+        "nosql-patterns"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.5,
+      "ndcg_5": 0.46927872602275644,
+      "neg_rejected": false,
+      "latency_p50": 30.50958306994289,
+      "latency_p95": 59.19125000946224,
+      "latency_p99": 59.19125000946224
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How can I ensure my API is protected against common web attacks while also providing a way for mobile apps to securely obtain access tokens without exposing a client secret?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/api-security.md",
+        "tests/fixtures/scale_docs/api-security.md",
+        "tests/fixtures/scale_docs/api-gateway-patterns.md",
+        "tests/fixtures/scale_docs/api-security.md"
+      ],
+      "expected": [
+        "owasp-top-10",
+        "api-security"
+      ],
+      "rr": 0.5,
+      "hit_5": 1.0,
+      "precision_3": 0.6666666666666666,
+      "ndcg_5": 0.38685280723454163,
+      "neg_rejected": false,
+      "latency_p50": 44.38624996691942,
+      "latency_p95": 91.10075002536178,
+      "latency_p99": 91.10075002536178
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "What approach should I take to monitor the health of a distributed system where I need to track a single request as it flows through multiple services to identify where bottlenecks are occurring?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/monitoring-observability.md",
+        "tests/fixtures/scale_docs/monitoring-observability.md",
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/scale_docs/connection-pooling.md"
+      ],
+      "expected": [
+        "monitoring-observability",
+        "service-mesh"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.6666666666666666,
+      "ndcg_5": 0.6131471927654584,
+      "neg_rejected": false,
+      "latency_p50": 38.63391699269414,
+      "latency_p95": 67.55962502211332,
+      "latency_p99": 67.55962502211332
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How can I design a database schema that can handle millions of users while allowing for easy updates to the data structure without significant downtime?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/sample_docs/database-design.md",
+        "tests/fixtures/scale_docs/data-pipeline-design.md",
+        "tests/fixtures/scale_docs/database-migrations.md"
+      ],
+      "expected": [
+        "database-sharding",
+        "database-migrations",
+        "sql-query-optimization"
+      ],
+      "rr": 0.25,
+      "hit_5": 1.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.23463936301137822,
+      "neg_rejected": false,
+      "latency_p50": 37.78320795390755,
+      "latency_p95": 58.016665978357196,
+      "latency_p99": 58.016665978357196
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "If I want to build a search engine that understands the meaning of queries rather than just matching keywords, what kind of specialized data storage and processing would I need?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/sample_docs/semantic-search.md",
+        "tests/fixtures/sample_docs/vector-databases.md"
+      ],
+      "expected": [
+        "vector-databases",
+        "semantic-search",
+        "elasticsearch-basics"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.7653606369886217,
+      "neg_rejected": false,
+      "latency_p50": 24.412082973867655,
+      "latency_p95": 53.33229200914502,
+      "latency_p99": 53.33229200914502
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How can I implement a secure remote access solution that doesn't rely on a traditional perimeter-based VPN and follows the principle of 'never trust, always verify'?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/ssh-configuration.md",
+        "tests/fixtures/scale_docs/vpn-tunneling.md"
+      ],
+      "expected": [
+        "zero-trust-architecture",
+        "authentication",
+        "tls-ssl"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 40.11025000363588,
+      "latency_p95": 62.002165941521525,
+      "latency_p99": 62.002165941521525
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "What are the key considerations for ensuring data integrity when moving large amounts of data between different cloud regions or providers?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/migration-strategies.md",
+        "tests/fixtures/scale_docs/data-pipeline-design.md",
+        "tests/fixtures/scale_docs/infrastructure-as-code.md",
+        "tests/fixtures/scale_docs/migration-strategies.md"
+      ],
+      "expected": [
+        "data-quality",
+        "cloud-networking",
+        "multi-region-deployment"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 43.19791600573808,
+      "latency_p95": 62.3399579199031,
+      "latency_p99": 62.3399579199031
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How can I use automated testing to ensure that my infrastructure changes don't break my application's deployment process?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/security-audit-checklist.md"
+      ],
+      "expected": [
+        "infrastructure-as-code",
+        "testing-strategies",
+        "ci-cd-pipelines"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 27.347124996595085,
+      "latency_p95": 49.124957993626595,
+      "latency_p99": 49.124957993626595
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "What architectural patterns help in decoupling services so that a failure in one service doesn't cause a cascading failure across the entire system?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/scale_docs/well-architected-framework.md",
+        "tests/fixtures/scale_docs/cloud-design-patterns.md",
+        "tests/fixtures/sample_docs/microservices.md"
+      ],
+      "expected": [
+        "error-handling-patterns",
+        "event-driven-architecture",
+        "microservices"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.3333333333333333,
+      "ndcg_5": 0.46927872602275644,
+      "neg_rejected": false,
+      "latency_p50": 42.57466597482562,
+      "latency_p95": 64.22254198696464,
+      "latency_p99": 64.22254198696464
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How can I optimize the performance of my Linux-based application by managing how it handles memory and process scheduling?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/linux-performance-tuning.md",
+        "tests/fixtures/scale_docs/linux-performance-tuning.md",
+        "tests/fixtures/scale_docs/linux-performance-tuning.md",
+        "tests/fixtures/scale_docs/linux-performance-tuning.md"
+      ],
+      "expected": [
+        "linux-memory-management",
+        "linux-process-management",
+        "linux-performance-tuning"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.46927872602275644,
+      "neg_rejected": false,
+      "latency_p50": 24.636875023134053,
+      "latency_p95": 48.01479203160852,
+      "latency_p99": 48.01479203160852
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "When designing a high-performance API, what are the trade-offs between using a traditional RESTful approach versus a modern binary protocol, and how does this impact network efficiency?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/sample_docs/api-design.md",
+        "tests/fixtures/scale_docs/http2-http3.md"
+      ],
+      "expected": [
+        "api-design",
+        "grpc-protocol",
+        "http2-http3"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.7653606369886217,
+      "neg_rejected": false,
+      "latency_p50": 34.98179197777063,
+      "latency_p95": 54.842542042024434,
+      "latency_p99": 54.842542042024434
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How can I ensure that my system can recover from a total regional failure of my cloud provider while maintaining data consistency?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/database-replication.md",
+        "tests/fixtures/scale_docs/event-driven-architecture.md",
+        "tests/fixtures/scale_docs/event-driven-architecture.md"
+      ],
+      "expected": [
+        "disaster-recovery",
+        "database-replication",
+        "multi-region-deployment"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.3333333333333333,
+      "ndcg_5": 0.46927872602275644,
+      "neg_rejected": false,
+      "latency_p50": 55.34874997101724,
+      "latency_p95": 70.76462497934699,
+      "latency_p99": 70.76462497934699
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "What is the best way to handle large-scale data processing tasks that are too big for a single machine and require parallel execution across a cluster?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/data-pipeline-design.md",
+        "tests/fixtures/scale_docs/data-pipeline-design.md",
+        "tests/fixtures/scale_docs/data-pipeline-design.md"
+      ],
+      "expected": [
+        "spark-fundamentals",
+        "data-pipeline-design"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.6131471927654584,
+      "neg_rejected": false,
+      "latency_p50": 25.867750053294003,
+      "latency_p95": 55.05654192529619,
+      "latency_p99": 55.05654192529619
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How can I use a cache to improve application performance while ensuring that users don't see stale data when updates occur?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/linux-performance-tuning.md",
+        "tests/fixtures/scale_docs/cdn-architecture.md",
+        "tests/fixtures/scale_docs/database-sharding.md",
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/scale_docs/linux-performance-tuning.md"
+      ],
+      "expected": [
+        "caching",
+        "redis-data-structures",
+        "event-driven-architecture"
+      ],
+      "rr": 0.25,
+      "hit_5": 1.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.20210734650054757,
+      "neg_rejected": false,
+      "latency_p50": 42.097457917407155,
+      "latency_p95": 68.2280840119347,
+      "latency_p99": 68.2280840119347
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "What are the security implications of allowing third-party applications to access my API on behalf of a user, and how can I mitigate these risks?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/api-security.md",
+        "tests/fixtures/scale_docs/api-security.md",
+        "tests/fixtures/scale_docs/api-security.md",
+        "tests/fixtures/scale_docs/api-security.md"
+      ],
+      "expected": [
+        "api-security",
+        "authentication",
+        "owasp-top-10"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.46927872602275644,
+      "neg_rejected": false,
+      "latency_p50": 27.233749977312982,
+      "latency_p95": 51.23816605191678,
+      "latency_p99": 51.23816605191678
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How can I implement a logging strategy that allows me to search through millions of logs across hundreds of containers to find the root cause of an error?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/monitoring-observability.md",
+        "tests/fixtures/scale_docs/monitoring-observability.md"
+      ],
+      "expected": [
+        "monitoring-observability",
+        "elasticsearch-basics",
+        "linux-logging"
+      ],
+      "rr": 0.25,
+      "hit_5": 1.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.2960819109658652,
+      "neg_rejected": false,
+      "latency_p50": 35.94329103361815,
+      "latency_p95": 65.27429190464318,
+      "latency_p99": 65.27429190464318
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "What are the differences between horizontal and vertical scaling, and when should I choose one over the other for my database?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/data-warehouse-modeling.md",
+        "tests/fixtures/scale_docs/websocket-protocol.md",
+        "tests/fixtures/scale_docs/auto-scaling.md",
+        "tests/fixtures/scale_docs/well-architected-framework.md",
+        "tests/fixtures/scale_docs/auto-scaling.md"
+      ],
+      "expected": [
+        "auto-scaling",
+        "database-sharding",
+        "database-replication"
+      ],
+      "rr": 0.3333333333333333,
+      "hit_5": 1.0,
+      "precision_3": 0.3333333333333333,
+      "ndcg_5": 0.23463936301137822,
+      "neg_rejected": false,
+      "latency_p50": 46.60254193004221,
+      "latency_p95": 73.67470895405859,
+      "latency_p99": 73.67470895405859
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How can I use DNS to improve the availability and performance of my global application?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/dns-resolution.md",
+        "tests/fixtures/scale_docs/multi-region-deployment.md",
+        "tests/fixtures/scale_docs/dns-resolution.md",
+        "tests/fixtures/scale_docs/well-architected-framework.md"
+      ],
+      "expected": [
+        "dns-resolution",
+        "load-balancing",
+        "cdn-architecture"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.6666666666666666,
+      "ndcg_5": 0.46927872602275644,
+      "neg_rejected": false,
+      "latency_p50": 43.62004203721881,
+      "latency_p95": 66.98104203678668,
+      "latency_p99": 66.98104203678668
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "What is the impact of using different serialization formats on the latency and throughput of a distributed data pipeline?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/data-pipeline-design.md",
+        "tests/fixtures/scale_docs/data-serialization.md",
+        "tests/fixtures/scale_docs/data-serialization.md",
+        "tests/fixtures/scale_docs/data-serialization.md"
+      ],
+      "expected": [
+        "data-serialization",
+        "grpc-protocol",
+        "apache-kafka"
+      ],
+      "rr": 0.5,
+      "hit_5": 1.0,
+      "precision_3": 0.6666666666666666,
+      "ndcg_5": 0.2960819109658652,
+      "neg_rejected": false,
+      "latency_p50": 36.57050000037998,
+      "latency_p95": 64.7577919298783,
+      "latency_p99": 64.7577919298783
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How can I ensure that my infrastructure is compliant with industry standards like SOC2 or HIPAA using automated tools?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/security-audit-checklist.md",
+        "tests/fixtures/scale_docs/compliance-frameworks.md",
+        "tests/fixtures/scale_docs/compliance-frameworks.md"
+      ],
+      "expected": [
+        "compliance-frameworks",
+        "infrastructure-as-code",
+        "security-audit-checklist"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.7653606369886217,
+      "neg_rejected": false,
+      "latency_p50": 37.74199995677918,
+      "latency_p95": 60.87975006084889,
+      "latency_p99": 60.87975006084889
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "What are the advantages of using a 'serverless' approach for event-driven tasks, and what are the potential downsides I should be aware of?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/scale_docs/serverless-architecture.md",
+        "tests/fixtures/scale_docs/event-driven-architecture.md",
+        "tests/fixtures/scale_docs/event-driven-architecture.md",
+        "tests/fixtures/scale_docs/database-replication.md"
+      ],
+      "expected": [
+        "serverless-architecture",
+        "event-driven-architecture",
+        "monitoring-observability"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.7653606369886217,
+      "neg_rejected": false,
+      "latency_p50": 44.8447500821203,
+      "latency_p95": 70.51887491252273,
+      "latency_p99": 70.51887491252273
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "How can I design a system to handle 'hot keys' in a distributed cache or database to prevent performance bottlenecks?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/scale_docs/database-sharding.md",
+        "tests/fixtures/sample_docs/caching.md",
+        "tests/fixtures/scale_docs/database-sharding.md"
+      ],
+      "expected": [
+        "database-sharding",
+        "redis-data-structures",
+        "caching"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.7653606369886217,
+      "neg_rejected": false,
+      "latency_p50": 30.204541981220245,
+      "latency_p95": 52.46899998746812,
+      "latency_p99": 52.46899998746812
+    },
+    {
+      "system": "candlekeep-explore",
+      "query": "What role does a 'service registry' play in a microservices architecture, and how does it relate to load balancing?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "tests/fixtures/sample_docs/microservices.md",
+        "tests/fixtures/sample_docs/microservices.md"
+      ],
+      "expected": [
+        "service-mesh",
+        "load-balancing",
+        "microservices"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.46927872602275644,
+      "neg_rejected": false,
+      "latency_p50": 22.996541927568614,
+      "latency_p95": 50.4458750365302,
+      "latency_p99": 50.4458750365302
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How can I ensure that only authorized services can communicate with each other in a microservices environment without relying on network-level IP filtering?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/firewall-rules.md",
+        "s3://nala-security-knowledge-base/source-code/software/migration-strategies.md",
+        "s3://nala-security-knowledge-base/source-code/software/zero-trust-architecture.md",
+        "s3://nala-security-knowledge-base/source-code/software/linux-networking-config.md",
+        "s3://nala-security-knowledge-base/source-code/software/microservices.md"
+      ],
+      "expected": [
+        "zero-trust-architecture",
+        "service-mesh",
+        "tls-ssl"
+      ],
+      "rr": 0.3333333333333333,
+      "hit_5": 1.0,
+      "precision_3": 0.3333333333333333,
+      "ndcg_5": 0.23463936301137822,
+      "neg_rejected": false,
+      "latency_p50": 1480.702625005506,
+      "latency_p95": 8704.395167063922,
+      "latency_p99": 8704.395167063922
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "If my application needs to process a high volume of sensor data in real-time while also maintaining a historical record for long-term trend analysis, what architectural components should I use to handle both needs efficiently?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/data-pipeline-design.md",
+        "s3://nala-security-knowledge-base/source-code/software/data-pipeline-design.md",
+        "s3://nala-security-knowledge-base/source-code/software/nosql-patterns.md"
+      ],
+      "expected": [
+        "stream-processing",
+        "data-lake-architecture",
+        "apache-kafka"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 915.8187910215929,
+      "latency_p95": 1138.7365839909762,
+      "latency_p99": 1138.7365839909762
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "What strategies can I use to prevent a single slow database query from exhausting all available connections and impacting the overall availability of my web application?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/connection-pooling.md",
+        "s3://nala-security-knowledge-base/source-code/software/sql-query-optimization.md"
+      ],
+      "expected": [
+        "connection-pooling",
+        "error-handling-patterns",
+        "load-balancing"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.5,
+      "ndcg_5": 0.46927872602275644,
+      "neg_rejected": false,
+      "latency_p50": 1108.1942920573056,
+      "latency_p95": 1119.9012079741806,
+      "latency_p99": 1119.9012079741806
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How can I protect my containerized applications from vulnerabilities in their base images while also ensuring that compromised containers cannot easily access the host system's kernel?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/container-security.md",
+        "s3://nala-security-knowledge-base/source-code/software/container-security.md",
+        "s3://nala-security-knowledge-base/source-code/software/security-audit-checklist.md"
+      ],
+      "expected": [
+        "container-security",
+        "kubernetes-architecture"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.6666666666666666,
+      "ndcg_5": 0.6131471927654584,
+      "neg_rejected": false,
+      "latency_p50": 969.3697500042617,
+      "latency_p95": 1005.0123749533668,
+      "latency_p99": 1005.0123749533668
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "If I'm building a globally distributed application that needs to minimize latency for users in different continents while still providing a consistent view of the data, what patterns should I consider for both the network and the database?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/multi-region-deployment.md",
+        "s3://nala-security-knowledge-base/source-code/software/multi-region-deployment.md"
+      ],
+      "expected": [
+        "cdn-architecture",
+        "database-replication",
+        "multi-region-deployment"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.46927872602275644,
+      "neg_rejected": false,
+      "latency_p50": 960.0859161000699,
+      "latency_p95": 1043.7208330258727,
+      "latency_p99": 1043.7208330258727
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How can I implement a system that automatically scales based on traffic spikes but also ensures that I don't exceed my budget by spinning up too many resources?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/auto-scaling.md",
+        "s3://nala-security-knowledge-base/source-code/software/cost-optimization.md",
+        "s3://nala-security-knowledge-base/source-code/software/auto-scaling.md"
+      ],
+      "expected": [
+        "auto-scaling",
+        "cost-optimization",
+        "monitoring-observability"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.7653606369886217,
+      "neg_rejected": false,
+      "latency_p50": 934.6971249906346,
+      "latency_p95": 1026.5567919705063,
+      "latency_p99": 1026.5567919705063
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "What are the best practices for managing sensitive information like database passwords in a CI/CD pipeline so they are never stored in plain text or committed to version control?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/security-audit-checklist.md",
+        "s3://nala-security-knowledge-base/source-code/software/security-audit-checklist.md",
+        "s3://nala-security-knowledge-base/source-code/software/security-audit-checklist.md"
+      ],
+      "expected": [
+        "secrets-management",
+        "ci-cd-pipelines",
+        "infrastructure-as-code"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 1211.3756249891594,
+      "latency_p95": 1260.0219580344856,
+      "latency_p99": 1260.0219580344856
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "When migrating a monolithic application to microservices, how can I handle transactions that span multiple services without using a traditional two-phase commit?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/migration-strategies.md",
+        "s3://nala-security-knowledge-base/source-code/software/microservices.md",
+        "s3://nala-security-knowledge-base/source-code/software/data-warehouse-modeling.md"
+      ],
+      "expected": [
+        "microservices",
+        "event-driven-architecture",
+        "nosql-patterns"
+      ],
+      "rr": 0.5,
+      "hit_5": 1.0,
+      "precision_3": 0.3333333333333333,
+      "ndcg_5": 0.2960819109658652,
+      "neg_rejected": false,
+      "latency_p50": 840.0359160732478,
+      "latency_p95": 885.9289169777185,
+      "latency_p99": 885.9289169777185
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How can I ensure my API is protected against common web attacks while also providing a way for mobile apps to securely obtain access tokens without exposing a client secret?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/api-security.md",
+        "s3://nala-security-knowledge-base/source-code/software/api-security.md",
+        "s3://nala-security-knowledge-base/source-code/software/api-security.md"
+      ],
+      "expected": [
+        "owasp-top-10",
+        "api-security"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.6131471927654584,
+      "neg_rejected": false,
+      "latency_p50": 1023.5907919704914,
+      "latency_p95": 1133.4771249676123,
+      "latency_p99": 1133.4771249676123
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "What approach should I take to monitor the health of a distributed system where I need to track a single request as it flows through multiple services to identify where bottlenecks are occurring?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/monitoring-observability.md"
+      ],
+      "expected": [
+        "monitoring-observability",
+        "service-mesh"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.6131471927654584,
+      "neg_rejected": false,
+      "latency_p50": 899.4078329997137,
+      "latency_p95": 1028.8270000601187,
+      "latency_p99": 1028.8270000601187
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How can I design a database schema that can handle millions of users while allowing for easy updates to the data structure without significant downtime?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/database-migrations.md",
+        "s3://nala-security-knowledge-base/source-code/software/database-design.md"
+      ],
+      "expected": [
+        "database-sharding",
+        "database-migrations",
+        "sql-query-optimization"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.5,
+      "ndcg_5": 0.46927872602275644,
+      "neg_rejected": false,
+      "latency_p50": 937.0142919942737,
+      "latency_p95": 1086.3130829529837,
+      "latency_p99": 1086.3130829529837
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "If I want to build a search engine that understands the meaning of queries rather than just matching keywords, what kind of specialized data storage and processing would I need?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/elasticsearch-basics.md",
+        "s3://nala-security-knowledge-base/source-code/software/elasticsearch-basics.md",
+        "s3://nala-security-knowledge-base/source-code/software/vector-databases.md",
+        "s3://nala-security-knowledge-base/source-code/software/semantic-search.md"
+      ],
+      "expected": [
+        "vector-databases",
+        "semantic-search",
+        "elasticsearch-basics"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 1.0,
+      "neg_rejected": false,
+      "latency_p50": 1431.3359160441905,
+      "latency_p95": 1594.4022909970954,
+      "latency_p99": 1594.4022909970954
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How can I implement a secure remote access solution that doesn't rely on a traditional perimeter-based VPN and follows the principle of 'never trust, always verify'?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/vpn-tunneling.md",
+        "s3://nala-security-knowledge-base/source-code/software/vpn-tunneling.md"
+      ],
+      "expected": [
+        "zero-trust-architecture",
+        "authentication",
+        "tls-ssl"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 971.557250013575,
+      "latency_p95": 1027.8929159976542,
+      "latency_p99": 1027.8929159976542
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "What are the key considerations for ensuring data integrity when moving large amounts of data between different cloud regions or providers?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/migration-strategies.md"
+      ],
+      "expected": [
+        "data-quality",
+        "cloud-networking",
+        "multi-region-deployment"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 1026.5689579537138,
+      "latency_p95": 1076.629374991171,
+      "latency_p99": 1076.629374991171
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How can I use automated testing to ensure that my infrastructure changes don't break my application's deployment process?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/security-audit-checklist.md",
+        "s3://nala-security-knowledge-base/source-code/software/security-audit-checklist.md",
+        "s3://nala-security-knowledge-base/source-code/software/security-audit-checklist.md"
+      ],
+      "expected": [
+        "infrastructure-as-code",
+        "testing-strategies",
+        "ci-cd-pipelines"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 849.3128339760005,
+      "latency_p95": 879.6754169743508,
+      "latency_p99": 879.6754169743508
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "What architectural patterns help in decoupling services so that a failure in one service doesn't cause a cascading failure across the entire system?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/error-handling-patterns.md",
+        "s3://nala-security-knowledge-base/source-code/software/cloud-design-patterns.md",
+        "s3://nala-security-knowledge-base/source-code/software/api-gateway-patterns.md"
+      ],
+      "expected": [
+        "error-handling-patterns",
+        "event-driven-architecture",
+        "microservices"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.3333333333333333,
+      "ndcg_5": 0.46927872602275644,
+      "neg_rejected": false,
+      "latency_p50": 841.0587080288678,
+      "latency_p95": 1010.6344589730725,
+      "latency_p99": 1010.6344589730725
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How can I optimize the performance of my Linux-based application by managing how it handles memory and process scheduling?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/linux-memory-management.md",
+        "s3://nala-security-knowledge-base/source-code/software/linux-process-management.md",
+        "s3://nala-security-knowledge-base/source-code/software/linux-memory-management.md",
+        "s3://nala-security-knowledge-base/source-code/software/linux-performance-tuning.md"
+      ],
+      "expected": [
+        "linux-memory-management",
+        "linux-process-management",
+        "linux-performance-tuning"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 1.0,
+      "neg_rejected": false,
+      "latency_p50": 982.350124977529,
+      "latency_p95": 1013.1353749893606,
+      "latency_p99": 1013.1353749893606
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "When designing a high-performance API, what are the trade-offs between using a traditional RESTful approach versus a modern binary protocol, and how does this impact network efficiency?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/data-serialization.md",
+        "s3://nala-security-knowledge-base/source-code/software/security-audit-checklist.md",
+        "s3://nala-security-knowledge-base/source-code/software/data-serialization.md",
+        "s3://nala-security-knowledge-base/source-code/software/api-design.md"
+      ],
+      "expected": [
+        "api-design",
+        "grpc-protocol",
+        "http2-http3"
+      ],
+      "rr": 0.25,
+      "hit_5": 1.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.23463936301137822,
+      "neg_rejected": false,
+      "latency_p50": 1031.1353330034763,
+      "latency_p95": 1109.0929999481887,
+      "latency_p99": 1109.0929999481887
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How can I ensure that my system can recover from a total regional failure of my cloud provider while maintaining data consistency?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/database-replication.md",
+        "s3://nala-security-knowledge-base/source-code/software/disaster-recovery.md",
+        "s3://nala-security-knowledge-base/source-code/software/database-replication.md"
+      ],
+      "expected": [
+        "disaster-recovery",
+        "database-replication",
+        "multi-region-deployment"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.7653606369886217,
+      "neg_rejected": false,
+      "latency_p50": 985.8442089753225,
+      "latency_p95": 1126.4702919870615,
+      "latency_p99": 1126.4702919870615
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "What is the best way to handle large-scale data processing tasks that are too big for a single machine and require parallel execution across a cluster?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/data-pipeline-design.md"
+      ],
+      "expected": [
+        "spark-fundamentals",
+        "data-pipeline-design"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.6131471927654584,
+      "neg_rejected": false,
+      "latency_p50": 847.8862500051036,
+      "latency_p95": 998.9900410873815,
+      "latency_p99": 998.9900410873815
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How can I use a cache to improve application performance while ensuring that users don't see stale data when updates occur?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/cdn-architecture.md",
+        "s3://nala-security-knowledge-base/source-code/software/caching.md"
+      ],
+      "expected": [
+        "caching",
+        "redis-data-structures",
+        "event-driven-architecture"
+      ],
+      "rr": 0.5,
+      "hit_5": 1.0,
+      "precision_3": 0.5,
+      "ndcg_5": 0.2960819109658652,
+      "neg_rejected": false,
+      "latency_p50": 928.0313339550048,
+      "latency_p95": 1024.572999915108,
+      "latency_p99": 1024.572999915108
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "What are the security implications of allowing third-party applications to access my API on behalf of a user, and how can I mitigate these risks?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/api-security.md",
+        "s3://nala-security-knowledge-base/source-code/software/security-audit-checklist.md",
+        "s3://nala-security-knowledge-base/source-code/software/api-security.md",
+        "s3://nala-security-knowledge-base/source-code/software/api-security.md"
+      ],
+      "expected": [
+        "api-security",
+        "authentication",
+        "owasp-top-10"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.6666666666666666,
+      "ndcg_5": 0.46927872602275644,
+      "neg_rejected": false,
+      "latency_p50": 803.8384590763599,
+      "latency_p95": 955.3208330180496,
+      "latency_p99": 955.3208330180496
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How can I implement a logging strategy that allows me to search through millions of logs across hundreds of containers to find the root cause of an error?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/monitoring-observability.md",
+        "s3://nala-security-knowledge-base/source-code/software/monitoring-observability.md",
+        "s3://nala-security-knowledge-base/source-code/software/linux-logging.md"
+      ],
+      "expected": [
+        "monitoring-observability",
+        "elasticsearch-basics",
+        "linux-logging"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.7653606369886217,
+      "neg_rejected": false,
+      "latency_p50": 958.724542055279,
+      "latency_p95": 1041.9085000175983,
+      "latency_p99": 1041.9085000175983
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "What are the differences between horizontal and vertical scaling, and when should I choose one over the other for my database?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/nosql-patterns.md",
+        "s3://nala-security-knowledge-base/source-code/software/nosql-patterns.md",
+        "s3://nala-security-knowledge-base/source-code/software/data-serialization.md"
+      ],
+      "expected": [
+        "auto-scaling",
+        "database-sharding",
+        "database-replication"
+      ],
+      "rr": 0.0,
+      "hit_5": 0.0,
+      "precision_3": 0.0,
+      "ndcg_5": 0.0,
+      "neg_rejected": false,
+      "latency_p50": 981.9713750621304,
+      "latency_p95": 1124.7048339573666,
+      "latency_p99": 1124.7048339573666
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How can I use DNS to improve the availability and performance of my global application?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/dns-resolution.md",
+        "s3://nala-security-knowledge-base/source-code/software/network-troubleshooting.md",
+        "s3://nala-security-knowledge-base/source-code/software/dns-resolution.md"
+      ],
+      "expected": [
+        "dns-resolution",
+        "load-balancing",
+        "cdn-architecture"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.6666666666666666,
+      "ndcg_5": 0.46927872602275644,
+      "neg_rejected": false,
+      "latency_p50": 796.3123330846429,
+      "latency_p95": 810.6685420498252,
+      "latency_p99": 810.6685420498252
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "What is the impact of using different serialization formats on the latency and throughput of a distributed data pipeline?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/data-serialization.md",
+        "s3://nala-security-knowledge-base/source-code/software/data-pipeline-design.md"
+      ],
+      "expected": [
+        "data-serialization",
+        "grpc-protocol",
+        "apache-kafka"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 0.5,
+      "ndcg_5": 0.46927872602275644,
+      "neg_rejected": false,
+      "latency_p50": 957.2072919690982,
+      "latency_p95": 1031.8618749734014,
+      "latency_p99": 1031.8618749734014
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How can I ensure that my infrastructure is compliant with industry standards like SOC2 or HIPAA using automated tools?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/security-audit-checklist.md",
+        "s3://nala-security-knowledge-base/source-code/software/compliance-frameworks.md",
+        "s3://nala-security-knowledge-base/source-code/software/compliance-frameworks.md"
+      ],
+      "expected": [
+        "compliance-frameworks",
+        "infrastructure-as-code",
+        "security-audit-checklist"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.7653606369886217,
+      "neg_rejected": false,
+      "latency_p50": 933.0347080249339,
+      "latency_p95": 933.7181249866262,
+      "latency_p99": 933.7181249866262
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "What are the advantages of using a 'serverless' approach for event-driven tasks, and what are the potential downsides I should be aware of?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/serverless-architecture.md",
+        "s3://nala-security-knowledge-base/source-code/software/event-driven-architecture.md"
+      ],
+      "expected": [
+        "serverless-architecture",
+        "event-driven-architecture",
+        "monitoring-observability"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.7653606369886217,
+      "neg_rejected": false,
+      "latency_p50": 793.1705410592258,
+      "latency_p95": 846.5035420376807,
+      "latency_p99": 846.5035420376807
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "How can I design a system to handle 'hot keys' in a distributed cache or database to prevent performance bottlenecks?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/redis-data-structures.md",
+        "s3://nala-security-knowledge-base/source-code/software/caching.md",
+        "s3://nala-security-knowledge-base/source-code/software/redis-data-structures.md"
+      ],
+      "expected": [
+        "database-sharding",
+        "redis-data-structures",
+        "caching"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.7653606369886217,
+      "neg_rejected": false,
+      "latency_p50": 846.3775829877704,
+      "latency_p95": 1127.0348330726847,
+      "latency_p99": 1127.0348330726847
+    },
+    {
+      "system": "bedrock-graphrag",
+      "query": "What role does a 'service registry' play in a microservices architecture, and how does it relate to load balancing?",
+      "category": "multi_hop",
+      "difficulty": "hard",
+      "retrieved": [
+        "s3://nala-security-knowledge-base/source-code/software/load-balancing.md",
+        "s3://nala-security-knowledge-base/source-code/software/load-balancing.md",
+        "s3://nala-security-knowledge-base/source-code/software/microservices.md"
+      ],
+      "expected": [
+        "service-mesh",
+        "load-balancing",
+        "microservices"
+      ],
+      "rr": 1.0,
+      "hit_5": 1.0,
+      "precision_3": 1.0,
+      "ndcg_5": 0.7653606369886217,
+      "neg_rejected": false,
+      "latency_p50": 1012.3062909115106,
+      "latency_p95": 1202.9285420430824,
+      "latency_p99": 1202.9285420430824
+    }
+  ]
+}

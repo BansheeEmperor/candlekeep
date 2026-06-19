@@ -1,0 +1,268 @@
+[
+  {
+    "query": "How can I ensure that only authorized services can communicate with each other in a microservices environment without relying on network-level IP filtering?",
+    "supporting_docs": [
+      "zero-trust-architecture.md",
+      "service-mesh.md",
+      "tls-ssl.md"
+    ],
+    "notes": "Requires connecting Zero Trust principles (identity-based access) with Service Mesh implementation (mTLS, sidecar proxies) and the technical details of how mTLS works (TLS/SSL)."
+  },
+  {
+    "query": "If my application needs to process a high volume of sensor data in real-time while also maintaining a historical record for long-term trend analysis, what architectural components should I use to handle both needs efficiently?",
+    "supporting_docs": [
+      "stream-processing.md",
+      "data-lake-architecture.md",
+      "apache-kafka.md"
+    ],
+    "notes": "Needs to connect real-time processing (windowing, watermarks) with long-term storage (S3, data zones) and the ingestion layer (Kafka)."
+  },
+  {
+    "query": "What strategies can I use to prevent a single slow database query from exhausting all available connections and impacting the overall availability of my web application?",
+    "supporting_docs": [
+      "connection-pooling.md",
+      "error-handling-patterns.md",
+      "load-balancing.md"
+    ],
+    "notes": "Connects connection pooling (limiting max connections) with error handling (circuit breaking, timeouts) and load balancing (health checks)."
+  },
+  {
+    "query": "How can I protect my containerized applications from vulnerabilities in their base images while also ensuring that compromised containers cannot easily access the host system's kernel?",
+    "supporting_docs": [
+      "container-security.md",
+      "kubernetes-architecture.md"
+    ],
+    "notes": "Image scanning for vulnerabilities and runtime protection (seccomp/AppArmor) which are often configured in Kubernetes via Pod Security Policies or Security Contexts."
+  },
+  {
+    "query": "If I'm building a globally distributed application that needs to minimize latency for users in different continents while still providing a consistent view of the data, what patterns should I consider for both the network and the database?",
+    "supporting_docs": [
+      "cdn-architecture.md",
+      "database-replication.md",
+      "multi-region-deployment.md"
+    ],
+    "notes": "Connecting CDN for static/edge content with database replication (multi-master or global read replicas) and general multi-region deployment strategies."
+  },
+  {
+    "query": "How can I implement a system that automatically scales based on traffic spikes but also ensures that I don't exceed my budget by spinning up too many resources?",
+    "supporting_docs": [
+      "auto-scaling.md",
+      "cost-optimization.md",
+      "monitoring-observability.md"
+    ],
+    "notes": "Auto-scaling triggers based on metrics from monitoring, combined with cost optimization strategies like setting limits and using spot instances."
+  },
+  {
+    "query": "What are the best practices for managing sensitive information like database passwords in a CI/CD pipeline so they are never stored in plain text or committed to version control?",
+    "supporting_docs": [
+      "secrets-management.md",
+      "ci-cd-pipelines.md",
+      "infrastructure-as-code.md"
+    ],
+    "notes": "Secrets management (Vault, AWS Secrets Manager) integrated into CI/CD and IaC (Terraform/CloudFormation)."
+  },
+  {
+    "query": "When migrating a monolithic application to microservices, how can I handle transactions that span multiple services without using a traditional two-phase commit?",
+    "supporting_docs": [
+      "microservices.md",
+      "event-driven-architecture.md",
+      "nosql-patterns.md"
+    ],
+    "notes": "Monolith to microservices transition often uses the Saga pattern or event-driven consistency (EDA)."
+  },
+  {
+    "query": "How can I ensure my API is protected against common web attacks while also providing a way for mobile apps to securely obtain access tokens without exposing a client secret?",
+    "supporting_docs": [
+      "owasp-top-10.md",
+      "api-security.md"
+    ],
+    "notes": "OWASP covers general threats, while api-security.md covers OAuth 2.0 with PKCE (specifically for public clients like mobile apps)."
+  },
+  {
+    "query": "What approach should I take to monitor the health of a distributed system where I need to track a single request as it flows through multiple services to identify where bottlenecks are occurring?",
+    "supporting_docs": [
+      "monitoring-observability.md",
+      "service-mesh.md"
+    ],
+    "notes": "Distributed tracing (part of observability) often implemented or facilitated by a service mesh (Istio/Envoy)."
+  },
+  {
+    "query": "How can I design a database schema that can handle millions of users while allowing for easy updates to the data structure without significant downtime?",
+    "supporting_docs": [
+      "database-sharding.md",
+      "database-migrations.md",
+      "sql-query-optimization.md"
+    ],
+    "notes": "Sharding for scale and migration strategies (like blue-green or expand-contract) for zero-downtime schema changes."
+  },
+  {
+    "query": "If I want to build a search engine that understands the meaning of queries rather than just matching keywords, what kind of specialized data storage and processing would I need?",
+    "supporting_docs": [
+      "vector-databases.md",
+      "semantic-search.md",
+      "elasticsearch-basics.md"
+    ],
+    "notes": "Vector databases for embeddings and semantic search concepts."
+  },
+  {
+    "query": "How can I implement a secure remote access solution that doesn't rely on a traditional perimeter-based VPN and follows the principle of 'never trust, always verify'?",
+    "supporting_docs": [
+      "zero-trust-architecture.md",
+      "authentication.md",
+      "tls-ssl.md"
+    ],
+    "notes": "Zero trust replaces VPNs with identity-based access and mTLS."
+  },
+  {
+    "query": "What are the key considerations for ensuring data integrity when moving large amounts of data between different cloud regions or providers?",
+    "supporting_docs": [
+      "data-quality.md",
+      "cloud-networking.md",
+      "multi-region-deployment.md"
+    ],
+    "notes": "Data quality (checksums, validation) combined with network considerations (bandwidth, latency) in multi-region setups."
+  },
+  {
+    "query": "How can I use automated testing to ensure that my infrastructure changes don't break my application's deployment process?",
+    "supporting_docs": [
+      "infrastructure-as-code.md",
+      "testing-strategies.md",
+      "ci-cd-pipelines.md"
+    ],
+    "notes": "Testing IaC (unit/integration tests) within a CI/CD pipeline."
+  },
+  {
+    "query": "What architectural patterns help in decoupling services so that a failure in one service doesn't cause a cascading failure across the entire system?",
+    "supporting_docs": [
+      "error-handling-patterns.md",
+      "event-driven-architecture.md",
+      "microservices.md"
+    ],
+    "notes": "Circuit breaking (error handling) and asynchronous communication (EDA) for decoupling."
+  },
+  {
+    "query": "How can I optimize the performance of my Linux-based application by managing how it handles memory and process scheduling?",
+    "supporting_docs": [
+      "linux-memory-management.md",
+      "linux-process-management.md",
+      "linux-performance-tuning.md"
+    ],
+    "notes": "Linux internals for performance tuning."
+  },
+  {
+    "query": "When designing a high-performance API, what are the trade-offs between using a traditional RESTful approach versus a modern binary protocol, and how does this impact network efficiency?",
+    "supporting_docs": [
+      "api-design.md",
+      "grpc-protocol.md",
+      "http2-http3.md"
+    ],
+    "notes": "REST vs gRPC (binary) and the role of HTTP/2 or HTTP/3 in network efficiency."
+  },
+  {
+    "query": "How can I ensure that my system can recover from a total regional failure of my cloud provider while maintaining data consistency?",
+    "supporting_docs": [
+      "disaster-recovery.md",
+      "database-replication.md",
+      "multi-region-deployment.md"
+    ],
+    "notes": "DR strategies (RTO/RPO) combined with cross-region replication."
+  },
+  {
+    "query": "What is the best way to handle large-scale data processing tasks that are too big for a single machine and require parallel execution across a cluster?",
+    "supporting_docs": [
+      "spark-fundamentals.md",
+      "data-pipeline-design.md"
+    ],
+    "notes": "Spark for distributed processing."
+  },
+  {
+    "query": "How can I use a cache to improve application performance while ensuring that users don't see stale data when updates occur?",
+    "supporting_docs": [
+      "caching.md",
+      "redis-data-structures.md",
+      "event-driven-architecture.md"
+    ],
+    "notes": "Caching strategies (eviction, TTL) and using events to invalidate cache."
+  },
+  {
+    "query": "What are the security implications of allowing third-party applications to access my API on behalf of a user, and how can I mitigate these risks?",
+    "supporting_docs": [
+      "api-security.md",
+      "authentication.md",
+      "owasp-top-10.md"
+    ],
+    "notes": "OAuth 2.0 (scopes, consent) and general API security."
+  },
+  {
+    "query": "How can I implement a logging strategy that allows me to search through millions of logs across hundreds of containers to find the root cause of an error?",
+    "supporting_docs": [
+      "monitoring-observability.md",
+      "elasticsearch-basics.md",
+      "linux-logging.md"
+    ],
+    "notes": "Log aggregation (observability) using Elasticsearch (part of ELK stack) and basic Linux logging concepts."
+  },
+  {
+    "query": "What are the differences between horizontal and vertical scaling, and when should I choose one over the other for my database?",
+    "supporting_docs": [
+      "auto-scaling.md",
+      "database-sharding.md",
+      "database-replication.md"
+    ],
+    "notes": "Horizontal scaling (sharding/replication) vs vertical scaling."
+  },
+  {
+    "query": "How can I use DNS to improve the availability and performance of my global application?",
+    "supporting_docs": [
+      "dns-resolution.md",
+      "load-balancing.md",
+      "cdn-architecture.md"
+    ],
+    "notes": "Geo-DNS, health checks, and CDN integration."
+  },
+  {
+    "query": "What is the impact of using different serialization formats on the latency and throughput of a distributed data pipeline?",
+    "supporting_docs": [
+      "data-serialization.md",
+      "grpc-protocol.md",
+      "apache-kafka.md"
+    ],
+    "notes": "JSON vs Protobuf (serialization) in Kafka or gRPC."
+  },
+  {
+    "query": "How can I ensure that my infrastructure is compliant with industry standards like SOC2 or HIPAA using automated tools?",
+    "supporting_docs": [
+      "compliance-frameworks.md",
+      "infrastructure-as-code.md",
+      "security-audit-checklist.md"
+    ],
+    "notes": "Compliance requirements and IaC for policy-as-code."
+  },
+  {
+    "query": "What are the advantages of using a 'serverless' approach for event-driven tasks, and what are the potential downsides I should be aware of?",
+    "supporting_docs": [
+      "serverless-architecture.md",
+      "event-driven-architecture.md",
+      "monitoring-observability.md"
+    ],
+    "notes": "FaaS for EDA, and observability/cold start challenges."
+  },
+  {
+    "query": "How can I design a system to handle 'hot keys' in a distributed cache or database to prevent performance bottlenecks?",
+    "supporting_docs": [
+      "database-sharding.md",
+      "redis-data-structures.md",
+      "caching.md"
+    ],
+    "notes": "Sharding strategies (consistent hashing) and caching techniques to mitigate hot keys."
+  },
+  {
+    "query": "What role does a 'service registry' play in a microservices architecture, and how does it relate to load balancing?",
+    "supporting_docs": [
+      "service-mesh.md",
+      "load-balancing.md",
+      "microservices.md"
+    ],
+    "notes": "Dynamic service discovery (registry) and its integration with load balancers (client-side or server-side)."
+  }
+]
