@@ -113,6 +113,19 @@ A comprehensive benchmark across n_results (3, 5, 10), pool multipliers (1×, 2�
 
 *Data: Research Diary Entries 43–44 (original implementation). Removal benchmark: `scripts/benchmark_pipeline_stages.py`, `tests/results/pipeline_stages.json`.*
 
+### 3.9 The Chronicle (Agent Memory) in a Separate Collection
+
+Agents accumulate knowledge mid-session that is expensive to rediscover but does not belong in the document corpus: failure signatures, debugging shortcuts, operational notes. The Chronicle gives them a place to record and recall these as short, discrete memories.
+
+The alternative — tagging memories as rows in the main `candlekeep` collection — was rejected. It would let memories leak into ordinary `search` results, expose them to the document corpus's tuning, and erase them on `repopulate_database`.
+
+**Decision:** Store memories in a dedicated ChromaDB collection (`memory`), isolated from documents but sharing the active embedding model and client (no extra config or model load). Two consequences follow directly: memories never appear in `search`, and they survive `repopulate_database`, which only clears `candlekeep`.
+
+Two implementation choices are worth recording:
+
+- **Tags as per-tag boolean keys.** ChromaDB's `$contains` matches document text only, not metadata, so whole-tag filtering goes through exact-match `$and` clauses over dedicated `tag:<name> = true` keys. This makes substring collisions impossible — a `boot` filter cannot match a `reboot` tag.
+- **A 0.5 cosine-similarity floor on recall.** A scaled-down [Relevance Ward](GLOSSARY.md#the-relevance-ward): returning no memory is better than returning a loosely related one.
+
 ## 4. Techniques Evaluated
 
 | Technique | Result | Status |

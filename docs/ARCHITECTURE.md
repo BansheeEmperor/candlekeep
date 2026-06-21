@@ -439,12 +439,38 @@ This is an ingestion-time technique — the context is baked into the stored emb
 
 ## Tool Registration
 
-All 8 tools (5 read-only, 3 write) are registered at startup. Database permissions (e.g., Bearer tokens for ChromaDB) determine whether write operations succeed.
+All 14 tools (8 read-only, 6 write) are registered at startup. Database permissions (e.g., Bearer tokens for ChromaDB) determine whether write operations succeed.
 
 | Category | Tools |
 |-----------|-----------|
-| Read Tools | search, list_documents, get_stats, critique_document, generate_documentation |
-| Write Tools | ingest, delete_document, repopulate_database |
+| Read Tools | search, list_documents, get_stats, critique_document, explore_entity, generate_documentation, memory_recall, memory_list |
+| Write Tools | ingest, delete_document, repopulate_database, rebuild_normalisation_map, memory_store, memory_delete |
+
+## The Chronicle (Agent Memory)
+
+The Chronicle is a store for short, agent-authored memories — failure
+signatures, debugging shortcuts, operational notes — distinct from the
+ingested document corpus. It backs the `memory_store`, `memory_recall`,
+`memory_list`, and `memory_delete` tools.
+
+It lives in its own ChromaDB collection (`memory`), separate from the
+`candlekeep` document collection. This isolation has two consequences:
+memories never surface in ordinary `search`, and they are untouched by
+`repopulate_database` (which only clears `candlekeep`). The Chronicle
+shares the active embedding model and ChromaDB client with the main
+store, so it adds no extra model load or configuration.
+
+**Tag storage:** ChromaDB's `$contains` operator matches document text
+only, not metadata, so tags are indexed as one boolean metadata key per
+tag (`tag:<name> = true`). Recall filters with exact-match `$and`
+clauses over these keys, which gives whole-tag matching with no
+substring collisions (a `boot` filter does not match a `reboot` tag). A
+comma-joined `tags` string is stored alongside for display.
+
+**Relevance floor:** `memory_recall` discards results below 0.5 cosine
+similarity — a lighter analogue of [The Relevance Ward](#5-the-relevance-ward-filtering)
+on the search paths. Returning no memory is preferable to returning a
+loosely related one.
 
 ## Embedding Model Protection
 
@@ -604,6 +630,8 @@ src/candlekeep/
 ├── database/
 │   ├── interface.py         # Abstract VectorDatabase
 │   ├── vector_store.py      # ChromaDB implementation
+│   ├── graph_store.py       # Entity co-occurrence graph (SQLite)
+│   ├── chronicle.py         # Chronicle: agent memory store (separate collection)
 │   └── embeddings.py        # Model loading + caching
 ├── providers/
 │   ├── base.py              # LLMProvider / VisionProvider ABCs (True Sight)
