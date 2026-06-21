@@ -717,7 +717,8 @@ def explore_entity(entity_name: str) -> str:
     return _explore_entity_impl(entity_name)
 
 
-
+@mcp.tool
+def generate_documentation(directory_path: str) -> str:
     """Analyze a project directory and return a structured documentation plan.
 
     Validates the path exists and returns a two-phase prompt: survey first,
