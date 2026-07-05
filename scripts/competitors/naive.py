@@ -1,77 +1,79 @@
-"""Naive vector search competitor."""
+"""Naive vector search competitor.
+
+The floor: ChromaDB top-k with cosine similarity, no post-processing.
+This is what you get from any RAG quickstart tutorial.
+"""
 from pathlib import Path
+
 import chromadb
+
 from candlekeep.database.interface import SearchResult
-from scripts.competitors.base import Competitor, CHUNK_SIZE, CHUNK_OVERLAP, _parse_frontmatter
+from scripts.competitors.base import (
+    Competitor,
+    get_shared_embedding_model,
+    shared_chunk_document,
+    generate_chunk_id,
+)
+
 
 class NaiveVectorSearch(Competitor):
-    """Naive vector search using ChromaDB and sentence-transformers."""
+    """Raw ChromaDB top-k search. No expansion, no reranking, no filtering."""
 
     name = "naive"
 
-    def __init__(self):
-        # Use ephemeral client to avoid state pollution
-        self._client = chromadb.Client()
-        self._collection = self._client.create_collection("naive_bench")
+    def __init__(self, db_path: str | None = None):
+        self.client = chromadb.Client() if db_path is None else chromadb.PersistentClient(path=db_path)
+        self.collection = self.client.get_or_create_collection(
+            name="naive_benchmark",
+            metadata={"hnsw:space": "cosine"},
+        )
+        self.model = get_shared_embedding_model()
 
     def ingest(self, doc_paths: list[Path]) -> int:
-        from sentence_transformers import SentenceTransformer
-        model = SentenceTransformer("BAAI/bge-small-en-v1.5", device="cpu")
-        
-        chunk_texts = []
-        chunk_metadatas = []
-        chunk_ids = []
-        
+        total = 0
         for path in doc_paths:
             if not path.is_file():
                 continue
-            text = path.read_text(encoding="utf-8", errors="replace")
-            frontmatter, content = _parse_frontmatter(text)
-            
-            # Very simple fixed-size chunking
-            for i in range(0, len(content), CHUNK_SIZE - CHUNK_OVERLAP):
-                chunk = content[i : i + CHUNK_SIZE]
-                if len(chunk) < 10:
-                    continue
-                
-                metadata = {"source": str(path), "filename": path.name, "chunk_index": i}
-                metadata.update(frontmatter)
-                
-                chunk_texts.append(chunk)
-                chunk_metadatas.append(metadata)
-                chunk_ids.append(f"{path.name}_{i}")
-        
-        if chunk_texts:
-            embeddings = model.encode(chunk_texts, normalize_embeddings=True).tolist()
-            self._collection.add(
-                ids=chunk_ids,
-                documents=chunk_texts,
-                metadatas=chunk_metadatas,
-                embeddings=embeddings
+            chunks = shared_chunk_document(path)
+            if not chunks:
+                continue
+
+            ids = [generate_chunk_id(c) for c in chunks]
+            texts = [c.text for c in chunks]
+            embeddings = self.model.encode(texts, convert_to_numpy=True).tolist()
+            metadatas = [{**c.metadata, "chunk_index": c.chunk_index} for c in chunks]
+
+            self.collection.upsert(
+                ids=ids, embeddings=embeddings, documents=texts, metadatas=metadatas,
             )
-        return len(chunk_texts)
+            total += len(chunks)
+        return total
 
     def search(self, query: str, k: int = 5) -> list[SearchResult]:
-        from sentence_transformers import SentenceTransformer
-        model = SentenceTransformer("BAAI/bge-small-en-v1.5", device="cpu")
-        query_embedding = model.encode([query], normalize_embeddings=True).tolist()
-        
-        results = self._collection.query(
-            query_embeddings=query_embedding,
-            n_results=k
-        )
-        
-        output = []
-        if results["documents"]:
-            for i in range(len(results["documents"][0])):
-                output.append(SearchResult(
-                    text=results["documents"][0][i],
-                    metadata=results["metadatas"][0][i],
-                    score=float(results["distances"][0][i]),
-                    doc_id=results["ids"][0][i]
-                ))
-        return output
+        embedding = self.model.encode([query], convert_to_numpy=True).tolist()
+        results = self.collection.query(query_embeddings=embedding, n_results=k)
+
+        if not results["ids"][0]:
+            return []
+
+        return [
+            SearchResult(
+                text=doc,
+                metadata=meta,
+                score=1 - dist,  # cosine distance → similarity
+                doc_id=doc_id,
+            )
+            for doc_id, doc, meta, dist in zip(
+                results["ids"][0],
+                results["documents"][0],
+                results["metadatas"][0],
+                results["distances"][0],
+            )
+        ]
 
     def reset(self) -> None:
-        self._client.delete_collection("naive_bench")
-        self._collection = self._client.create_collection("naive_bench")
+        self.client.delete_collection("naive_benchmark")
+        self.collection = self.client.get_or_create_collection(
+            name="naive_benchmark",
+            metadata={"hnsw:space": "cosine"},
+        )
