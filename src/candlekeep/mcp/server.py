@@ -197,6 +197,13 @@ def get_processor():
     return _processor
 
 
+def _get_chronicle():
+    """Lazy accessor for the Chronicle (memory) store singleton."""
+    from candlekeep.database.chronicle import get_chronicle
+    store = get_store()
+    return get_chronicle(store.client, store.embedder)
+
+
 def _verify_read_access() -> bool:
     try:
         get_store().collection.count()
@@ -391,6 +398,14 @@ def _background_init():
             _log("[candlekeep] ⚠ Rate limiting disabled")
     
     get_store()
+
+    # Initialize the Chronicle (memory) collection — fast, no embedding work.
+    try:
+        _get_chronicle()
+        _log("[candlekeep] ✓ Chronicle (memory) collection ready")
+    except Exception as e:
+        _log(f"[candlekeep] ⚠ Chronicle init failed (memory tools disabled): {e}")
+
     _loading = False
 
 
@@ -717,7 +732,8 @@ def explore_entity(entity_name: str) -> str:
     return _explore_entity_impl(entity_name)
 
 
-
+@mcp.tool
+def generate_documentation(directory_path: str) -> str:
     """Analyze a project directory and return a structured documentation plan.
 
     Validates the path exists and returns a two-phase prompt: survey first,
@@ -835,6 +851,75 @@ frontmatter are prepended to every chunk for context. Write with that in mind:
 - Avoid vague sections that just reference other sections
 - The frontmatter title and description appear in every chunk, so make
   them keyword-rich and specific"""
+
+
+def _format_chronicle_entry(e, truncate: int = 0) -> str:
+    """Render a ChronicleEntry as a markdown block."""
+    text = e.text if not truncate else (e.text[:truncate] + ("…" if len(e.text) > truncate else ""))
+    meta_bits = []
+    if e.category:
+        meta_bits.append(f"category: {e.category}")
+    if e.tags:
+        meta_bits.append(f"tags: {', '.join(e.tags)}")
+    if e.author:
+        meta_bits.append(f"by: {e.author}")
+    if e.created_at:
+        meta_bits.append(e.created_at)
+    header = f"**`{e.id}`**"
+    if e.score:
+        header += f" | score {e.score:.3f}"
+    if meta_bits:
+        header += " | " + " · ".join(meta_bits)
+    return f"{header}\n{text}"
+
+
+@mcp.tool
+def memory_recall(
+    query: str,
+    n_results: int = 5,
+    tags: str = "",
+    category: str = "",
+    ctx: Context = CurrentContext(),
+) -> str:
+    """Recall memories from the Chronicle semantically similar to a query.
+
+    The Chronicle is a separate store of short lessons agents have recorded —
+    failure patterns, debugging tips, "where to look when X breaks". Use this
+    to find previously recorded knowledge relevant to a current problem.
+
+    Args:
+        query: What to search for
+        n_results: Maximum memories to return (default: 5)
+        tags: Comma-separated tags to filter by — a memory must contain ALL of them
+        category: Optional category filter (exact match)
+    """
+    if msg := _check_ready():
+        return msg
+    if msg := _rate_check(_search_limiter, ctx):
+        return msg
+
+    tag_list = [t.strip() for t in tags.split(",") if t.strip()]
+    entries = _get_chronicle().recall(query, n_results, tags=tag_list, category=category)
+    if not entries:
+        return "No memories found."
+    return "\n\n".join(_format_chronicle_entry(e) for e in entries)
+
+
+@mcp.tool
+def memory_list(category: str = "", limit: int = 20) -> str:
+    """List recorded memories from the Chronicle, newest first.
+
+    Args:
+        category: Optional category filter (exact match)
+        limit: Maximum memories to list (default: 20)
+    """
+    if msg := _check_ready():
+        return msg
+
+    entries = _get_chronicle().entries(category=category, limit=limit)
+    if not entries:
+        return "No memories recorded."
+    return "\n\n".join(_format_chronicle_entry(e, truncate=200) for e in entries)
 
 
 # ============================================================
@@ -964,6 +1049,80 @@ def rebuild_normalisation_map(ctx: Context = CurrentContext()) -> str:
         if norm_map is None:
             return "⚠ Corpus is empty — no normalisation map generated."
         return f"✓ Normalisation map rebuilt: {norm_map.size} variant → canonical mappings."
+    except Exception as e:
+        return f"❌ Error: {e}"
+
+
+@mcp.tool
+def memory_store(
+    text: str,
+    tags: str = "",
+    category: str = "",
+    author: str = "",
+    ctx: Context = CurrentContext(),
+) -> str:
+    """Record a memory in the Chronicle for future recall.
+
+    Use this to persist short-form knowledge discovered during work — failure
+    patterns, debugging tips, solutions, or "where to look when X breaks".
+    Memories live in a separate store and survive repopulate_database().
+
+    Args:
+        text: The memory content (1–2000 characters)
+        tags: Comma-separated tags for filtering (e.g. "boot,device,pcr")
+        category: Optional category (e.g. "failure-pattern", "debug-tip")
+        author: Who recorded this memory (e.g. an agent name)
+    """
+    if msg := _check_ready():
+        return msg
+    if msg := _rate_check(_write_limiter, ctx):
+        return msg
+
+    text = (text or "").strip()
+    if not text:
+        return "❌ Cannot store an empty memory."
+    if len(text) > 2000:
+        return f"❌ Memory too long ({len(text)} chars). Keep memories under 2000 characters."
+
+    from datetime import datetime, timezone
+    tag_list = [t.strip() for t in tags.split(",") if t.strip()]
+    created_at = datetime.now(timezone.utc).isoformat()
+
+    try:
+        with _write_guard():
+            entry = _get_chronicle().record(
+                text, tags=tag_list, category=category, author=author, created_at=created_at
+            )
+            preview = entry.text[:80] + ("…" if len(entry.text) > 80 else "")
+            return f"✓ Recorded memory `{entry.id}`: {preview}"
+    except _WriteLockTimeout as e:
+        return str(e)
+    except chromadb.errors.AuthorizationError as e:
+        return f"❌ Write permission denied: {e}"
+    except Exception as e:
+        return f"❌ Error: {e}"
+
+
+@mcp.tool
+def memory_delete(memory_id: str, ctx: Context = CurrentContext()) -> str:
+    """Delete a memory from the Chronicle by its ID.
+
+    Use memory_list or memory_recall to find the ID first.
+    """
+    if msg := _check_ready():
+        return msg
+    if msg := _rate_check(_write_limiter, ctx):
+        return msg
+
+    try:
+        with _write_guard():
+            if _get_chronicle().strike(memory_id):
+                return f"✓ Deleted memory `{memory_id}`"
+            return f"No memory found with ID `{memory_id}`"
+    except _WriteLockTimeout as e:
+        return str(e)
+    except chromadb.errors.AuthorizationError as e:
+        return f"❌ Write permission denied: {e}"
     except Exception as e:
         return f"❌ Error: {e}"
 
