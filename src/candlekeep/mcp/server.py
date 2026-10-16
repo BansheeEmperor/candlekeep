@@ -451,8 +451,9 @@ def check_document_quality(path: Path) -> list[str]:
         issues.append("Insufficient structure (fewer than 2 headers)")
     if words < 50:
         issues.append("Too short (< 50 words) — consider combining with related content")
-    if words > 10000:
-        issues.append("Too long (> 10k words) — consider splitting into focused documents")
+    _max_words = _settings.quality_max_words
+    if _max_words and words > _max_words:
+        issues.append(f"Too long (> {_max_words} words) — consider splitting into focused documents")
     if sum(1 for l in lines if l.strip().startswith("```")) % 2 != 0:
         issues.append("Unclosed code block (mismatched ``` markers)")
 
@@ -699,7 +700,7 @@ def _explore_entity_impl(entity_name: str) -> str:
 
     # Fetch chunks mentioning this entity
     try:
-        raw = get_store().collection.get(
+        raw = get_store()._get(
             where={"entities": {"$contains": norm}},
             limit=10,
         )
@@ -815,7 +816,7 @@ ingest() will reject documents that fail these checks:
 - **YAML frontmatter required** — must start with `---` and include:
   title, description, keywords, category, tags
 - **At least 2 headers** (ATX `#` or setext `===`/`---` style) — or YAML frontmatter as proof of curation
-- **Between 50 and 10,000 words**
+- **At least 50 words, and at most CANDLEKEEP_QUALITY_MAX_WORDS** (default 10,000; 0 disables the upper bound)
 - **No unclosed code blocks** (matched ``` pairs)
 
 Frontmatter template:
@@ -933,7 +934,7 @@ def ingest(path: str, ctx: Context = CurrentContext()) -> str:
     Validates document quality before ingestion. Documents must have:
     - YAML frontmatter (title, description, keywords)
     - At least 2 headers (ATX or setext) — or frontmatter as proof of curation
-    - Between 50 and 10,000 words
+    - At least 50 words, at most CANDLEKEEP_QUALITY_MAX_WORDS (default 10,000; 0 disables)
 
     Supports: txt, md, pdf, rst, json, yaml files.
     """
@@ -1123,6 +1124,34 @@ def memory_delete(memory_id: str, ctx: Context = CurrentContext()) -> str:
         return str(e)
     except chromadb.errors.AuthorizationError as e:
         return f"❌ Write permission denied: {e}"
+    except Exception as e:
+        return f"❌ Error: {e}"
+
+
+@mcp.tool
+def rebuild_graph(ctx: Context = CurrentContext()) -> str:
+    """Rebuild the entity co-occurrence graph synchronously.
+
+    The graph normally rebuilds in a debounced background thread after each
+    ingest(). With CANDLEKEEP_DEFER_GRAPH_REBUILD=1 that per-file rebuild is
+    skipped, so call this once after a bulk load, before querying or
+    exporting the database.
+    """
+    if msg := _check_ready():
+        return msg
+    if msg := _rate_check(_write_limiter, ctx):
+        return msg
+
+    try:
+        from candlekeep.database.graph_store import get_graph_store
+        gs = get_graph_store(_settings)
+        if gs is None:
+            return "⚠ Entity graph is disabled (CANDLEKEEP_GRAPH_AUGMENT=false) — nothing to rebuild."
+        with _write_guard():
+            gs.rebuild_cooccurrence()
+        return "✓ Entity co-occurrence graph rebuilt."
+    except _WriteLockTimeout as e:
+        return str(e)
     except Exception as e:
         return f"❌ Error: {e}"
 

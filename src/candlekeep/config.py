@@ -66,6 +66,20 @@ def get_data_dir() -> Path:
     return base / "candlekeep"
 
 
+def get_models_dir() -> Path:
+    """Model cache location, independent of data_dir.
+
+    Decoupled from data_dir so CANDLEKEEP_DATA_DIR can point at a swappable /
+    bind-mounted KB data dir without dragging the large, reproducible model
+    cache along (which a KB swap would otherwise wipe). Models are a cache, not
+    data, so the default lives under XDG_CACHE_HOME.
+    """
+    if os.getenv("CANDLEKEEP_MODELS_DIR"):
+        return Path(os.getenv("CANDLEKEEP_MODELS_DIR"))
+    base = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache"))
+    return base / "candlekeep" / "models"
+
+
 @dataclass
 class Settings:
     """Candlekeep configuration settings."""
@@ -85,6 +99,10 @@ class Settings:
     # Document processing
     chunk_size: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_CHUNK_SIZE", "512")))
     chunk_overlap: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_CHUNK_OVERLAP", "100")))
+    # Ingest quality gate: max words per document (0 = disabled). Long reference
+    # docs with many headers are still chunked by section, so raising this is
+    # safe for such corpora.
+    quality_max_words: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_QUALITY_MAX_WORDS", "10000")))
     
     # Personality
     spice: bool = field(default_factory=lambda: os.getenv("CANDLEKEEP_SPICE", "false").lower() == "true")
@@ -124,7 +142,9 @@ class Settings:
             self.device = detect_device()
         self.data_dir = Path(self.data_dir)
         self.data_dir.mkdir(parents=True, exist_ok=True)
-        (self.data_dir / "models").mkdir(exist_ok=True)
+        # Model cache is decoupled from data_dir (see get_models_dir / models_dir)
+        # so the KB data dir can be swapped or bind-mounted without disturbing it.
+        self.models_dir.mkdir(parents=True, exist_ok=True)
         (self.data_dir / "chroma").mkdir(exist_ok=True)
         if self.vlm_provider and self.vlm_provider != "none":
             (self.data_dir / "image_captions").mkdir(exist_ok=True)
@@ -154,7 +174,15 @@ class Settings:
     
     @property
     def models_dir(self) -> Path:
-        return self.data_dir / "models"
+        # Explicit override wins.
+        if os.getenv("CANDLEKEEP_MODELS_DIR"):
+            return Path(os.getenv("CANDLEKEEP_MODELS_DIR"))
+        # Back-compat: an existing in-data_dir cache keeps working so upgrades
+        # don't re-download. New installs use the decoupled XDG_CACHE location.
+        legacy = self.data_dir / "models"
+        if legacy.exists() and any(legacy.glob("models--*")):
+            return legacy
+        return get_models_dir()
     
     @property
     def chroma_dir(self) -> Path:

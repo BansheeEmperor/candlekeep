@@ -47,7 +47,7 @@ class TestEmbeddingMismatchDetection:
 
 
 class TestModelNotCachedLocally:
-    def test_exits_when_model_not_found(self):
+    def test_exits_when_model_not_found(self, monkeypatch):
         """Should exit if embedding model not in local cache."""
         from candlekeep.database.embeddings import EmbeddingManager
         from candlekeep.config import Settings
@@ -55,6 +55,7 @@ class TestModelNotCachedLocally:
         tmp = Path(tempfile.mkdtemp())
         (tmp / "models").mkdir()
 
+        monkeypatch.setenv("CANDLEKEEP_MODELS_DIR", str(tmp / "models"))
         settings = Settings.from_env()
         settings.data_dir = tmp
 

@@ -28,7 +28,7 @@ def test_explore_entity_returns_related(tmp_path):
     with patch.object(_mod, "_check_ready", return_value=None), \
          patch("candlekeep.database.graph_store.get_graph_store", return_value=gs), \
          patch.object(_mod, "get_store") as mock_store:
-        mock_store.return_value.collection = mock_collection
+        mock_store.return_value._get = mock_collection.get
         result = _mod._explore_entity_impl("ArcaneRecall")
 
     assert "bm25searcher" in result
