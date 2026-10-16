@@ -2,6 +2,7 @@
 import hashlib
 import os
 import sys
+import time
 from pathlib import Path
 from typing import Any
 import chromadb
@@ -20,13 +21,58 @@ def _human_readable_size(size_bytes: int) -> str:
     return f"{size_bytes:.1f} TB"
 
 
+def _is_stale_collection(exc: Exception) -> bool:
+    """True if the error means our cached collection handle points at a UUID
+    that no longer exists.
+
+    Happens after a full re-ingest (KB sync): the rebuilt 'candlekeep'
+    collection gets a NEW UUID, but this process resolved the handle once at
+    startup and keeps querying the old UUID -> 'Collection [<uuid>] does not
+    exist.' Detected by message + class name to stay robust across chromadb
+    versions.
+    """
+    msg = str(exc).lower()
+    if "does not exist" in msg or ("collection" in msg and "not found" in msg):
+        return True
+    name = type(exc).__name__.lower()
+    return "collection" in name and any(t in name for t in ("notfound", "invalid", "exist"))
+
+
+def _is_chroma_unavailable(exc: Exception) -> bool:
+    """True if the error looks like the Chroma server is unreachable.
+
+    During a KB sync we restart ONLY Chroma and keep this (Candlekeep) process
+    warm. A query landing in the brief Chroma-down window should wait and
+    retry, not surface a hard error to the client.
+    """
+    msg = str(exc).lower()
+    name = type(exc).__name__.lower()
+    needles = (
+        "connection", "connect", "refused", "timed out", "timeout",
+        "max retries", "could not connect", "failed to connect",
+        "remote end closed", "server disconnected", "connection reset",
+    )
+    return any(n in msg for n in needles) or any(n in name for n in ("connect", "timeout"))
+
+
 class ChromaVectorStore(VectorDatabase):
     """ChromaDB implementation with authentication."""
+
+    # Class-level defaults so instances built without __init__ still self-heal.
+    _reconnect_attempts = 5
+    _reconnect_backoff = 1.0
     
     def __init__(self, settings: Settings | None = None):
         self.settings = settings or Settings.from_env()
         self.embedder = EmbeddingManager.get_instance(self.settings)
-        
+
+        # Self-heal tuning: how hard to retry a collection op when Chroma is
+        # mid-restart (KB sync) before giving up. Stale-collection re-resolves
+        # are instant and not bounded by this; the backoff only paces the
+        # Chroma-unreachable case.
+        self._reconnect_attempts = int(os.getenv("CANDLEKEEP_RECONNECT_ATTEMPTS", "5"))
+        self._reconnect_backoff = float(os.getenv("CANDLEKEEP_RECONNECT_BACKOFF", "1.0"))
+
         # Setup auth headers
         headers = {}
         if self.settings.chroma_auth_token:
@@ -43,10 +89,7 @@ class ChromaVectorStore(VectorDatabase):
                     headers=headers if headers else None,
                     ssl=self.settings.chroma_ssl
                 )
-            self.collection = self.client.get_or_create_collection(
-                name="candlekeep",
-                metadata={"hnsw:space": "cosine", "embedding_model": self.settings.embedding_model}
-            )
+            self._open_collection()
             # Check if remote DB was populated with a different model
             remote_model = self.collection.metadata.get("embedding_model")
             if remote_model and remote_model != self.settings.embedding_model:
@@ -80,6 +123,101 @@ class ChromaVectorStore(VectorDatabase):
         """Set the associated graph database."""
         self._graph_store = value
 
+    def _open_collection(self):
+        """(Re)resolve the 'candlekeep' collection handle by name.
+
+        The chromadb client binds a Collection object to its UUID at resolution
+        time. After a full re-ingest the UUID changes, so this MUST be callable
+        at runtime (not just in __init__) to pick up a swapped-in KB without a
+        process restart.
+        """
+        self.collection = self.client.get_or_create_collection(
+            name="candlekeep",
+            metadata={"hnsw:space": "cosine", "embedding_model": self.settings.embedding_model},
+        )
+        return self.collection
+
+    def _invalidate_worker_caches(self):
+        """Flush in-memory caches derived from collection contents.
+
+        BM25, the normalisation map, the entity graph and (optionally) ColBERT
+        are built once per worker from the corpus. After a data swap they
+        describe the OLD corpus; clearing forces a lazy rebuild from the new
+        collection on the next query — added latency, never a wrong answer.
+        Each clear is independent and best-effort.
+        """
+        for mod, fn in (
+            ("candlekeep.rag.hybrid", "clear_bm25_cache"),
+            ("candlekeep.rag.token_normalisation", "clear_normalisation_cache"),
+            ("candlekeep.database.graph_store", "clear_graph_store_cache"),
+        ):
+            try:
+                m = __import__(mod, fromlist=[fn])
+                getattr(m, fn)()
+            except Exception:
+                pass
+        if os.getenv("CANDLEKEEP_SPARSE_BACKEND", "bm25") == "colbert":
+            try:
+                from candlekeep.rag.colbert import clear_colbert_cache
+                clear_colbert_cache()
+            except Exception:
+                pass
+
+    def _reconnect(self):
+        """Self-heal after a Chroma data swap or restart: re-resolve the
+        collection by name (handles a new UUID) and drop the per-worker derived
+        caches. Keeps the process warm — no restart required."""
+        old_id = getattr(self.collection, "id", None)
+        self._open_collection()
+        new_id = getattr(self.collection, "id", None)
+        self._invalidate_worker_caches()
+        # Observability: make a sync's self-heal visible in CK logs so a stale
+        # collection (and the one-time cache rebuild it triggers) is auditable.
+        print(f"[candlekeep] self-heal: re-resolved collection 'candlekeep' "
+              f"{old_id} -> {new_id}; derived caches flushed", file=sys.stderr)
+
+    def _collection_op(self, fn):
+        """Run a collection read with self-healing so a Chroma-only restart
+        (the KB sync path) stays invisible to callers:
+
+          * stale collection UUID (data swapped underneath us) -> re-resolve by
+            name + flush caches, retry immediately;
+          * Chroma unreachable (server mid-restart) -> short backoff,
+            re-resolve, retry.
+
+        Any other error, or exhausted retries, re-raises the original.
+        """
+        last = None
+        for i in range(self._reconnect_attempts):
+            try:
+                return fn(self.collection)
+            except Exception as e:
+                last = e
+                if _is_stale_collection(e):
+                    self._reconnect()
+                    continue
+                if _is_chroma_unavailable(e) and i < self._reconnect_attempts - 1:
+                    time.sleep(self._reconnect_backoff * (i + 1))
+                    try:
+                        self._reconnect()
+                    except Exception:
+                        pass
+                    continue
+                raise
+        raise last
+
+    def _query(self, **kwargs):
+        """Self-healing wrapper around collection.query()."""
+        return self._collection_op(lambda col: col.query(**kwargs))
+
+    def _get(self, **kwargs):
+        """Self-healing wrapper around collection.get()."""
+        return self._collection_op(lambda col: col.get(**kwargs))
+
+    def _count(self):
+        """Self-healing wrapper around collection.count()."""
+        return self._collection_op(lambda col: col.count())
+
     def _generate_id(self, chunk: Chunk) -> str:
         """Generate unique ID for a chunk."""
         content = f"{chunk.metadata['source']}:{chunk.chunk_index}:{chunk.text[:100]}"
@@ -93,7 +231,7 @@ class ChromaVectorStore(VectorDatabase):
         # Delete existing chunks from same sources
         sources = set(c.metadata["source"] for c in chunks)
         for source in sources:
-            results = self.collection.get(where={"source": source})
+            results = self._get(where={"source": source})
             if results["ids"]:
                 self.collection.delete(ids=results["ids"])
 
@@ -119,7 +257,13 @@ class ChromaVectorStore(VectorDatabase):
                         mentions.extend((e, source, idx) for e in entities)
             if graph_store and mentions:
                 graph_store.add_mentions(mentions)
-                schedule_graph_rebuild(graph_store)
+                # Per-file co-occurrence rebuild is O(graph size); during bulk
+                # ingest it re-runs on an ever-growing graph and dominates wall
+                # time. CANDLEKEEP_DEFER_GRAPH_REBUILD=1 skips it here; the
+                # caller MUST invoke the rebuild_graph tool once after the bulk
+                # load to materialise the co-occurrence table.
+                if os.getenv("CANDLEKEEP_DEFER_GRAPH_REBUILD", "").lower() not in ("1", "true"):
+                    schedule_graph_rebuild(graph_store)
         except Exception:
             pass  # entity extraction must never block ingestion
 
@@ -160,7 +304,7 @@ class ChromaVectorStore(VectorDatabase):
         where = {"category": category} if category else None
         
         # Fetch extra candidates for re-ranking
-        results = self.collection.query(
+        results = self._query(
             query_embeddings=[embedding], n_results=n_results * 3, where=where
         )
 
@@ -238,7 +382,7 @@ class ChromaVectorStore(VectorDatabase):
         from candlekeep.rag.hybrid import remove_from_bm25_cache
         from candlekeep.database.graph_store import get_graph_store
 
-        results = self.collection.get(where={"source": source})
+        results = self._get(where={"source": source})
         if results["ids"]:
             self.collection.delete(ids=results["ids"])
             remove_from_bm25_cache(source)
@@ -279,7 +423,7 @@ class ChromaVectorStore(VectorDatabase):
 
     def list_documents(self) -> list[dict]:
         """List all unique source documents."""
-        results = self.collection.get()
+        results = self._get()
         sources = {}
         for meta in results["metadatas"]:
             src = meta["source"]
@@ -294,7 +438,7 @@ class ChromaVectorStore(VectorDatabase):
 
     def get_stats(self) -> dict:
         """Get collection statistics."""
-        count = self.collection.count()
+        count = self._count()
         docs = self.list_documents()
         
         # Calculate database size
@@ -305,7 +449,7 @@ class ChromaVectorStore(VectorDatabase):
             total_size = 0
         
         # Estimate tokens
-        all_docs = self.collection.get()
+        all_docs = self._get()
         total_chars = sum(len(doc) for doc in all_docs.get("documents", []))
         estimated_tokens = total_chars // 4
         
@@ -338,7 +482,7 @@ class ChromaVectorStore(VectorDatabase):
 
     def get_by_entity(self, entity: str, n_results: int = 10) -> list[SearchResult]:
         """Search documents containing an entity."""
-        results = self.collection.get(where_document={"$contains": entity}, limit=n_results)
+        results = self._get(where_document={"$contains": entity}, limit=n_results)
         if not results["ids"]:
             return []
 
@@ -349,7 +493,7 @@ class ChromaVectorStore(VectorDatabase):
 
     def get_chunks_by_source(self, source: str) -> list[SearchResult]:
         """Get all chunks from a specific source document."""
-        results = self.collection.get(where={"source": source})
+        results = self._get(where={"source": source})
         if not results["ids"]:
             return []
 
@@ -360,7 +504,7 @@ class ChromaVectorStore(VectorDatabase):
 
     def get_all_chunks(self) -> list[SearchResult]:
         """Get all chunks from the database."""
-        results = self.collection.get()
+        results = self._get()
         if not results["ids"]:
             return []
 
@@ -385,7 +529,7 @@ class ChromaVectorStore(VectorDatabase):
     def get_stored_embeddings_by_source(self, source: str) -> dict[int, list[float]]:
 
         """Get stored embeddings for all chunks from a source document."""
-        results = self.collection.get(
+        results = self._get(
             where={"source": source},
             include=["embeddings", "metadatas"]
         )

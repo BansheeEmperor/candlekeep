@@ -513,7 +513,12 @@ All settings via environment variables (`.env` file):
 | CANDLEKEEP_EMBEDDING | bge-small | Embedding model (minilm, bge-small, nomic) |
 | CANDLEKEEP_EMBEDDING_CACHE_SIZE | 500 | Max entries in query embedding LRU cache |
 | CANDLEKEEP_CHUNK_SIZE | 512 | Chunk size in characters |
-| CANDLEKEEP_CHUNK_OVERLAP | 50 | Overlap between chunks |
+| CANDLEKEEP_CHUNK_OVERLAP | 100 | Overlap between chunks |
+| CANDLEKEEP_QUALITY_MAX_WORDS | 10000 | Max words per document in the quality gate (0=no upper bound) |
+| CANDLEKEEP_MODELS_DIR | $XDG_CACHE_HOME/candlekeep/models | Model cache location, kept separate from the data dir |
+| CANDLEKEEP_DEFER_GRAPH_REBUILD | false | Skip the per-ingest graph rebuild; call `rebuild_graph` once after a bulk load |
+| CANDLEKEEP_RECONNECT_ATTEMPTS | 5 | Retries for a collection read when Chroma restarts or the collection is replaced |
+| CANDLEKEEP_RECONNECT_BACKOFF | 1.0 | Base backoff in seconds between those retries (grows linearly) |
 | CANDLEKEEP_SPICE | false | Wizard persona mode |
 | CANDLEKEEP_REMOTE_WRITE | false | Allow writes on remote DB |
 | CANDLEKEEP_TRANSPORT | stdio | Transport mode: `stdio` or `http` |

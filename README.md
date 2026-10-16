@@ -24,7 +24,7 @@ A RAG knowledge base server that gives AI agents the power to search, retrieve, 
 - **Statistical Rigor**: Validated against **The Centurion Set** (100+ multi-category queries)
 - **Quality Gate**: Documents must have frontmatter and structure to enter the library
 - **Embedding Protection**: Auto-detects model mismatch on remote databases
-- **14 MCP Tools**: Search, ingest, critique, generate docs, agent memory, and more
+- **15 MCP Tools**: Search, ingest, critique, generate docs, agent memory, and more
 - **[LLM & True Sight Providers](docs/ARCHITECTURE.md#llm--true-sight-providers)**: Pluggable `anthropic`, `openai`, `bedrock`, and `openai_compat` (Ollama/LM Studio/vLLM) — text and True Sight independently configurable
 - **Token Auth**: Bearer token authentication for remote ChromaDB
 
@@ -129,6 +129,7 @@ See [Setup Guide](docs/SETUP.md) for auth configuration and production deploymen
 - **rebuild_normalisation_map** — Regenerate The Rosetta Seal from the current corpus after a full repopulate + ingest cycle
 - **memory_store** — Record a short-form memory (lesson, failure pattern, debug tip) in the Chronicle
 - **memory_delete** — Delete a memory from the Chronicle by ID
+- **rebuild_graph** — Rebuild the entity co-occurrence graph now (use once after a bulk load with `CANDLEKEEP_DEFER_GRAPH_REBUILD=1`)
 
 The Chronicle is a separate store of agent-recorded memories, isolated from the document corpus and preserved across `repopulate_database`.
 

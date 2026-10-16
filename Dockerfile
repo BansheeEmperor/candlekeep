@@ -38,6 +38,8 @@ ENV CANDLEKEEP_TRANSPORT=http
 ENV CANDLEKEEP_HTTP_HOST=0.0.0.0
 ENV CANDLEKEEP_HTTP_PORT=8111
 ENV CANDLEKEEP_DEVICE=cpu
+# Keep the model cache outside the data dir so the data dir can be swapped or bind-mounted
+ENV CANDLEKEEP_MODELS_DIR=/app/models
 
 # Create data directory
 RUN mkdir -p /app/data
