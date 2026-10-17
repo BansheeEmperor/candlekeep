@@ -62,6 +62,31 @@ def test_jaccard_partial(gs):
 
 
 @pytest.mark.unit
+def test_duplicate_mentions_in_chunk_counted_once(gs):
+    # a is mentioned twice in chunk 0 and in chunk 1 of another doc; b in both
+    gs.add_mentions([
+        ("a", "doc1", 0), ("a", "doc1", 0), ("b", "doc1", 0), ("b", "doc1", 0),
+        ("a", "doc2", 1), ("b", "doc2", 1),
+        ("a", "doc2", 2),
+    ])
+    gs.rebuild_cooccurrence()
+    row = gs._conn.execute(
+        "SELECT cooccurrence_count, jaccard_similarity FROM entity_cooccurrence "
+        "WHERE entity_a = 'a' AND entity_b = 'b'").fetchone()
+    # cooc = 2 chunks, |a| = 3 chunks, |b| = 2 chunks -> 2 / (3 + 2 - 2)
+    assert row[0] == 2 and abs(row[1] - 2/3) < 1e-9
+
+
+@pytest.mark.unit
+def test_rebuild_is_repeatable_and_cleans_up(gs):
+    gs.add_mentions([("a", "doc1", 0), ("b", "doc1", 0), ("a", "doc1", 1), ("b", "doc1", 1)])
+    gs.rebuild_cooccurrence()
+    gs.rebuild_cooccurrence()
+    assert gs._conn.execute("SELECT COUNT(*) FROM entity_cooccurrence").fetchone()[0] == 1
+    assert gs._conn.execute("SELECT name FROM sqlite_temp_master").fetchall() == []
+
+
+@pytest.mark.unit
 def test_remove_by_source(gs):
     gs.add_mentions([
         ("a", "doc1", 0), ("b", "doc1", 0),
