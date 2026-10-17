@@ -56,7 +56,7 @@
 
 ### Arcane Coalescence
 **Technical Name:** Window Merging
-**The Lore:** The ritual of stitching together adjacent fragments into a single cohesive Divine Window. It prevents the library from repeating the same text twice and ensures the agent receives a unified narrative.
+**The Lore:** The ritual of stitching together adjacent fragments into a single cohesive Divine Window. It prevents the library from repeating the same text twice and ensures the agent receives a unified narrative: each document's header appears once per window, and the overlap between neighbouring fragments is removed.
 
 ### The Scholar's Discernment
 **Technical Name:** Similarity-Weighted Expansion / Contextual Pruning

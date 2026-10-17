@@ -126,6 +126,30 @@ Two implementation choices are worth recording:
 - **Tags as per-tag boolean keys.** ChromaDB's `$contains` matches document text only, not metadata, so whole-tag filtering goes through exact-match `$and` clauses over dedicated `tag:<name> = true` keys. This makes substring collisions impossible — a `boot` filter cannot match a `reboot` tag.
 - **A 0.5 cosine-similarity floor on recall.** A scaled-down [Relevance Ward](GLOSSARY.md#the-relevance-ward): returning no memory is better than returning a loosely related one.
 
+### 3.10 Stitched, Match-Anchored Search Results
+
+[Arcane Recall](GLOSSARY.md#arcane-recall) merges neighbouring chunks into windows, and every chunk carries its Bardic Knowledge prefix plus the chunker's overlap with its neighbour. Concatenating chunks verbatim repeated the document header once per chunk and duplicated the overlap text. The `search` tool's fixed-length view also started at the top of the window — usually the header and the context before the match — so the matched passage often fell outside what the agent received.
+
+**Decision:** Keep the prefix in the embeddings, where it helps ranking, but strip it at presentation time. Windows keep the header once and drop chunk overlaps, and each window records where its best-scoring matched chunk starts. The tool returns a title line plus `CANDLEKEEP_RESULT_CHARS` characters (default 1000) from the match. Because the duplication is gone, the same character budget carries more of the document, which is what allows a larger default budget without a proportional increase in output size.
+
+### 3.11 Paginated Reads for Large Collections
+
+Several features read the entire collection at once: the BM25 index build, `list_documents`, `get_stats`, and the normalisation-map and ColBERT rebuilds. chromadb 1.5 introduced a hard limit — a single `get()` returning metadata for more than 32,766 records fails — so hybrid and explore search failed on every query once a collection crossed that size. Pinning an older chromadb would only hide the problem.
+
+**Decision:** Route every full-collection read through one paginated, self-healing helper with a fixed page size of 5,000 records, chosen from a page-size sweep as the middle of the fastest range and well below the limit.
+
+### 3.12 Tool Execution Off the Event Loop
+
+FastMCP 2 ran synchronous tools directly on the asyncio event loop, so one long-running tool call (ingesting a large directory, a graph or normalisation-map rebuild) made the HTTP server unresponsive to every other agent until it finished. FastMCP 3 runs synchronous tools in a thread pool.
+
+**Decision:** Require `fastmcp>=3.4.9,<4`. Tool outputs are unchanged. Running tools concurrently exposed an unlocked shared cache, so the BM25 index build now runs under a re-entrant lock with a generation check — a build that spans a cache clear (for example a self-heal reconnect) is redone rather than cached. FastMCP 4 (built on MCP SDK v2) was evaluated and produced identical outputs, but it changes session semantics through its sessionless protocol mode and is left for a separate upgrade.
+
+### 3.13 Rate-Limit Identity in Stateless HTTP
+
+The rate limiter keyed on the MCP session. Stateless HTTP — required for uvicorn multi-worker deployments — has no session, so every request looked like a new client and limits never applied.
+
+**Decision:** Key on the `mcp-session-id` header when present; otherwise on an optional, client-supplied `X-Candlekeep-Agent` header; otherwise on the client IP. Agents that send the header get their own bucket, and agents that don't share one bucket per IP. The header is not authenticated: rate limits remain a fairness mechanism, not a security boundary.
+
 ## 4. Techniques Evaluated
 
 | Technique | Result | Status |

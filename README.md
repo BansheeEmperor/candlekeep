@@ -115,7 +115,7 @@ See [Setup Guide](docs/SETUP.md) for auth configuration and production deploymen
 
 ## MCP Tools
 
-- **search** — Semantic search with adaptive routing (`simple` 22–36ms, `precise` ~1550ms)
+- **search** — Semantic search with adaptive routing (`hybrid`, `precise`, `explore`); each result starts at the matched passage
 - **list_documents** — List all indexed tomes
 - **get_stats** — Library statistics
 - **critique_document** — Check document quality before ingestion
@@ -138,17 +138,15 @@ Access to write tools is managed by your database permissions (configured via `C
 ## Testing
 
 ```bash
-# Unit tests — no database required (~1.4s)
-pytest tests/test_router.py tests/test_quality_gate.py tests/test_arcane_recall_unit.py \
-       tests/test_protection.py tests/test_processor.py tests/test_search.py \
-       tests/test_providers.py
+# Unit tests — no database required
+pytest -m unit
 
 # Benchmarks — requires local ChromaDB on localhost:8000
 ./scripts/start_chroma.sh
 pytest tests/test_router_benchmark.py -v -s
 ```
 
-59 unit tests covering router, quality gate, chunk expansion, embedding protection, document processing, and LLM/True Sight providers. Benchmark tests include regression assertions that fail if precision or content match drops below 80%.
+Unit tests cover the router, quality gate, chunk expansion and stitching, embedding protection, document processing, paginated reads, the entity graph, rate limiting, and LLM/True Sight providers. Benchmark tests include regression assertions that fail if precision or content match drops below 80%.
 
 ## Requirements
 
