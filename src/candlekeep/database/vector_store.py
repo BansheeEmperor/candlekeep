@@ -11,6 +11,15 @@ from candlekeep.config import Settings
 from candlekeep.database.embeddings import EmbeddingManager
 from candlekeep.database.interface import VectorDatabase, SearchResult, Chunk
 
+# Full-collection reads are paged. chromadb >= 1.5 rejects a single get() that
+# returns metadatas for more than 32,766 records ("too many SQL variables" —
+# SQLite's bound-variable limit), so an unpaged get() breaks BM25, stats and
+# list_documents once a collection passes ~32k chunks. In a page-size sweep
+# (HTTP server, documents + metadatas) 4k-10k pages were the fastest plateau;
+# larger pages were slower, noisier and used more client memory, smaller pages
+# paid per-request overhead. 5000 sits mid-plateau, well below the limit.
+_GET_PAGE_SIZE = 5000
+
 
 def _human_readable_size(size_bytes: int) -> str:
     """Convert bytes to human readable format."""
@@ -213,6 +222,25 @@ class ChromaVectorStore(VectorDatabase):
     def _get(self, **kwargs):
         """Self-healing wrapper around collection.get()."""
         return self._collection_op(lambda col: col.get(**kwargs))
+
+    def _get_paginated(self, page_size: int = _GET_PAGE_SIZE, **kwargs) -> dict:
+        """Read every matching record via self-healing get() calls of at most
+        page_size records each (see _GET_PAGE_SIZE).
+
+        Returns ids plus whichever of documents/metadatas/embeddings the
+        include= kwarg selects, concatenated in collection order.
+        """
+        merged: dict = {"ids": []}
+        offset = 0
+        while True:
+            page = self._get(limit=page_size, offset=offset, **kwargs)
+            merged["ids"].extend(page["ids"])
+            for key in ("documents", "metadatas", "embeddings"):
+                if page.get(key) is not None:
+                    merged.setdefault(key, []).extend(page[key])
+            if len(page["ids"]) < page_size:
+                return merged
+            offset += len(page["ids"])
 
     def _count(self):
         """Self-healing wrapper around collection.count()."""
@@ -423,7 +451,7 @@ class ChromaVectorStore(VectorDatabase):
 
     def list_documents(self) -> list[dict]:
         """List all unique source documents."""
-        results = self._get()
+        results = self._get_paginated(include=["metadatas"])
         sources = {}
         for meta in results["metadatas"]:
             src = meta["source"]
@@ -449,7 +477,7 @@ class ChromaVectorStore(VectorDatabase):
             total_size = 0
         
         # Estimate tokens
-        all_docs = self._get()
+        all_docs = self._get_paginated(include=["documents"])
         total_chars = sum(len(doc) for doc in all_docs.get("documents", []))
         estimated_tokens = total_chars // 4
         
@@ -504,7 +532,7 @@ class ChromaVectorStore(VectorDatabase):
 
     def get_all_chunks(self) -> list[SearchResult]:
         """Get all chunks from the database."""
-        results = self._get()
+        results = self._get_paginated(include=["documents", "metadatas"])
         if not results["ids"]:
             return []
 

@@ -32,11 +32,10 @@ def update_bm25_cache(db):
     if _bm25_cache is not None:
         return _bm25_cache, _corpus_ids
 
-    # Fetch ALL documents from ChromaDB
-    results = db.collection.get()
+    # Fetch ALL documents from ChromaDB (paged — see vector_store._GET_PAGE_SIZE)
+    results = db._get_paginated(include=["documents"])
     documents = results['documents']
     _corpus_ids = results['ids']
-    metadatas = results['metadatas']
 
     # Tokenize corpus
     tokenized_corpus = [_tokenize(doc) for doc in documents]
