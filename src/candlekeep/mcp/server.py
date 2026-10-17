@@ -564,11 +564,18 @@ def search(
     if not results:
         return "No results found."
 
-    output = []
-    for r in results:
-        output.append(f"**Score: {r.score:.3f}** | Source: {r.metadata['filename']}")
-        output.append(f"```\n{r.text[:500]}{'...' if len(r.text) > 500 else ''}\n```\n")
-    return "\n".join(output)
+    return "\n".join(_format_result(r, _settings.result_chars) for r in results)
+
+
+def _format_result(r, budget: int) -> str:
+    """Render one search result: title line, then up to `budget` chars starting
+    at the matched chunk (Arcane Recall's _match_offset) rather than at the top
+    of the expanded window."""
+    offset = r.metadata.get("_match_offset", 0)
+    title = r.metadata.get("title")
+    view = (f"Document: {title}\n\n" if offset and title else "") + r.text[offset:]
+    body = f"{view[:budget]}{'...' if len(view) > budget else ''}"
+    return f"**Score: {r.score:.3f}** | Source: {r.metadata['filename']}\n```\n{body}\n```\n"
 
 
 @mcp.tool

@@ -120,3 +120,60 @@ class TestExpandResults:
         assert "chunk0" in expanded[0].text
         assert "chunk5" in expanded[0].text
         assert "chunk6" not in expanded[0].text
+
+
+class TestStitching:
+    """Bardic prefix kept once, chunker overlap removed, match offset tracked."""
+
+    META = {"source": "doc.md", "filename": "doc.md", "title": "Setup Guide", "description": "How setup works"}
+    PREFIX = "Document: Setup Guide. Description: How setup works.\n\n"
+
+    def _chunks(self, bodies):
+        return [
+            SearchResult(text=self.PREFIX + b, score=1.0, doc_id=f"doc.md:{i}",
+                         metadata={**self.META, "chunk_index": i})
+            for i, b in enumerate(bodies)
+        ]
+
+    def test_prefix_once_and_overlap_removed(self):
+        shared = "the shared overlap region of chunk text"
+        bodies = ["intro section " + shared, shared + " continues into the second part", "## Next section\nunrelated"]
+        chunks = self._chunks(bodies)
+        db = _mock_db({"doc.md": chunks})
+        expanded = expand_results(db, [chunks[1]], n_results=1, expansion_chunks=2)
+        text = expanded[0].text
+        assert text.count("Document: Setup Guide") == 1
+        assert text.count(shared) == 1
+        assert text == self.PREFIX + "intro section " + shared + " continues into the second part\n\n## Next section\nunrelated"
+
+    def test_match_offset_points_at_best_match(self):
+        bodies = [f"body number {i} " + "x" * 30 for i in range(5)]
+        chunks = self._chunks(bodies)
+        db = _mock_db({"doc.md": chunks})
+        hits = [SearchResult(text=chunks[1].text, score=0.5, doc_id="doc.md:1", metadata=chunks[1].metadata),
+                SearchResult(text=chunks[3].text, score=0.9, doc_id="doc.md:3", metadata=chunks[3].metadata)]
+        expanded = expand_results(db, hits, n_results=5, expansion_chunks=1)
+        assert len(expanded) == 1  # windows 0-2 and 2-4 coalesce
+        r = expanded[0]
+        assert r.text[r.metadata["_match_offset"]:].startswith("body number 3")
+
+    def test_no_prefix_chunks_unchanged(self):
+        source_chunks = [_make_result(f"chunk{i}", chunk_index=i) for i in range(3)]
+        db = _mock_db({"doc.md": source_chunks})
+        expanded = expand_results(db, [source_chunks[1]], n_results=1, expansion_chunks=1)
+        assert expanded[0].text == "chunk0\n\nchunk1\n\nchunk2"
+        assert expanded[0].text[expanded[0].metadata["_match_offset"]:].startswith("chunk1")
+
+
+class TestFormatResult:
+    def test_view_starts_at_match_with_title_line(self):
+        from candlekeep.mcp.server import _format_result
+        r = SearchResult(text="Document: T. Description: D.\n\nintro\n\nTHE ANSWER here", score=0.5, doc_id="d",
+                         metadata={"filename": "d.md", "title": "T", "_match_offset": 37})
+        out = _format_result(r, budget=200)
+        assert "Document: T\n\nTHE ANSWER here" in out and "intro" not in out
+
+    def test_budget_truncates(self):
+        from candlekeep.mcp.server import _format_result
+        r = SearchResult(text="a" * 50, score=0.5, doc_id="d", metadata={"filename": "d.md"})
+        assert "a" * 10 + "..." in _format_result(r, budget=10)

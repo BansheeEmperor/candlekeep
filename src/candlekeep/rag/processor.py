@@ -7,6 +7,20 @@ from candlekeep.config import Settings
 from candlekeep.database.interface import Chunk
 
 
+def bardic_prefix(meta: dict) -> str:
+    """Bardic Knowledge context prepended to every chunk before embedding.
+
+    Arcane Recall uses the same string to strip the repeated prefix when it
+    stitches neighbouring chunks into one result.
+    """
+    parts = []
+    if "title" in meta:
+        parts.append(f"Document: {meta['title']}")
+    if "description" in meta:
+        parts.append(f"Description: {meta['description']}")
+    return ". ".join(parts) + ".\n\n" if parts else ""
+
+
 @dataclass
 class ProcessResult:
     chunks: list[Chunk]
@@ -42,16 +56,7 @@ class DocumentProcessor:
         base_meta = {"source": str(path), "filename": path.name, "extension": path.suffix}
         base_meta.update(frontmatter)
 
-        context_prefix = ""
-        if self.settings.bardic_knowledge:
-            context_parts = []
-            if "title" in base_meta:
-                context_parts.append(f"Document: {base_meta['title']}")
-            if "description" in base_meta:
-                context_parts.append(f"Description: {base_meta['description']}")
-            context_prefix = ". ".join(context_parts)
-            if context_prefix:
-                context_prefix += ".\n\n"
+        context_prefix = bardic_prefix(base_meta) if self.settings.bardic_knowledge else ""
 
         text_chunks = [
             Chunk(

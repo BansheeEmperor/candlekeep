@@ -104,6 +104,9 @@ class Settings:
     # safe for such corpora.
     quality_max_words: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_QUALITY_MAX_WORDS", "10000")))
     
+    # Characters of each search result shown to the agent, starting at the matched chunk
+    result_chars: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_RESULT_CHARS", "1000")))
+
     # Personality
     spice: bool = field(default_factory=lambda: os.getenv("CANDLEKEEP_SPICE", "false").lower() == "true")
     
