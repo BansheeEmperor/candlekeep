@@ -155,18 +155,46 @@ _search_limiter = _RateLimiter(_settings.rate_limit_search, _settings.rate_limit
 _write_limiter = _RateLimiter(_settings.rate_limit_write, _settings.rate_limit_window)
 
 
+# Header an agent can send to get its own rate-limit bucket when the transport
+# has no MCP session (stateless HTTP behind uvicorn workers).
+_AGENT_HEADER = "x-candlekeep-agent"
+
+
+def _rate_key(ctx: Context) -> str | None:
+    """Identify the caller for per-client rate limiting.
+
+    Stateful HTTP sends mcp-session-id on every call, so limits stay per
+    session. Stateless HTTP has no session (ctx.session_id would be a fresh
+    UUID per request, so nothing would ever be limited); fall back to the
+    optional X-Candlekeep-Agent header, then the client IP. Fairness, not a
+    security boundary: the header is client-supplied.
+    """
+    try:
+        request = ctx.request_context.request
+    except Exception:
+        return None
+    if request is None:
+        return None
+    if session_id := request.headers.get("mcp-session-id"):
+        return f"session:{session_id}"
+    if agent := request.headers.get(_AGENT_HEADER, "").strip():
+        return f"agent:{agent[:128]}"
+    if request.client:
+        return f"ip:{request.client.host}"
+    return None
+
+
 def _rate_check(limiter: _RateLimiter, ctx: Context) -> str | None:
-    """Check rate limit for the current session. Returns error message or None."""
+    """Check rate limit for the calling client. Returns error message or None."""
     if _settings.transport != "http":
         return None
     if not limiter.enabled:
         return None
-    try:
-        session_id = ctx.session_id
-    except Exception:
-        # session_id unavailable (e.g. during init) — allow the call
+    key = _rate_key(ctx)
+    if key is None:
+        # No identifiable caller (e.g. during init) — allow the call
         return None
-    if not limiter.check(session_id):
+    if not limiter.check(key):
         return "⚠ Rate limit exceeded. Try again shortly."
     return None
 
