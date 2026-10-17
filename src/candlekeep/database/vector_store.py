@@ -311,7 +311,6 @@ class ChromaVectorStore(VectorDatabase):
         clear_bm25_cache()
 
         # If ColBERT backend is active, mark its index dirty for lazy rebuild.
-        import os
         if os.getenv("CANDLEKEEP_SPARSE_BACKEND", "bm25") == "colbert":
             from candlekeep.rag.colbert import mark_colbert_dirty
             mark_colbert_dirty()

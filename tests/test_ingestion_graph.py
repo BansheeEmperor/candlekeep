@@ -119,3 +119,38 @@ def test_delete_by_source_removes_graph_mentions(tmp_path):
     count = conn.execute("SELECT COUNT(*) FROM entity_mentions WHERE source = 'doc1.md'").fetchone()[0]
     conn.close()
     assert count == 0
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("defer, expect_rebuild", [("", True), ("1", False)])
+def test_add_documents_schedules_graph_rebuild(tmp_path, monkeypatch, defer, expect_rebuild):
+    """The co-occurrence rebuild must be scheduled after ingest unless deferred.
+
+    Regression: a function-local `import os` in add_documents made the earlier
+    os.getenv() raise UnboundLocalError, which the extraction guard swallowed,
+    so the graph was never rebuilt automatically.
+    """
+    from candlekeep.config import Settings
+    from candlekeep.database.graph_store import clear_graph_store_cache
+    from candlekeep.database.vector_store import ChromaVectorStore
+
+    monkeypatch.setenv("CANDLEKEEP_DEFER_GRAPH_REBUILD", defer)
+    settings = MagicMock(spec=Settings)
+    settings.entity_ruler_path = tmp_path / "entity_ruler.jsonl"
+    settings.graph_db_path = tmp_path / "graph.db"
+
+    vs = ChromaVectorStore.__new__(ChromaVectorStore)
+    vs.settings = settings
+    vs.embedder = MagicMock()
+    vs.embedder.embed.return_value = [[0.1] * 384]
+    vs.collection = MagicMock()
+    vs.collection.get.return_value = {"ids": []}
+
+    clear_graph_store_cache()
+    try:
+        with patch("candlekeep.database.graph_store.schedule_graph_rebuild") as rebuild, \
+             patch("candlekeep.rag.token_normalisation.schedule_background_rebuild"):
+            vs.add_documents([_make_chunk("ArcaneRecall expands context with BM25Searcher")])
+        assert rebuild.called is expect_rebuild
+    finally:
+        clear_graph_store_cache()
