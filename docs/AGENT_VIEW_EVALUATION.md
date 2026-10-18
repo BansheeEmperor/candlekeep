@@ -54,7 +54,7 @@ Matched chunks other than the best one are therefore never shown when they lie o
 |---|---|---|---|---|
 | **A** | Project baseline | `development` @ `6519cc7` | 2.14.5 (pinned by A) | Includes A's known defects: unpaginated full-collection reads, the post-ingest graph rebuild never scheduled, and a 500-character un-stitched view. |
 | **B** | Current branch | `feat/large-collections-and-result-context` @ `d524652` | 3.4.9 | Paginated reads, graph rebuild fix, faster co-occurrence query, stitching and match-anchored 1000-character view, FastMCP 3 with the BM25 lock, rate-limit keying. |
-| **C** | B + proposal | B + commit "show other matched passages" (SHA recorded at implementation, Section 14) | 3.4.9 | Defined in §3.1. |
+| **C** | B + proposal | `feat/show-matched-passages` @ `ade2365` (two commits on top of `c43016f`: `d5b8895`, `ade2365`) | 3.4.9 | Defined in §3.1, as resolved in the Deviations Log. |
 
 ### 3.1 Definition of C (frozen)
 
@@ -266,7 +266,7 @@ Status values: `pending` · `running` · `done` · `verified` · `failed` · `vo
 |---|---|---|---|---|---|---|---|---|---|---|
 | R00-A | A | 6519cc7 | venv-A | env | — | `scripts/eval_agent_view/env.py --state A` | `tests/results/agent_view_eval/env/A.txt` | — | pending | |
 | R00-B | B | d524652 | venv-B | env | — | `… --state B` | `…/env/B.txt` | — | pending | |
-| R00-C | C | (TBD) | venv-C | env | — | `… --state C` | `…/env/C.txt` | — | pending | |
+| R00-C | C | ade2365 | venv-C | env | — | `… --state C` | `…/env/C.txt` | — | pending | |
 | I01 | B | d524652 | venv-B | ingest | CEN | `ingest.py --suite CEN` | `…/ingest/I01_CEN.json` | 89 docs | pending | |
 | I02 | B | d524652 | venv-B | ingest | CEN-G (overlap 50) | `ingest.py --suite CEN --overlap 50` | `…/ingest/I02_CEN-G.json` | 89 docs | pending | |
 | I03 | B | d524652 | venv-B | ingest | CD-LEG | `ingest.py --suite CD-LEG` | `…/ingest/I03_CD-LEG.json` | 90 docs | pending | |
@@ -279,18 +279,18 @@ Status values: `pending` · `running` · `done` · `verified` · `failed` · `vo
 | R01 | B | d524652 | venv-B | L1+L2 | CEN (determinism, run 2) | `run_layer1.py / run_layer2.py --state B --suite CEN --tag rerun` | `…/L1/B_CEN_rerun.json`, `…/L2/B_CEN_rerun.json` | 108 | pending | |
 | L1-A-* | A | 6519cc7 | venv-A | L1 | CEN, CEN-G, MH, CD×5, BEIR×2 | `run_layer1.py --state A --suite <s>` | `…/L1/A_<s>.json` | per §5 | pending | |
 | L1-B-* | B | d524652 | venv-B | L1 | ″ | `… --state B …` | `…/L1/B_<s>.json` | per §5 | pending | |
-| L1-C-* | C | (TBD) | venv-C | L1 | ″ | `… --state C …` | `…/L1/C_<s>.json` | per §5 | pending | |
+| L1-C-* | C | ade2365 | venv-C | L1 | ″ | `… --state C …` | `…/L1/C_<s>.json` | per §5 | pending | |
 | L2-A-* | A | 6519cc7 | venv-A | L2 | CEN, CEN-G, MH, CD×5, BEIR×2 | `run_layer2.py --state A --suite <s>` | `…/L2/A_<s>.json` | per §5 | pending | |
 | L2-B-* | B | d524652 | venv-B | L2 | ″ | `… --state B …` | `…/L2/B_<s>.json` | per §5 | pending | |
-| L2-C-* | C | (TBD) | venv-C | L2 | ″ | `… --state C …` | `…/L2/C_<s>.json` | per §5 | pending | |
-| L2-C0 | C (extras = 0) | (TBD) | venv-C | L2 | CEN | `CANDLEKEEP_RESULT_EXTRA_CHARS=0 run_layer2.py --state C --suite CEN --tag killswitch` | `…/L2/C_CEN_killswitch.json` | 108 | pending | |
+| L2-C-* | C | ade2365 | venv-C | L2 | ″ | `… --state C …` | `…/L2/C_<s>.json` | per §5 | pending | |
+| L2-C0 | C (extras = 0) | ade2365 | venv-C | L2 | CEN | `CANDLEKEEP_RESULT_EXTRA_CHARS=0 run_layer2.py --state C --suite CEN --tag killswitch` | `…/L2/C_CEN_killswitch.json` | 108 | pending | |
 | L2-I1 | A (empty graph) | 6519cc7 | venv-A | L2 info | CEN, MH | `run_layer2.py --state A --graph empty` | `…/L2/info_A_emptygraph_<s>.json` | 108/30 | pending | |
 | L2-I2 | B (500 chars) | d524652 | venv-B | L2 info | CEN, MH | `CANDLEKEEP_RESULT_CHARS=500 run_layer2.py --state B` | `…/L2/info_B_500_<s>.json` | 108/30 | pending | |
-| J1 | A/B/C | — | — | L3 | CEN-A hybrid | `judge_pack.py --pack J1` | `…/judges/pack_J1.json`, `keymap_J1.json` (SHA-256: _TBD before judging_), `out_J1_*.json` | 234 | pending | |
-| J1-R | — | — | — | L3 | 20% re-judge | `judge_pack.py --pack J1 --rejudge 0.2` | `…/judges/out_J1R_*.json` | ≈47 | pending | |
-| J2 (opt.) | B/C | — | — | L3 | CEN-A precise | `judge_pack.py --pack J2` | `…/judges/pack_J2.json` … | 156 | pending | |
+| J1 | A/B/C | — | — | L3 | CEN-A hybrid | `judge_pack.py --pack J1` | `…/judges/pack_J1.json`, `keymap_J1.json` (SHA-256: _TBD before judging_), `out_J1_*.json` | 228 | pending | |
+| J1-R | — | — | — | L3 | 20% re-judge | `judge_pack.py --pack J1R` | `…/judges/out_J1R_*.json` | ≈46 | pending | |
+| J2 (opt.) | B/C | — | — | L3 | CEN-A precise | `judge_pack.py --pack J2` | `…/judges/pack_J2.json` … | 152 | pending | |
 | CI-B | B | d524652 | venv-B | CI | — | `pytest -m "unit or (benchmark and not slow)"` (MPS) | `…/verification/ci_B.txt` | — | pending | |
-| CI-C | C | (TBD) | venv-C | CI | — | ″ | `…/verification/ci_C.txt` | — | pending | |
+| CI-C | C | ade2365 | venv-C | CI | — | ″ | `…/verification/ci_C.txt` | — | pending | |
 | V-ALL | — | — | — | verify | all | `verify.py --all --check-doc` | `…/verification/checks.json`, `…/summary.json` | — | pending | |
 
 ## 15. Results (filled from `summary.json` after V-ALL passes)
@@ -367,6 +367,15 @@ Status values: `pending` · `running` · `done` · `verified` · `failed` · `vo
 | 2026-10-18 (pre-run) | §10 C-13 | Latency is evaluated per suite and path: \|C − B\| ≤ max(5% of B, 15 ms) on Layer 2 p50. | The original wording didn't say whether latency is pooled. | Stricter; nothing is averaged away. |
 | 2026-10-18 (pre-run) | §10 C-14 | `scripts/compare_benchmarks.py` has no CI; it marks 🔴 for a precision drop over 1 point. Its archived baselines were produced by CI on CPU, while all protocol runs use MPS. The CI benchmark is therefore run for A, B and C on MPS. C-14 passes if the test suite passes for B and C, and `compare_benchmarks.py` shows no 🔴 for B or C against **A's run on the same environment**. Comparisons against the archive are reported for information. | Removes the environment confound and states the rule the script actually implements. | Decisive comparison is against the same-environment baseline. |
 | 2026-10-18 (pre-run) | §3.1 | In C, a result with no claimed extra span and no leftover fill is rendered by B's formatter exactly, including its `...` marker. A result with extra spans or fill appends `...` when text continues after its last rendered span. | Keeps the kill-switch identity (C-15) exact and keeps the truncation signal. | C-15 is testable byte for byte. |
+| 2026-10-18 (pre-run) | §3.1 | State C = branch `feat/show-matched-passages` @ `ade2365`. Step 3 is implemented as the literal text reads: each passage first pays for its gap marker, then takes `min(span, remaining)`, and claiming stops when fewer than 120 characters of budget would remain for the next passage. A matched chunk shorter than 120 is shown whole. Extras never exceed the budget. | The wording allowed two readings. The pre-protocol simulation that motivated the proposal applied the 120 minimum to the *passage* and charged the marker *after* it. The protocol evaluates the rule as written, not the simulation. | C is pinned before any run. |
+| 2026-10-18 (pre-run) | §4 | One Chroma server process per corpus is started after ingest and kept alive for every run on that corpus (A, B, C, reruns). Each run records the process identity (pid and start time). A restart voids comparisons across it, and the affected runs are repeated. | Chroma rebuilds part of the HNSW graph on every load. Across processes, precise-path neighbour sets differed in smoke tests while distances were bit-identical. | Removes index variance between compared runs. Checked under V-02. |
+| 2026-10-18 (pre-run) | §4 | Layer 2 servers are started through `scripts/eval_agent_view/serve.py`, which makes Candlekeep's startup write probe (add and delete `__auth_test__`) fail before it reaches Chroma. This applies identically to A, B and C. The ingest server keeps the probe. | The probe inserts and deletes a point in the shared HNSW index on every server start, which would change the index between compared runs. | Read-only servers; search is unaffected. |
+| 2026-10-18 (pre-run) | §4 | `PYTHONHASHSEED=20261018` is set for every Candlekeep process (L1, ingest and L2 servers), but not for the CI run. | Fixes hash-dependent set and dict ordering across processes. | Identical for all states. |
+| 2026-10-18 (pre-run) | §4 / §11 | Each corpus is ingested with a single MCP `ingest` call. I01 and I02 ingest a staging directory of symlinks to every file in `sample_docs` and `scale_docs`. Gold sources are matched by basename. | Back-to-back ingest calls can run the embedder concurrently with the background normalisation rebuild, which crashes MPS (a pre-existing issue in A and B). Basename matching differs from the project's path matching for one Centurion gold entry (`scale_docs/microservices.md` does not exist; `sample_docs/microservices.md` does). | Identical for all states. |
+| 2026-10-18 (pre-run) | §5 / §7.1 | CEN-G gold chunks are rebuilt from the product's own parsed body (`DocumentProcessor._parse_frontmatter`). Six CEN documents have invalid YAML frontmatter, which the product keeps in the body, exactly as when the labels were made (0 of 709 graded keys out of range). Gold-document text for shingle metrics still uses regex frontmatter removal. | The contract's regex body would misalign 17 gold chunks in 7 queries. | Labels now align with the annotation. |
+| 2026-10-18 (pre-run) | §8 | CEN-014 and CEN-038 have empty reference answers in the fixture and are excluded from judging. CEN-A therefore has 76 queries: J1 = 228 items, J1-R ≈ 46, J2 = 152. Re-judge parts may hold fewer than 25 items. | No ground truth to judge against. | C-11 n = 76. |
+| 2026-10-18 (pre-run) | §6 / §7 / §9 | Conventions adopted from the harness and verifier (both agree, cross-checked with 0 mismatches):<br>• means over empty sets are null;<br>• BEIR queries have category `beir`;<br>• the BEIR ideal DCG is cut at 10;<br>• graded nDCG@5 includes CEN-G adversarial queries;<br>• an empty normalised text has no shingles;<br>• a tool error is stored as `raw_output = ""`;<br>• C-07, C-10, C-12 and C-13 are evaluated on all three paths of every suite, including BEIR explore;<br>• RQ3 uses the hybrid path;<br>• κ is computed over the whole re-judged subset. | Points the data contract left open. | None. |
+| 2026-10-18 (pre-run) | §7.2 | Finding: explore's graph expansion never adds documents in any state. It fetches chunks by `collection.get(ids=<source paths>)`, but chunk ids are hashes. The A-with-empty-graph informational row is therefore expected to equal A. | Found by the harness review. A product issue, not part of this evaluation. | None. |
 
 ## 17. Change log
 
