@@ -243,6 +243,8 @@ tests/results/agent_view_eval/
 - **Device.** MPS only. The CPU precise path is broken with the pinned-at-runtime dependencies in both A and B, and is out of scope here.
 - **Rosetta Seal.** The normalisation map is built but not applied in BM25 in any state, so it does not differ between states.
 - **Rate limiting** is disabled. The effect of rate limits on agent behaviour is not measured.
+- **Formatting reveals the state** (added after the run). A three-rule classifier recovers the state from J1 formatting alone for 97.4% of items: C's `[…]` marker, A's per-chunk `Document: … Description:` prefix, and the B/C title line. Judges were blind to labels, not to format. Their notes never refer to a system.
+- **Output length in Layer 3** (added after the run). On judged items, C's output is 1.7× B's, and no length-matched B was judged. Within a state, `full` verdicts do not correlate with length. The exploratory length-matched Layer 2 runs (§16) address the deterministic metrics only.
 
 ## 13. Verification procedure (must pass before reporting)
 
@@ -264,34 +266,37 @@ Status values: `pending` · `running` · `done` · `verified` · `failed` · `vo
 
 | Run | State | Git SHA | Env | Layer | Suite | Command (abridged) | Output path | n | Status | Verified (V-ids) |
 |---|---|---|---|---|---|---|---|---|---|---|
-| R00-A | A | 6519cc7 | venv-A | env | — | `scripts/eval_agent_view/env.py --state A` | `tests/results/agent_view_eval/env/A.txt` | — | pending | |
-| R00-B | B | d524652 | venv-B | env | — | `… --state B` | `…/env/B.txt` | — | pending | |
-| R00-C | C | ade2365 | venv-C | env | — | `… --state C` | `…/env/C.txt` | — | pending | |
-| I01 | B | d524652 | venv-B | ingest | CEN | `ingest.py --suite CEN` | `…/ingest/I01_CEN.json` | 89 docs | pending | |
-| I02 | B | d524652 | venv-B | ingest | CEN-G (overlap 50) | `ingest.py --suite CEN --overlap 50` | `…/ingest/I02_CEN-G.json` | 89 docs | pending | |
-| I03 | B | d524652 | venv-B | ingest | CD-LEG | `ingest.py --suite CD-LEG` | `…/ingest/I03_CD-LEG.json` | 90 docs | pending | |
-| I04 | B | d524652 | venv-B | ingest | CD-MED | `… CD-MED` | `…/ingest/I04_CD-MED.json` | 91 docs | pending | |
-| I05 | B | d524652 | venv-B | ingest | CD-NAR | `… CD-NAR` | `…/ingest/I05_CD-NAR.json` | 89 docs | pending | |
-| I06 | B | d524652 | venv-B | ingest | CD-API | `… CD-API` | `…/ingest/I06_CD-API.json` | 95 docs | pending | |
-| I07 | B | d524652 | venv-B | ingest | CD-ALT | `… CD-ALT` | `…/ingest/I07_CD-ALT.json` | 88 docs | pending | |
-| I08 | B | d524652 | venv-B | ingest | BEIR-SF | `… BEIR-SF` | `…/ingest/I08_BEIR-SF.json` | 5,183 docs | pending | |
-| I09 | B | d524652 | venv-B | ingest | BEIR-NF | `… BEIR-NF` | `…/ingest/I09_BEIR-NF.json` | 3,633 docs | pending | |
-| R01 | B | d524652 | venv-B | L1+L2 | CEN (determinism, run 2) | `run_layer1.py / run_layer2.py --state B --suite CEN --tag rerun` | `…/L1/B_CEN_rerun.json`, `…/L2/B_CEN_rerun.json` | 108 | pending | |
-| L1-A-* | A | 6519cc7 | venv-A | L1 | CEN, CEN-G, MH, CD×5, BEIR×2 | `run_layer1.py --state A --suite <s>` | `…/L1/A_<s>.json` | per §5 | pending | |
-| L1-B-* | B | d524652 | venv-B | L1 | ″ | `… --state B …` | `…/L1/B_<s>.json` | per §5 | pending | |
-| L1-C-* | C | ade2365 | venv-C | L1 | ″ | `… --state C …` | `…/L1/C_<s>.json` | per §5 | pending | |
-| L2-A-* | A | 6519cc7 | venv-A | L2 | CEN, CEN-G, MH, CD×5, BEIR×2 | `run_layer2.py --state A --suite <s>` | `…/L2/A_<s>.json` | per §5 | pending | |
-| L2-B-* | B | d524652 | venv-B | L2 | ″ | `… --state B …` | `…/L2/B_<s>.json` | per §5 | pending | |
-| L2-C-* | C | ade2365 | venv-C | L2 | ″ | `… --state C …` | `…/L2/C_<s>.json` | per §5 | pending | |
-| L2-C0 | C (extras = 0) | ade2365 | venv-C | L2 | CEN | `CANDLEKEEP_RESULT_EXTRA_CHARS=0 run_layer2.py --state C --suite CEN --tag killswitch` | `…/L2/C_CEN_killswitch.json` | 108 | pending | |
-| L2-I1 | A (empty graph) | 6519cc7 | venv-A | L2 info | CEN, MH | `run_layer2.py --state A --graph empty` | `…/L2/info_A_emptygraph_<s>.json` | 108/30 | pending | |
-| L2-I2 | B (500 chars) | d524652 | venv-B | L2 info | CEN, MH | `CANDLEKEEP_RESULT_CHARS=500 run_layer2.py --state B` | `…/L2/info_B_500_<s>.json` | 108/30 | pending | |
-| J1 | A/B/C | — | — | L3 | CEN-A hybrid | `judge_pack.py --pack J1` | `…/judges/pack_J1.json`, `keymap_J1.json` (SHA-256: `b93e2d6a8d2c409b85c0ffb1986fe5b52f7cef8c40b72d3968e6702c00af8725`), `out_J1_*.json` | 228 | packs built | |
-| J1-R | — | — | — | L3 | 20% re-judge | `judge_pack.py --pack J1R` | `…/judges/pack_J1R.json`, `keymap_J1R.json` (SHA-256: `2493f118148d3b5e52efec58bff3f0659d595ea38991141e6a439fedb95f38ab`), `out_J1R_*.json` | 46 | packs built | |
-| J2 (opt.) | B/C | — | — | L3 | CEN-A precise | `judge_pack.py --pack J2` | `…/judges/pack_J2.json`, `keymap_J2.json` (SHA-256: `6d75632acefdc12c4c136af5a2ad3594ad565d82d58e22d268f82af6296df5e2`), `out_J2_*.json` | 152 | packs built | |
-| CI-B | B | d524652 | venv-B | CI | — | `pytest -m "unit or (benchmark and not slow)"` (MPS) | `…/verification/ci_B.txt` | — | pending | |
-| CI-C | C | ade2365 | venv-C | CI | — | ″ | `…/verification/ci_C.txt` | — | pending | |
-| V-ALL | — | — | — | verify | all | `verify.py --all --check-doc` | `…/verification/checks.json`, `…/summary.json` | — | pending | |
+| R00-A | A | 6519cc7 | venv-A | env | — | `scripts/eval_agent_view/env.py --state A` | `tests/results/agent_view_eval/env/A.txt` | — | verified | V-02 |
+| R00-B | B | d524652 | venv-B | env | — | `… --state B` | `…/env/B.txt` | — | verified | V-02 |
+| R00-C | C | ade2365 | venv-C | env | — | `… --state C` | `…/env/C.txt` | — | verified | V-02 |
+| I01 | B | d524652 | venv-B | ingest | CEN | `ingest.py --suite CEN` | `…/ingest/I01_CEN.json` | 89 docs | verified: 2,970 chunks, 2,945 entities, 3,351 edges | V-02, V-03 |
+| I02 | B | d524652 | venv-B | ingest | CEN-G (overlap 50) | `ingest.py --suite CEN --overlap 50` | `…/ingest/I02_CEN-G.json` | 89 docs | verified: 2,868 chunks, 2,939 entities, 2,906 edges | V-02, V-03 |
+| I03 | B | d524652 | venv-B | ingest | CD-LEG | `ingest.py --suite CD-LEG` | `…/ingest/I03_CD-LEG.json` | 90 docs | verified: 1,520 chunks, 2,667 entities, 3,211 edges | V-02, V-03 |
+| I04 | B | d524652 | venv-B | ingest | CD-MED | `… CD-MED` | `…/ingest/I04_CD-MED.json` | 91 docs | verified: 1,433 chunks, 1,734 entities, 523 edges | V-02, V-03 |
+| I05 | B | d524652 | venv-B | ingest | CD-NAR | `… CD-NAR` | `…/ingest/I05_CD-NAR.json` | 89 docs | verified: 1,408 chunks, 1,535 entities, 1,009 edges | V-02, V-03 |
+| I06 | B | d524652 | venv-B | ingest | CD-API | `… CD-API` | `…/ingest/I06_CD-API.json` | 95 docs | verified: 1,735 chunks, 741 entities, 1,403 edges | V-02, V-03 |
+| I07 | B | d524652 | venv-B | ingest | CD-ALT | `… CD-ALT` | `…/ingest/I07_CD-ALT.json` | 88 docs | verified: 1,205 chunks, 898 entities, 394 edges | V-02, V-03 |
+| I08 | B | d524652 | venv-B | ingest | BEIR-SF | `… BEIR-SF` | `…/ingest/I08_BEIR-SF.json` | 5,183 docs | verified: 19,040 chunks, 22,374 entities, 26,379 edges | V-02, V-03 |
+| I09 | B | d524652 | venv-B | ingest | BEIR-NF | `… BEIR-NF` | `…/ingest/I09_BEIR-NF.json` | 3,633 docs | verified: 14,140 chunks, 17,853 entities, 26,866 edges | V-02, V-03 |
+| R01 | B | d524652 | venv-B | L1+L2 | CEN (determinism, run 2) | `run_layer1.py / run_layer2.py --state B --suite CEN --tag rerun` | `…/L1/B_CEN_rerun.json`, `…/L2/B_CEN_rerun.json` | 108 | verified: identical rankings and outputs | V-01 |
+| L1-A-* | A | 6519cc7 | venv-A | L1 | CEN, CEN-G, MH, CD×5, BEIR×2 | `run_layer1.py --state A --suite <s>` | `…/L1/A_<s>.json` | per §5 | verified | V-02, V-03, V-05, V-07 |
+| L1-B-* | B | d524652 | venv-B | L1 | ″ | `… --state B …` | `…/L1/B_<s>.json` | per §5 | verified | V-02, V-03, V-05, V-07 |
+| L1-C-* | C | ade2365 | venv-C | L1 | ″ | `… --state C …` | `…/L1/C_<s>.json` | per §5 | verified | V-02, V-03, V-05, V-07 |
+| L2-A-* | A | 6519cc7 | venv-A | L2 | CEN, CEN-G, MH, CD×5, BEIR×2 | `run_layer2.py --state A --suite <s>` | `…/L2/A_<s>.json` | per §5 | verified | V-02, V-03, V-05, V-07 |
+| L2-B-* | B | d524652 | venv-B | L2 | ″ | `… --state B …` | `…/L2/B_<s>.json` | per §5 | verified (first CEN-G run void: HEAD changed mid-run, repeated, §16) | V-02, V-03, V-05, V-07 |
+| L2-C-* | C | ade2365 | venv-C | L2 | ″ | `… --state C …` | `…/L2/C_<s>.json` | per §5 | verified | V-02, V-03, V-05, V-07 |
+| L2-C0 | C (extras = 0) | ade2365 | venv-C | L2 | CEN | `CANDLEKEEP_RESULT_EXTRA_CHARS=0 run_layer2.py --state C --suite CEN --tag killswitch` | `…/L2/C_CEN_killswitch.json` | 108 | verified: 324/324 byte-identical | V-04 |
+| L2-I1 | A (empty graph) | 6519cc7 | venv-A | L2 info | CEN, MH | `run_layer2.py --state A --graph empty` | `…/L2/info_A_emptygraph_<s>.json` | 108/30 | verified | V-02, V-05 |
+| L2-I2 | B (500 chars) | d524652 | venv-B | L2 info | CEN, MH | `CANDLEKEEP_RESULT_CHARS=500 run_layer2.py --state B` | `…/L2/info_B_500_<s>.json` | 108/30 | verified | V-02, V-05 |
+| J1 | A/B/C | — | — | L3 | CEN-A hybrid | `judge_pack.py --pack J1` | `…/judges/pack_J1.json`, `keymap_J1.json` (SHA-256: `b93e2d6a8d2c409b85c0ffb1986fe5b52f7cef8c40b72d3968e6702c00af8725`), `out_J1_*.json` | 228 | verified | V-06 |
+| J1-R | — | — | — | L3 | 20% re-judge | `judge_pack.py --pack J1R` | `…/judges/pack_J1R.json`, `keymap_J1R.json` (SHA-256: `2493f118148d3b5e52efec58bff3f0659d595ea38991141e6a439fedb95f38ab`), `out_J1R_*.json` | 46 | verified: κ 0.927 | V-06 |
+| J2 (opt.) | B/C | — | — | L3 | CEN-A precise | `judge_pack.py --pack J2` | `…/judges/pack_J2.json`, `keymap_J2.json` (SHA-256: `6d75632acefdc12c4c136af5a2ad3594ad565d82d58e22d268f82af6296df5e2`), `out_J2_*.json` | 152 | verified | V-06 |
+| CI-B | B | d524652 | venv-B | CI | — | `pytest -m "unit or (benchmark and not slow)"` (MPS) | `…/verification/ci_B.txt` | — | done: 240 passed (1 of 1 attempts); comparison vs A failed closed (no baseline) | verify.py C-14 |
+| CI-C | C | ade2365 | venv-C | CI | — | ″ | `…/verification/ci_C.txt` | — | done: 270 passed (attempt 2 of 2; attempt 1 aborted, void); comparison vs A failed closed | verify.py C-14 |
+| CI-A | A | 6519cc7 | venv-A | CI | — | ″ | `…/verification/ci_A.txt`, attempts in `…/verification/previous/` | — | failed: aborted 3 of 3 attempts (MPS race, §16) | verify.py C-14 |
+| CI-info-{A,B,C} | A/B/C | — | venv-A/B/C | CI info | — | `drive.py ci --serialize-models --results-root …/ci_info` | `…/ci_info/verification/ci_<S>.*` | — | done, informational: tests pass; B and C 2 red vs A (precise) | verify.py C-14 (info) |
+| EXP-* | B, C | d524652, ade2365 | venv-B/C | L2 exploratory | CEN, CEN-G, MH, CD×5 | `drive.py l2 … --result-chars 2000/3000` (B), `--extra-chars 1000/1500` (C), `--results-root …/exploratory` | `…/exploratory/L2/*.json`, `…/exploratory/summary_table.md` | 32 runs | done, exploratory (§16) | `verify.py --metrics-of` |
+| V-ALL | — | — | — | verify | all | `verify.py --all --check-doc` | `…/verification/checks.json`, `…/summary.json` | — | verified: V-01 to V-09 pass | V-01 to V-09 |
 
 ## 15. Results (filled from `summary.json` after V-ALL passes)
 
@@ -299,60 +304,133 @@ Status values: `pending` · `running` · `done` · `verified` · `failed` · `vo
 
 | Suite | Path | MRR@5 | nDCG@5 | Hit@1 | Hit@5 | P@5 | Graded nDCG@5 | Adv. leak | Latency p50 (ms) | Ranking identical C=B | Source JSON |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| CEN | hybrid | | | | | | — | | | | `L1/{A,B,C}_CEN.json` |
-| CEN | precise | | | | | | — | | | | ″ |
-| CEN | explore | | | | | | — | | | | ″ |
-| CEN-G | hybrid / precise / explore | — | — | — | — | — | | — | — | | `L1/{A,B,C}_CEN-G.json` |
-| MH | each path | SupportAll@5: | | | | | — | — | | | `L1/{A,B,C}_MH.json` |
-| CD-LEG … CD-ALT, pooled | each path | | | | | | — | | | | `L1/{A,B,C}_CD-*.json` |
-| BEIR-SF / BEIR-NF | hybrid / precise | nDCG@10: | Recall@10: | | | | — | — | | | `L1/{A,B,C}_BEIR-*.json` |
+| CEN | hybrid | 0.534 / 0.534 / 0.534; Δ +0.000 [+0.000, +0.000] | 0.554 / 0.554 / 0.554; Δ +0.000 [+0.000, +0.000] | 0.491 / 0.491 / 0.491; Δ +0.000 [+0.000, +0.000] | 0.602 / 0.602 / 0.602; Δ +0.000 [+0.000, +0.000] | 0.460 / 0.460 / 0.460; Δ +0.000 [+0.000, +0.000] | — | 30 / 30 / 30 (of 30) | 37.3 / 38.2 / 37.0; B/A 1.023 | 108/108 | `L1/{A,B,C}_CEN.json` |
+| CEN | precise | 0.515 / 0.522 / 0.522; Δ +0.007 [-0.002, +0.019] | 0.522 / 0.530 / 0.530; Δ +0.008 [+0.000, +0.021] | 0.685 / 0.685 / 0.685; Δ +0.000 [-0.037, +0.037] | 0.722 / 0.722 / 0.722; Δ +0.000 [-0.037, +0.037] | 0.578 / 0.573 / 0.573; Δ -0.005 [-0.037, +0.026] | — | 10 / 11 / 11 (of 30) | 37.4 / 37.2 / 38.5; B/A 0.996 | 108/108 | ″ |
+| CEN | explore | 0.525 / 0.525 / 0.525; Δ +0.000 [+0.000, +0.000] | 0.538 / 0.538 / 0.538; Δ +0.000 [+0.000, +0.000] | 0.491 / 0.491 / 0.491; Δ +0.000 [+0.000, +0.000] | 0.574 / 0.574 / 0.574; Δ +0.000 [+0.000, +0.000] | 0.496 / 0.496 / 0.496; Δ +0.000 [+0.000, +0.000] | — | 30 / 30 / 30 (of 30) | 23.0 / 23.1 / 23.3; B/A 1.002 | 108/108 | ″ |
+| CEN-G | hybrid | — | — | — | — | — | 0.466 / 0.466 / 0.466; Δ +0.000 [+0.000, +0.000] | — | — | 108/108 | `L1/{A,B,C}_CEN-G.json` |
+| CEN-G | precise | — | — | — | — | — | 0.384 / 0.375 / 0.375; Δ -0.009 [-0.019, -0.001] | — | — | 108/108 | ″ |
+| CEN-G | explore | — | — | — | — | — | 0.368 / 0.368 / 0.368; Δ +0.000 [+0.000, +0.000] | — | — | 108/108 | ″ |
+| MH | hybrid | SupportAll@5: 0.133 / 0.133 / 0.133; Δ +0.000 [+0.000, +0.000] | 0.499 / 0.499 / 0.499; Δ +0.000 [+0.000, +0.000] | 0.567 / 0.567 / 0.567; Δ +0.000 [+0.000, +0.000] | 0.900 / 0.900 / 0.900; Δ +0.000 [+0.000, +0.000] | 0.440 / 0.440 / 0.440; Δ +0.000 [+0.000, +0.000] | — | — | 58.3 / 58.6 / 58.2; B/A 1.004 | 30/30 | `L1/{A,B,C}_MH.json` |
+| MH | precise | SupportAll@5: 0.067 / 0.033 / 0.033; Δ -0.033 [-0.100, +0.000] | 0.425 / 0.409 / 0.409; Δ -0.016 [-0.040, +0.001] | 0.533 / 0.533 / 0.533; Δ +0.000 [+0.000, +0.000] | 0.800 / 0.767 / 0.767; Δ -0.033 [-0.100, +0.000] | 0.463 / 0.463 / 0.463; Δ +0.000 [-0.027, +0.027] | — | — | 66.9 / 65.9 / 66.1; B/A 0.986 | 30/30 | ″ |
+| MH | explore | SupportAll@5: 0.067 / 0.067 / 0.067; Δ +0.000 [+0.000, +0.000] | 0.433 / 0.433 / 0.433; Δ +0.000 [+0.000, +0.000] | 0.567 / 0.567 / 0.567; Δ +0.000 [+0.000, +0.000] | 0.833 / 0.833 / 0.833; Δ +0.000 [+0.000, +0.000] | 0.513 / 0.513 / 0.513; Δ +0.000 [+0.000, +0.000] | — | — | 33.6 / 33.8 / 33.9; B/A 1.006 | 30/30 | ″ |
+| CD-LEG | hybrid | 0.678 / 0.678 / 0.678; Δ +0.000 [+0.000, +0.000] | 0.686 / 0.686 / 0.686; Δ +0.000 [+0.000, +0.000] | 0.664 / 0.664 / 0.664; Δ +0.000 [+0.000, +0.000] | 0.701 / 0.701 / 0.701; Δ +0.000 [+0.000, +0.000] | 0.536 / 0.536 / 0.536; Δ +0.000 [+0.000, +0.000] | — | 30 / 30 / 30 (of 30) | 33.7 / 33.8 / 33.3; B/A 1.003 | 107/107 | `L1/{A,B,C}_CD-LEG.json` |
+| CD-LEG | precise | 0.687 / 0.687 / 0.687; Δ +0.000 [-0.014, +0.014] | 0.688 / 0.688 / 0.688; Δ +0.000 [-0.010, +0.010] | 0.953 / 0.953 / 0.953; Δ +0.000 [-0.028, +0.028] | 0.963 / 0.963 / 0.963; Δ +0.000 [+0.000, +0.000] | 0.553 / 0.563 / 0.563; Δ +0.010 [+0.000, +0.025] | — | 1 / 1 / 1 (of 30) | 34.6 / 34.5 / 35.0; B/A 0.994 | 107/107 | ″ |
+| CD-LEG | explore | 0.671 / 0.671 / 0.671; Δ +0.000 [+0.000, +0.000] | 0.675 / 0.675 / 0.675; Δ +0.000 [+0.000, +0.000] | 0.664 / 0.664 / 0.664; Δ +0.000 [+0.000, +0.000] | 0.682 / 0.682 / 0.682; Δ +0.000 [+0.000, +0.000] | 0.662 / 0.662 / 0.662; Δ +0.000 [+0.000, +0.000] | — | 30 / 30 / 30 (of 30) | 20.5 / 20.3 / 20.5; B/A 0.995 | 107/107 | ″ |
+| CD-MED | hybrid | 0.692 / 0.692 / 0.692; Δ +0.000 [+0.000, +0.000] | 0.696 / 0.696 / 0.696; Δ +0.000 [+0.000, +0.000] | 0.685 / 0.685 / 0.685; Δ +0.000 [+0.000, +0.000] | 0.704 / 0.704 / 0.704; Δ +0.000 [+0.000, +0.000] | 0.412 / 0.412 / 0.412; Δ +0.000 [+0.000, +0.000] | — | 30 / 30 / 30 (of 30) | 33.8 / 34.3 / 34.7; B/A 1.016 | 108/108 | `L1/{A,B,C}_CD-MED.json` |
+| CD-MED | precise | 0.685 / 0.679 / 0.679; Δ -0.006 [-0.022, +0.006] | 0.695 / 0.688 / 0.688; Δ -0.007 [-0.018, +0.001] | 0.926 / 0.898 / 0.898; Δ -0.028 [-0.065, +0.000] | 0.972 / 0.963 / 0.963; Δ -0.009 [-0.028, +0.000] | 0.523 / 0.516 / 0.516; Δ -0.007 [-0.027, +0.005] | — | 2 / 3 / 3 (of 30) | 35.9 / 35.6 / 35.7; B/A 0.992 | 108/108 | ″ |
+| CD-MED | explore | 0.690 / 0.690 / 0.690; Δ +0.000 [+0.000, +0.000] | 0.691 / 0.691 / 0.691; Δ +0.000 [+0.000, +0.000] | 0.685 / 0.685 / 0.685; Δ +0.000 [+0.000, +0.000] | 0.694 / 0.694 / 0.694; Δ +0.000 [+0.000, +0.000] | 0.645 / 0.645 / 0.645; Δ +0.000 [+0.000, +0.000] | — | 30 / 30 / 30 (of 30) | 19.6 / 19.9 / 19.9; B/A 1.012 | 108/108 | ″ |
+| CD-NAR | hybrid | 0.675 / 0.675 / 0.675; Δ +0.000 [+0.000, +0.000] | 0.689 / 0.689 / 0.689; Δ +0.000 [+0.000, +0.000] | 0.648 / 0.648 / 0.648; Δ +0.000 [+0.000, +0.000] | 0.722 / 0.722 / 0.722; Δ +0.000 [+0.000, +0.000] | 0.516 / 0.516 / 0.516; Δ +0.000 [+0.000, +0.000] | — | 30 / 30 / 30 (of 30) | 33.3 / 33.4 / 33.4; B/A 1.005 | 108/108 | `L1/{A,B,C}_CD-NAR.json` |
+| CD-NAR | precise | 0.660 / 0.656 / 0.656; Δ -0.005 [-0.014, +0.000] | 0.663 / 0.660 / 0.660; Δ -0.003 [-0.010, +0.000] | 0.935 / 0.926 / 0.926; Δ -0.009 [-0.028, +0.000] | 0.944 / 0.944 / 0.944; Δ +0.000 [+0.000, +0.000] | 0.577 / 0.576 / 0.576; Δ -0.001 [-0.013, +0.008] | — | 0 / 0 / 0 (of 30) | 34.6 / 33.9 / 33.9; B/A 0.981 | 108/108 | ″ |
+| CD-NAR | explore | 0.663 / 0.663 / 0.663; Δ +0.000 [+0.000, +0.000] | 0.670 / 0.670 / 0.670; Δ +0.000 [+0.000, +0.000] | 0.648 / 0.648 / 0.648; Δ +0.000 [+0.000, +0.000] | 0.685 / 0.685 / 0.685; Δ +0.000 [+0.000, +0.000] | 0.627 / 0.627 / 0.627; Δ +0.000 [+0.000, +0.000] | — | 30 / 30 / 30 (of 30) | 19.9 / 20.1 / 19.9; B/A 1.010 | 108/108 | ″ |
+| CD-API | hybrid | 0.612 / 0.612 / 0.612; Δ +0.000 [+0.000, +0.000] | 0.621 / 0.621 / 0.621; Δ +0.000 [+0.000, +0.000] | 0.583 / 0.583 / 0.583; Δ +0.000 [+0.000, +0.000] | 0.648 / 0.648 / 0.648; Δ +0.000 [+0.000, +0.000] | 0.510 / 0.510 / 0.510; Δ +0.000 [+0.000, +0.000] | — | 30 / 30 / 30 (of 30) | 29.5 / 29.8 / 29.7; B/A 1.011 | 108/108 | `L1/{A,B,C}_CD-API.json` |
+| CD-API | precise | 0.599 / 0.599 / 0.599; Δ +0.000 [-0.014, +0.014] | 0.609 / 0.609 / 0.609; Δ +0.000 [-0.010, +0.010] | 0.852 / 0.852 / 0.852; Δ +0.000 [-0.028, +0.028] | 0.907 / 0.907 / 0.907; Δ +0.000 [+0.000, +0.000] | 0.608 / 0.612 / 0.612; Δ +0.004 [-0.002, +0.011] | — | 0 / 0 / 0 (of 30) | 28.2 / 28.4 / 28.2; B/A 1.007 | 108/108 | ″ |
+| CD-API | explore | 0.596 / 0.596 / 0.596; Δ +0.000 [+0.000, +0.000] | 0.600 / 0.600 / 0.600; Δ +0.000 [+0.000, +0.000] | 0.583 / 0.583 / 0.583; Δ +0.000 [+0.000, +0.000] | 0.611 / 0.611 / 0.611; Δ +0.000 [+0.000, +0.000] | 0.578 / 0.578 / 0.578; Δ +0.000 [+0.000, +0.000] | — | 30 / 30 / 30 (of 30) | 19.5 / 19.9 / 19.8; B/A 1.021 | 108/108 | ″ |
+| CD-ALT | hybrid | 0.568 / 0.568 / 0.568; Δ +0.000 [+0.000, +0.000] | 0.585 / 0.585 / 0.585; Δ +0.000 [+0.000, +0.000] | 0.538 / 0.538 / 0.538; Δ +0.000 [+0.000, +0.000] | 0.625 / 0.625 / 0.625; Δ +0.000 [+0.000, +0.000] | 0.324 / 0.324 / 0.324; Δ +0.000 [+0.000, +0.000] | — | 30 / 30 / 30 (of 30) | 34.8 / 35.2 / 35.2; B/A 1.012 | 104/104 | `L1/{A,B,C}_CD-ALT.json` |
+| CD-ALT | precise | 0.540 / 0.548 / 0.548; Δ +0.008 [-0.011, +0.029] | 0.550 / 0.555 / 0.555; Δ +0.006 [-0.008, +0.021] | 0.683 / 0.692 / 0.692; Δ +0.010 [-0.029, +0.048] | 0.750 / 0.740 / 0.740; Δ -0.010 [-0.029, +0.000] | 0.447 / 0.439 / 0.439; Δ -0.008 [-0.029, +0.003] | — | 12 / 13 / 13 (of 30) | 52.8 / 51.1 / 49.9; B/A 0.969 | 104/104 | ″ |
+| CD-ALT | explore | 0.560 / 0.560 / 0.560; Δ +0.000 [+0.000, +0.000] | 0.574 / 0.574 / 0.574; Δ +0.000 [+0.000, +0.000] | 0.538 / 0.538 / 0.538; Δ +0.000 [+0.000, +0.000] | 0.606 / 0.606 / 0.606; Δ +0.000 [+0.000, +0.000] | 0.527 / 0.527 / 0.527; Δ +0.000 [+0.000, +0.000] | — | 30 / 30 / 30 (of 30) | 19.6 / 19.6 / 19.7; B/A 1.000 | 104/104 | ″ |
+| CD pooled | hybrid | 0.645 / 0.645 / 0.645; Δ +0.000 [+0.000, +0.000] | 0.656 / 0.656 / 0.656; Δ +0.000 [+0.000, +0.000] | 0.624 / 0.624 / 0.624; Δ +0.000 [+0.000, +0.000] | 0.680 / 0.680 / 0.680; Δ +0.000 [+0.000, +0.000] | 0.460 / 0.460 / 0.460; Δ +0.000 [+0.000, +0.000] | — | 150 / 150 / 150 (of 150) | 33.0 / 33.1 / 33.2; B/A 1.002 | 535/535 | `L1/{A,B,C}_CD-*.json` |
+| CD pooled | precise | 0.635 / 0.634 / 0.634; Δ -0.001 [-0.007, +0.006] | 0.642 / 0.641 / 0.641; Δ -0.001 [-0.006, +0.004] | 0.871 / 0.865 / 0.865; Δ -0.006 [-0.019, +0.007] | 0.908 / 0.905 / 0.905; Δ -0.004 [-0.009, +0.000] | 0.542 / 0.542 / 0.542; Δ +0.000 [-0.007, +0.005] | — | 15 / 17 / 17 (of 150) | 35.5 / 35.5 / 35.6; B/A 0.998 | 535/535 | ″ |
+| CD pooled | explore | 0.637 / 0.637 / 0.637; Δ +0.000 [+0.000, +0.000] | 0.643 / 0.643 / 0.643; Δ +0.000 [+0.000, +0.000] | 0.624 / 0.624 / 0.624; Δ +0.000 [+0.000, +0.000] | 0.656 / 0.656 / 0.656; Δ +0.000 [+0.000, +0.000] | 0.608 / 0.608 / 0.608; Δ +0.000 [+0.000, +0.000] | — | 150 / 150 / 150 (of 150) | 19.8 / 20.0 / 20.0; B/A 1.006 | 535/535 | ″ |
+| BEIR-SF | hybrid | nDCG@10: 0.598 / 0.598 / 0.598; Δ +0.000 [+0.000, +0.000] | Recall@10: 0.730 / 0.730 / 0.730; Δ +0.000 [+0.000, +0.000] | 0.487 / 0.487 / 0.487; Δ +0.000 [+0.000, +0.000] | 0.653 / 0.653 / 0.653; Δ +0.000 [+0.000, +0.000] | 0.145 / 0.145 / 0.145; Δ +0.000 [+0.000, +0.000] | — | — | 110.3 / 111.1 / 110.6; B/A 1.008 | 300/300 | `L1/{A,B,C}_BEIR-SF.json` |
+| BEIR-SF | precise | nDCG@10: 0.606 / 0.612 / 0.612; Δ +0.006 [-0.007, +0.021] | Recall@10: 0.689 / 0.693 / 0.693; Δ +0.004 [-0.009, +0.018] | 0.520 / 0.530 / 0.530; Δ +0.010 [-0.017, +0.033] | 0.670 / 0.673 / 0.673; Δ +0.003 [-0.017, +0.023] | 0.151 / 0.151 / 0.151; Δ +0.000 [-0.004, +0.005] | — | — | 166.0 / 164.3 / 164.8; B/A 0.990 | 300/300 | ″ |
+| BEIR-NF | hybrid | nDCG@10: 0.303 / 0.303 / 0.303; Δ +0.000 [+0.000, +0.000] | Recall@10: 0.147 / 0.147 / 0.147; Δ +0.000 [+0.000, +0.000] | 0.427 / 0.427 / 0.427; Δ +0.000 [+0.000, +0.000] | 0.628 / 0.628 / 0.628; Δ +0.000 [+0.000, +0.000] | 0.313 / 0.313 / 0.313; Δ +0.000 [+0.000, +0.000] | — | — | 83.9 / 83.5 / 83.8; B/A 0.995 | 323/323 | `L1/{A,B,C}_BEIR-NF.json` |
+| BEIR-NF | precise | nDCG@10: 0.291 / 0.293 / 0.293; Δ +0.002 [-0.002, +0.006] | Recall@10: 0.132 / 0.130 / 0.130; Δ -0.002 [-0.006, +0.001] | 0.464 / 0.467 / 0.467; Δ +0.003 [-0.019, +0.025] | 0.601 / 0.604 / 0.604; Δ +0.003 [-0.019, +0.022] | 0.332 / 0.338 / 0.338; Δ +0.005 [-0.003, +0.013] | — | — | 121.2 / 120.5 / 120.7; B/A 0.994 | 323/323 | ″ |
 
 ### 15.2 Layer 2 — agent-visible (values: A / B / C; McNemar b, c, p for C vs B)
 
 | Suite | Path | Primary visibility (GPV / SupportVisible / GoldText) | GPC | GoldShare | Chars/q mean (p95) | Adv. chars/q | Latency p50 | Multi-match freq. | Source JSON |
 |---|---|---|---|---|---|---|---|---|---|
-| CEN-G | each path | | | | | | | | `L2/{A,B,C}_CEN-G.json` |
-| MH | each path | | — | | | — | | | `L2/{A,B,C}_MH.json` |
-| CEN | each path | | — | | | | | | `L2/{A,B,C}_CEN.json` |
-| CD-* (each), pooled | each path | | — | | | | | | `L2/{A,B,C}_CD-*.json` |
-| BEIR-SF / BEIR-NF | hybrid / precise | | — | | | — | | | `L2/{A,B,C}_BEIR-*.json` |
-| Informational | A empty graph; B at 500 chars | | | | | | | | `L2/info_*.json` |
+| CEN-G | hybrid | GPV 0.836 / 0.791 / 0.970 (n=67); b=0, c=12, p=0.0005 | 0.284 / 0.428 / 0.684; Δ(C−B) +0.256 [+0.189, +0.326] | 0.642 / 0.649 / 0.657 | 2048 (2829) / 3031 (4588) / 4733 (6723); C/B 1.561 | 2658 / 3763 / 4908; C/B 1.304, C−B +1146 | 43.5 / 42.5 / 43.2; C−B +0.7 | 0.600 (241/402) | `L2/{A,B,C}_CEN-G.json` |
+| CEN-G | precise | GPV 0.731 / 0.657 / 0.881 (n=67); b=0, c=15, p=0.0001 | 0.228 / 0.307 / 0.633; Δ(C−B) +0.326 [+0.256, +0.400] | 0.564 / 0.575 / 0.626 | 1242 (2826) / 1913 (4417) / 3416 (6624); C/B 1.786 | 570 / 955 / 1424; C/B 1.490, C−B +469 | 42.8 / 43.1 / 44.0; C−B +0.9 | 0.700 (168/240) | ″ |
+| CEN-G | explore | GPV 0.731 / 0.776 / 0.851 (n=67); b=0, c=5, p=0.0625 | 0.239 / 0.424 / 0.493; Δ(C−B) +0.068 [+0.031, +0.112] | 0.689 / 0.686 / 0.683 | 1970 (2816) / 2760 (3818) / 3321 (4742); C/B 1.203 | 2340 / 3075 / 3318; C/B 1.079, C−B +243 | 27.6 / 27.4 / 27.8; C−B +0.4 | 0.248 (96/387) | ″ |
+| MH | hybrid | SupportVisible 0.067 / 0.100 / 0.133 (n=30); b=0, c=1, p=1.0000 | — | 0.442 / 0.464 / 0.506 | 2773 (2833) / 4226 (5239) / 5770 (7003); C/B 1.365 | — | 62.4 / 63.8 / 63.1; C−B -0.7 | 0.540 (81/150) | `L2/{A,B,C}_MH.json` |
+| MH | precise | SupportVisible 0.033 / 0.033 / 0.033 (n=30); b=0, c=0, p=1.0000 | — | 0.463 / 0.465 / 0.475 | 2539 (2839) / 3978 (5040) / 5900 (6955); C/B 1.483 | — | 70.9 / 70.6 / 69.6; C−B -0.9 | 0.596 (81/136) | ″ |
+| MH | explore | SupportVisible 0.033 / 0.067 / 0.067 (n=30); b=0, c=0, p=1.0000 | — | 0.519 / 0.528 / 0.549 | 2054 (2825) / 3104 (4337) / 3521 (5047); C/B 1.134 | — | 37.9 / 37.6 / 37.6; C−B +0.0 | 0.252 (28/111) | ″ |
+| CEN | hybrid | GoldText 7.86 / 44.05 / 78.90; Δ(C−B) +34.85 [+28.97, +40.77] | — | 0.638 / 0.651 / 0.661 | 2050 (2827) / 2998 (4591) / 4712 (6751); C/B 1.571 | 2645 / 3750 / 4882; C/B 1.302, C−B +1131 | 41.2 / 42.1 / 41.8; C−B -0.3 | 0.623 (250/401) | `L2/{A,B,C}_CEN.json` |
+| CEN | precise | GoldText 6.28 / 32.82 / 68.18; Δ(C−B) +35.36 [+29.19, +41.51] | — | 0.574 / 0.588 / 0.637 | 1292 (2829) / 1925 (4533) / 3469 (6810); C/B 1.802 | 574 / 787 / 1340; C/B 1.702, C−B +553 | 42.0 / 42.2 / 41.0; C−B -1.2 | 0.715 (176/246) | ″ |
+| CEN | explore | GoldText 10.24 / 49.13 / 64.29; Δ(C−B) +15.17 [+10.76, +19.96] | — | 0.686 / 0.685 / 0.683 | 1910 (2814) / 2739 (4192) / 3257 (4519); C/B 1.189 | 2213 / 2986 / 3305; C/B 1.107, C−B +319 | 26.9 / 26.8 / 27.0; C−B +0.2 | 0.275 (103/374) | ″ |
+| CD-LEG | hybrid | GoldText 8.23 / 33.10 / 90.74; Δ(C−B) +57.64 [+53.25, +61.42] | — | 0.745 / 0.759 / 0.839 | 1473 (2865) / 2465 (5247) / 4578 (7192); C/B 1.858 | 2494 / 4123 / 6028; C/B 1.462, C−B +1905 | 37.7 / 37.2 / 37.6; C−B +0.4 | 0.670 (185/276) | `L2/{A,B,C}_CD-LEG.json` |
+| CD-LEG | precise | GoldText 7.81 / 29.87 / 86.31; Δ(C−B) +56.44 [+51.56, +60.75] | — | 0.392 / 0.412 / 0.600 | 1467 (2873) / 2429 (5229) / 4076 (7418); C/B 1.678 | 36 / 52 / 124; C/B 2.374, C−B +72 | 39.2 / 38.5 / 38.7; C−B +0.2 | 0.772 (207/268) | ″ |
+| CD-LEG | explore | GoldText 13.38 / 49.17 / 93.92; Δ(C−B) +44.75 [+39.22, +50.12] | — | 0.920 / 0.919 / 0.916 | 1463 (2303) / 2370 (4172) / 3574 (4989); C/B 1.508 | 2131 / 3456 / 4158; C/B 1.203, C−B +701 | 23.9 / 24.0 / 24.1; C−B +0.1 | 0.485 (133/274) | ″ |
+| CD-MED | hybrid | GoldText 8.03 / 29.09 / 84.97; Δ(C−B) +55.88 [+52.18, +59.28] | — | 0.571 / 0.594 / 0.755 | 1709 (2880) / 2595 (4682) / 4584 (6768); C/B 1.767 | 2565 / 3628 / 5049; C/B 1.392, C−B +1421 | 40.2 / 39.4 / 39.0; C−B -0.4 | 0.597 (197/330) | `L2/{A,B,C}_CD-MED.json` |
+| CD-MED | precise | GoldText 8.04 / 28.10 / 87.33; Δ(C−B) +59.23 [+55.79, +62.26] | — | 0.365 / 0.371 / 0.607 | 1507 (2887) / 2419 (4932) / 4099 (7153); C/B 1.694 | 73 / 158 / 366; C/B 2.312, C−B +208 | 40.3 / 40.1 / 39.7; C−B -0.4 | 0.737 (207/281) | ″ |
+| CD-MED | explore | GoldText 11.96 / 44.88 / 86.95; Δ(C−B) +42.06 [+36.69, +47.38] | — | 0.893 / 0.899 / 0.908 | 1489 (2826) / 2183 (3821) / 3191 (4288); C/B 1.462 | 2286 / 3060 / 3338; C/B 1.091, C−B +278 | 24.0 / 23.6 / 23.8; C−B +0.2 | 0.449 (129/287) | ″ |
+| CD-NAR | hybrid | GoldText 8.42 / 31.13 / 88.62; Δ(C−B) +57.49 [+52.88, +61.54] | — | 0.713 / 0.713 / 0.799 | 1599 (2860) / 2505 (4782) / 4391 (6839); C/B 1.753 | 2587 / 3735 / 4730; C/B 1.266, C−B +995 | 37.3 / 37.7 / 37.9; C−B +0.2 | 0.589 (182/309) | `L2/{A,B,C}_CD-NAR.json` |
+| CD-NAR | precise | GoldText 6.92 / 26.71 / 82.18; Δ(C−B) +55.47 [+50.49, +59.91] | — | 0.419 / 0.426 / 0.626 | 1272 (2855) / 2045 (4873) / 3631 (7055); C/B 1.775 | 17 / 17 / 17; C/B 1.000, C−B +0 | 38.4 / 37.6 / 38.4; C−B +0.8 | 0.807 (192/238) | ″ |
+| CD-NAR | explore | GoldText 10.37 / 39.58 / 79.69; Δ(C−B) +40.12 [+34.86, +45.42] | — | 0.867 / 0.867 / 0.876 | 1452 (2852) / 2186 (4254) / 3210 (4398); C/B 1.469 | 2322 / 3283 / 3524; C/B 1.073, C−B +241 | 23.7 / 23.8 / 23.9; C−B +0.1 | 0.425 (119/280) | ″ |
+| CD-API | hybrid | GoldText 2.38 / 26.32 / 53.04; Δ(C−B) +26.72 [+23.00, +30.45] | — | 0.711 / 0.737 / 0.768 | 1325 (2815) / 1828 (3663) / 3495 (5190); C/B 1.912 | 2185 / 2643 / 3631; C/B 1.374, C−B +988 | 33.2 / 33.2 / 33.2; C−B +0.0 | 0.677 (178/263) | `L2/{A,B,C}_CD-API.json` |
+| CD-API | precise | GoldText 2.23 / 25.83 / 50.65; Δ(C−B) +24.82 [+21.49, +28.04] | — | 0.461 / 0.500 / 0.642 | 1096 (2822) / 1608 (3806) / 3169 (5896); C/B 1.970 | 17 / 17 / 17; C/B 1.000, C−B +0 | 31.7 / 31.2 / 31.5; C−B +0.3 | 0.751 (157/209) | ″ |
+| CD-API | explore | GoldText 4.51 / 26.29 / 36.23; Δ(C−B) +9.94 [+6.64, +13.71] | — | 0.802 / 0.810 / 0.812 | 1345 (2704) / 1594 (2794) / 1948 (2984); C/B 1.222 | 2058 / 2292 / 2425; C/B 1.058, C−B +132 | 23.0 / 23.2 / 23.3; C−B +0.2 | 0.434 (115/265) | ″ |
+| CD-ALT | hybrid | GoldText 9.23 / 26.64 / 68.18; Δ(C−B) +41.54 [+35.14, +47.76] | — | 0.455 / 0.498 / 0.612 | 2156 (2852) / 2730 (4070) / 4210 (6075); C/B 1.542 | 2795 / 3601 / 4269; C/B 1.186, C−B +669 | 39.9 / 39.0 / 39.7; C−B +0.8 | 0.459 (186/405) | `L2/{A,B,C}_CD-ALT.json` |
+| CD-ALT | precise | GoldText 9.51 / 28.36 / 69.88; Δ(C−B) +41.51 [+34.92, +47.89] | — | 0.401 / 0.444 / 0.571 | 1755 (2856) / 2229 (4194) / 3643 (6377); C/B 1.635 | 798 / 1010 / 1516; C/B 1.502, C−B +506 | 57.1 / 55.6 / 54.9; C−B -0.6 | 0.668 (213/319) | ″ |
+| CD-ALT | explore | GoldText 16.15 / 38.19 / 50.24; Δ(C−B) +12.05 [+7.92, +16.65] | — | 0.741 / 0.736 / 0.737 | 2123 (2839) / 2515 (3924) / 2826 (3927); C/B 1.124 | 2444 / 3044 / 3204; C/B 1.053, C−B +160 | 23.6 / 23.3 / 23.6; C−B +0.3 | 0.232 (92/397) | ″ |
+| CD pooled | hybrid | GoldText 7.24 / 29.27 / 77.17; Δ(C−B) +47.89 [+45.58, +50.25] | — | 0.641 / 0.662 / 0.756 | 1649 (2863) / 2422 (4691) / 4251 (6723); C/B 1.755 | 2525 / 3546 / 4742; C/B 1.337, C−B +1195 | 37.2 / 37.2 / 37.2; C−B +0.0 | 0.586 (928/1583) | `L2/{A,B,C}_CD-*.json` |
+| CD pooled | precise | GoldText 6.87 / 27.76 / 75.30; Δ(C−B) +47.54 [+45.13, +49.91] | — | 0.408 / 0.430 / 0.610 | 1417 (2871) / 2145 (4885) / 3724 (7091); C/B 1.736 | 188 / 251 / 408; C/B 1.627, C−B +157 | 39.9 / 39.9 / 39.6; C−B -0.4 | 0.742 (976/1315) | ″ |
+| CD pooled | explore | GoldText 11.22 / 39.61 / 69.54; Δ(C−B) +29.93 [+27.28, +32.61] | — | 0.846 / 0.847 / 0.851 | 1570 (2836) / 2167 (3943) / 2950 (4289); C/B 1.361 | 2248 / 3027 / 3330; C/B 1.100, C−B +303 | 23.7 / 23.6 / 23.7; C−B +0.1 | 0.391 (588/1503) | ″ |
+| BEIR-SF | hybrid | GoldText 7.56 / 18.62 / 35.89; Δ(C−B) +17.28 [+14.91, +19.85] | — | 0.112 / 0.112 / 0.151 | 4491 (5517) / 7125 (9714) / 8699 (11263); C/B 1.221 | — | 114.7 / 115.3 / 115.1; C−B -0.2 | 0.674 (1647/2445) | `L2/{A,B,C}_BEIR-SF.json` |
+| BEIR-SF | precise | GoldText 7.39 / 18.00 / 36.53; Δ(C−B) +18.53 [+15.92, +21.31] | — | 0.085 / 0.080 / 0.116 | 5354 (5527) / 8856 (10198) / 10443 (11782); C/B 1.179 | — | 171.4 / 168.1 / 168.9; C−B +0.8 | 0.744 (2159/2903) | ″ |
+| BEIR-NF | hybrid | GoldText 20.39 / 48.73 / 68.79; Δ(C−B) +20.06 [+17.35, +22.85] | — | 0.283 / 0.286 / 0.299 | 4169 (5519) / 6499 (9585) / 8107 (11154); C/B 1.248 | — | 89.5 / 89.7 / 89.0; C−B -0.7 | 0.697 (1706/2448) | `L2/{A,B,C}_BEIR-NF.json` |
+| BEIR-NF | precise | GoldText 19.52 / 47.62 / 67.38; Δ(C−B) +19.76 [+17.16, +22.43] | — | 0.342 / 0.342 / 0.356 | 3799 (5529) / 6123 (10045) / 7430 (11659); C/B 1.213 | — | 127.2 / 125.7 / 125.7; C−B +0.0 | 0.778 (1708/2194) | ″ |
+| Informational | A empty graph, CEN, hybrid | GoldText 7.86 (A: 7.86); Δ vs A +0.00 [+0.00, +0.00] | — | 0.638 | 2050 (2827) | 2645 | 41.6 | — | `L2/info_*.json` |
+| Informational | A empty graph, CEN, precise | GoldText 6.28 (A: 6.28); Δ vs A +0.00 [+0.00, +0.00] | — | 0.574 | 1292 (2829) | 574 | 42.6 | — | ″ |
+| Informational | A empty graph, CEN, explore | GoldText 10.24 (A: 10.24); Δ vs A +0.00 [+0.00, +0.00] | — | 0.686 | 1910 (2814) | 2213 | 27.0 | — | ″ |
+| Informational | A empty graph, MH, hybrid | SupportVisible 0.067 (A: 0.067); vs A: b=0, c=0, p=1.0000 | — | 0.442 | 2773 (2833) | — | 62.3 | — | ″ |
+| Informational | A empty graph, MH, precise | SupportVisible 0.033 (A: 0.033); vs A: b=0, c=0, p=1.0000 | — | 0.463 | 2539 (2839) | — | 69.7 | — | ″ |
+| Informational | A empty graph, MH, explore | SupportVisible 0.033 (A: 0.033); vs A: b=0, c=0, p=1.0000 | — | 0.519 | 2054 (2825) | — | 36.9 | — | ″ |
+| Informational | B at 500 chars, CEN, hybrid | GoldText 19.01 (A: 7.86, B: 44.05); Δ vs A +11.15 [+9.05, +13.40] | — | 0.646 | 1907 (2816) | 2459 | 42.4 | — | ″ |
+| Informational | B at 500 chars, CEN, precise | GoldText 14.15 (A: 6.28, B: 32.82); Δ vs A +7.87 [+6.15, +9.69] | — | 0.583 | 1199 (2810) | 506 | 42.1 | — | ″ |
+| Informational | B at 500 chars, CEN, explore | GoldText 22.62 (A: 10.24, B: 49.13); Δ vs A +12.37 [+10.12, +14.67] | — | 0.687 | 1789 (2731) | 2051 | 27.1 | — | ″ |
+| Informational | B at 500 chars, MH, hybrid | SupportVisible 0.100 (A: 0.067, B: 0.100); vs A: b=0, c=1, p=1.0000 | — | 0.448 | 2632 (2826) | — | 61.4 | — | ″ |
+| Informational | B at 500 chars, MH, precise | SupportVisible 0.033 (A: 0.033, B: 0.033); vs A: b=0, c=0, p=1.0000 | — | 0.467 | 2461 (2834) | — | 70.6 | — | ″ |
+| Informational | B at 500 chars, MH, explore | SupportVisible 0.067 (A: 0.033, B: 0.067); vs A: b=0, c=1, p=1.0000 | — | 0.519 | 1971 (2825) | — | 37.2 | — | ″ |
 
 ### 15.3 Layer 3 — judges
 
 | Pack | State | full | partial | none | Net vs B | B-full → not-full | κ (double-judged) | Source JSON |
 |---|---|---|---|---|---|---|---|---|
-| J1 (hybrid) | A | | | | | | | `judges/out_J1_*.json` |
-| J1 (hybrid) | B | | | | — | — | | ″ |
-| J1 (hybrid) | C | | | | | | | ″ |
-| J2 (precise, opt.) | B / C | | | | | | | `judges/out_J2_*.json` |
+| J1 (hybrid) | A | 1 | 46 | 29 | -10 | 10 | pack 0.927 (n=46, agreement 0.957); this state 0.894 (n=17) | `judges/out_J1_*.json` |
+| J1 (hybrid) | B | 11 | 46 | 19 | — | — | pack 0.927 (n=46, agreement 0.957); this state 0.903 (n=18) | ″ |
+| J1 (hybrid) | C | 20 | 39 | 17 | +9 | 1 | pack 0.927 (n=46, agreement 0.957); this state 1.000 (n=11) | ″ |
+| J2 (precise, opt.) | B / C | 8 / 20 | 42 / 36 | 26 / 20 | +12 | 1 | not double-judged | `judges/out_J2_*.json` |
 
 ### 15.4 Criteria outcome
 
 | ID | Result (value, CI or p) | Pass / Fail | Evidence (run IDs → JSON) | Verified (V-ids) |
 |---|---|---|---|---|
-| C-01 | | | L1-A-CEN, L1-B-CEN | |
-| C-02 | | | L1-A/B-CD-* | |
-| C-03 | | | L1-A/B-BEIR-* | |
-| C-04 | | | L1-A/B-CEN-G | |
-| C-05 | | | L1-A/B-CEN, CD-* | |
-| C-06 | | | L1-A/B-CEN | |
-| C-07 | | | L1-B/C-* | |
-| C-08 | | | L2-B/C-CEN-G | |
-| C-09 | | | L2-B/C-MH | |
-| C-10 | | | L2-B/C-* | |
-| C-11 | | | J1, J1-R | |
-| C-12 | | | L2-B/C-* | |
-| C-13 | | | L2-B/C-* | |
-| C-14 | | | CI-B, CI-C | |
-| C-15 | | | L2-C0, L2-B-CEN | |
+| C-01 | MRR@5 Δ(B−A): hybrid +0.000 [+0.000, +0.000], precise +0.007 [-0.002, +0.019], explore +0.000 [+0.000, +0.000]; nDCG@5 Δ(B−A): hybrid +0.000 [+0.000, +0.000], precise +0.008 [+0.000, +0.021], explore +0.000 [+0.000, +0.000]; pass if lower bound > -0.02 | Pass | L1-A-CEN, L1-B-CEN | V-01 pass, V-02 pass, V-03 pass, V-05 pass |
+| C-02 | pooled MRR@5 Δ(B−A): hybrid +0.000 [+0.000, +0.000], precise -0.001 [-0.007, +0.006], explore +0.000 [+0.000, +0.000]; largest per-suite drop -0.006 (CD-MED precise), limit -0.03 | Pass | L1-A/B-CD-* | V-02 pass, V-03 pass, V-05 pass |
+| C-03 | nDCG@10 Δ(B−A): BEIR-SF hybrid +0.000 [+0.000, +0.000], BEIR-SF precise +0.006 [-0.007, +0.021], BEIR-NF hybrid +0.000 [+0.000, +0.000], BEIR-NF precise +0.002 [-0.002, +0.006] | Pass | L1-A/B-BEIR-* | V-02 pass, V-03 pass, V-05 pass |
+| C-04 | graded nDCG@5 Δ(B−A): hybrid +0.000 [+0.000, +0.000], precise -0.009 [-0.019, -0.001], explore +0.000 [+0.000, +0.000] | Pass | L1-A/B-CEN-G | V-02 pass, V-03 pass, V-05 pass |
+| C-05 | B ≤ A + 2 in every CEN/CD suite and path; largest B − A +1 (CEN precise) | Pass | L1-A/B-CEN, CD-* | V-02 pass, V-03 pass, V-05 pass |
+| C-06 | L1 p50 B/A: hybrid 1.023, precise 0.996, explore 1.002; limit 1.10 | Pass | L1-A/B-CEN | V-01 pass, V-02 pass, V-03 pass, V-05 pass |
+| C-07 | 0 differing of 4212 query-path pairs compared | Pass | L1-B/C-* | V-02 pass, V-03 pass, V-05 pass |
+| C-08 | GPV CEN-G hybrid: b=0, c=12, net +12, n=67, p=0.0005, Holm p=0.0015; superiority claimed | Pass | L2-B/C-CEN-G | V-02 pass, V-03 pass, V-05 pass, V-07 pass |
+| C-09 | SupportVisible MH hybrid: b=0, c=1, net +1, n=30, p=1.0000, Holm p=1.0000; superiority not claimed | Pass | L2-B/C-MH | V-02 pass, V-03 pass, V-05 pass, V-07 pass |
+| C-10 | no suite/path fails; largest binary net loss b−c +0 (MH precise); smallest GoldText upper bound +13.71 (CD-API explore) | Pass | L2-B/C-* | V-02 pass, V-03 pass, V-05 pass, V-07 pass |
+| C-11 | net C−B full +9; B-full→C-not-full 1; b=1, c=10, p=0.0117, Holm p=0.0234; κ=0.927 (n=46); superiority claimed | Pass | J1, J1-R | V-06 pass |
+| C-12 | failing: CEN hybrid C/B 1.571; CEN precise C/B 1.802; CEN precise adversarial C/B 1.702, C−B 552.5; CEN-G hybrid C/B 1.561; CEN-G precise C/B 1.786; CD-LEG hybrid C/B 1.858; CD-LEG precise C/B 1.678; CD-LEG explore C/B 1.508; CD-MED hybrid C/B 1.767; CD-MED precise C/B 1.694; CD-MED precise adversarial C/B 2.312, C−B 207.8; CD-NAR hybrid C/B 1.753; CD-NAR precise C/B 1.775; CD-API hybrid C/B 1.912; CD-API precise C/B 1.970; CD-ALT hybrid C/B 1.542; CD-ALT precise C/B 1.635; CD-ALT precise adversarial C/B 1.502, C−B 506.4 | Fail | L2-B/C-* | V-02 pass, V-03 pass, V-05 pass |
+| C-13 | abs(C−B) ≤ max(5% of B, 15 ms) everywhere; closest -1.2 ms of ±15.0 (CEN precise) | Pass | L2-B/C-* | V-02 pass, V-03 pass, V-05 pass |
+| C-14 | pytest -m "unit or (benchmark and not slow)" on MPS: B pass, C pass; compare_benchmarks.py rule vs A's MPS run (hybrid, precise, explore): B fail (not compared: baseline fail), C fail (not compared: baseline fail) (A's baseline run: fail, exit -6); informational run, model calls serialised (not a decision): tests A pass, B pass, C pass; vs A: B 2 red (precise precision 0.874→0.823; precise recall 0.768→0.732), C 2 red (precise precision 0.874→0.823; precise recall 0.768→0.732); vs archive (information): B 1 red, C 1 red | Fail | CI-B, CI-C | — |
+| C-15 | 324 of 324 outputs byte-identical | Pass | L2-C0, L2-B-CEN | V-02 pass, V-04 pass |
+
+Decisions: RQ1 Fail (C-01 to C-06 and C-14 for B; criteria Fail); RQ2 Fail (C-07 to C-15; criteria Fail).
 
 ### 15.5 RQ3 — generality
 
 | Suite | Multi-match frequency (C) | Δ primary visibility (C − B) | Notes |
 |---|---|---|---|
-| (one row per suite) | | | |
-| **Spearman ρ (p)** | | | |
+| CEN | 0.623 | +34.85 | hybrid; GoldText |
+| CEN-G | 0.600 | +0.179 | hybrid; GPV; GoldText Δ +34.21 |
+| MH | 0.540 | +0.033 | hybrid; SupportVisible; GoldText Δ +29.30 |
+| CD-LEG | 0.670 | +57.64 | hybrid; GoldText |
+| CD-MED | 0.597 | +55.88 | hybrid; GoldText |
+| CD-NAR | 0.589 | +57.49 | hybrid; GoldText |
+| CD-API | 0.677 | +26.72 | hybrid; GoldText |
+| CD-ALT | 0.459 | +41.54 | hybrid; GoldText |
+| BEIR-SF | 0.674 | +17.28 | hybrid; GoldText |
+| BEIR-NF | 0.697 | +20.06 | hybrid; GoldText |
+| **Spearman ρ (p)** | -0.115 (p=0.7514, n=10) | | descriptive only; registered metrics |
+| Spearman ρ (p), GoldText for every suite | -0.515 (p=0.1276, n=10) | | secondary, not pre-registered: one unit across suites |
 
 ## 16. Deviations log
 
@@ -376,6 +454,19 @@ Status values: `pending` · `running` · `done` · `verified` · `failed` · `vo
 | 2026-10-18 (pre-run) | §8 | CEN-014 and CEN-038 have empty reference answers in the fixture and are excluded from judging. CEN-A therefore has 76 queries: J1 = 228 items, J1-R ≈ 46, J2 = 152. Re-judge parts may hold fewer than 25 items. | No ground truth to judge against. | C-11 n = 76. |
 | 2026-10-18 (pre-run) | §6 / §7 / §9 | Conventions adopted from the harness and verifier (both agree, cross-checked with 0 mismatches):<br>• means over empty sets are null;<br>• BEIR queries have category `beir`;<br>• the BEIR ideal DCG is cut at 10;<br>• graded nDCG@5 includes CEN-G adversarial queries;<br>• an empty normalised text has no shingles;<br>• a tool error is stored as `raw_output = ""`;<br>• C-07, C-10, C-12 and C-13 are evaluated on all three paths of every suite, including BEIR explore;<br>• RQ3 uses the hybrid path;<br>• κ is computed over the whole re-judged subset. | Points the data contract left open. | None. |
 | 2026-10-18 (pre-run) | §7.2 | Finding: explore's graph expansion never adds documents in any state. It fetches chunks by `collection.get(ids=<source paths>)`, but chunk ids are hashes. The A-with-empty-graph informational row is therefore expected to equal A. | Found by the harness review. A product issue, not part of this evaluation. | None. |
+| 2026-10-18 (run) | §11 / §13 | The first Layer 2 run of B on CEN-G was invalidated by the harness and moved to `invalid/L2/B_CEN-G.20261018T180712Z.json`, because commit `5317ba1` (documentation only: the key-map hashes) changed HEAD while it ran. `drive.py all` was restarted and repeated that run against the same Chroma process. All other outputs were kept, since `src/` and `pyproject.toml` did not change. No commits are made while a run is in progress. | The harness compares HEAD before and after every run. | None: the repeated run uses the same code, ingest and Chroma process. |
+| 2026-10-18 (run) | §8 | Judges read a plain-text rendering of their pack part, `judges/pack_<P>_part<k>.txt` (`scripts/eval_agent_view/render_pack.py`), instead of the JSON part. The rendering writes each field's line breaks out between `<<<…>>>` markers; `render_pack.py --check` parses it back and requires every item to equal the JSON part's, field for field (17/17 parts identical). Each judge returns `{id, verdict, evidence[], note}` as structured output, and `out_<P>_part<k>.json` is extracted from the workflow journal without editing. | The judges' file viewer truncates lines over 2,000 characters, and a JSON part keeps each tool output on a single line of up to ~8,000. | None: same items, same content. |
+| 2026-10-18 (run) | §10 C-14 | The first CI runs of A and C aborted after 4.7 s, in the first selected test (`tests/test_arcane_recall.py`), with a Metal assertion (SIGABRT, exit −6). In both, the Rosetta Seal background rebuild (`token_normalisation._rebuild_worker`) and the test's query embedded on MPS at the same time; the code is the same in A, B and C. B's first run completed (240 passed). Rule, fixed before any repeat: a CI run that aborts this way has no test outcome and is repeated, up to 3 attempts per state. A run whose tests complete and fail counts as a failure and is not repeated. Every attempt is kept under `verification/previous/`. B's comparison against A is redone with `drive.py ci --state B --compare-only` once A has router results. | The abort is a pre-existing race between two embedder users on MPS, not a test result. | C-14 is decided on completed runs; the number of aborted attempts is reported per state. |
+| 2026-10-18 (run) | §10 C-14 | Outcome of the repeat rule: A aborted 3 of 3 attempts, B completed 1 of 1, and C aborted once, then completed (270 passed). A therefore has no router results, and the decisive comparison against A's run fails closed for B and C. **C-14 is reported as failed.** An informational CI run, not part of any decision, is added for A, B and C: the same command plus `-p mps_serial` (`scripts/eval_agent_view/pytest_plugins/mps_serial.py`), which makes every `SentenceTransformer.encode` and `CrossEncoder.predict` call hold one lock. It is written under `ci_info/verification/` (`drive.py ci --serialize-models --results-root tests/results/agent_view_eval/ci_info`). | A cannot complete the pre-registered command on MPS. The informational run shows whether the code changes move the project's own benchmarks once the race is removed. | C-14 fails as pre-registered; RQ1 and RQ2 cannot pass. The informational run is reported next to it, labelled as such. |
+| 2026-10-18 (run) | §7.2 | Exploratory Layer 2 runs, added after the results were known and not part of any decision. B with `CANDLEKEEP_RESULT_CHARS` 2000 and 3000 (a length-matched control for C's larger output) and C with `CANDLEKEEP_RESULT_EXTRA_CHARS` 1000 and 1500 (budgets that might satisfy C-12), on CEN, CEN-G, MH and the five CD suites. They use the same code, ingests and Chroma processes, and are written to a separate results root nested at `exploratory/` (holding copies of the ingest records), which `verify.py` does not read. Their requests also appear in the corpora's Chroma logs after 19:28Z. | C-12 failed, and C's judged gain cannot be separated from its extra output without a length-matched control. | None. They inform a follow-up state C′, which would have to re-enter the protocol. |
+| 2026-10-18 (run) | §8 | The J1 part 6 judge read its file, then produced no output for 30 minutes and was stopped. The workflow was resumed: the 16 finished judges were replayed from cache, and a second agent with the identical prompt judged part 6. Its verdicts are the only part 6 verdicts that exist. `journal_extract.json` lists the stopped agent as agent 1 of 2 with no result. | The agent stalled without returning. | None: no verdicts were discarded or chosen between. |
+| 2026-10-18 (run) | §8 / §9 | For the 46 double-judged items, the first (J1) verdict counts toward C-11; the J1-R verdict is used only for κ. Using J1-R where available would turn CEN-004's B verdict from full to partial (b = 0). | The protocol did not say which verdict counts. | None; the alternative only strengthens C-11. |
+| 2026-10-18 (run) | §11 | Layer 3 judges (18:12–18:27Z) and the J1 part 6 re-run (18:43–18:52Z) ran while protocol runs were in progress (L2 for CD-MED through BEIR-SF, and the CI repeats). Judges call a remote model and read one file each, so local load is small. | Judging started once the CEN outputs existed. | Latency (C-06, C-13) could be slightly affected for those suites. C-06 uses CEN, which had finished; C-13 passes with a margin of ≥ 13.8 ms. |
+| 2026-10-18 (run) | §13 / `verify.py` | After the results were known, `verify.py` was changed in reporting only:<br>(1) A's CI baseline must itself complete (exit 0 and a pytest summary line), so an aborted baseline fails C-14 closed, as this log already stated, instead of reporting it as missing;<br>(2) a comparison that never ran prints "not compared" instead of "(0 red)";<br>(3) the informational CI run under `ci_info/` is compared with the same rule and printed next to C-14.<br>No metric or other criterion changes; `summary.json` was diffed before and after. | The verifier reported C-14 as missing and omitted the informational run, which contradicted the previous entry. | C-14 reads "fail". The RQ1 and RQ2 outcomes do not change: neither could pass either way. |
+| 2026-10-18 (run) | §10 C-14 (correction) | The pre-run C-14 entry says `compare_benchmarks.py` marks a precision drop over 1 point. It marks a drop over 1 point in **precision or recall**, and the harness and verifier apply that rule. | The wording was incomplete. | None. |
+| 2026-10-18 (run) | §5 / §7.1 (correction) | The pre-run CEN-G entry says the labels align with the annotation. They mostly do: commit `69172ef` (2026-03-17, after the labels were made) added setext-header splitting, so 40 of 709 graded keys (16 of grade ≥ 2, in 7 queries) now point at a neighbouring chunk's text. This is the same for A, B and C. | Found by the RQ1 audit. | Noise for C-04 and C-08, not bias. C-04 without the 22 affected queries: −0.008 [−0.019, +0.001]. |
+| 2026-10-18 (run) | §6 / §7 (conventions) | Conventions the harness and the verifier share, recorded here:<br>• GoldText and GoldShare are null, not 0, for adversarial queries;<br>• backslashes are removed only before the markdown characters `_ * [ ] ( ) # . - < >`, the backtick and the pipe;<br>• GoldShare's denominator is the text inside each result's fence, including the title line and a trailing `...`;<br>• P@5 divides by min(results, 5) and counts duplicate windows of a gold document separately (`eval/metrics.py`). | The spot checks found them unwritten. | None: the same for all states. |
+| 2026-10-18 (run) | §8 / C-11 | Informational re-judging of C-11's 11 discordant queries (`scripts/eval_agent_view/rejudge_discordant.py`): CEN-004, -006, -020, -035, -044, -048, -050, -067, -074, -076 and -078. Their B and C items are re-issued as `D####` in two parts, and no part holds both states of one query. Each part is judged by two new judges with the J1 prompt. Rule, fixed before judging: an item counts as full when at least 2 of its 3 verdicts (J1 plus two new) say full, and b, c, McNemar and Holm are recomputed. Key map `judges/keymap_J1D.json`, SHA-256 `3e49d32b793a127ec66bb1157f098ddd10b3dba4d2fe66f64ba0e5e2f254137e`. | The C-11 audit found that superiority rests on single-judge verdicts, two of them borderline. | None on C-11 as registered. It reports how robust the superiority claim is. |
 
 ## 17. Change log
 
