@@ -58,6 +58,7 @@ import common as C  # noqa: E402
 import serve  # noqa: E402  (log-line constants only; importing it has no side effects)
 
 HARNESS = C.HARNESS_DIR
+DEFAULT_RESULTS_ROOT = C.CONFIG.results_root   # before any --results-root override
 PY_B = C.STATES["B"].python
 SERVE = HARNESS / "serve.py"   # Layer 2 server launcher (write probe neutralised)
 HIDDEN: list = []          # hidden smoke-test options, forwarded to every harness script
@@ -680,10 +681,17 @@ def do_ci_compare_only(s: C.StateDef, state: str) -> None:
         {k: {"status": v["status"], "red_flags": v["red_flags"]} for k, v in compare.items()}))
 
 
-def do_ci(state: str, pytest_k: str | None = None, compare_only: bool = False) -> None:
+def do_ci(state: str, pytest_k: str | None = None, compare_only: bool = False,
+          serialize_models: bool = False) -> None:
     """pytest -m "unit or (benchmark and not slow)" on MPS in the state's checkout, then
-    compare_benchmarks.py; restore the checkout's tests/results afterwards."""
+    compare_benchmarks.py; restore the checkout's tests/results afterwards.
+
+    serialize_models (informational run only, protocol section 16): load the
+    pytest_plugins/mps_serial.py plugin, which serialises model calls; refused
+    unless --results-root points away from the protocol's results."""
     s = require_state(state)
+    if serialize_models and C.CONFIG.results_root.resolve() == DEFAULT_RESULTS_ROOT.resolve():
+        raise StepFailed("--serialize-models is informational: pass --results-root to keep its files apart")
     if compare_only:
         do_ci_compare_only(s, state)
         return
@@ -726,10 +734,10 @@ def do_ci(state: str, pytest_k: str | None = None, compare_only: bool = False) -
         "CHROMA_URL": C.DEAD_CHROMA_URL,
         "CANDLEKEEP_DATA_DIR": str(ci_root / "data"),
         "XDG_DATA_HOME": str(ci_root / "xdg"),
-        "PYTHONPATH": str(checkout / "src"),
+        "PYTHONPATH": str(checkout / "src") + (f":{HARNESS / 'pytest_plugins'}" if serialize_models else ""),
     })
     cmd = [s.python, "-m", "pytest", "-m", "unit or (benchmark and not slow)", "-v", "-s",
-           *(["-k", pytest_k] if pytest_k else [])]
+           *(["-p", "mps_serial"] if serialize_models else []), *(["-k", pytest_k] if pytest_k else [])]
     header = (f"# CI run for state {state}\n# checkout: {checkout}\n# git_sha: {before['git_sha']}\n"
               f"# src_tree_sha: {before['src_tree_sha']}\n# command: {' '.join(map(str, cmd))}\n"
               f"# env: {json.dumps({k: v for k, v in env.items() if k != 'PATH'})}\n# started_at: {C.now_iso()}\n")
@@ -968,6 +976,8 @@ def main() -> int:
     p.add_argument("--compare-only", action="store_true",
                    help="redo the benchmark comparisons of the state's last CI run without running pytest")
     p.add_argument("--pytest-k", help=argparse.SUPPRESS)  # smoke tests only: restrict the selection
+    p.add_argument("--serialize-models", action="store_true",
+                   help="informational run: serialise model calls (needs --results-root)")
     p = sub.add_parser("all")
     p.add_argument("--states", default="A,B,C")
     p.add_argument("--corpora", default="I01,I02,I03,I04,I05,I06,I07,I08,I09")
@@ -999,7 +1009,7 @@ def main() -> int:
         elif args.cmd == "l2":
             do_l2(args.state, args.suite, args.tag, args.result_chars, args.extra_chars, args.graph_empty, args.force)
         elif args.cmd == "ci":
-            do_ci(args.state, args.pytest_k, args.compare_only)
+            do_ci(args.state, args.pytest_k, args.compare_only, args.serialize_models)
         elif args.cmd == "all":
             do_all([s for s in args.states.split(",") if s], [c for c in args.corpora.split(",") if c], args.skip_ci)
         elif args.cmd == "status":

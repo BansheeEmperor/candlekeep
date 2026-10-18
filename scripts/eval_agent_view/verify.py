@@ -92,6 +92,10 @@ Harness file formats read here (interfaces, not metric code):
   avg_precision or avg_recall is a red mark) to the router JSONs of every path
   in ``--ci-paths`` (default hybrid, precise, explore: the paths the project's
   CI compares) against A's run; a missing or zero baseline value is "missing".
+  A's baseline run must itself complete (exit 0 and a pytest summary line); an
+  aborted baseline fails the comparison closed (protocol section 16). The
+  informational run under ``ci_info/verification/`` (model calls serialised,
+  section 16) is compared with the same rule and reported, never decisive.
   A rendering's red-mark count must agree with the recomputation for the paths
   it shows.
 - ingest/: the canonical record ``<I0x>_<name>.json`` (``*.replaced-*`` and
@@ -2586,7 +2590,7 @@ def ci_run(v: Verifier, state: str) -> dict:
     if rec.get("provenance_unchanged") is False:
         probs.append("the checkout changed during the run")
     py = parse_pytest(text)
-    if state in ("B", "C"):
+    if state in ("A", "B", "C"):   # A is the baseline: it must complete too (section 16)
         if rec.get("exit_code") != 0 or rec.get("passed") is False:
             probs.append(f"pytest exit code {rec.get('exit_code')}")
         if not py["ok"]:
@@ -2605,13 +2609,14 @@ def router_summary(path: Path):
     return obj["summary"], None
 
 
-def ci_compare(v: Verifier, state: str, base_files: dict, base_status: str, md: Path | None) -> dict:
+def ci_compare(v: Verifier, state: str, base_files: dict, base_status: str, md: Path | None,
+               cur_dir: Path | None = None) -> dict:
     """compare_benchmarks.py's rule re-applied to the router benchmark JSONs: red when current - baseline < -0.01
     for avg_precision or avg_recall. A missing file or a zero baseline value (the script prints "New") is missing."""
     rows, missing, probs = [], [], []
     for p in CI_PATHS:
         bs, be = router_summary(base_files[p])
-        cs, ce = router_summary(v.vdir / f"ci_{state}_router_{p}_benchmark.json")
+        cs, ce = router_summary((cur_dir or v.vdir) / f"ci_{state}_router_{p}_benchmark.json")
         if bs is None or cs is None:
             missing.append({"path": p, "baseline": be or "ok", "current": ce or "ok"})
             continue
@@ -2649,6 +2654,28 @@ def ci_compare(v: Verifier, state: str, base_files: dict, base_status: str, md: 
             "baseline_run": base_status, "rendering": md_info}
 
 
+def _cmp_txt(c: dict) -> str:
+    """A comparison's outcome; "(N red)" only when the rule could be applied to every path."""
+    if c.get("missing") or c.get("baseline_run") != "pass":
+        return f"{c['status']} (not compared: baseline {c.get('baseline_run')})"
+    return f"{c['status']} ({c.get('red')} red)"
+
+
+def _info_txt(ci: dict) -> str:
+    """The informational run's comparison (section 16), with every red row."""
+    info = ci.get("info")
+    if not info:
+        return ""
+    parts = []
+    for s in ("B", "C"):
+        c = info.get(f"compare_{s}") or {}
+        reds = "; ".join(f"{r['path']} {r['metric'].replace('avg_', '')} {r['baseline']:.3f}→{r['current']:.3f}"
+                         for r in c.get("rows", []) if r.get("red"))
+        parts.append(f"{s} {c.get('red')} red" + (f" ({reds})" if reds else ""))
+    tests = ", ".join(f"{s} {info['runs'][s]['status']}" for s in STATES)
+    return f"informational run, model calls serialised (not a decision): tests {tests}; vs A: " + ", ".join(parts) + "; "
+
+
 def ci_gates(v: Verifier) -> dict:
     out = {}
     runs = {s: ci_run(v, s) for s in STATES}
@@ -2662,6 +2689,21 @@ def ci_gates(v: Verifier) -> dict:
         a = ci_compare(v, s, arch, "pass", v.vdir / f"ci_{s}_compare_archive.md")
         out[f"archive_{s}"] = {"status": "info", "red": a["red"], "missing": a["missing"], "rows": a["rows"],
                                "rendering": a["rendering"], "note": "informational (archive baselines are CPU runs)"}
+    # Section 16: informational run with model calls serialised (never decisive).
+    idir = v.root / "ci_info" / "verification"
+    if idir.is_dir():
+        info_runs = {}
+        for s in STATES:
+            sub = Verifier.__new__(Verifier)
+            sub.__dict__.update(v.__dict__)
+            sub.vdir = idir
+            info_runs[s] = ci_run(sub, s)
+        ia = {p: idir / f"ci_A_router_{p}_benchmark.json" for p in CI_PATHS}
+        out["info"] = {"note": "informational: same command plus -p mps_serial (section 16); not a decision",
+                       "runs": info_runs}
+        for s in ("B", "C"):
+            out["info"][f"compare_{s}"] = ci_compare(v, s, ia, info_runs["A"]["status"],
+                                                   idir / f"ci_{s}_compare_A.md", cur_dir=idir)
     return out
 
 
@@ -3170,8 +3212,9 @@ def criteria(v: Verifier, s: dict, ci: dict) -> dict:
     C["C-14"] = {"status": worst([pb, pc]), "parts": {"B": pb, "C": pc},
                  "result": f"pytest -m \"{CI_MARK}\" on MPS: B {ci['tests_B']['status']}, C {ci['tests_C']['status']}; "
                            f"compare_benchmarks.py rule vs A's MPS run ({', '.join(CI_PATHS)}): "
-                           f"B {ci['compare_B']['status']} ({ci['compare_B'].get('red')} red), "
-                           f"C {ci['compare_C']['status']} ({ci['compare_C'].get('red')} red); "
+                           f"B {_cmp_txt(ci['compare_B'])}, C {_cmp_txt(ci['compare_C'])} "
+                           f"(A's baseline run: {ci['baseline_A']['status']}, exit {ci['baseline_A'].get('exit_code')}); "
+                           + _info_txt(ci) +
                            f"vs archive (information): B {(ci.get('archive_B') or {}).get('red')} red, "
                            f"C {(ci.get('archive_C') or {}).get('red')} red",
                  "evidence": ci}
