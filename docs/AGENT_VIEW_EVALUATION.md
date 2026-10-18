@@ -286,9 +286,9 @@ Status values: `pending` · `running` · `done` · `verified` · `failed` · `vo
 | L2-C0 | C (extras = 0) | ade2365 | venv-C | L2 | CEN | `CANDLEKEEP_RESULT_EXTRA_CHARS=0 run_layer2.py --state C --suite CEN --tag killswitch` | `…/L2/C_CEN_killswitch.json` | 108 | pending | |
 | L2-I1 | A (empty graph) | 6519cc7 | venv-A | L2 info | CEN, MH | `run_layer2.py --state A --graph empty` | `…/L2/info_A_emptygraph_<s>.json` | 108/30 | pending | |
 | L2-I2 | B (500 chars) | d524652 | venv-B | L2 info | CEN, MH | `CANDLEKEEP_RESULT_CHARS=500 run_layer2.py --state B` | `…/L2/info_B_500_<s>.json` | 108/30 | pending | |
-| J1 | A/B/C | — | — | L3 | CEN-A hybrid | `judge_pack.py --pack J1` | `…/judges/pack_J1.json`, `keymap_J1.json` (SHA-256: _TBD before judging_), `out_J1_*.json` | 228 | pending | |
-| J1-R | — | — | — | L3 | 20% re-judge | `judge_pack.py --pack J1R` | `…/judges/out_J1R_*.json` | ≈46 | pending | |
-| J2 (opt.) | B/C | — | — | L3 | CEN-A precise | `judge_pack.py --pack J2` | `…/judges/pack_J2.json` … | 152 | pending | |
+| J1 | A/B/C | — | — | L3 | CEN-A hybrid | `judge_pack.py --pack J1` | `…/judges/pack_J1.json`, `keymap_J1.json` (SHA-256: `b93e2d6a8d2c409b85c0ffb1986fe5b52f7cef8c40b72d3968e6702c00af8725`), `out_J1_*.json` | 228 | packs built | |
+| J1-R | — | — | — | L3 | 20% re-judge | `judge_pack.py --pack J1R` | `…/judges/pack_J1R.json`, `keymap_J1R.json` (SHA-256: `2493f118148d3b5e52efec58bff3f0659d595ea38991141e6a439fedb95f38ab`), `out_J1R_*.json` | 46 | packs built | |
+| J2 (opt.) | B/C | — | — | L3 | CEN-A precise | `judge_pack.py --pack J2` | `…/judges/pack_J2.json`, `keymap_J2.json` (SHA-256: `6d75632acefdc12c4c136af5a2ad3594ad565d82d58e22d268f82af6296df5e2`), `out_J2_*.json` | 152 | packs built | |
 | CI-B | B | d524652 | venv-B | CI | — | `pytest -m "unit or (benchmark and not slow)"` (MPS) | `…/verification/ci_B.txt` | — | pending | |
 | CI-C | C | ade2365 | venv-C | CI | — | ″ | `…/verification/ci_C.txt` | — | pending | |
 | V-ALL | — | — | — | verify | all | `verify.py --all --check-doc` | `…/verification/checks.json`, `…/summary.json` | — | pending | |
