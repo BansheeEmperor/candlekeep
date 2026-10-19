@@ -149,6 +149,8 @@ class Chronicle:
             results["metadatas"][0],
             results["distances"][0],
         ):
+            if meta is None or doc is None:   # deleted by a concurrent write after the index lookup
+                continue
             score = 1 - dist  # cosine distance → similarity
             if score < MIN_RELEVANCE_SCORE:
                 continue

@@ -351,6 +351,9 @@ class ChromaVectorStore(VectorDatabase):
                 results["metadatas"][0],
                 results["distances"][0],
             )
+            # An ingest running at the same time can delete a record after the index lookup
+            # and before its row is read; Chroma then returns None for it.
+            if meta is not None and doc is not None
         ]
 
         # Filter out overview/index documents
