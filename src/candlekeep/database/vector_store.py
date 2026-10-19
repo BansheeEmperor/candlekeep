@@ -47,6 +47,15 @@ def _is_stale_collection(exc: Exception) -> bool:
     return "collection" in name and any(t in name for t in ("notfound", "invalid", "exist"))
 
 
+def _is_concurrent_delete(exc: Exception) -> bool:
+    """True if a query failed because a concurrent write deleted a record it had
+    already found in the index ("Error executing plan: Internal error: Error
+    finding id"). Seen when a search overlaps a re-ingest; the next try sees a
+    consistent index.
+    """
+    return "error finding id" in str(exc).lower()
+
+
 def _is_chroma_unavailable(exc: Exception) -> bool:
     """True if the error looks like the Chroma server is unreachable.
 
@@ -192,7 +201,8 @@ class ChromaVectorStore(VectorDatabase):
           * stale collection UUID (data swapped underneath us) -> re-resolve by
             name + flush caches, retry immediately;
           * Chroma unreachable (server mid-restart) -> short backoff,
-            re-resolve, retry.
+            re-resolve, retry;
+          * a record deleted by a concurrent write mid-query -> retry.
 
         Any other error, or exhausted retries, re-raises the original.
         """
@@ -204,6 +214,9 @@ class ChromaVectorStore(VectorDatabase):
                 last = e
                 if _is_stale_collection(e):
                     self._reconnect()
+                    continue
+                if _is_concurrent_delete(e) and i < self._reconnect_attempts - 1:
+                    time.sleep(0.05)
                     continue
                 if _is_chroma_unavailable(e) and i < self._reconnect_attempts - 1:
                     time.sleep(self._reconnect_backoff * (i + 1))

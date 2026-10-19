@@ -68,6 +68,21 @@ class TestCollectionOp:
         assert store._count() == 42
         assert store.client.opened == 1
 
+    def test_concurrent_delete_retried(self):
+        class Flaky(_Collection):
+            calls = 0
+
+            def count(self):
+                Flaky.calls += 1
+                if Flaky.calls == 1:
+                    raise RuntimeError("Error executing plan: Internal error: Error finding id")
+                return 7
+
+        store = _store(None)
+        store.collection = Flaky("same")
+        assert store._collection_op(lambda col: col.count()) == 7
+        assert store.collection.id == "same"   # retried in place, no reconnect
+
     def test_other_errors_reraised(self):
         store = _store(ValueError("bad where clause"))
         with pytest.raises(ValueError):
