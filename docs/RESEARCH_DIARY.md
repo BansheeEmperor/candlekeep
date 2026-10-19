@@ -3613,3 +3613,65 @@ Re-scoring the stitched windows with their unstitched text reproduced the old lo
 - On the evaluation's corpora and Chroma processes, the precise, hybrid and explore rankings equal those before stitching on all 4,212 query-path pairs.
 - The router benchmark equals the pre-stitching run exactly on every path.
 - Latency is unchanged in alternating runs (precise p50 44.5 / 43.5 ms, against 46.3 / 43.3 ms before stitching).
+
+---
+
+## Entry 62: Serialising Model Calls on MPS
+
+**Date:** October 19, 2026  
+**Focus:** Process crashes under concurrency on Apple GPUs, and what the fix costs
+
+### The crash
+
+PyTorch's MPS backend is not thread-safe. When two threads run a model at once, the process aborts with a Metal command-buffer assertion or segfaults. FastMCP 3 runs tools in a thread pool, and an ingest starts a background normalisation rebuild, so a Candlekeep server on MPS crashed whenever two model calls overlapped. Reproduced, with the laptop awake and under `caffeinate`:
+
+- two threads in `EmbeddingManager.embed`, one embedding a batch and one a query: 4 segfaults and 1 hang in 5 runs;
+- a search during an ingest: the server crashed in every run (Entries 60–61 code, 4 of 4);
+- 16 concurrent precise searches: crashed in 4 of 4 runs, inside `CrossEncoder.predict`. The reranker semaphore allows several reranks at once;
+- 16 concurrent hybrid or explore searches: no crash in 4 runs each. Their query embeddings are short and rarely overlap.
+
+It also aborted the CI suite on MPS (`tests/test_arcane_recall.py`, while the Rosetta Seal rebuild ran), which is why the agent-view evaluation's C-14 failed closed.
+
+### The fix (`408654f`)
+
+`src/candlekeep/model_lock.py`:
+
+- **One process-wide lock.** It is re-entrant and hands over first-come, first-served. On MPS, every model load, `encode` and `predict` holds it. CPU and CUDA calls take no lock.
+- **Slices.** A call over 128 inputs runs in slices of 128, one lock hold each, in the model's own longest-first order. A first version that held the lock for a whole call let one ingest stall every search for its entire embedding: 6.0 s for 2,866 chunks, growing linearly with ingest size.
+- **Fair handoff.** With slicing alone, CPython's lock lets the slicing thread re-acquire at once. The lock therefore goes to the longest waiter.
+- **Numerics.** Because slices follow encode's length order in multiples of its batch size, the 2,955 Centurion embeddings and 300 reranker scores are bitwise equal to a single call's.
+- **Leaf lock.** Nothing else is locked, called back or waited on while it is held; a review traced every lock in the codebase and found no ordering cycle.
+
+### Performance (`scripts/benchmark_model_lock.py`, `tests/results/mps_lock_benchmark.json`)
+
+Each scenario ran on a fresh Chroma and Candlekeep server on an Apple M5 Pro (MPS), alternating no lock (`72c233f`) and lock. Every server first ingested `scale_docs`.
+
+| Scenario | No lock | Lock |
+|---|---|---|
+| Single client, p50 over 5 rounds: hybrid / precise / explore | 58.0 / 57.1 / 40.3 ms | 57.6 / 58.2 / 40.1 ms |
+| 16 sessions, hybrid | 25.4, 25.6 qps | 27.7, 29.1 qps |
+| 16 sessions, precise | crashed 2 of 2 | 28.2, 28.2 qps (p95 about 700 ms) |
+| 16 sessions, explore | 34.5, 33.5 qps | 37.1, 41.4 qps |
+| Ingest alone (13 per side) | 46.2 s | 46.2 s |
+| Re-ingest while 4 sessions search | crashed 2 of 2 | completes; search p50 115 ms, p95 190 ms, max 0.5–1.0 s |
+
+- **The lock costs nothing in steady state.** A paired in-process test (324 pairs, same store, alternating) measured −0.09 ms per precise search and −0.02 ms per hybrid search; the single-client precise difference above is within its per-round range (−2.8 to +4.4 ms).
+- **Under concurrency it is faster.** Serialised MPS calls beat contended ones: hybrid +12% and explore +15% throughput.
+- **Search during an ingest now works.** Lock timing in the overlap run shows the ingest in 46 slices, each held for at most 0.38 s, and the longest wait of any search 0.33 s. Without slicing, that wait was 5.9 s.
+- **Ingesting under load is slower, but not because of the lock.** The re-ingest takes about 140 s under load against 46 s alone. The ingest waited only 1.1 s in total for the lock; the rest is CPU and Chroma contention with four busy searchers.
+- **CI on MPS.** The suite now passes three times in three with no plugin. Before, the baseline aborted 3 times in 3.
+
+### Two concurrency bugs found on the way (`ebc2900`, `4ab25c1`)
+
+Once search-during-ingest could run on MPS, it exposed two read-during-write races that FastMCP 3's thread pool already allowed on CPU and CUDA:
+
+- A query can return a record deleted after its index lookup, with a None document and metadata. Vector search raised `'NoneType' object has no attribute 'get'` (1–2 searches in about 4,800 per run). Vector search and memory recall now skip such rows.
+- Chroma can fail the query with "Error finding id" (1 in about 4,800). `_collection_op` now retries it after 50 ms.
+
+With both fixes, three overlap runs (14,543 searches during re-ingests) had 0 failed searches.
+
+### Notes
+
+- On MPS, the startup calibration of the precise-path semaphore now times serialised reranks, so the size it picks (3–9 across starts) only decides where requests queue.
+- The post-ingest Rosetta Seal rebuild still takes the lock to build a map that BM25 does not apply (ARCHITECTURE, Rosetta Seal).
+- A deployment that forks after importing torch would inherit the lock; uvicorn workers are spawned.

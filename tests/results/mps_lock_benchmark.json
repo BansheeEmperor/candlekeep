@@ -1,0 +1,766 @@
+{
+ "description": "MPS model-call lock, measured through the MCP server on MPS. 'nolock' = 72c233f. 'lock' = the lock design of 408654f, benchmarked before its interrupt-safe wait and model-load re-check were added (neither is on the call path). 'final' = 4ab25c1, which also has the two concurrent-ingest fixes. docs/RESEARCH_DIARY.md Entry 62.",
+ "script": "scripts/benchmark_model_lock.py",
+ "corpus": "tests/fixtures/scale_docs (2,866 chunks)",
+ "queries": "Centurion Set (108)",
+ "alternating_rounds": {
+  "nolock": [
+   {
+    "sequential": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 45.76,
+     "paths": {
+      "hybrid": {
+       "n": 108,
+       "p50_ms": 58.05,
+       "p95_ms": 89.7,
+       "max_ms": 102.45,
+       "mean_ms": 61.93
+      },
+      "precise": {
+       "n": 108,
+       "p50_ms": 56.33,
+       "p95_ms": 115.64,
+       "max_ms": 175.07,
+       "mean_ms": 65.04
+      },
+      "explore": {
+       "n": 108,
+       "p50_ms": 39.64,
+       "p95_ms": 53.23,
+       "max_ms": 54.13,
+       "mean_ms": 41.48
+      }
+     }
+    },
+    "concurrent-hybrid": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 45.78,
+     "paths": {
+      "hybrid": {
+       "n": 108,
+       "p50_ms": 540.54,
+       "p95_ms": 995.87,
+       "max_ms": 1119.05,
+       "mean_ms": 576.69,
+       "wall_s": 4.25,
+       "qps": 25.4
+      }
+     }
+    },
+    "concurrent-precise": {
+     "status": "server crashed (error: RuntimeError('server exited with -6'))",
+     "server_exit_code": -6,
+     "ingest_s": 46.14
+    },
+    "concurrent-explore": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 45.48,
+     "paths": {
+      "explore": {
+       "n": 108,
+       "p50_ms": 413.42,
+       "p95_ms": 667.45,
+       "max_ms": 736.05,
+       "mean_ms": 419.45,
+       "wall_s": 3.13,
+       "qps": 34.49
+      }
+     }
+    },
+    "overlap": {
+     "status": "server crashed (error: RuntimeError('server exited with -11'))",
+     "server_exit_code": -11,
+     "ingest_s": 45.94
+    }
+   },
+   {
+    "sequential": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 45.87,
+     "paths": {
+      "hybrid": {
+       "n": 108,
+       "p50_ms": 59.98,
+       "p95_ms": 89.99,
+       "max_ms": 95.73,
+       "mean_ms": 63.24
+      },
+      "precise": {
+       "n": 108,
+       "p50_ms": 58.69,
+       "p95_ms": 115.18,
+       "max_ms": 164.47,
+       "mean_ms": 65.02
+      },
+      "explore": {
+       "n": 108,
+       "p50_ms": 41.72,
+       "p95_ms": 54.76,
+       "max_ms": 56.47,
+       "mean_ms": 43.27
+      }
+     }
+    },
+    "concurrent-hybrid": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 46.83,
+     "paths": {
+      "hybrid": {
+       "n": 108,
+       "p50_ms": 518.62,
+       "p95_ms": 949.34,
+       "max_ms": 1071.68,
+       "mean_ms": 567.47,
+       "wall_s": 4.22,
+       "qps": 25.58
+      }
+     }
+    },
+    "concurrent-precise": {
+     "status": "server crashed (error: ConnectError('All connection attempts failed'))",
+     "server_exit_code": -6,
+     "ingest_s": 46.78
+    },
+    "concurrent-explore": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 47.75,
+     "paths": {
+      "explore": {
+       "n": 108,
+       "p50_ms": 440.51,
+       "p95_ms": 684.66,
+       "max_ms": 777.79,
+       "mean_ms": 434.06,
+       "wall_s": 3.22,
+       "qps": 33.53
+      }
+     }
+    },
+    "overlap": {
+     "status": "server crashed (error: RuntimeError('server exited with -6'))",
+     "server_exit_code": -6,
+     "ingest_s": 47.05
+    }
+   },
+   {
+    "sequential": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 45.52,
+     "paths": {
+      "hybrid": {
+       "n": 108,
+       "p50_ms": 58.95,
+       "p95_ms": 89.87,
+       "max_ms": 94.55,
+       "mean_ms": 61.8
+      },
+      "precise": {
+       "n": 108,
+       "p50_ms": 57.2,
+       "p95_ms": 111.93,
+       "max_ms": 176.51,
+       "mean_ms": 63.99
+      },
+      "explore": {
+       "n": 108,
+       "p50_ms": 40.3,
+       "p95_ms": 53.28,
+       "max_ms": 54.8,
+       "mean_ms": 41.93
+      }
+     }
+    }
+   },
+   {
+    "sequential": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 45.79,
+     "paths": {
+      "hybrid": {
+       "n": 108,
+       "p50_ms": 56.0,
+       "p95_ms": 89.7,
+       "max_ms": 97.1,
+       "mean_ms": 61.14
+      },
+      "precise": {
+       "n": 108,
+       "p50_ms": 55.74,
+       "p95_ms": 112.72,
+       "max_ms": 154.92,
+       "mean_ms": 63.78
+      },
+      "explore": {
+       "n": 108,
+       "p50_ms": 39.45,
+       "p95_ms": 51.0,
+       "max_ms": 54.82,
+       "mean_ms": 41.41
+      }
+     }
+    }
+   },
+   {
+    "sequential": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 46.01,
+     "paths": {
+      "hybrid": {
+       "n": 108,
+       "p50_ms": 57.13,
+       "p95_ms": 88.15,
+       "max_ms": 95.52,
+       "mean_ms": 61.63
+      },
+      "precise": {
+       "n": 108,
+       "p50_ms": 57.6,
+       "p95_ms": 114.56,
+       "max_ms": 136.63,
+       "mean_ms": 64.64
+      },
+      "explore": {
+       "n": 108,
+       "p50_ms": 40.28,
+       "p95_ms": 51.69,
+       "max_ms": 56.48,
+       "mean_ms": 41.76
+      }
+     }
+    }
+   }
+  ],
+  "lock": [
+   {
+    "sequential": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 46.25,
+     "paths": {
+      "hybrid": {
+       "n": 108,
+       "p50_ms": 60.25,
+       "p95_ms": 90.68,
+       "max_ms": 95.13,
+       "mean_ms": 62.94
+      },
+      "precise": {
+       "n": 108,
+       "p50_ms": 60.2,
+       "p95_ms": 123.42,
+       "max_ms": 154.72,
+       "mean_ms": 66.78
+      },
+      "explore": {
+       "n": 108,
+       "p50_ms": 41.53,
+       "p95_ms": 51.7,
+       "max_ms": 54.97,
+       "mean_ms": 42.21
+      }
+     }
+    },
+    "concurrent-hybrid": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 45.73,
+     "paths": {
+      "hybrid": {
+       "n": 108,
+       "p50_ms": 459.18,
+       "p95_ms": 893.52,
+       "max_ms": 1057.11,
+       "mean_ms": 535.41,
+       "wall_s": 3.9,
+       "qps": 27.72
+      }
+     }
+    },
+    "concurrent-precise": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 46.4,
+     "paths": {
+      "precise": {
+       "n": 108,
+       "p50_ms": 526.42,
+       "p95_ms": 698.08,
+       "max_ms": 754.89,
+       "mean_ms": 519.16,
+       "wall_s": 3.82,
+       "qps": 28.25
+      }
+     }
+    },
+    "concurrent-explore": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 47.84,
+     "paths": {
+      "explore": {
+       "n": 108,
+       "p50_ms": 398.88,
+       "p95_ms": 583.93,
+       "max_ms": 734.45,
+       "mean_ms": 392.34,
+       "wall_s": 2.91,
+       "qps": 37.14
+      }
+     }
+    },
+    "overlap": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 46.67,
+     "reingest_under_load_s": 145.1,
+     "failed_searches": 1,
+     "first_error": "ToolError(\"Error calling tool 'search': 'NoneType' object has no attribute 'get'\")",
+     "search_during_ingest_ms": {
+      "n": 4838,
+      "p50_ms": 116.3,
+      "p95_ms": 193.6,
+      "max_ms": 878.1,
+      "mean_ms": 120.1
+     }
+    }
+   },
+   {
+    "sequential": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 46.22,
+     "paths": {
+      "hybrid": {
+       "n": 108,
+       "p50_ms": 56.53,
+       "p95_ms": 87.41,
+       "max_ms": 93.93,
+       "mean_ms": 61.95
+      },
+      "precise": {
+       "n": 108,
+       "p50_ms": 57.79,
+       "p95_ms": 110.99,
+       "max_ms": 200.55,
+       "mean_ms": 64.74
+      },
+      "explore": {
+       "n": 108,
+       "p50_ms": 40.08,
+       "p95_ms": 52.11,
+       "max_ms": 54.04,
+       "mean_ms": 41.52
+      }
+     }
+    },
+    "concurrent-hybrid": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 45.8,
+     "paths": {
+      "hybrid": {
+       "n": 108,
+       "p50_ms": 445.08,
+       "p95_ms": 844.24,
+       "max_ms": 1057.24,
+       "mean_ms": 504.14,
+       "wall_s": 3.72,
+       "qps": 29.07
+      }
+     }
+    },
+    "concurrent-precise": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 45.62,
+     "paths": {
+      "precise": {
+       "n": 108,
+       "p50_ms": 522.67,
+       "p95_ms": 731.36,
+       "max_ms": 798.42,
+       "mean_ms": 512.89,
+       "wall_s": 3.83,
+       "qps": 28.16
+      }
+     }
+    },
+    "concurrent-explore": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 46.27,
+     "paths": {
+      "explore": {
+       "n": 108,
+       "p50_ms": 356.71,
+       "p95_ms": 483.81,
+       "max_ms": 621.93,
+       "mean_ms": 357.81,
+       "wall_s": 2.61,
+       "qps": 41.43
+      }
+     }
+    },
+    "overlap": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 46.05,
+     "reingest_under_load_s": 141.5,
+     "failed_searches": 2,
+     "first_error": "ToolError(\"Error calling tool 'search': 'NoneType' object has no attribute 'get'\")",
+     "search_during_ingest_ms": {
+      "n": 4812,
+      "p50_ms": 114.9,
+      "p95_ms": 188.7,
+      "max_ms": 940.4,
+      "mean_ms": 117.9
+     }
+    }
+   },
+   {
+    "sequential": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 46.25,
+     "paths": {
+      "hybrid": {
+       "n": 108,
+       "p50_ms": 58.36,
+       "p95_ms": 89.32,
+       "max_ms": 93.79,
+       "mean_ms": 62.6
+      },
+      "precise": {
+       "n": 108,
+       "p50_ms": 61.63,
+       "p95_ms": 116.51,
+       "max_ms": 136.87,
+       "mean_ms": 65.82
+      },
+      "explore": {
+       "n": 108,
+       "p50_ms": 39.5,
+       "p95_ms": 54.27,
+       "max_ms": 56.39,
+       "mean_ms": 41.62
+      }
+     }
+    }
+   },
+   {
+    "sequential": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 45.62,
+     "paths": {
+      "hybrid": {
+       "n": 108,
+       "p50_ms": 56.27,
+       "p95_ms": 88.48,
+       "max_ms": 93.73,
+       "mean_ms": 61.12
+      },
+      "precise": {
+       "n": 108,
+       "p50_ms": 56.66,
+       "p95_ms": 112.42,
+       "max_ms": 180.61,
+       "mean_ms": 62.85
+      },
+      "explore": {
+       "n": 108,
+       "p50_ms": 39.81,
+       "p95_ms": 50.72,
+       "max_ms": 55.07,
+       "mean_ms": 41.6
+      }
+     }
+    }
+   },
+   {
+    "sequential": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 45.57,
+     "paths": {
+      "hybrid": {
+       "n": 108,
+       "p50_ms": 56.79,
+       "p95_ms": 89.1,
+       "max_ms": 93.79,
+       "mean_ms": 61.52
+      },
+      "precise": {
+       "n": 108,
+       "p50_ms": 54.83,
+       "p95_ms": 110.55,
+       "max_ms": 143.04,
+       "mean_ms": 62.83
+      },
+      "explore": {
+       "n": 108,
+       "p50_ms": 39.38,
+       "p95_ms": 49.77,
+       "max_ms": 54.88,
+       "mean_ms": 41.11
+      }
+     }
+    }
+   }
+  ],
+  "lock_stats_run": {
+   "status": "ok",
+   "server_exit_code": null,
+   "ingest_s": 46.35,
+   "reingest_under_load_s": 142.2,
+   "failed_searches": 0,
+   "first_error": null,
+   "search_during_ingest_ms": {
+    "n": 4833,
+    "p50_ms": 114.7,
+    "p95_ms": 189.1,
+    "max_ms": 1001.7,
+    "mean_ms": 118.1
+   },
+   "lock_stats": {
+    "other": {
+     "n": 48,
+     "wait_s": 0.691,
+     "max_wait_s": 0.045,
+     "hold_s": 0.591,
+     "max_hold_s": 0.18
+    },
+    "ingest": {
+     "n": 46,
+     "wait_s": 1.166,
+     "max_wait_s": 0.071,
+     "hold_s": 11.561,
+     "max_hold_s": 0.369
+    },
+    "rebuild": {
+     "n": 10,
+     "wait_s": 0.101,
+     "max_wait_s": 0.034,
+     "hold_s": 0.511,
+     "max_hold_s": 0.086
+    },
+    "search": {
+     "n": 5443,
+     "wait_s": 92.621,
+     "max_wait_s": 0.34,
+     "hold_s": 139.119,
+     "max_hold_s": 0.135
+    }
+   }
+  }
+ },
+ "final": {
+  "runs": [
+   {
+    "concurrent-precise": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 43.97,
+     "paths": {
+      "precise": {
+       "n": 108,
+       "p50_ms": 513.58,
+       "p95_ms": 649.53,
+       "max_ms": 793.22,
+       "mean_ms": 504.6,
+       "wall_s": 3.75,
+       "qps": 28.83
+      }
+     }
+    },
+    "overlap": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 44.24,
+     "reingest_under_load_s": 139.8,
+     "failed_searches": 0,
+     "first_error": null,
+     "search_during_ingest_ms": {
+      "n": 4866,
+      "p50_ms": 112.3,
+      "p95_ms": 181.4,
+      "max_ms": 962.7,
+      "mean_ms": 115.4
+     }
+    }
+   },
+   {
+    "concurrent-precise": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 45.01,
+     "paths": {
+      "precise": {
+       "n": 108,
+       "p50_ms": 519.64,
+       "p95_ms": 698.76,
+       "max_ms": 796.29,
+       "mean_ms": 509.93,
+       "wall_s": 3.84,
+       "qps": 28.14
+      }
+     }
+    },
+    "overlap": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 45.02,
+     "reingest_under_load_s": 138.2,
+     "failed_searches": 1,
+     "first_error": "ToolError(\"Error calling tool 'search': Error executing plan: Internal error: Error finding id\")",
+     "search_during_ingest_ms": {
+      "n": 4822,
+      "p50_ms": 111.8,
+      "p95_ms": 177.4,
+      "max_ms": 532.7,
+      "mean_ms": 114.7
+     }
+    }
+   },
+   {
+    "overlap": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 48.63,
+     "reingest_under_load_s": 146.6,
+     "failed_searches": 0,
+     "first_error": null,
+     "search_during_ingest_ms": {
+      "n": 4811,
+      "p50_ms": 117.9,
+      "p95_ms": 199.4,
+      "max_ms": 1000.8,
+      "mean_ms": 122.3
+     }
+    }
+   },
+   {
+    "overlap": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 45.22,
+     "reingest_under_load_s": 142.4,
+     "failed_searches": 0,
+     "first_error": null,
+     "search_during_ingest_ms": {
+      "n": 4851,
+      "p50_ms": 114.5,
+      "p95_ms": 195.4,
+      "max_ms": 562.9,
+      "mean_ms": 117.7
+     }
+    }
+   },
+   {
+    "overlap": {
+     "status": "ok",
+     "server_exit_code": null,
+     "ingest_s": 46.66,
+     "reingest_under_load_s": 148.5,
+     "failed_searches": 0,
+     "first_error": null,
+     "search_during_ingest_ms": {
+      "n": 4881,
+      "p50_ms": 118.8,
+      "p95_ms": 196.2,
+      "max_ms": 989.2,
+      "mean_ms": 122.2
+     }
+    }
+   }
+  ],
+  "lock_stats_run": {
+   "status": "ok",
+   "server_exit_code": null,
+   "ingest_s": 45.21,
+   "reingest_under_load_s": 140.5,
+   "failed_searches": 0,
+   "first_error": null,
+   "search_during_ingest_ms": {
+    "n": 4863,
+    "p50_ms": 113.0,
+    "p95_ms": 187.4,
+    "max_ms": 906.7,
+    "mean_ms": 116.0
+   },
+   "lock_stats": {
+    "warmup": {
+     "n": 2,
+     "wait_s": 0.0,
+     "max_wait_s": 0.0,
+     "hold_s": 0.228,
+     "max_hold_s": 0.17
+    },
+    "calibration": {
+     "n": 1,
+     "wait_s": 0.0,
+     "max_wait_s": 0.0,
+     "hold_s": 0.083,
+     "max_hold_s": 0.083
+    },
+    "other": {
+     "n": 45,
+     "wait_s": 0.694,
+     "max_wait_s": 0.045,
+     "hold_s": 0.274,
+     "max_hold_s": 0.013
+    },
+    "ingest": {
+     "n": 46,
+     "wait_s": 1.121,
+     "max_wait_s": 0.071,
+     "hold_s": 11.642,
+     "max_hold_s": 0.382
+    },
+    "rebuild": {
+     "n": 10,
+     "wait_s": 0.047,
+     "max_wait_s": 0.031,
+     "hold_s": 0.476,
+     "max_hold_s": 0.075
+    },
+    "search": {
+     "n": 5487,
+     "wait_s": 85.011,
+     "max_wait_s": 0.334,
+     "hold_s": 137.123,
+     "max_hold_s": 0.121
+    }
+   }
+  },
+  "ci_on_mps_without_plugin": [
+   "275 passed, 12 skipped, 40 deselected",
+   "275 passed, 12 skipped, 40 deselected",
+   "275 passed, 12 skipped, 40 deselected"
+  ]
+ },
+ "in_process_paired_overhead_ms": {
+  "precise": {
+   "n": 324,
+   "median_paired_diff": -0.088
+  },
+  "hybrid": {
+   "n": 324,
+   "median_paired_diff": -0.022
+  }
+ },
+ "numerics": {
+  "embeddings_2955_chunks_bitwise_equal": true,
+  "reranker_300_pairs_bitwise_equal": true
+ }
+}
