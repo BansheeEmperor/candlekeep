@@ -62,37 +62,39 @@ Status values: `pending` · `running` · `done` · `verified` · `failed` · `vo
 
 | Run | State | Git SHA | Env | Layer | Suite | Command (abridged) | Output path | n | Status | Verified (V-ids) |
 |---|---|---|---|---|---|---|---|---|---|---|
-| R00-A | A | 6519cc7 | venv-A | env | — | `drive.py env --state A --round rounds/r2.json` | `tests/results/agent_view_eval_r2/env/A.txt` | — | pending | |
-| R00-B | B | 8e5846f | venv-B | env | — | `… --state B …` | `…/env/B.txt` | — | pending | |
-| R00-C | C | f74b23f | venv-Cprime | env | — | `… --state C …` | `…/env/C.txt` | — | pending | |
-| I01 | B | 8e5846f | venv-B | ingest | CEN | `drive.py ingest --corpus I01 --round rounds/r2.json` | `…/ingest/I01_*.json` | 89 docs | pending | |
-| I02 | B | 8e5846f | venv-B | ingest | CEN-G (overlap 50) | `drive.py ingest --corpus I02 --round rounds/r2.json` | `…/ingest/I02_*.json` | 89 docs | pending | |
-| I03 | B | 8e5846f | venv-B | ingest | CD-LEG | `drive.py ingest --corpus I03 --round rounds/r2.json` | `…/ingest/I03_*.json` | 90 docs | pending | |
-| I04 | B | 8e5846f | venv-B | ingest | CD-MED | `drive.py ingest --corpus I04 --round rounds/r2.json` | `…/ingest/I04_*.json` | 91 docs | pending | |
-| I05 | B | 8e5846f | venv-B | ingest | CD-NAR | `drive.py ingest --corpus I05 --round rounds/r2.json` | `…/ingest/I05_*.json` | 89 docs | pending | |
-| I06 | B | 8e5846f | venv-B | ingest | CD-API | `drive.py ingest --corpus I06 --round rounds/r2.json` | `…/ingest/I06_*.json` | 95 docs | pending | |
-| I07 | B | 8e5846f | venv-B | ingest | CD-ALT | `drive.py ingest --corpus I07 --round rounds/r2.json` | `…/ingest/I07_*.json` | 88 docs | pending | |
-| I08 | B | 8e5846f | venv-B | ingest | BEIR-SF | `drive.py ingest --corpus I08 --round rounds/r2.json` | `…/ingest/I08_*.json` | 5,182 docs | pending | |
-| I09 | B | 8e5846f | venv-B | ingest | BEIR-NF | `drive.py ingest --corpus I09 --round rounds/r2.json` | `…/ingest/I09_*.json` | 3,623 docs | pending | |
-| R01 | B | 8e5846f | venv-B | L1+L2 | CEN (determinism, run 2) | `drive.py all` (B rerun) | `…/L1/B_CEN_rerun.json`, `…/L2/B_CEN_rerun.json` | 108 | pending | |
-| L1-A-* | A | 6519cc7 | venv-A | L1 | CEN, CEN-G, MH, CD×5, BEIR×2 | `drive.py l1 --state A --suite <s> --round …` | `…/L1/A_<s>.json` | per §5 | pending | |
-| L1-B-* | B | 8e5846f | venv-B | L1 | ″ | `… --state B …` | `…/L1/B_<s>.json` | per §5 | pending | |
-| L1-C-* | C | f74b23f | venv-Cprime | L1 | ″ | `… --state C …` | `…/L1/C_<s>.json` | per §5 | pending | |
-| L2-A-* | A | 6519cc7 | venv-A | L2 | CEN, CEN-G, MH, CD×5, BEIR×2 | `drive.py l2 --state A --suite <s> --round …` | `…/L2/A_<s>.json` | per §5 | pending | |
-| L2-B-* | B | 8e5846f | venv-B | L2 | ″ | `… --state B …` | `…/L2/B_<s>.json` | per §5 | pending | |
-| L2-C-* | C | f74b23f | venv-Cprime | L2 | ″ | `… --state C …` | `…/L2/C_<s>.json` | per §5 | pending | |
-| L2-C0 | C (extras = 0) | f74b23f | venv-Cprime | L2 | CEN | `… --state C --extra-chars 0 …` | `…/L2/C_CEN_killswitch.json` | 108 | pending | |
-| L2-I1 | A (empty graph) | 6519cc7 | venv-A | L2 info | CEN, MH | `… --state A --graph-empty …` | `…/L2/info_A_emptygraph_<s>.json` | 108/30 | pending | |
-| L2-I2 | B (500 chars) | 8e5846f | venv-B | L2 info | CEN, MH | `… --state B --result-chars 500 …` | `…/L2/info_B_500_<s>.json` | 108/30 | pending | |
-| L2-I3 | B (1,700 chars) | 8e5846f | venv-B | L2 info | CEN, CEN-G, MH | `… --state B --result-chars 1700 …` | `…/L2/info_B_1700_<s>.json` | 108/108/30 | pending | |
-| J1 | A/B/C | — | — | L3 | CEN-A hybrid | `judge_pack.py build --pack J1 --round …` | `…/judges/pack_J1.json`, `keymap_J1.json` (SHA-256: _TBD before judging_), `out_J1_*.json` | 228 | pending | |
-| J1-R | — | — | — | L3 | 20% re-judge | `judge_pack.py build --pack J1R --round …` | `…/judges/pack_J1R.json`, `keymap_J1R.json` (SHA-256: _TBD before judging_), `out_J1R_*.json` | 46 | pending | |
-| J2 (opt.) | B/C | — | — | L3 | CEN-A precise | `judge_pack.py build --pack J2 --round …` | `…/judges/pack_J2.json`, `keymap_J2.json` (SHA-256: _TBD before judging_), `out_J2_*.json` | 152 | pending | |
+| R00-A | A | 6519cc7 | venv-A | env | — | `drive.py env --state A --round rounds/r2.json` | `tests/results/agent_view_eval_r2/env/A.txt` | — | done | |
+| R00-B | B | 8e5846f | venv-B | env | — | `… --state B …` | `…/env/B.txt` | — | done | |
+| R00-C | C | f74b23f | venv-Cprime | env | — | `… --state C …` | `…/env/C.txt` | — | done | |
+| I01 | B | 8e5846f | venv-B | ingest | CEN | `drive.py ingest --corpus I01 --round rounds/r2.json` | `…/ingest/I01_*.json` | 89 docs | done | |
+| I02 | B | 8e5846f | venv-B | ingest | CEN-G (overlap 50) | `drive.py ingest --corpus I02 --round rounds/r2.json` | `…/ingest/I02_*.json` | 89 docs | done | |
+| I03 | B | 8e5846f | venv-B | ingest | CD-LEG | `drive.py ingest --corpus I03 --round rounds/r2.json` | `…/ingest/I03_*.json` | 90 docs | done | |
+| I04 | B | 8e5846f | venv-B | ingest | CD-MED | `drive.py ingest --corpus I04 --round rounds/r2.json` | `…/ingest/I04_*.json` | 91 docs | done | |
+| I05 | B | 8e5846f | venv-B | ingest | CD-NAR | `drive.py ingest --corpus I05 --round rounds/r2.json` | `…/ingest/I05_*.json` | 89 docs | done | |
+| I06 | B | 8e5846f | venv-B | ingest | CD-API | `drive.py ingest --corpus I06 --round rounds/r2.json` | `…/ingest/I06_*.json` | 95 docs | done | |
+| I07 | B | 8e5846f | venv-B | ingest | CD-ALT | `drive.py ingest --corpus I07 --round rounds/r2.json` | `…/ingest/I07_*.json` | 88 docs | done | |
+| I08 | B | 8e5846f | venv-B | ingest | BEIR-SF | `drive.py ingest --corpus I08 --round rounds/r2.json` | `…/ingest/I08_*.json` | 5,182 docs | done | |
+| I09 | B | 8e5846f | venv-B | ingest | BEIR-NF | `drive.py ingest --corpus I09 --round rounds/r2.json` | `…/ingest/I09_*.json` | 3,623 docs | done | |
+| R01 | B | 8e5846f | venv-B | L1+L2 | CEN (determinism, run 2) | `drive.py all` (B rerun) | `…/L1/B_CEN_rerun.json`, `…/L2/B_CEN_rerun.json` | 108 | done | |
+| L1-A-* | A | 6519cc7 | venv-A | L1 | CEN, CEN-G, MH, CD×5, BEIR×2 | `drive.py l1 --state A --suite <s> --round …` | `…/L1/A_<s>.json` | per §5 | done | |
+| L1-B-* | B | 8e5846f | venv-B | L1 | ″ | `… --state B …` | `…/L1/B_<s>.json` | per §5 | done | |
+| L1-C-* | C | f74b23f | venv-Cprime | L1 | ″ | `… --state C …` | `…/L1/C_<s>.json` | per §5 | done | |
+| L2-A-* | A | 6519cc7 | venv-A | L2 | CEN, CEN-G, MH, CD×5, BEIR×2 | `drive.py l2 --state A --suite <s> --round …` | `…/L2/A_<s>.json` | per §5 | done | |
+| L2-B-* | B | 8e5846f | venv-B | L2 | ″ | `… --state B …` | `…/L2/B_<s>.json` | per §5 | done | |
+| L2-C-* | C | f74b23f | venv-Cprime | L2 | ″ | `… --state C …` | `…/L2/C_<s>.json` | per §5 | done | |
+| L2-C0 | C (extras = 0) | f74b23f | venv-Cprime | L2 | CEN | `… --state C --extra-chars 0 …` | `…/L2/C_CEN_killswitch.json` | 108 | done | |
+| L2-I1 | A (empty graph) | 6519cc7 | venv-A | L2 info | CEN, MH | `… --state A --graph-empty …` | `…/L2/info_A_emptygraph_<s>.json` | 108/30 | done | |
+| L2-I2 | B (500 chars) | 8e5846f | venv-B | L2 info | CEN, MH | `… --state B --result-chars 500 …` | `…/L2/info_B_500_<s>.json` | 108/30 | done | |
+| L2-I3 | B (1,700 chars) | 8e5846f | venv-B | L2 info | CEN, CEN-G, MH | `… --state B --result-chars 1700 …` | `…/L2/info_B_1700_<s>.json` | 108/108/30 | done | |
+| J1 | A/B/C | — | — | L3 | CEN-A hybrid | `judge_pack.py build --pack J1 --round …` | `…/judges/pack_J1.json`, `keymap_J1.json` (SHA-256: `b93e2d6a8d2c409b85c0ffb1986fe5b52f7cef8c40b72d3968e6702c00af8725`), `out_J1_*.json` | 228 | pending | |
+| J1-R | — | — | — | L3 | 20% re-judge | `judge_pack.py build --pack J1R --round …` | `…/judges/pack_J1R.json`, `keymap_J1R.json` (SHA-256: `2493f118148d3b5e52efec58bff3f0659d595ea38991141e6a439fedb95f38ab`), `out_J1R_*.json` | 46 | pending | |
+| J2 (opt.) | B/C | — | — | L3 | CEN-A precise | `judge_pack.py build --pack J2 --round …` | `…/judges/pack_J2.json`, `keymap_J2.json` (SHA-256: `6d75632acefdc12c4c136af5a2ad3594ad565d82d58e22d268f82af6296df5e2`), `out_J2_*.json` | 152 | pending | |
 | J1D | B/C | — | — | L3 info | C-11 discordant queries (R2-3) | `rejudge_discordant.py build/analyse --round …` | `…/judges/pack_J1D_part*.json`, `keymap_J1D.json`, `results_J1D.json` | — | pending | |
-| CI-A | A | 6519cc7 | venv-A | CI | — | `pytest -m "unit or (benchmark and not slow)" -p mps_serial` (MPS) | `…/verification/ci_A.txt` | — | pending | |
-| CI-B | B | 8e5846f | venv-B | CI | — | `pytest -m "unit or (benchmark and not slow)"` (MPS) | `…/verification/ci_B.txt` | — | pending | |
-| CI-C | C | f74b23f | venv-Cprime | CI | — | ″ | `…/verification/ci_C.txt` | — | pending | |
+| CI-A | A | 6519cc7 | venv-A | CI | — | `pytest -m "unit or (benchmark and not slow)" -p mps_serial` (MPS) | `…/verification/ci_A.txt` | — | done: 214 passed, 12 skipped (1 attempt) | |
+| CI-B | B | 8e5846f | venv-B | CI | — | `pytest -m "unit or (benchmark and not slow)"` (MPS) | `…/verification/ci_B.txt` | — | done: 275 passed, 12 skipped (1 attempt); 0 red flags vs A | |
+| CI-C | C | f74b23f | venv-Cprime | CI | — | ″ | `…/verification/ci_C.txt` | — | done: 307 passed, 12 skipped (1 attempt); 0 red flags vs A | |
 | V-ALL | — | — | — | verify | all | `drive.py verify --all --check-doc --round …` | `…/verification/checks.json`, `…/summary.json` | — | pending | |
+
+The key maps of J1, J1R and J2 are byte-identical to round 1's. They depend only on the seed, the 76 CEN-A queries and the states, so an item id names the same query and state in both rounds. The judges see only their own part.
 
 ## 15. Results (filled from `summary.json` after V-ALL passes)
 
