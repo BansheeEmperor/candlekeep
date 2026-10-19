@@ -15,6 +15,7 @@ is frozen and authoritative; this directory implements its Sections 4 to 11.
 | `run_layer2.py` | Layer 2: raw `search` tool output through MCP, fixed FastMCP 3 client |
 | `judge_pack.py` | Layer 3: blind judge packs, key maps, unblinding |
 | `drive.py` | Runs every step with the right venv, ports and environment |
+| `rounds/r2.json` | Everything round 2 changes (results root, EVAL_HOME, ports, states, document counts, CI plugins, informational runs); see "Rounds" |
 
 ## Layout
 
@@ -47,6 +48,18 @@ tests/results/agent_view_eval/
 ```
 
 Ports: Chroma for I01..I09 = 8121..8129, ingest server 8130, Layer 2 server 8131.
+
+Round 2 (`--round rounds/r2.json`, see "Rounds") has the same layout under its own roots:
+
+```
+EVAL_HOME = ~/.cache/candlekeep-eval/r2      data/, staging/, scratch/, run/ as above
+State A = worktrees/A at 6519cc7 with venvs/A (shared with round 1, read only)
+State B = this checkout (src/ = 8e5846f) with .venv
+State C = worktrees/Cprime at f74b23f with venvs/Cprime     (worktrees/ and venvs/ under ~/.cache/candlekeep-eval)
+tests/results/agent_view_eval_r2/            env/, ingest/, L1/, L2/, judges/, verification/, ... as above
+Ports: Chroma for I01..I09 = 8221..8229, ingest server 8230, Layer 2 server 8231.
+```
+
 Port 65530 must stay unused: it is the dead `CHROMA_URL` used whenever candlekeep is
 imported in-process (its import starts a background thread that connects to Chroma
 and write-probes it), and in the CI run. Servers bind to 127.0.0.1 only.
@@ -93,6 +106,9 @@ $PY scripts/eval_agent_view/drive.py status
 $PY scripts/eval_agent_view/drive.py chroma-down --corpus I01   # only once every run on I01 is done
 $PY scripts/eval_agent_view/drive.py verify --all --check-doc   # V-ALL, see "Verification" below
 ```
+
+Every command takes `--round FILE` for a later round, e.g.
+`$PY scripts/eval_agent_view/drive.py all --round rounds/r2.json` (see "Rounds").
 
 `all` ingests every corpus that has no successful ingest, then runs, for each corpus in
 turn: L1 for B (plus the CEN rerun), A and C, then L2 for B (plus the CEN rerun), A, C,
@@ -259,6 +275,90 @@ Besides protocol Section 13, `verify.py` checks the Section 16 controls:
 * V-03 / V-06: the fixtures give 76 CEN-A queries (CEN-014 and CEN-038 excluded), and
   the packs hold J1 228, J1R 46 (round(0.2 x 228)) and J2 152 items.
 
+## Rounds
+
+A later round of the protocol compares new states on the same suites. One round file,
+`rounds/<name>.json`, selects everything that differs from round 1; without `--round`
+every value is round 1's. Round 2 (`rounds/r2.json`, protocol
+`docs/AGENT_VIEW_EVALUATION_R2.md`):
+
+| Key | Meaning (round 2) |
+|---|---|
+| `name` | shown by `status` and recorded in `verify.py`'s `summary.json` / `checks.json` |
+| `results_root` | replaces `tests/results/agent_view_eval` (`tests/results/agent_view_eval_r2`) |
+| `eval_home` | holds `data/`, `staging/`, `scratch/`, `run/` as EVAL_HOME does (`~/.cache/candlekeep-eval/r2`); worktrees and venvs come from `states` |
+| `doc` | the protocol document whose section 15 `verify.py --check-doc` compares |
+| `ports` | `chroma`: one port per corpus, all nine (8221..8229); `ingest` (8230); `l2` (8231) |
+| `states` | `checkout`, `venv`, `ref`, `fastmcp` of A, B and C. A's ref is the commit checked out (6519cc7); B's is the commit whose `src/` every B output must have (8e5846f; HEAD may be a later commit that changes only docs or the harness); C's is the exact commit of C's checkout (f74b23f, required like the others; round 1 has none and reads C's SHA from `env/C.txt`, a cross-check that stays). B's checkout must be this repository (the fixtures, the project's metrics module and B's ingest provenance are read from it); B's venv becomes venv B (Chroma CLI, ingest server, the interpreter of the scripts `drive.py` starts, and `verify.py`'s default `--b-python`) |
+| `corpus_documents` | expected document counts that differ from the registry (I08 5182, I09 3623: the quality gate now skips 1 SciFact and 10 NFCorpus documents under 50 words) |
+| `ci_plugins` | modules of `pytest_plugins/` added with `-p` to the CI command of the listed states only (A: `mps_serial`, since A's code still crashes on MPS when two threads call a model; B and C have a model-call lock and run the command as written) |
+| `info_runs` | extra informational Layer 2 runs, each `{state, result_chars, suites, refs}`: `drive.py all` runs the state with `CANDLEKEEP_RESULT_CHARS=result_chars` on each suite (`L2/info_<state>_<chars>_<suite>.json`, as `drive.py l2 --result-chars`), and `verify.py` checks it like the other informational rows and reports it next to `refs`, paired against the first (round 2: B at 1,700 on CEN, CEN-G and MH, refs C then B; R2-4) |
+
+Paths may start with `~` or be relative to the repository root. `corpus_documents`,
+`ci_plugins` and `info_runs` may be left out (none); every other key is required.
+
+* **Selection.** Every script takes `--round FILE`: the path as given, else relative to this
+  directory, so `--round rounds/r2.json` works from the repository root. `drive.py`
+  forwards it, as an absolute path, to every script it starts, and `drive.py verify`
+  passes it to `verify.py`. `common.apply_overrides` applies it before the smoke-test
+  options, which still apply on top of it. It must follow the subcommand
+  (`drive.py <step> --round FILE`): before it, `drive.py` refuses it, as it does an
+  abbreviated `--round` after `verify`. An empty value, or one that names no file, is
+  refused by every script and by `verify.py`: it never means round 1.
+* **Checks.** The file is checked before anything runs: missing or unknown keys, refs that
+  are not commit SHAs (C's included), a checkout of B other than this repository, a
+  corpus without a Chroma port and plugins that are not in `pytest_plugins/` are
+  refused. A run with `--round` also refuses a final configuration whose data, staging,
+  scratch, run or results directory overlaps (one inside the other) round 1's data,
+  staging, scratch, run or results directory, round 1's B′ results
+  (`tests/results/agent_view_bprime`), any other existing `tests/results/agent_view_*`
+  tree, or a checkout or venv of round 1's states or the round's (of these directories,
+  only the results root and `--out` files may lie in this repository, B's checkout), or
+  that uses one of round 1's ports (8121..8131) or the dead port. Existing directories
+  are also compared by identity (`os.path.samefile`), so another spelling of one (its
+  case, on macOS) still counts. An explicit `--out` (`common.py preflight`, `env.py`,
+  `run_layer1.py`, `run_layer2.py`) must avoid the same directories. So no step of a
+  round reads or writes round 1's data, results, pid files or ports. Files named as
+  read-only inputs (`--recompute`, `--journal`, `verify.py --metrics-of`) are not
+  restricted. The round's own results root is exempt from the rule on existing results
+  trees, so two round files must never name the same one. State A's checkout and venv
+  are the ones round 1 used (read only).
+* **CI.** `drive.py ci` adds the state's `ci_plugins` (plus `mps_serial` with
+  `--serialize-models`) with `-p` and puts `pytest_plugins/` on `PYTHONPATH`. The plugins
+  come from this checkout, not the state's, so the run records each plugin file's
+  SHA-256: as `plugins` and `plugin_sha256` in `ci_<S>.json` (in a round for every state,
+  `[]` and `{}` without plugins; in round 1 only when there are plugins) and in a
+  `# plugins:` line of the `ci_<S>.txt` header. A plugin file that changes during the
+  run makes the run invalid. The CI step never touches any `tests/results/agent_view_*`
+  entry of the checkout (every round's results, also one created while the run goes
+  on), nor the run's own results root when it lies in the checkout's `tests/results`.
+* **Verification.** `verify.py --round FILE` reads the same file with its own code (data
+  only) and sets: the refs of A and B, C's commit, each state's FastMCP version and the A
+  and C checkouts, the defaults of `--root`, `--doc`, `--eval-home` and `--b-python` (B's
+  venv), the expected document counts, and the CI rule (a state listed in `ci_plugins`
+  must have loaded exactly those plugins and no others, every other state none, and the
+  run must record each plugin file's SHA-256 in its json and header; a plugin file that
+  differs from the recorded SHA-256 now leaves the run unverifiable; `-k` and
+  `--deselect` stay forbidden; the informational `ci_info/` run is not subject to it).
+  Every other expectation (query counts, CEN-A 76 with CEN-014 and CEN-038 excluded,
+  seeds, criteria C-01..C-15, rendering) is round 1's. With `--round`, `verify.py`
+  refuses a `--root`, or an `--eval-home` whose `data/` or `staging/`, that overlaps round
+  1's results root, the `data/`, `staging/`, `scratch/`, `run/`, `worktrees/` or `venvs/`
+  of round 1's EVAL_HOME, round 1's B′ results, another existing results tree or the A or
+  C checkout, whether given directly or passed on by `drive.py verify`.
+* **Abbreviated options.** `--round` makes some abbreviations ambiguous, and they now fail:
+  `verify.py --ro` (`--round` or `--root`), `drive.py <step> --r` (`--results-root` or
+  `--round`). `drive.py verify` passes abbreviated options to `verify.py` unchanged
+  instead of taking them for its own. Spell options out.
+
+```bash
+$PY scripts/eval_agent_view/drive.py status --round rounds/r2.json       # the round's states, roots and ports
+$PY scripts/eval_agent_view/drive.py preflight --round rounds/r2.json
+$PY scripts/eval_agent_view/drive.py all --round rounds/r2.json
+$PY scripts/eval_agent_view/drive.py verify --all --check-doc --round rounds/r2.json
+$PY scripts/eval_agent_view/verify.py --round scripts/eval_agent_view/rounds/r2.json --render
+```
+
 ## Conventions the harness fixes
 
 These follow the data contract. The points the contract leaves open, or words
@@ -334,9 +434,13 @@ against them.
     comparisons later from the saved results.
 
   Afterwards every file under the checkout's `tests/results` is restored from a pre-run
-  backup and files the run created are deleted; `tests/results/agent_view_eval` is never
-  touched. A state's earlier CI files in `verification/` are moved to
-  `verification/previous/`, never deleted.
+  backup and files the run created are deleted; every `tests/results/agent_view_*` entry
+  (the results of every round: `agent_view_eval`, `agent_view_bprime`, a later round's),
+  and the run's own results root when it lies there, are never touched. A round file can
+  add pytest plugins to a state's command (`ci_plugins`, see "Rounds"); `ci_<S>.json`
+  records them as `plugins`, with their files' SHA-256 as `plugin_sha256`. A state's
+  earlier CI files in `verification/` are moved to `verification/previous/`, never
+  deleted.
 * **Seeds.** Protocol Section 4 fixes seed 20261018 for every shuffled or sampled step,
   so all judge packs default to it; `--seed` overrides it (a deviation to log if used).
 * **Ingest record** `ok` is false (and the file is written as `.failed.json`) if any tool
@@ -352,9 +456,11 @@ against them.
 Hidden options (accepted by every script, forwarded by `drive.py`) redirect all state
 to a throwaway area: `--test-config FILE` (JSON with `data_root`, `staging_root`,
 `scratch_root`, `run_root`, `results_root`, `ports`, extra `corpora`/`suites` with the
-`records` loader, and `states` to repoint a checkout or venv), `--data-root DIR`,
+`records` loader, and `states` to repoint a state's checkout or venv; venv B, which runs
+Chroma, the ingest server and the scripts `drive.py` starts, stays), `--data-root DIR`,
 `--results-root DIR`, `--ports chroma=N,ingest=N,l2=N`. `drive.py ci --pytest-k EXPR`
-restricts the test selection. Example config:
+restricts the test selection. They apply on top of `--round`, and with a round the
+result must still avoid the directories and ports listed under "Rounds". Example config:
 
 ```json
 {"data_root": "/tmp/ck_smoke/home/data", "staging_root": "/tmp/ck_smoke/home/staging",

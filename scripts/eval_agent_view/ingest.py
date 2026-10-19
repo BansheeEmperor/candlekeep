@@ -34,6 +34,10 @@ Protocol sections 4, 5 and 11 (step 3). With venv B only:
    L1/L2 runs is a separate process, started afterwards (drive.py chroma-up).
 
     .venv/bin/python scripts/eval_agent_view/ingest.py --corpus I01
+
+With --round FILE, the round file's data and staging directories, ports, results root,
+venv B and expected document counts replace round 1's (common.load_round; B's checkout
+is this repository in every round).
 """
 from __future__ import annotations
 
@@ -242,7 +246,7 @@ def main() -> int:
     live = C.our_chroma(corpus)
     if live:
         raise SystemExit(f"drive.py's Chroma server for {corpus.id} is running (pid {live['pid']}, port "
-                         f"{live['port']}); stop it first: drive.py chroma-down --corpus {corpus.id}")
+                         f"{live['port']}); stop it first: drive.py chroma-down --corpus {corpus.id}{C.round_flag()}")
     for port in (corpus.chroma_port, C.CONFIG.ingest_port):
         if C.port_in_use(port):
             raise SystemExit(f"port {port} is already in use")

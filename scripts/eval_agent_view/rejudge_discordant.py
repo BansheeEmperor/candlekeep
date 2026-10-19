@@ -134,7 +134,9 @@ def analyse() -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("cmd", choices=["build", "analyse"])
+    C.add_hidden_args(ap)
     args = ap.parse_args()
+    C.apply_overrides(args)
     build() if args.cmd == "build" else analyse()
     return 0
 

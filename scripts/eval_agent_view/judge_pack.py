@@ -17,7 +17,7 @@ round(0.2 * 228) sorted J1 ids with random.Random(seed).sample and numbers them
 R0001... unblind splits each evidence string on " ... " and checks every part
 verbatim against the item's tool output (the rule verify.py applies).
 
-Files (under tests/results/agent_view_eval/judges/):
+Files (under judges/ of the results root: tests/results/agent_view_eval, or a round file's with --round):
     pack_<P>.json                 all items, no keys
     pack_<P>_part<k>.json         balanced parts of at most 26 items, one per judge
     keymap_<P>.json (+ .sha256)   id -> "qid|STATE" (J1R: R id -> J id)

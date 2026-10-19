@@ -1,0 +1,15 @@
+{
+  "name": "round 2",
+  "results_root": "tests/results/agent_view_eval_r2",
+  "eval_home": "~/.cache/candlekeep-eval/r2",
+  "doc": "docs/AGENT_VIEW_EVALUATION_R2.md",
+  "ports": {"chroma": {"I01": 8221, "I02": 8222, "I03": 8223, "I04": 8224, "I05": 8225, "I06": 8226, "I07": 8227, "I08": 8228, "I09": 8229}, "ingest": 8230, "l2": 8231},
+  "states": {
+    "A": {"checkout": "~/.cache/candlekeep-eval/worktrees/A", "venv": "~/.cache/candlekeep-eval/venvs/A", "ref": "6519cc7", "fastmcp": "2.14.5"},
+    "B": {"checkout": ".", "venv": ".venv", "ref": "8e5846f", "fastmcp": "3.4.9"},
+    "C": {"checkout": "~/.cache/candlekeep-eval/worktrees/Cprime", "venv": "~/.cache/candlekeep-eval/venvs/Cprime", "ref": "f74b23f", "fastmcp": "3.4.9"}
+  },
+  "corpus_documents": {"I08": 5182, "I09": 3623},
+  "ci_plugins": {"A": ["mps_serial"]},
+  "info_runs": [{"state": "B", "result_chars": 1700, "suites": ["CEN", "CEN-G", "MH"], "refs": ["C", "B"]}]
+}

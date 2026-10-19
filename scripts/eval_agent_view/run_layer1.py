@@ -97,7 +97,8 @@ def run(args) -> int:
     queries = C.load_queries(suite)
     url = C.chroma_url(corpus)
     if not C.http_ok(C.chroma_heartbeat_url(corpus.chroma_port)):
-        raise SystemExit(f"Chroma for {corpus.id} is not running at {url} (start it with drive.py chroma-up)")
+        raise SystemExit(f"Chroma for {corpus.id} is not running at {url} (start it with "
+                         f"`drive.py chroma-up --corpus {corpus.id}{C.round_flag()}`)")
     chroma_start, chroma_source = C.chroma_process_for_run(corpus, "run_layer1.py")
     ck_data = C.ck_data_dir(corpus)
     if not (ck_data / "graph.db").is_file():
@@ -241,6 +242,8 @@ def main() -> int:
     C.add_hidden_args(ap)
     args = ap.parse_args()
     C.apply_overrides(args)
+    if args.out:
+        C.require_round_output(args.out)
     if args.recompute:
         return recompute(args.recompute, args.check)
     if not args.state or not args.suite:

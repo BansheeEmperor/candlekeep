@@ -29,7 +29,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--journal", required=True, type=Path)
     ap.add_argument("--force", action="store_true", help="overwrite existing out_*.json files")
+    C.add_hidden_args(ap)
     args = ap.parse_args()
+    C.apply_overrides(args)
     d = C.CONFIG.results_root / "judges"
     labels, results, order = {}, {}, {}
     for line in args.journal.read_text(encoding="utf-8").splitlines():

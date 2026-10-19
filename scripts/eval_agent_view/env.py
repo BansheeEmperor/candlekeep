@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Environment manifest of one code state (protocol section 11 step 1, runs R00-A/B/C).
 
-Writes tests/results/agent_view_eval/env/<STATE>.txt with: state, venv path, python
+Writes tests/results/agent_view_eval/env/<STATE>.txt (with --round FILE: env/ under the
+round's results root, for the round's states) with: state, venv path, python
 version, `uv pip freeze` of the venv, git SHA and `git rev-parse HEAD:src` of the
 state's checkout, FastMCP version, torch MPS availability, and the snapshot
 directory names of the model cache (~/.cache/candlekeep/models).
@@ -70,6 +71,8 @@ def main() -> int:
     C.add_hidden_args(ap)
     args = ap.parse_args()
     C.apply_overrides(args)
+    if args.out:
+        C.require_round_output(args.out)
     state = C.STATES[args.state]
     for p, what in ((state.checkout, "checkout"), (state.python, "venv python")):
         if not p.exists():
@@ -94,6 +97,9 @@ def main() -> int:
         expected_tree = C.git(state.checkout, "rev-parse", f"{state.ref}:src")
         checks.append(f"HEAD:src == {state.ref}:src: {src_tree == expected_tree}")
     if state.name == "C":
+        if state.ref:  # a round file pins C's exact commit (round 1: this file records it)
+            expected = C.git(state.checkout, "rev-parse", f"{state.ref}^{{commit}}")
+            checks.append(f"HEAD == {state.ref}: {sha == expected}")
         base = C.git(C.REPO, "rev-parse", f"{C.STATES['B'].ref}:src")
         checks.append(f"HEAD:src differs from {C.STATES['B'].ref}:src: {src_tree != base}")
     checks.append(f"fastmcp == {state.fastmcp}: {info.get('fastmcp') == state.fastmcp}")

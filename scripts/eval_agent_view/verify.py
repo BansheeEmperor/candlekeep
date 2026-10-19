@@ -14,6 +14,7 @@ Usage::
     verify.py --all [--render] [--check-doc]
     verify.py --render                   write verification/section15.md from summary.json
     verify.py --check-doc                diff section 15 of the protocol against the rendering
+    verify.py --round FILE ...           any of the above for a later round (see below)
 
 ``--all`` runs V-01..V-07 and V-09 (V-08 is manual; a sample is written),
 computes every number of section 15 and every criterion C-01..C-15, and writes
@@ -24,6 +25,25 @@ runs to exist.
 
 Exit status: 0 when every automated check passes, 1 when any check fails,
 2 when nothing fails but some inputs are missing or pending.
+
+A later round of the protocol compares new states on the same suites. Its round file
+(``--round FILE``, e.g. ``scripts/eval_agent_view/rounds/r2.json``) is read here as
+data, with this script's own code, and sets: the refs of A and B (``STATE_REF``), C's
+exact commit (``C_REF``, required; env/C.txt is still cross-checked against it), each
+state's FastMCP version and the A and C checkouts, the default ``--root``, ``--doc``,
+``--eval-home`` and ``--b-python`` (B's venv; B's checkout must be this repository), the
+ingest document counts it lists, and the CI plugin rule: a state listed under
+``ci_plugins`` must load exactly those pytest plugins (``-p``) in its CI command, every
+other state none, and the run must record each plugin file's SHA-256 (``-k`` and
+``--deselect`` stay forbidden; the informational ``ci_info/`` run is not subject to the
+rule), and extra informational Layer 2 runs (``info_runs``: a state at another
+``CANDLEKEEP_RESULT_CHARS`` on some suites, expected as
+``L2/info_<state>_<chars>_<suite>.json``, checked like the other informational rows and
+reported in section 15 next to its ``refs``, paired against the first). Every other
+expectation is round 1's. With ``--round``, a ``--root`` or
+``--eval-home`` that meets round 1's results or EVAL_HOME directories, another
+``tests/results/agent_view_*`` tree or the A or C checkout is refused
+(``round_isolation_problems``), and so is an empty ``--round`` value.
 
 Where the data contract is silent, this verifier fixes the following
 conventions (a V-05 mismatch on one of these points is a convention
@@ -131,6 +151,7 @@ DEFAULT_ROOT = REPO / "tests" / "results" / "agent_view_eval"
 DEFAULT_DOC = REPO / "docs" / "AGENT_VIEW_EVALUATION.md"
 DEFAULT_EVAL_HOME = Path(os.environ.get("EVAL_HOME", str(Path.home() / ".cache" / "candlekeep-eval")))
 DEFAULT_B_PYTHON = REPO / ".venv" / "bin" / "python"
+ROUND1_ROOT, ROUND1_EVAL_HOME = DEFAULT_ROOT, DEFAULT_EVAL_HOME   # a run without --round (kept by apply_round)
 
 SEED = 20261018
 N_BOOT = 10_000
@@ -164,7 +185,12 @@ CORPUS_DIRS = {"I01": _CEN_DIRS, "I02": _CEN_DIRS,
                "I07": (FIX / "cross_domain" / "alternating_docs",)}
 SUPPORTED_EXT = {".txt", ".md", ".pdf", ".rst", ".json", ".yaml", ".yml"}  # DocumentProcessor's set
 STATE_REF = {"A": "6519cc7", "B": "d524652"}
+C_REF = None              # C's exact commit: round 1 reads it from env/C.txt; a round file pins it
 FASTMCP_VERSION = {"A": "2.14.5", "B": "3.4.9", "C": "3.4.9"}
+STATE_CHECKOUT: dict = {}  # A and C checkouts; round 1: <eval home>/worktrees/{A,C}; a round file names them
+CI_PLUGINS = None         # round 1: not checked; a round file: {state: the -p plugins its CI command must load}
+INFO_RUNS: list = []      # a round file's extra informational L2 runs (L2/info_<state>_<result_chars>_<suite>.json)
+ROUND = None              # the round file applied with --round (load_round's dict)
 QUERY_FIELDS = ("qid", "query", "category", "gold_sources", "graded_chunks", "graded_docs", "supporting")
 N_RESULTS = {s: (10 if s in BEIR_SUITES else 5) for s in SUITES}
 JUDGE_PACKS = {"J1": {"path": "hybrid", "states": ("A", "B", "C"), "optional": False, "rejudge": True},
@@ -1110,7 +1136,15 @@ def expected_runs() -> list:
     for s in ("CEN", "MH"):
         out.append(("L2", f"info_A_emptygraph_{s}", "A", s, "emptygraph", "info"))
         out.append(("L2", f"info_B_500_{s}", "B", s, "500", "info"))
+    for r in INFO_RUNS:     # a round file's extra informational runs
+        for s in r["suites"]:
+            out.append(("L2", f"info_{r['state']}_{r['result_chars']}_{s}", r["state"], s, str(r["result_chars"]), "info"))
     return out
+
+
+def info_result_chars() -> dict:
+    """{stem prefix: CANDLEKEEP_RESULT_CHARS} of the informational runs that set it."""
+    return {"info_B_500_": 500, **{f"info_{r['state']}_{r['result_chars']}_": r["result_chars"] for r in INFO_RUNS}}
 
 
 def parse_stem(stem: str):
@@ -1195,6 +1229,8 @@ class Verifier:
         """(tree sha, source description) expected for a state's src/."""
         if state in STATE_REF:
             return self.rev(f"{STATE_REF[state]}:src"), f"git rev-parse {STATE_REF[state]}:src"
+        if state == "C" and C_REF:
+            return self.rev(f"{C_REF}:src"), f"git rev-parse {C_REF}:src"
         env = self.env_info("C")
         if env is None:
             return None, "env/C.txt missing"
@@ -1402,11 +1438,13 @@ class Verifier:
                 it.append(item(f"{lab}: git_sha's committed src equals src_tree_sha", "warn",
                                {"committed": committed, "recorded": tree}))
             if state == "A":
-                chk("git_sha is state A (6519cc7)", full == self.rev(STATE_REF["A"]), full)
+                chk(f"git_sha is state A ({STATE_REF['A']})", full == self.rev(STATE_REF["A"]), full)
             elif state == "B":
                 _o, _e, rc = git(self.repo, "diff", "--quiet", STATE_REF["B"], full, "--", "src")
-                chk("git diff d524652 <git_sha> -- src is empty", rc == 0, full)
+                chk(f"git diff {STATE_REF['B']} <git_sha> -- src is empty", rc == 0, full)
             elif state == "C":
+                if C_REF:
+                    chk(f"git_sha is state C ({C_REF})", full == self.rev(C_REF), full)
                 env = self.env_info("C")
                 if env and env.get("git_sha"):
                     chk("git_sha equals env/C.txt", full == self.rev(env["git_sha"]), {"file": full, "env": env["git_sha"]})
@@ -1447,8 +1485,9 @@ class Verifier:
                     chk("server_env CANDLEKEEP_RESULT_EXTRA_CHARS=0", str(extra).strip() == "0", extra)
                 elif state == "C" and extra is not None:
                     chk("server_env CANDLEKEEP_RESULT_EXTRA_CHARS=2500", str(extra).strip() == "2500", extra)
-                if run.stem.startswith("info_B_500"):
-                    chk("server_env CANDLEKEEP_RESULT_CHARS=500", str(chars).strip() == "500", chars)
+                want = next((n for pre, n in info_result_chars().items() if run.stem.startswith(pre)), None)
+                if want is not None:
+                    chk(f"server_env CANDLEKEEP_RESULT_CHARS={want}", str(chars).strip() == str(want), chars)
                 elif chars is not None:
                     chk("server_env CANDLEKEEP_RESULT_CHARS=1000", str(chars).strip() == "1000", chars)
                 chk('server_env write_probe = "neutralised" (server started through serve.py, section 16)',
@@ -1622,11 +1661,15 @@ class Verifier:
             if state in STATE_REF and env.get("git_sha"):
                 full = self.rev(env["git_sha"])
                 if state == "A":
-                    g.append(item("env/A.txt git SHA is 6519cc7", "pass" if full == self.rev("6519cc7") else "fail", full))
+                    g.append(item(f"env/A.txt git SHA is {STATE_REF['A']}",
+                                  "pass" if full == self.rev(STATE_REF["A"]) else "fail", full))
                 else:
                     _o, _e, rc = git(self.repo, "diff", "--quiet", STATE_REF["B"], env["git_sha"], "--", "src")
-                    g.append(item("env/B.txt: git diff d524652 <sha> -- src is empty", "pass" if rc == 0 else "fail",
-                                  env["git_sha"]))
+                    g.append(item(f"env/B.txt: git diff {STATE_REF['B']} <sha> -- src is empty",
+                                  "pass" if rc == 0 else "fail", env["git_sha"]))
+            elif state == "C" and C_REF and env.get("git_sha"):
+                full = self.rev(env["git_sha"])
+                g.append(item(f"env/C.txt git SHA is {C_REF}", "pass" if full == self.rev(C_REF) else "fail", full))
         a, b = self.env_info("A"), self.env_info("B")
         if a and b:
             allowed = {"fastmcp", "fastmcp-slim", "py-key-value-aio", "py-key-value-shared", "candlekeep"}
@@ -1688,9 +1731,10 @@ class Verifier:
         """State checkouts at verification time: HEAD and uncommitted src/ changes (signals, not proof)."""
         out = []
         env_c = self.env_info("C")
-        wanted = {"A": (self.eval_home / "worktrees" / "A", self.rev(STATE_REF["A"])),
+        head_c = self.rev(C_REF) if C_REF else (self.rev(env_c["git_sha"]) if env_c and env_c.get("git_sha") else None)
+        wanted = {"A": (STATE_CHECKOUT.get("A", self.eval_home / "worktrees" / "A"), self.rev(STATE_REF["A"])),
                   "B": (self.repo, None),
-                  "C": (self.eval_home / "worktrees" / "C", self.rev(env_c["git_sha"]) if env_c and env_c.get("git_sha") else None)}
+                  "C": (STATE_CHECKOUT.get("C", self.eval_home / "worktrees" / "C"), head_c)}
         for state, (path, head_expected) in wanted.items():
             if not (path / ".git").exists():
                 out.append(item(f"checkout {state} ({path})", "warn", "not found at verification time"))
@@ -1746,10 +1790,12 @@ class Verifier:
         sha = str(obj.get("git_sha") or "")
         if sha:
             _o, _e, rc = git(self.repo, "diff", "--quiet", STATE_REF["B"], sha, "--", "src")
-            out.append(item(f"{lab}: git diff d524652 <git_sha> -- src is empty", "pass" if rc == 0 else "fail", sha))
+            out.append(item(f"{lab}: git diff {STATE_REF['B']} <git_sha> -- src is empty",
+                            "pass" if rc == 0 else "fail", sha))
         if obj.get("src_tree_sha"):
             exp = self.rev(f"{STATE_REF['B']}:src")
-            out.append(item(f"{lab}: src_tree_sha = d524652:src", "pass" if obj["src_tree_sha"] == exp else "fail",
+            out.append(item(f"{lab}: src_tree_sha = {STATE_REF['B']}:src",
+                            "pass" if obj["src_tree_sha"] == exp else "fail",
                             {"recorded": obj["src_tree_sha"], "expected": exp}))
         if obj.get("src_dirty"):
             out.append(item(f"{lab}: src/ clean at ingest", "fail", obj.get("src_dirty")))
@@ -2527,8 +2573,23 @@ def parse_ci_header(text: str) -> dict:
     return head
 
 
-def ci_run(v: Verifier, state: str) -> dict:
-    """Provenance and outcome of one CI run (verification/ci_<state>.json and .txt)."""
+def pytest_plugins_of(cmd: list) -> list:
+    """The plugins a pytest command line loads, as pytest's pre-parse reads them: -p NAME or -pNAME."""
+    args = cmd[cmd.index("pytest") + 1:] if "pytest" in cmd else list(cmd)
+    out = []
+    for i, a in enumerate(args):
+        if a == "-p" and i + 1 < len(args):
+            out.append(args[i + 1])
+        elif a.startswith("-p") and len(a) > 2:
+            out.append(a[2:])
+    return out
+
+
+def ci_run(v: Verifier, state: str, decisive: bool = True) -> dict:
+    """Provenance and outcome of one CI run (verification/ci_<state>.json and .txt). With --round,
+    a decisive run's command must load exactly the round's plugins for the state (CI_PLUGINS) and
+    record the SHA-256 of each plugin file (json plugin_sha256 and the "# plugins:" header line);
+    a plugin file that differs now leaves the run unverifiable."""
     jp, tp = v.vdir / f"ci_{state}.json", v.vdir / f"ci_{state}.txt"
     rec, err = load_json_safe(jp)
     res = {"state": state, "files": [jp.name, tp.name]}
@@ -2554,6 +2615,32 @@ def ci_run(v: Verifier, state: str) -> dict:
             probs.append(f"command restricts the test selection: {sc}")
         if head.get("command") != " ".join(sc):
             probs.append("header command differs from the json command")
+        if decisive and CI_PLUGINS is not None:   # --round: exactly the round's plugins for this state
+            used, allowed = sorted(pytest_plugins_of(sc)), CI_PLUGINS.get(state, [])
+            res["plugins"] = used
+            if used != allowed:
+                probs.append(f"command loads pytest plugins {used}; the round allows {allowed} for state {state}")
+            recorded = rec.get("plugins", used)
+            if not isinstance(recorded, list) or sorted(map(str, recorded)) != used:
+                probs.append(f"ci json records plugins {recorded!r}; the command loads {used}")
+            # The plugin files lie outside the state's checkout: the run records their SHA-256.
+            digests = rec.get("plugin_sha256", {} if not used else None)
+            try:
+                head_digests = json.loads(head["plugins"]) if "plugins" in head else {}
+            except ValueError:
+                head_digests = None
+            if not (isinstance(digests, dict) and sorted(digests) == used and all(
+                    isinstance(h, str) and re.fullmatch(r"[0-9a-f]{64}", h) for h in digests.values())):
+                probs.append(f"ci json records plugin SHA-256 {digests!r} for the plugins {used}")
+            elif head_digests != digests:
+                probs.append("header and json plugin SHA-256 differ")
+            else:
+                res["plugin_sha256"] = digests
+                for name, h in sorted(digests.items()):
+                    f = SCRIPT.parent / "pytest_plugins" / f"{name}.py"
+                    now = sha256_file(f) if f.is_file() else None
+                    if now != h:
+                        unverifiable.append(f"pytest_plugins/{name}.py has SHA-256 {now} now; the run loaded {h}")
     try:
         env = json.loads(head.get("env", ""))
     except ValueError:
@@ -2572,12 +2659,14 @@ def ci_run(v: Verifier, state: str) -> dict:
     if full is None:
         probs.append(f"git_sha {sha!r} does not resolve")
     elif state == "A" and full != v.rev(STATE_REF["A"]):
-        probs.append(f"git_sha {full} is not 6519cc7")
+        probs.append(f"git_sha {full} is not {STATE_REF['A']}")
     elif state == "B":
         _o, _e, rc = git(v.repo, "diff", "--quiet", STATE_REF["B"], full, "--", "src")
         if rc != 0:
-            probs.append(f"git diff d524652 {full[:12]} -- src is not empty")
+            probs.append(f"git diff {STATE_REF['B']} {full[:12]} -- src is not empty")
     elif state == "C":
+        if C_REF and full != v.rev(C_REF):
+            probs.append(f"git_sha {full} is not {C_REF}")
         env_c = v.env_info("C")
         if not env_c or not env_c.get("git_sha"):
             unverifiable.append("env/C.txt git SHA")
@@ -2684,7 +2773,8 @@ def ci_gates(v: Verifier) -> dict:
     for s in ("B", "C"):
         out[f"tests_{s}"] = runs[s]
         out[f"compare_{s}"] = ci_compare(v, s, a_files, runs["A"]["status"], v.vdir / f"ci_{s}_compare_A.md")
-        checkout = Path(runs[s].get("checkout") or (v.repo if s == "B" else v.eval_home / "worktrees" / "C"))
+        checkout = Path(runs[s].get("checkout") or (v.repo if s == "B" else
+                                                    STATE_CHECKOUT.get("C", v.eval_home / "worktrees" / "C")))
         arch = {p: checkout / "tests" / "results" / "archive" / f"router_{p}_benchmark.json" for p in CI_PATHS}
         a = ci_compare(v, s, arch, "pass", v.vdir / f"ci_{s}_compare_archive.md")
         out[f"archive_{s}"] = {"status": "info", "red": a["red"], "missing": a["missing"], "rows": a["rows"],
@@ -2697,7 +2787,7 @@ def ci_gates(v: Verifier) -> dict:
             sub = Verifier.__new__(Verifier)
             sub.__dict__.update(v.__dict__)
             sub.vdir = idir
-            info_runs[s] = ci_run(sub, s)
+            info_runs[s] = ci_run(sub, s, decisive=False)   # informational: not subject to a round's plugin rule
         ia = {p: idir / f"ci_A_router_{p}_benchmark.json" for p in CI_PATHS}
         out["info"] = {"note": "informational: same command plus -p mps_serial (section 16); not a decision",
                        "runs": info_runs}
@@ -2918,6 +3008,10 @@ def build_summary(v: Verifier, judges: Judges, ci: dict, vstatus: dict | None = 
                        ("info_B_500_CEN", ("A", "B")), ("info_B_500_MH", ("A", "B"))):
         suite = stem.rsplit("_", 1)[1]
         s["l2_info"][stem] = {p: info_cell(v, stem, refs, suite, p) for p in PATHS}
+    for r in INFO_RUNS:     # a round file's extra informational runs, compared with its refs (paired: refs[0])
+        for suite in r["suites"]:
+            stem = f"info_{r['state']}_{r['result_chars']}_{suite}"
+            s["l2_info"][stem] = {p: info_cell(v, stem, tuple(r["refs"]), suite, p) for p in PATHS}
     # Layer 3.
     for pack, res in judges.packs.items():
         entry = {"status": res["status"], "complete": res.get("complete", False), "counts": res.get("counts"),
@@ -3412,8 +3506,11 @@ def render_section15(s: dict) -> str:
             L.append(f"| {name} | {p} | {prim(c)} | {gpc(c)} | {_abc(c['values'], 'goldshare')} | {chars(c)} | "
                      f"{adv(c, show_adv)} | {lat2(c)} | {mm(c)} | {src(i, js)} |")
     first = True
-    for stem, label in (("info_A_emptygraph_CEN", "A empty graph, CEN"), ("info_A_emptygraph_MH", "A empty graph, MH"),
-                        ("info_B_500_CEN", "B at 500 chars, CEN"), ("info_B_500_MH", "B at 500 chars, MH")):
+    info_rows = [("info_A_emptygraph_CEN", "A empty graph, CEN"), ("info_A_emptygraph_MH", "A empty graph, MH"),
+                 ("info_B_500_CEN", "B at 500 chars, CEN"), ("info_B_500_MH", "B at 500 chars, MH")]
+    info_rows += [(f"info_{r['state']}_{r['result_chars']}_{su}", f"{r['state']} at {r['result_chars']:,} chars, {su}")
+                  for r in INFO_RUNS for su in r["suites"]]
+    for stem, label in info_rows:
         for p in PATHS:
             c = s["l2_info"][stem][p]
             val = c["value"]
@@ -3562,6 +3659,150 @@ def spot_sample(v: Verifier) -> dict:
     return out
 
 
+# ── Rounds (--round) ────────────────────────────────────────────────
+
+ROUND_KEYS = ("name", "results_root", "eval_home", "doc", "ports", "states", "corpus_documents", "ci_plugins",
+              "info_runs")
+ROUND_OPTIONAL = ("corpus_documents", "ci_plugins", "info_runs")
+INFO_RUN_FIELDS = ("state", "result_chars", "suites", "refs")
+SHA_RE = re.compile(r"[0-9a-fA-F]{7,40}")
+
+
+def round_file(value) -> Path:
+    """The file --round names: as given (relative to the working directory), else relative to
+    this script's directory (rounds/r2.json). An empty value, or one that names no regular
+    file, is refused: it must never mean round 1."""
+    if not str(value).strip():
+        raise SystemExit("--round was given an empty value; name a round file, e.g. --round rounds/r2.json")
+    p = Path(value).expanduser()
+    if not p.is_absolute() and not p.is_file() and (SCRIPT.parent / p).is_file():
+        p = SCRIPT.parent / p
+    p = p.resolve()
+    if not p.is_file():
+        raise SystemExit(f"--round {value}: {p} is not a file")
+    return p
+
+
+def round_location(value: str) -> Path:
+    """A path in a round file: "~" is expanded, a relative path is relative to the repository root."""
+    p = Path(value).expanduser()
+    return p if p.is_absolute() else REPO / p
+
+
+def load_round(value) -> dict:
+    """A round file, read as data. Exits when it has a key this verifier does not know (an
+    unread value could be an expectation that differs from round 1's) or lacks or
+    malforms one it uses, or when B's checkout is not this repository (B is checked
+    against --repo); its ports and the venvs of A and C are not used here."""
+    path = round_file(value)
+    raw, err = load_json_safe(path)
+    if not isinstance(raw, dict):
+        raise SystemExit(f"--round {path}: {err or 'not a JSON object'}")
+    probs = [f"unknown key {k!r}" for k in raw if k not in ROUND_KEYS]
+    probs += [f"missing {k!r}" for k in ROUND_KEYS if k not in raw and k not in ROUND_OPTIONAL]
+    probs += [f"{k} must be a non-empty string" for k in ("name", "results_root", "eval_home", "doc")
+              if k in raw and not (isinstance(raw[k], str) and raw[k])]
+    states = raw.get("states")
+    if not (isinstance(states, dict) and set(states) == set(STATES)
+            and all(isinstance(s, dict) for s in states.values())):
+        probs.append(f"states must give each of {', '.join(STATES)}")
+        states = {}
+    for st, spec in states.items():
+        probs += [f"states.{st}.{k} must be a non-empty string" for k in ("checkout", "venv", "fastmcp")
+                  if not (isinstance(spec.get(k), str) and spec[k])]
+        ref = spec.get("ref")
+        if not (isinstance(ref, str) and SHA_RE.fullmatch(ref)):
+            probs.append(f"states.{st}.ref must be a commit SHA")
+    b_checkout = states.get("B", {}).get("checkout")
+    if isinstance(b_checkout, str) and b_checkout and not same_dir(round_location(b_checkout), REPO):
+        probs.append(f"states.B.checkout must be this repository ({REPO})")
+    docs, plugins = raw.get("corpus_documents", {}), raw.get("ci_plugins", {})
+    if not (isinstance(docs, dict) and all(c in INGEST_DOCS and isinstance(n, int) and not isinstance(n, bool) and n > 0
+                                           for c, n in docs.items())):
+        probs.append(f"corpus_documents must map ingest ids ({', '.join(INGEST_DOCS)}) to document counts")
+    if not (isinstance(plugins, dict) and all(st in STATES and isinstance(names, list)
+                                              and all(isinstance(n, str) and n for n in names)
+                                              for st, names in plugins.items())):
+        probs.append("ci_plugins must map states to lists of pytest plugin names")
+    info = raw.get("info_runs", [])
+
+    def named(x, names):
+        return isinstance(x, str) and x in names
+
+    if not (isinstance(info, list) and all(
+            isinstance(r, dict) and set(r) == set(INFO_RUN_FIELDS) and named(r["state"], STATES)
+            and isinstance(r["result_chars"], int) and not isinstance(r["result_chars"], bool) and r["result_chars"] > 0
+            and isinstance(r["suites"], list) and r["suites"] and all(named(s, SUITES) for s in r["suites"])
+            and isinstance(r["refs"], list) and r["refs"] and all(named(s, STATES) for s in r["refs"])
+            for r in info)):
+        probs.append(f"info_runs must be a list of {{{', '.join(INFO_RUN_FIELDS)}}}: a state, a positive "
+                     "CANDLEKEEP_RESULT_CHARS, a non-empty list of suites and a non-empty list of states to compare with")
+    if probs:
+        raise SystemExit(f"--round {path}: " + "; ".join(probs))
+    return {"file": path, "name": raw["name"], "results_root": round_location(raw["results_root"]),
+            "eval_home": round_location(raw["eval_home"]), "doc": round_location(raw["doc"]),
+            "states": {st: {"checkout": round_location(s["checkout"]), "venv": round_location(s["venv"]),
+                            "ref": s["ref"], "fastmcp": s["fastmcp"]} for st, s in states.items()},
+            "corpus_documents": dict(docs), "ci_plugins": {st: sorted(names) for st, names in plugins.items()},
+            "info_runs": [dict(r, suites=list(r["suites"]), refs=list(r["refs"])) for r in info]}
+
+
+def apply_round(rnd: dict) -> None:
+    """Make a round file's values this verifier's expectations and defaults (module docstring).
+    ROUND1_ROOT and ROUND1_EVAL_HOME keep round 1's, for round_isolation_problems."""
+    global DEFAULT_ROOT, DEFAULT_DOC, DEFAULT_EVAL_HOME, DEFAULT_B_PYTHON, C_REF, CI_PLUGINS, ROUND
+    DEFAULT_ROOT, DEFAULT_DOC, DEFAULT_EVAL_HOME = rnd["results_root"], rnd["doc"], rnd["eval_home"]
+    states = rnd["states"]
+    DEFAULT_B_PYTHON = states["B"]["venv"] / "bin" / "python"
+    STATE_REF.update({st: states[st]["ref"] for st in ("A", "B")})
+    C_REF = states["C"]["ref"]
+    FASTMCP_VERSION.update({st: s["fastmcp"] for st, s in states.items()})
+    STATE_CHECKOUT.update({st: states[st]["checkout"] for st in ("A", "C")})
+    INGEST_DOCS.update(rnd["corpus_documents"])
+    CI_PLUGINS = {st: rnd["ci_plugins"].get(st, []) for st in STATES}
+    INFO_RUNS[:] = rnd["info_runs"]
+    ROUND = rnd
+
+
+def _same_file(a: Path, b: Path) -> bool:
+    try:
+        return os.path.samefile(a, b)
+    except OSError:      # either one does not exist (or cannot be read)
+        return False
+
+
+def within(path: Path, root: Path) -> bool:
+    """path is root or lies under it: by name, or by identity (os.path.samefile) of root and an
+    existing ancestor of path, so that another spelling of a directory (its case, on macOS, or
+    a symlink) still counts."""
+    path, root = Path(path).expanduser().resolve(), Path(root).expanduser().resolve()
+    return path.is_relative_to(root) or any(_same_file(p, root) for p in (path, *path.parents))
+
+
+def same_dir(a: Path, b: Path) -> bool:
+    return within(a, b) and within(b, a)
+
+
+def round_isolation_problems(args) -> list:
+    """With --round: where --root (read and written) or the data/ and staging/ directories
+    under --eval-home (read) meet what a round must neither read nor write: round 1's results
+    root and the data, staging, scratch, run, worktrees and venvs directories of its EVAL_HOME
+    (the defaults of a run without --round), round 1's B′ results (tests/results/agent_view_bprime,
+    section 16), every other existing results tree (tests/results/agent_view_*), and the round's
+    A and C checkouts. Directories are compared both ways (one inside the other) with within()."""
+    results = REPO / "tests" / "results"
+    off = [("round 1's results root", ROUND1_ROOT), ("round 1's B′ results", results / "agent_view_bprime")]
+    off += [(f"round 1's {d}/", ROUND1_EVAL_HOME / d)
+            for d in ("data", "staging", "scratch", "run", "worktrees", "venvs")]
+    listed = [ROUND["results_root"], *(q for _w, q in off)]      # the round's own tree, and those named above
+    off += [(f"the results tree {p.name}", p) for p in sorted(results.glob("agent_view_*"))
+            if p.is_dir() and not any(same_dir(p, q) for q in listed)]
+    off += [(f"the checkout of {st}", p) for st, p in sorted(STATE_CHECKOUT.items())]
+    mine = [("--root", Path(args.root))]
+    mine += [(f"--eval-home's {d}/", Path(args.eval_home) / d) for d in ("data", "staging")]
+    return [f"{opt} {p} overlaps {what} {q}" for opt, p in mine for what, q in off if within(p, q) or within(q, p)]
+
+
 # ── Main ────────────────────────────────────────────────────────────
 
 def cmd_metrics_of(path: Path, args) -> int:
@@ -3618,9 +3859,11 @@ def cmd_all(args) -> tuple:
                        "mcnemar": "scipy.stats.binomtest(c, b + c, 0.5), two-sided",
                        "inputs": {r.label: r.sha256 for r in list(v.runs.values()) + v.extra_runs if r.present},
                        "cen_g_gold_body": args.gold_body, "ci_paths": list(CI_PATHS),
-                       "cen_g_exclusion": getattr(v, "cen_g_exclusion", None)}
+                       "cen_g_exclusion": getattr(v, "cen_g_exclusion", None),
+                       **({"round": {"name": ROUND["name"], "file": str(ROUND["file"])}} if ROUND else {})}
     write_json(root / "summary.json", summary)
-    checks = {"generated_at": now_iso(), "root": str(root), "status": status,
+    checks = {"generated_at": now_iso(), "root": str(root),
+              **({"round": {"name": ROUND["name"], "file": str(ROUND["file"])}} if ROUND else {}), "status": status,
               "checks": {k: {"title": c["title"], "status": status[k], "items": c["items"]} for k, c in sorted(v.checks.items())},
               "missing_inputs": [r.label for r in v.runs.values() if not r.present],
               "extra_inputs": [r.label for r in v.extra_runs],
@@ -3631,7 +3874,16 @@ def cmd_all(args) -> tuple:
 
 def main(argv=None) -> int:
     global CI_PATHS
+    pre = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+    pre.add_argument("--round")
+    known, _rest = pre.parse_known_args(argv)
+    if known.round is not None:                  # an empty value is refused, never taken as round 1
+        apply_round(load_round(known.round))     # before the defaults below are read
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    ap.add_argument("--round", metavar="FILE",
+                    help="round file of a later round, e.g. scripts/eval_agent_view/rounds/r2.json: refs, FastMCP "
+                         "versions and checkouts of the states, the defaults of --root, --doc, --eval-home and "
+                         "--b-python, document counts and the CI plugin rule (default: round 1)")
     ap.add_argument("--metrics-of", type=Path, help="recompute and print the metrics of one L1/L2 file")
     ap.add_argument("--all", action="store_true", help="run every check and write summary.json")
     ap.add_argument("--render", action="store_true", help="write verification/section15.md from summary.json")
@@ -3649,6 +3901,12 @@ def main(argv=None) -> int:
                     help="router benchmark paths C-14 compares against A's run (default: %(default)s, the paths the "
                          "project's CI compares; narrowing it needs a Deviations Log entry)")
     args = ap.parse_args(argv)
+    if args.round != known.round:    # an abbreviated --round that only this parser understood
+        ap.error("spell out --round (it must be read before the other options' defaults)")
+    if ROUND is not None:
+        problems = round_isolation_problems(args)
+        if problems:
+            ap.error(f"refusing round {ROUND['name']!r} ({ROUND['file']}): " + "; ".join(problems))
     CI_PATHS = tuple(p.strip() for p in args.ci_paths.split(",") if p.strip())
     if args.metrics_of:
         return cmd_metrics_of(args.metrics_of, args)

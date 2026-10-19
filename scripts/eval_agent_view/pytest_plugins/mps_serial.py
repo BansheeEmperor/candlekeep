@@ -1,4 +1,4 @@
-"""pytest plugin for the informational CI run only (protocol section 16, C-14).
+"""pytest plugin that serialises model calls in a CI run (protocol section 16, C-14).
 
 On MPS, two threads calling a sentence-transformers model at the same time abort
 the process with a Metal assertion. In the CI selection this happens when the
@@ -7,8 +7,10 @@ code is the same in A, B and C. This plugin makes every SentenceTransformer.enco
 and CrossEncoder.predict call hold one process-wide lock, so model calls run one at
 a time. Inputs, models and outputs are unchanged; only their overlap is removed.
 
-Loaded with `-p mps_serial` by `drive.py ci --serialize-models`, never in the
-pre-registered run.
+Loaded with `-p mps_serial` by `drive.py ci --serialize-models` (round 1: the
+informational run only, never the pre-registered one), and by `drive.py ci` for every
+state whose round file lists it under ci_plugins (round 2: A, whose code has no
+model-call lock; B and C have one and run the command as written).
 """
 import functools
 import threading
@@ -35,4 +37,4 @@ def pytest_configure(config):
 
 
 def pytest_report_header(config):
-    return "mps_serial: SentenceTransformer.encode and CrossEncoder.predict are serialised (informational run)"
+    return "mps_serial: SentenceTransformer.encode and CrossEncoder.predict are serialised"

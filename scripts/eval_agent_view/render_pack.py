@@ -90,7 +90,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--pack", action="append", default=[], help="pack to render (repeatable)")
     ap.add_argument("--check", action="store_true", help="verify every .txt against its .json")
+    C.add_hidden_args(ap)
     args = ap.parse_args()
+    C.apply_overrides(args)
     for pack in args.pack:
         for p in parts_of(pack):
             items = C.load_json(p)

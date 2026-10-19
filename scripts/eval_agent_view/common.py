@@ -18,9 +18,13 @@ prepare_candlekeep_env() has pointed the import-time background thread of
 candlekeep.mcp.server at a dead Chroma port and a scratch data directory.
 
 CLI (run with venv B's python):
-    common.py preflight [--out FILE]
+    common.py preflight [--out FILE] [--round FILE]
     common.py wait-ready --url URL [--timeout SECONDS]
     common.py fingerprint --port PORT
+
+A later round of the protocol is selected with --round FILE (rounds/<name>.json, see
+load_round), which every script accepts and drive.py forwards; without it every value
+below is round 1's.
 """
 from __future__ import annotations
 
@@ -86,7 +90,8 @@ GOLD_BODY_DESCRIPTIONS = {
 
 @dataclass
 class Config:
-    """Mutable run configuration. Hidden test options may override it."""
+    """Mutable run configuration. A round file (--round) and hidden test options may
+    override it; Config() itself always holds round 1's values."""
     data_root: Path = EVAL_HOME / "data"          # <data_root>/<I0x>/{chroma,ck_data}
     staging_root: Path = EVAL_HOME / "staging"    # <staging_root>/<I0x>/: BEIR <doc_id>.md files, I01/I02 symlinks
     scratch_root: Path = EVAL_HOME / "scratch"    # throwaway candlekeep data dirs
@@ -106,7 +111,8 @@ class StateDef:
     name: str
     checkout: Path
     venv: Path
-    ref: str | None        # A: commit to be checked out; B: commit whose src/ must match
+    ref: str | None        # A: commit to be checked out; B: commit whose src/ must match;
+                           # C: None in round 1 (env/C.txt records it), its exact commit in a round file
     fastmcp: str           # FastMCP version the state pins
 
     @property
@@ -123,7 +129,7 @@ STATES = {
     "B": StateDef("B", REPO, REPO / ".venv", "d524652", "3.4.9"),
     "C": StateDef("C", EVAL_HOME / "worktrees" / "C", EVAL_HOME / "venvs" / "C", None, "3.4.9"),
 }
-VENV_B = STATES["B"].venv
+VENV_B = STATES["B"].venv      # Chroma CLI, ingest server, drive.py's subprocesses (a round may move it)
 
 
 @dataclass(frozen=True)
@@ -240,39 +246,273 @@ def logs_dir() -> Path:
     return d
 
 
-# ── Hidden test overrides ────────────────────────────────────────────────────
+# ── Rounds (--round) and hidden test overrides ───────────────────────────────
+#
+# A later round of the protocol compares new states on the same suites. Its round
+# file (rounds/<name>.json, selected with --round) holds everything that differs from
+# round 1: the results root, EVAL_HOME (data/, staging/, scratch/, run/), the protocol
+# document (read by verify.py), the ports, the states, document counts that differ
+# from the registry, pytest plugins added to some states' CI command, and extra
+# informational Layer 2 runs (a state at another CANDLEKEEP_RESULT_CHARS on some
+# suites). Without --round every value is round 1's. verify.py reads the same file
+# with its own code.
 
-HIDDEN_FLAGS = ("--test-config", "--data-root", "--results-root", "--ports")
+HIDDEN_FLAGS = ("--test-config", "--data-root", "--results-root", "--ports", "--round")
+ROUND_HELP = ("round file, e.g. rounds/r2.json: results root, EVAL_HOME, ports, states, document counts, CI "
+              "plugins and extra informational Layer 2 runs of a later round of the protocol (default: round 1)")
+ROUND_REQUIRED = ("name", "results_root", "eval_home", "doc", "ports", "states")
+ROUND_OPTIONAL = ("corpus_documents", "ci_plugins", "info_runs")    # default: as the registry, none, none
+INFO_RUN_FIELDS = ("state", "result_chars", "suites", "refs")
+STATE_FIELDS = ("checkout", "venv", "ref", "fastmcp")
+PYTEST_PLUGINS_DIR = HARNESS_DIR / "pytest_plugins"
+ROUND1_PORTS = frozenset(c.chroma_port for c in CORPORA.values()) | {Config().ingest_port, Config().l2_port}
+ROUND1_STATES = dict(STATES)   # round 1's checkouts and venvs (a round replaces the entries of STATES)
+RESULTS_DIR = REPO / "tests" / "results"    # its agent_view_* directories hold the results of every round
+ROUND1_BPRIME = RESULTS_DIR / "agent_view_bprime"   # round 1's checks of state B′ (protocol, Deviations Log)
+ROUND: dict | None = None      # the applied round file (load_round's dict); None in round 1
+CI_PLUGINS: dict = {}          # {state: [plugin]}: pytest_plugins/<plugin>.py added to that state's CI command
+INFO_RUNS: list = []           # extra informational L2 runs: L2/info_<state>_<result_chars>_<suite>.json
 
 
 def add_hidden_args(ap: argparse.ArgumentParser) -> None:
-    """Smoke-test options. Not part of the protocol, so hidden from --help."""
+    """Smoke-test options (not part of the protocol, so hidden from --help) and --round."""
     for flag in HIDDEN_FLAGS:
-        ap.add_argument(flag, default=None, help=argparse.SUPPRESS)
+        if flag == "--round":
+            ap.add_argument(flag, default=None, metavar="FILE", help=ROUND_HELP)
+        else:
+            ap.add_argument(flag, default=None, help=argparse.SUPPRESS)
 
 
 def hidden_argv(args: argparse.Namespace) -> list[str]:
-    """The hidden options of args, ready to forward to another harness script."""
+    """The hidden options of args and --round, ready to forward to another harness
+    script. The round file goes as an absolute path (scripts run in scratch directories)."""
     out = []
     for flag in HIDDEN_FLAGS:
         value = getattr(args, flag[2:].replace("-", "_"), None)
         if value is not None:
-            out += [flag, str(value)]
+            out += [flag, str(round_path(value) if flag == "--round" else value)]
     return out
 
 
-def apply_overrides(args: argparse.Namespace) -> None:
-    """Apply hidden overrides.
+def round_path(value) -> Path:
+    """The file --round names: as given (relative to the working directory), else relative
+    to this directory, so that `drive.py <step> --round rounds/r2.json` works from anywhere.
+    An empty value, or one that names no regular file, is refused: it must never mean round 1."""
+    if not str(value).strip():
+        raise SystemExit("--round was given an empty value; name a round file, e.g. --round rounds/r2.json")
+    path = Path(value).expanduser()
+    if not path.is_absolute() and not path.is_file() and (HARNESS_DIR / path).is_file():
+        path = HARNESS_DIR / path
+    path = path.resolve()
+    if not path.is_file():
+        raise SystemExit(f"--round {value}: {path} is not a file")
+    return path
 
+
+def _round_location(value: str) -> Path:
+    """A path in a round file: "~" is expanded, a relative path is relative to the repository root."""
+    path = Path(value).expanduser()
+    return path if path.is_absolute() else REPO / path
+
+
+def _is_port(value) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and 0 < value < 65536
+
+
+def _same_file(a: Path, b: Path) -> bool:
+    try:
+        return os.path.samefile(a, b)
+    except OSError:      # either one does not exist (or cannot be read)
+        return False
+
+
+def _within(path: Path, root: Path) -> bool:
+    """path is root or lies under it: by name, or by identity (os.path.samefile) of root and
+    an existing ancestor of path, so that another spelling of a directory (its case, on
+    macOS, or a symlink) still counts."""
+    path, root = Path(path).expanduser().resolve(), Path(root).expanduser().resolve()
+    return path.is_relative_to(root) or any(_same_file(p, root) for p in (path, *path.parents))
+
+
+def _same_dir(a: Path, b: Path) -> bool:
+    return _within(a, b) and _within(b, a)
+
+
+def load_round(value) -> dict:
+    """Read and check a round file. Every key of ROUND_REQUIRED must be there, with a
+    Chroma port for every corpus and all of STATE_FIELDS for each of A, B and C (every
+    ref a commit SHA); unknown keys and values of the wrong kind are refused, and so is a
+    checkout of B other than this repository (the fixtures, the project's metrics module
+    and B's ingest provenance are read from REPO). This fails closed: a value silently
+    left at round 1's could make the round read or write round 1's files. Paths are
+    resolved with _round_location."""
+    path = round_path(value)
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as e:
+        raise SystemExit(f"round file {path}: {e}")
+    if not isinstance(raw, dict):
+        raise SystemExit(f"round file {path}: not a JSON object")
+    problems = [f"missing {k!r}" for k in ROUND_REQUIRED if k not in raw]
+    problems += [f"unknown key {k!r}" for k in raw if k not in ROUND_REQUIRED + ROUND_OPTIONAL]
+    problems += [f"{k} must be a non-empty string" for k in ("name", "results_root", "eval_home", "doc")
+                 if k in raw and not (isinstance(raw[k], str) and raw[k])]
+    ports = raw.get("ports", {})
+    chroma = ports.get("chroma") if isinstance(ports, dict) else None
+    if not (isinstance(ports, dict) and set(ports) == {"chroma", "ingest", "l2"} and isinstance(chroma, dict)
+            and set(chroma) == set(CORPORA) and all(map(_is_port, [*chroma.values(), ports["ingest"], ports["l2"]]))):
+        problems.append(f'ports must be {{"chroma": {{corpus: port}} for each of {", ".join(CORPORA)}, '
+                        f'"ingest": port, "l2": port}}')
+    states = raw.get("states", {})
+    if not (isinstance(states, dict) and set(states) == set(STATES)
+            and all(isinstance(s, dict) and set(s) == set(STATE_FIELDS) for s in states.values())):
+        problems.append(f"states must give {', '.join(STATE_FIELDS)} for each of {', '.join(STATES)}")
+    else:
+        problems += [f"states.{name}.{key} must be a non-empty string" for name, s in states.items()
+                     for key in STATE_FIELDS if not (isinstance(s[key], str) and s[key])]
+        problems += [f"states.{name}.ref must be a commit SHA" for name, s in states.items()
+                     if isinstance(s["ref"], str) and s["ref"] and not re.fullmatch(r"[0-9a-fA-F]{7,40}", s["ref"])]
+        b_checkout = states["B"]["checkout"]
+        if isinstance(b_checkout, str) and b_checkout and not _same_dir(_round_location(b_checkout), REPO):
+            problems.append(f"states.B.checkout must be this repository ({REPO})")
+    docs = raw.get("corpus_documents", {})
+    if not (isinstance(docs, dict) and all(cid in CORPORA and _is_count(n) for cid, n in docs.items())):
+        problems.append("corpus_documents must map corpus ids to document counts")
+    plugins = raw.get("ci_plugins", {})
+    if not (isinstance(plugins, dict) and all(
+            st in STATES and isinstance(names, list) and all(
+                isinstance(n, str) and n.isidentifier() and (PYTEST_PLUGINS_DIR / f"{n}.py").is_file() for n in names)
+            for st, names in plugins.items())):
+        problems.append(f"ci_plugins must map states to lists of modules in {PYTEST_PLUGINS_DIR}")
+    info = raw.get("info_runs", [])
+    if not (isinstance(info, list) and all(
+            isinstance(r, dict) and set(r) == set(INFO_RUN_FIELDS) and _is_name_in(r["state"], STATES)
+            and _is_count(r["result_chars"]) and isinstance(r["suites"], list) and r["suites"]
+            and all(_is_name_in(s, SUITES) for s in r["suites"]) and isinstance(r["refs"], list) and r["refs"]
+            and all(_is_name_in(st, STATES) for st in r["refs"]) for r in info)):
+        problems.append(f"info_runs must be a list of {{{', '.join(INFO_RUN_FIELDS)}}}: a state, a positive "
+                        "CANDLEKEEP_RESULT_CHARS, a non-empty list of suites and a non-empty list of states to compare with")
+    if problems:
+        raise SystemExit(f"round file {path}: " + "; ".join(problems))
+    return {
+        "file": path, "name": raw["name"],
+        "results_root": _round_location(raw["results_root"]), "eval_home": _round_location(raw["eval_home"]),
+        "doc": _round_location(raw["doc"]),
+        "ports": {"chroma": dict(chroma), "ingest": ports["ingest"], "l2": ports["l2"]},
+        "states": {name: {"checkout": _round_location(s["checkout"]), "venv": _round_location(s["venv"]),
+                          "ref": s["ref"], "fastmcp": s["fastmcp"]} for name, s in states.items()},
+        "corpus_documents": dict(docs), "ci_plugins": {st: list(names) for st, names in plugins.items()},
+        "info_runs": [dict(r, suites=list(r["suites"]), refs=list(r["refs"])) for r in info],
+    }
+
+
+def _is_count(value) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value > 0
+
+
+def _is_name_in(value, names) -> bool:
+    return isinstance(value, str) and value in names
+
+
+def apply_round(rnd: dict) -> None:
+    """Make a round's values the configuration: every EVAL_HOME directory under its
+    eval_home (worktrees and venvs come from its states), its results root, ports,
+    states (VENV_B follows B's venv) and document counts, its CI plugins and its extra
+    informational runs."""
+    global EVAL_HOME, ROUND, VENV_B
+    EVAL_HOME = rnd["eval_home"]
+    CONFIG.data_root, CONFIG.staging_root = EVAL_HOME / "data", EVAL_HOME / "staging"
+    CONFIG.scratch_root, CONFIG.run_root = EVAL_HOME / "scratch", EVAL_HOME / "run"
+    CONFIG.results_root = rnd["results_root"]
+    _apply_ports(rnd["ports"])
+    for name, s in rnd["states"].items():
+        STATES[name] = replace(STATES[name], checkout=s["checkout"], venv=s["venv"], ref=s["ref"],
+                               fastmcp=s["fastmcp"])
+    VENV_B = STATES["B"].venv
+    for cid, n in rnd["corpus_documents"].items():
+        CORPORA[cid] = replace(CORPORA[cid], n_docs=n)
+    CI_PLUGINS.clear()
+    CI_PLUGINS.update(rnd["ci_plugins"])
+    INFO_RUNS[:] = rnd["info_runs"]
+    ROUND = rnd
+
+
+def _off_limits(results: bool) -> list[tuple[str, Path]]:
+    """(what, directory) a round must neither read nor write: round 1's data, staging,
+    scratch, run and results directories (those a run without --round uses) and its B′
+    results, every other existing results tree (tests/results/agent_view_*), and the
+    checkouts and venvs of round 1's states and of the round's own. With results (the
+    results root, an output file), B's checkout is left out: they belong in this
+    repository's tests/results."""
+    base = Config()
+    out = [(f"round 1's {k}", getattr(base, k))
+           for k in ("data_root", "staging_root", "scratch_root", "run_root", "results_root")]
+    out.append(("round 1's B′ results", ROUND1_BPRIME))
+    own = ROUND["results_root"] if ROUND else CONFIG.results_root
+    out += [(f"the results tree {p.name}", p) for p in sorted(RESULTS_DIR.glob("agent_view_*"))
+            if p.is_dir() and not _same_dir(p, own)]
+    for label, states in (("round 1's", ROUND1_STATES), ("the round's", STATES)):
+        for name, s in states.items():
+            out.append((f"{label} venv of {name}", s.venv))
+            if not (results and _same_dir(s.checkout, REPO)):
+                out.append((f"{label} checkout of {name}", s.checkout))
+    seen, unique = set(), []
+    for what, path in out:
+        key = str(Path(path).expanduser().resolve())
+        if key not in seen:
+            seen.add(key)
+            unique.append((what, Path(path)))
+    return unique
+
+
+def round_isolation_problems() -> list[str]:
+    """Where the configuration meets a directory of _off_limits or round 1's ports: a round
+    must neither read nor write them. Directories are compared both ways (one inside the
+    other) with _within."""
+    problems = []
+    for key in ("data_root", "staging_root", "scratch_root", "run_root", "results_root"):
+        mine = Path(getattr(CONFIG, key))
+        problems += [f"{key} {mine} overlaps {what} {theirs}" for what, theirs in _off_limits(key == "results_root")
+                     if _within(mine, theirs) or _within(theirs, mine)]
+    ports = {f"Chroma port of {cid}": c.chroma_port for cid, c in CORPORA.items()}
+    ports.update({"ingest port": CONFIG.ingest_port, "Layer 2 port": CONFIG.l2_port})
+    problems += [f"{what} {port} is round 1's (or the dead port {DEAD_PORT})"
+                 for what, port in ports.items() if port in ROUND1_PORTS or port == DEAD_PORT]
+    return problems
+
+
+def require_round_output(path) -> None:
+    """With a round applied, refuse an explicit output path (--out) inside a directory of
+    _off_limits. Without a round it does nothing."""
+    if ROUND is None:
+        return
+    hits = [f"{what} {theirs}" for what, theirs in _off_limits(True) if _within(Path(path), theirs)]
+    if hits:
+        raise SystemExit(f"refusing to write {path} in round {ROUND['name']!r}: it lies in " + "; ".join(hits))
+
+
+def round_flag() -> str:
+    """" --round <file>" while a round file is applied (for the commands messages suggest), else ""."""
+    return f" --round {ROUND['file']}" if ROUND else ""
+
+
+def apply_overrides(args: argparse.Namespace) -> None:
+    """Apply --round, then the hidden smoke-test overrides on top of it.
+
+    --round FILE         a round file (load_round, apply_round). With it, the final
+                         configuration must not meet round 1's directories or ports
+                         (round_isolation_problems).
     --test-config FILE   JSON with optional keys data_root, staging_root,
                          scratch_root, run_root, results_root, ports,
                          "corpora"/"suites" that add registry entries, and
-                         "states" that repoint a state's checkout/venv.
+                         "states" that repoint a state's checkout/venv (VENV_B stays).
     --data-root DIR      DIR/{data,staging,scratch,run} replace the EVAL_HOME ones.
     --results-root DIR   replaces tests/results/agent_view_eval.
     --ports SPEC         e.g. "chroma=8141,ingest=8142,l2=8143";
                          chroma applies to every corpus.
     """
+    if getattr(args, "round", None) is not None:     # an empty value is refused, never taken as round 1
+        apply_round(load_round(args.round))
     cfg_file = getattr(args, "test_config", None)
     if cfg_file:
         cfg = json.loads(Path(cfg_file).read_text(encoding="utf-8"))
@@ -306,12 +546,20 @@ def apply_overrides(args: argparse.Namespace) -> None:
         CONFIG.results_root = Path(args.results_root)
     if getattr(args, "ports", None):
         _apply_ports(dict(part.split("=", 1) for part in args.ports.split(",") if part))
+    if ROUND is not None:
+        problems = round_isolation_problems()
+        if problems:
+            raise SystemExit(f"refusing round {ROUND['name']!r} ({ROUND['file']}): it would use files of round 1, "
+                             "another results tree or a state's checkout or venv, or round 1's ports: "
+                             + "; ".join(problems))
 
 
 def _apply_ports(ports: dict) -> None:
+    """chroma: one port for every corpus, or {corpus: port} (round files); ingest; l2."""
     if "chroma" in ports:
-        for cid in list(CORPORA):
-            CORPORA[cid] = replace(CORPORA[cid], chroma_port=int(ports["chroma"]))
+        chroma = ports["chroma"]
+        for cid, port in (chroma if isinstance(chroma, dict) else dict.fromkeys(CORPORA, chroma)).items():
+            CORPORA[cid] = replace(CORPORA[cid], chroma_port=int(port))
     if "ingest" in ports:
         CONFIG.ingest_port = int(ports["ingest"])
     if "l2" in ports:
@@ -1425,7 +1673,8 @@ def chroma_process_for_run(corpus: CorpusDef, script: str) -> tuple[dict, str]:
         return given, "captured by drive.py before the run started"
     if now is None:
         raise SystemExit(f"no Chroma server of ours runs for {corpus.id} on port {corpus.chroma_port}: start it with "
-                         f"`drive.py chroma-up --corpus {corpus.id}` (every run records the server's process identity)")
+                         f"`drive.py chroma-up --corpus {corpus.id}{round_flag()}` (every run records the server's "
+                         f"process identity)")
     return now, f"captured by {script} at its start (not passed by drive.py)"
 
 
@@ -1867,6 +2116,8 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
     if args.cmd == "preflight":
         apply_overrides(args)
+        if args.out:
+            require_round_output(args.out)
         report = preflight()
         if args.out:
             write_json_atomic(Path(args.out), report)

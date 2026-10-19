@@ -240,6 +240,8 @@ def main() -> int:
     C.add_hidden_args(ap)
     args = ap.parse_args()
     C.apply_overrides(args)
+    if args.out:
+        C.require_round_output(args.out)
     if args.recompute:
         return recompute(args.recompute, args.check, args.gold_body)
     if not (args.state and args.suite and args.url):

@@ -13,6 +13,7 @@ client work runs in subprocesses with venv B's python.
     drive.py all [--states A,B,C] [--corpora I01,...] [--skip-ci]
     drive.py status
     drive.py verify [verify.py arguments, e.g. --all --check-doc]
+    drive.py <any of the above> --round rounds/r2.json     a later round (after the subcommand)
 
 Every L1/L2 step refuses to run when the state's checkout has uncommitted changes in
 src/ or pyproject.toml or a .env file, when the corpus has no current successful
@@ -36,6 +37,13 @@ Ports: Chroma for I01..I09 on 8121..8129, the ingest server on 8130, the Layer 2
 server on 8131; 65530 must stay unused (the dead CHROMA_URL for in-process
 imports and for the CI run). Server and run logs go to
 tests/results/agent_view_eval/logs/.
+
+With --round FILE, the round file's results root, EVAL_HOME, ports, states, document
+counts and CI plugins replace round 1's, and `all` adds its informational runs
+(README, "Rounds"); drive.py forwards the
+option to every script it starts, and refuses a configuration that meets round 1's
+directories or ports, another results tree, or a state's checkout or venv. --round
+must follow the subcommand: before it (or abbreviated after `verify`) it is refused.
 """
 from __future__ import annotations
 
@@ -59,9 +67,9 @@ import serve  # noqa: E402  (log-line constants only; importing it has no side e
 
 HARNESS = C.HARNESS_DIR
 DEFAULT_RESULTS_ROOT = C.CONFIG.results_root   # before any --results-root override
-PY_B = C.STATES["B"].python
+PY_B = C.STATES["B"].python    # set again in main() from C.VENV_B: a round file may name another venv for B
 SERVE = HARNESS / "serve.py"   # Layer 2 server launcher (write probe neutralised)
-HIDDEN: list = []          # hidden smoke-test options, forwarded to every harness script
+HIDDEN: list = []          # hidden smoke-test options and --round, forwarded to every harness script
 # Candlekeep's background-init lines about the write probe (mcp/server.py, every state).
 READ_ONLY_LINE = "Read-only mode (write access denied)"
 WRITE_ENABLED_LINE = "Write access enabled"
@@ -69,6 +77,17 @@ WRITE_ENABLED_LINE = "Write access enabled"
 
 class StepFailed(RuntimeError):
     pass
+
+
+def hidden_suffix() -> str:
+    """The forwarded options (smoke tests, --round) as they follow a drive.py command that a
+    message suggests: in a later round, that command must act on the same round."""
+    return "".join(" " + a for a in HIDDEN)
+
+
+def protocol_results_root() -> Path:
+    """The protocol's results root: round 1's, or the round file's (before any --results-root)."""
+    return C.ROUND["results_root"] if C.ROUND else DEFAULT_RESULTS_ROOT
 
 
 # ── Logging and subprocesses ─────────────────────────────────────────────────
@@ -267,8 +286,8 @@ def require_chroma(corpus: C.CorpusDef) -> dict:
     ident = C.chroma_process(corpus)
     if ident is None:
         raise StepFailed(f"no Chroma server of ours is running for {corpus.id} on port {corpus.chroma_port}; start "
-                         f"it with `drive.py chroma-up --corpus {corpus.id}` (l1 and l2 never start or stop Chroma: "
-                         f"one process must serve every run on a corpus)")
+                         f"it with `drive.py chroma-up --corpus {corpus.id}{hidden_suffix()}` (l1 and l2 never start "
+                         f"or stop Chroma: one process must serve every run on a corpus)")
     return ident
 
 
@@ -308,7 +327,7 @@ def running_chroma_note() -> list[str]:
         ident = C.chroma_process(corpus)
         if ident:
             lines.append(f"  {cid}: pid {ident['pid']}, started {ident['started']}, port {ident['port']}; stop with "
-                         f"`drive.py chroma-down --corpus {cid}{''.join(' ' + a for a in HIDDEN)}`")
+                         f"`drive.py chroma-down --corpus {cid}{hidden_suffix()}`")
     return lines
 
 
@@ -510,10 +529,33 @@ def do_l2(state: str, suite: str, tag: str | None, result_chars: int | None, ext
     return out
 
 
-def _results_snapshot(results_dir: Path, protected: Path) -> dict:
+RESULT_TREE_PREFIX = "agent_view_"   # tests/results/agent_view_*: every round's results
+
+
+def protected_results(results_dir: Path) -> tuple:
+    """Subtrees of a checkout's tests/results that a CI run never touches, besides every
+    entry named agent_view_* (_is_protected: the results of every round, round 1's
+    agent_view_eval and agent_view_bprime included, also one created while the run goes
+    on): the protocol's and this run's results roots when they lie there. Given in
+    results_dir's own form, so that they prefix the paths rglob yields."""
+    out = []
+    base = results_dir.resolve()
+    for root in (protocol_results_root(), C.CONFIG.results_root):
+        root = Path(root).resolve()
+        if root.is_relative_to(base):
+            out.append(results_dir / root.relative_to(base))
+    return tuple(out)
+
+
+def _is_protected(p: Path, results_dir: Path, protected: tuple) -> bool:
+    top = p.relative_to(results_dir).parts[0]
+    return top.casefold().startswith(RESULT_TREE_PREFIX) or any(p.is_relative_to(q) for q in protected)
+
+
+def _results_snapshot(results_dir: Path, protected: tuple) -> dict:
     snap = {}
     for p in results_dir.rglob("*"):
-        if p.is_file() and not p.is_relative_to(protected):
+        if p.is_file() and not _is_protected(p, results_dir, protected):
             snap[str(p.relative_to(results_dir))] = C.sha256_file(p)
     return snap
 
@@ -526,8 +568,8 @@ def _pytest_counts(text: str) -> dict:
     return counts
 
 
-def snapshot_results(results_dir: Path, protected: Path, backup: Path) -> tuple[dict, set]:
-    """Hash and back up every file under results_dir except the protected subtree."""
+def snapshot_results(results_dir: Path, protected: tuple, backup: Path) -> tuple[dict, set]:
+    """Hash and back up every file under results_dir except the protected subtrees."""
     snapshot = _results_snapshot(results_dir, protected)
     for rel in snapshot:
         (backup / rel).parent.mkdir(parents=True, exist_ok=True)
@@ -536,14 +578,14 @@ def snapshot_results(results_dir: Path, protected: Path, backup: Path) -> tuple[
     return snapshot, dirs
 
 
-def restore_results(results_dir: Path, protected: Path, snapshot: dict, dirs_before: set,
+def restore_results(results_dir: Path, protected: tuple, snapshot: dict, dirs_before: set,
                     backup: Path) -> tuple[list, list, list]:
     """Return results_dir to the snapshot: restore changed or deleted files from the
     backup and delete only files (and empty directories) that did not exist before.
-    Nothing under the protected subtree is ever touched."""
+    Nothing under the protected subtrees is ever touched."""
     restored, deleted, recreated = [], [], []
     for p in sorted(results_dir.rglob("*"), reverse=True):
-        if p.is_relative_to(protected) or not p.is_file():
+        if _is_protected(p, results_dir, protected) or not p.is_file():
             continue
         rel = str(p.relative_to(results_dir))
         if rel not in snapshot:
@@ -558,7 +600,7 @@ def restore_results(results_dir: Path, protected: Path, snapshot: dict, dirs_bef
             shutil.copy2(backup / rel, results_dir / rel)
             recreated.append(rel)
     for p in sorted(results_dir.rglob("*"), key=lambda q: len(q.parts), reverse=True):
-        if p.is_dir() and not p.is_relative_to(protected) \
+        if p.is_dir() and not _is_protected(p, results_dir, protected) \
                 and str(p.relative_to(results_dir)) not in dirs_before and not any(p.iterdir()):
             p.rmdir()
     return restored, deleted, recreated
@@ -670,7 +712,7 @@ def do_ci_compare_only(s: C.StateDef, state: str) -> None:
     verification = C.CONFIG.results_root / "verification"
     summary_path = verification / f"ci_{state}.json"
     if not summary_path.is_file():
-        raise StepFailed(f"{summary_path} missing: run drive.py ci --state {state} first")
+        raise StepFailed(f"{summary_path} missing: run drive.py ci --state {state}{hidden_suffix()} first")
     summary = C.load_json(summary_path)
     compare = compare_benchmarks(s, state, s.checkout / "tests" / "results", verification,
                                  summary.get("router_results") or {})
@@ -681,31 +723,57 @@ def do_ci_compare_only(s: C.StateDef, state: str) -> None:
         {k: {"status": v["status"], "red_flags": v["red_flags"]} for k, v in compare.items()}))
 
 
+def ci_plugins(state: str, serialize_models: bool = False) -> list[str]:
+    """pytest plugins (pytest_plugins/<name>.py, loaded with -p) of a state's CI run: the
+    round file's ci_plugins for the state (none in round 1), plus mps_serial for an
+    informational --serialize-models run."""
+    plugins = list(C.CI_PLUGINS.get(state, []))
+    if serialize_models and "mps_serial" not in plugins:
+        plugins.append("mps_serial")
+    return plugins
+
+
+def plugin_digests(plugins: list) -> dict:
+    """{plugin: SHA-256 of pytest_plugins/<plugin>.py, None if it is gone}. The plugins come
+    from this checkout, not the state's, so a CI run records their code here."""
+    files = {p: C.PYTEST_PLUGINS_DIR / f"{p}.py" for p in plugins}
+    return {p: C.sha256_file(f) if f.is_file() else None for p, f in files.items()}
+
+
 def do_ci(state: str, pytest_k: str | None = None, compare_only: bool = False,
           serialize_models: bool = False) -> None:
     """pytest -m "unit or (benchmark and not slow)" on MPS in the state's checkout, then
     compare_benchmarks.py; restore the checkout's tests/results afterwards.
 
+    The command loads the plugins of ci_plugins() with -p; the "# plugins:" header line and
+    ci_<S>.json (plugins, plugin_sha256) record them with the SHA-256 of their files, and a
+    plugin file that changes during the run invalidates it.
     serialize_models (informational run only, protocol section 16): load the
     pytest_plugins/mps_serial.py plugin, which serialises model calls; refused
     unless --results-root points away from the protocol's results."""
     s = require_state(state)
-    if serialize_models and C.CONFIG.results_root.resolve() == DEFAULT_RESULTS_ROOT.resolve():
+    if serialize_models and C.CONFIG.results_root.resolve() == protocol_results_root().resolve():
         raise StepFailed("--serialize-models is informational: pass --results-root to keep its files apart")
     if compare_only:
         do_ci_compare_only(s, state)
         return
     checkout = s.checkout
     results_dir = checkout / "tests" / "results"
-    protected = results_dir / "agent_view_eval"          # never touched
+    protected = protected_results(results_dir)          # never touched
     verification = C.CONFIG.results_root / "verification"
     verification.mkdir(parents=True, exist_ok=True)
     before = clean_provenance(s)
+    plugins = ci_plugins(state, serialize_models)
+    plugin_sha = plugin_digests(plugins)
+    if None in plugin_sha.values():
+        raise StepFailed(f"pytest plugin files missing in {C.PYTEST_PLUGINS_DIR}: "
+                         f"{[p for p, h in plugin_sha.items() if h is None]}")
     if state != "A":
         missing = [p for p in CI_PATHS if benchmark_file_problem(verification / f"ci_A_router_{p}_benchmark.json")]
         if missing:
             print(f"warning: A's router results for {missing} are missing; the decisive comparison will be "
-                  f"marked failed (run ci --state A, then ci --state {state} --compare-only)", file=sys.stderr)
+                  f"marked failed (run ci --state A{hidden_suffix()}, then ci --state {state} --compare-only"
+                  f"{hidden_suffix()})", file=sys.stderr)
     # A previous CI run of this state is moved aside (never deleted), so no file of
     # it can be read as part of this run.
     previous = sorted(p for p in verification.glob(f"ci_{state}[._]*") if p.is_file())
@@ -734,13 +802,14 @@ def do_ci(state: str, pytest_k: str | None = None, compare_only: bool = False,
         "CHROMA_URL": C.DEAD_CHROMA_URL,
         "CANDLEKEEP_DATA_DIR": str(ci_root / "data"),
         "XDG_DATA_HOME": str(ci_root / "xdg"),
-        "PYTHONPATH": str(checkout / "src") + (f":{HARNESS / 'pytest_plugins'}" if serialize_models else ""),
+        "PYTHONPATH": str(checkout / "src") + (f":{C.PYTEST_PLUGINS_DIR}" if plugins else ""),
     })
     cmd = [s.python, "-m", "pytest", "-m", "unit or (benchmark and not slow)", "-v", "-s",
-           *(["-p", "mps_serial"] if serialize_models else []), *(["-k", pytest_k] if pytest_k else [])]
+           *[arg for p in plugins for arg in ("-p", p)], *(["-k", pytest_k] if pytest_k else [])]
     header = (f"# CI run for state {state}\n# checkout: {checkout}\n# git_sha: {before['git_sha']}\n"
               f"# src_tree_sha: {before['src_tree_sha']}\n# command: {' '.join(map(str, cmd))}\n"
-              f"# env: {json.dumps({k: v for k, v in env.items() if k != 'PATH'})}\n# started_at: {C.now_iso()}\n")
+              + (f"# plugins: {json.dumps(plugin_sha)}\n" if plugins else "")
+              + f"# env: {json.dumps({k: v for k, v in env.items() if k != 'PATH'})}\n# started_at: {C.now_iso()}\n")
     out_txt.write_text(header, encoding="utf-8")
     code, seconds, counts, produced, compare = None, None, {}, {}, {}
     try:
@@ -767,11 +836,15 @@ def do_ci(state: str, pytest_k: str | None = None, compare_only: bool = False,
     status_after = C.git(checkout, "status", "--porcelain")
     after = C.git_provenance(checkout)
     invalid = [f"checkout changed during the CI run: {c}" for c in C.provenance_changes(before, after)]
+    provenance_unchanged = not invalid
+    invalid += [f"pytest plugin {p}.py changed during the CI run" for p, h in plugin_digests(plugins).items()
+                if h != plugin_sha[p]]
     summary = {
         "state": state, "checkout": str(checkout),
         "git_sha": before["git_sha"], "src_tree_sha": before["src_tree_sha"], "src_dirty": before["src_dirty"],
-        "provenance_before": before, "provenance_after": after, "provenance_unchanged": not invalid,
+        "provenance_before": before, "provenance_after": after, "provenance_unchanged": provenance_unchanged,
         "command": [str(c) for c in cmd],
+        **({"plugins": plugins, "plugin_sha256": plugin_sha} if plugins or C.ROUND else {}),
         "exit_code": code, "passed": code == 0, "seconds": seconds, "counts": counts,
         "output": str(out_txt), "router_results": produced, "compare": compare,
         "c14": c14_summary(state, code, compare, invalid),
@@ -853,6 +926,8 @@ def do_all(states: list, corpora: list, skip_ci: bool) -> None:
                     runs.append(("C", None, {"extra_chars": 0}))
                 if suite in ("CEN", "MH"):
                     runs += [("A", None, {"graph_empty": True}), ("B", None, {"result_chars": 500})]
+                runs += [(r["state"], None, {"result_chars": r["result_chars"]}) for r in C.INFO_RUNS
+                         if suite in r["suites"]]
                 for st, tag, kw in runs:
                     if st not in states:
                         continue
@@ -873,6 +948,16 @@ def do_all(states: list, corpora: list, skip_ci: bool) -> None:
 
 def do_status() -> None:
     root = C.CONFIG.results_root
+    if C.ROUND:
+        print(f"round: {C.ROUND['name']} ({C.ROUND['file']})")
+        for st, s in C.STATES.items():
+            print(f"  state {st}: {s.checkout} (ref {s.ref}), venv {s.venv}, FastMCP {s.fastmcp}"
+                  + (f", CI plugins {C.CI_PLUGINS[st]}" if C.CI_PLUGINS.get(st) else ""))
+        print(f"  data root {C.CONFIG.data_root}; Chroma ports {[c.chroma_port for c in C.CORPORA.values()]}, "
+              f"ingest {C.CONFIG.ingest_port}, Layer 2 {C.CONFIG.l2_port}")
+        for r in C.INFO_RUNS:
+            print(f"  informational: {r['state']} at CANDLEKEEP_RESULT_CHARS={r['result_chars']} on "
+                  f"{', '.join(r['suites'])} (compared with {', '.join(r['refs'])})")
     print(f"results root: {root}")
     for st in C.STATES:
         print(f"  env/{st}.txt: {'yes' if (root / 'env' / f'{st}.txt').exists() else '-'}")
@@ -928,7 +1013,8 @@ def do_status() -> None:
 def do_verify(extra: list) -> None:
     """verify.py (written independently; not part of `all`) with the harness's CEN-G
     gold body and CI paths passed explicitly, so both sides use the same rules
-    whatever the defaults, plus any further verify.py arguments."""
+    whatever the defaults, the results root and, in a later round, the same round file
+    (which verify.py reads with its own code), plus any further verify.py arguments."""
     script = HARNESS / "verify.py"
     if not script.is_file():
         raise StepFailed(f"{script} missing")
@@ -939,12 +1025,14 @@ def do_verify(extra: list) -> None:
     env.update({"CHROMA_URL": C.DEAD_CHROMA_URL, "CANDLEKEEP_DATA_DIR": str(scratch)})
     try:
         run_logged([PY_B, script, "--gold-body", C.CEN_G_GOLD_BODY, "--ci-paths", ",".join(CI_PATHS),
-                    "--root", C.CONFIG.results_root, *extra], C.logs_dir() / "verify.log", env=env)
+                    "--root", C.CONFIG.results_root, *(["--round", C.ROUND["file"]] if C.ROUND else []), *extra],
+                   C.logs_dir() / "verify.log", env=env)
     finally:
         shutil.rmtree(scratch, ignore_errors=True)
 
 
 def main() -> int:
+    global PY_B
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("preflight")
@@ -983,14 +1071,25 @@ def main() -> int:
     p.add_argument("--corpora", default="I01,I02,I03,I04,I05,I06,I07,I08,I09")
     p.add_argument("--skip-ci", action="store_true")
     sub.add_parser("status")
-    sub.add_parser("verify", help="run verify.py with the harness's --gold-body and --ci-paths; "
-                                  "other arguments go to verify.py (e.g. --all --check-doc)")
+    # allow_abbrev=False: an abbreviated option goes to verify.py unchanged instead of being taken
+    # for one of drive.py's (e.g. --ro, which verify.py reads as --round or --root).
+    sub.add_parser("verify", allow_abbrev=False,
+                   help="run verify.py with the harness's --gold-body and --ci-paths; "
+                        "other arguments go to verify.py (e.g. --all --check-doc)")
     for sp in sub.choices.values():
         C.add_hidden_args(sp)
     args, extra = ap.parse_known_args()
+    # --round before the subcommand, or abbreviated, is not drive.py's option: drive.py would run
+    # as round 1 and pass it on to verify.py.
+    options = [a.split("=", 1)[0] for a in extra]
+    misplaced = [a for a, o in zip(extra, options) if len(o) >= len("--rou") and "--round".startswith(o)]
+    if misplaced:
+        ap.error(f"{misplaced[0]}: spell out --round and put it after the subcommand: "
+                 f"drive.py {args.cmd} --round FILE")
     if extra and args.cmd != "verify":
         ap.error(f"unrecognized arguments: {' '.join(extra)}")
     C.apply_overrides(args)
+    PY_B = C.VENV_B / "bin" / "python"     # round 1: .venv; a round: its B venv (a smoke states override leaves it)
     HIDDEN.extend(C.hidden_argv(args))
     try:
         if args.cmd == "preflight":
