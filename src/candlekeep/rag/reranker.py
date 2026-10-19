@@ -62,7 +62,8 @@ def rerank_results(
         return results
 
     model = _get_cross_encoder(model_name, device)
-    pairs = [(query, r.text) for r in results]
+    # Arcane Recall windows carry the unstitched text the reranker was calibrated on.
+    pairs = [(query, r.metadata.get("_rerank_text", r.text)) for r in results]
     scores = model.predict(pairs)
 
     reranked = []

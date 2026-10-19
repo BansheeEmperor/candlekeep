@@ -165,6 +165,33 @@ class TestStitching:
         assert expanded[0].text[expanded[0].metadata["_match_offset"]:].startswith("chunk1")
 
 
+class TestRerankText:
+    """The reranker scores the unstitched window, not the stitched display text."""
+
+    def test_rerank_text_is_the_unstitched_join(self):
+        chunks = TestStitching()._chunks(["intro shared overlap text", "shared overlap text and more", "tail"])
+        db = _mock_db({"doc.md": chunks})
+        r = expand_results(db, [chunks[1]], n_results=1, expansion_chunks=1)[0]
+        assert r.metadata["_rerank_text"] == "\n\n".join(c.text for c in chunks)
+        assert r.text != r.metadata["_rerank_text"]   # the display text is stitched
+
+    def test_reranker_scores_rerank_text(self, monkeypatch):
+        from candlekeep.rag import reranker
+        seen = []
+
+        class FakeEncoder:
+            def predict(self, pairs):
+                seen.extend(pairs)
+                return [1.0 for _ in pairs]
+
+        monkeypatch.setattr(reranker, "_get_cross_encoder", lambda *a, **k: FakeEncoder())
+        windowed = SearchResult(text="stitched", score=0.5, doc_id="a",
+                                metadata={"_rerank_text": "unstitched join"})
+        plain = SearchResult(text="plain chunk", score=0.4, doc_id="b", metadata={})
+        out = reranker.rerank_results("q", [windowed, plain])
+        assert seen == [("q", "unstitched join"), ("q", "plain chunk")]
+        assert {r.text for r in out} == {"stitched", "plain chunk"}   # results keep their display text
+
 class TestFormatResult:
     def test_view_starts_at_match_with_title_line(self):
         from candlekeep.mcp.server import _format_result

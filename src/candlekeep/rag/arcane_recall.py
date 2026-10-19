@@ -193,6 +193,12 @@ def expand_results(
         # Where the best-scoring matched chunk starts in text; the search tool
         # starts its truncated view here instead of at the window's first chunk.
         meta["_match_offset"] = match_offset
+        # The window as the cross-encoder scores it: the chunk texts joined
+        # unstitched, prefixes and overlaps kept. The reranker and its Relevance
+        # Ward (router.MIN_RERANKER_SCORE) were calibrated on this text;
+        # scoring the shorter stitched text moves logits across the Ward.
+        meta["_rerank_text"] = ("\n\n".join(doc_chunks[i].text for i in indices if i in doc_chunks)
+                                if doc_chunks else expanded_text)
         expanded.append(SearchResult(
             text=expanded_text,
             score=score,
