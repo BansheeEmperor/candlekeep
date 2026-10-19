@@ -134,6 +134,8 @@ Two implementation choices are worth recording:
 
 **Decision:** Keep the prefix in the embeddings, where it helps ranking, but strip it at presentation time. Windows keep the header once and drop chunk overlaps, and each window records where its best-scoring matched chunk starts. The tool returns a title line plus `CANDLEKEEP_RESULT_CHARS` characters (default 1000) from the match. Because the duplication is gone, the same character budget carries more of the document, which is what allows a larger default budget without a proportional increase in output size.
 
+Stitching is for presentation only. The precise path's cross-encoder still scores each window as the unstitched join of its chunks, prefixes and overlaps kept. Its Relevance Ward (−10) was calibrated on that text. Scoring the stitched text instead moved logits across the Ward: on the router benchmark, precise precision fell from 87.4% to 82.3% and recall from 76.8% to 73.2%. With the unstitched text, the precise rankings match those before stitching on every query of the agent-view evaluation's suites (`docs/AGENT_VIEW_EVALUATION.md` §16).
+
 ### 3.11 Paginated Reads for Large Collections
 
 Several features read the entire collection at once: the BM25 index build, `list_documents`, `get_stats`, and the normalisation-map and ColBERT rebuilds. chromadb 1.5 introduced a hard limit — a single `get()` returning metadata for more than 32,766 records fails — so hybrid and explore search failed on every query once a collection crossed that size. Pinning an older chromadb would only hide the problem.

@@ -3592,3 +3592,24 @@ Every benchmark number recorded before 2026-10-19 was computed on the pre-repair
 - 38 fixture documents (three of them split into six) and `tests/test_processor.py` (`f7c2964`).
 - `tests/fixtures/eval_suite_100.json` (labels 1.3) and `scripts/remap_graded_labels.py` (`494a30d`).
 - `scripts/benchmark_fixture_repair.py` and `tests/results/fixture_repair_benchmark.json`: the before/after benchmark.
+
+---
+
+## Entry 61: The Reranker Must Score Unstitched Windows
+
+**Date:** October 19, 2026  
+**Focus:** Precise-path regression found by the agent-view evaluation
+
+Stitching (`docs/DESIGN.md` §3.10) keeps the Bardic prefix once and removes chunk overlaps. It was meant for the search tool's view, but it also changed the text the precise path's cross-encoder scores. The informational CI run of the agent-view evaluation, with model calls serialised, showed the effect on the project's router benchmark: precise precision 87.4% → 82.3% and recall 76.8% → 73.2% (2 of 23 queries).
+
+- "OAuth 2.0 flows" returned nothing. Its authentication.md window scored −9.57 unstitched and −10.88 stitched, below the Relevance Ward at −10, which was calibrated on unstitched text.
+- "How do I design a scalable API with proper caching?" lost its 5th result to the same logit shift.
+
+Re-scoring the stitched windows with their unstitched text reproduced the old logits for all 111 candidates. Windows were the same in both states; only the text differed.
+
+**Fix (`72c233f`):** `expand_results` records each window's unstitched join in `metadata["_rerank_text"]`, and `rerank_results` scores it. Results keep the stitched text for display.
+
+**Verification:**
+- On the evaluation's corpora and Chroma processes, the precise, hybrid and explore rankings equal those before stitching on all 4,212 query-path pairs.
+- The router benchmark equals the pre-stitching run exactly on every path.
+- Latency is unchanged in alternating runs (precise p50 44.5 / 43.5 ms, against 46.3 / 43.3 ms before stitching).
