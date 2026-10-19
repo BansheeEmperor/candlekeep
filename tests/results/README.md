@@ -15,6 +15,7 @@
 | `distance_metric_benchmark.json` | Distance metric comparison | Entry 7 |
 | `search_ef_benchmark.json` | HNSW search_ef sweep | Entry 15 |
 | `m_sweep_benchmark.json` | HNSW M parameter sweep | Entry 15 |
+| `fixture_repair_benchmark.json` | Centurion, cross-domain and essay suites before and after the 2026-10-19 fixture repair | Entry 60 |
 
 ## Archived Files
 

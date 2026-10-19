@@ -3523,3 +3523,72 @@ Adopted **Overlapping Sentinels (100 characters)** as the new framework default 
 - `docs/BENCHMARKING.md` — Formalized the 5k MuSiQue "Scale Inversion" findings.
 
 This completes the deep multi-hop validation cycle. Candlekeep is now demonstrably superior to the leading competitor in speed, cost, and recall at scale.
+
+---
+
+## Entry 60: Fixture Repair After the Quality Gate Began Parsing Frontmatter
+
+**Date:** October 19, 2026  
+**Focus:** Test-corpus hygiene and benchmark comparability
+
+### Why
+
+The agent-view evaluation (`docs/AGENT_VIEW_EVALUATION.md`) showed that the processor drops frontmatter it cannot parse without a warning. It indexes the raw block as body text, so the document loses its title, description and Bardic Knowledge prefix. The quality gate did not catch this, because it only checked that a file starts with `---`, and directory ingests skipped the gate entirely. Commit `244518e` makes the gate parse the frontmatter with the processor's own rule and check every file of a directory ingest. Run over the repository's fixtures, the new gate rejected 38 of 878 documents, so an MCP directory ingest of the fixture corpora would have skipped them.
+
+### What was repaired (commit `f7c2964`)
+
+| Problem | Files | Repair |
+|---|---|---|
+| Frontmatter that did not parse: an unquoted `: ` in a title, or quotes inside a quoted title | 26: `scale_docs` 6, `alternating_docs` 8, `medical_docs` 1, `narrative_docs` 9, `paul_graham` 2 | The value is re-quoted; the parsed value equals the text as written, and no other byte changes |
+| A truncated document that ends inside a code block | 8: `scale_docs` 5 (concurrency-patterns, container-security, data-pipeline-design, design-patterns-structural, package-management), `api_ref_docs` 3 (identity-verification-api, image-scanning-api, snapshot-api) | The block is closed at the end of the file; the truncated content is left as is |
+| Metadata written as a ```` ```yaml ```` block | `scale_docs/vpn-tunneling.md` | The two fences become `---` |
+| No frontmatter | `sample_docs/plain-text.txt` | Frontmatter added, body unchanged; a new processor test keeps the no-frontmatter case covered |
+| Over 10,000 words | `paul_graham`: how-to-raise-money, the-other-road-ahead, what-i-worked-on | Split at the paragraph nearest the middle into `-part-1` / `-part-2`, titled "(Part n of 2)"; the two bodies join to the original exactly, and no evaluation query uses these essays as gold |
+
+`container-security.md` had both a frontmatter and a code-block problem. All 881 gated fixture files now pass, including the three new essay parts. BEIR documents are not repository files: the evaluation harness renders them from `corpus.jsonl`. Eleven of them are under 50 words (1 SciFact, 10 NFCorpus), so an MCP directory ingest would skip them. That is dataset text and was left alone.
+
+### Graded labels re-pointed (Centurion Set 1.2 → 1.3, commit `494a30d`)
+
+In seven of the repaired CEN documents (the six frontmatter repairs and `vpn-tunneling.md`), the raw frontmatter used to form chunk 0, so every later chunk index moved. `scripts/remap_graded_labels.py` rebuilds each labelled chunk with the labelling-time processor, loaded from `51f939f` (Entry 52), and moves the key to the current chunk with the same text. Of the 709 keys:
+
+- 660 are unchanged;
+- 44 move, all on exact text matches: 42 in the repaired documents, and 2 in `ci-cd-pipelines.md`, which had drifted when `69172ef` added setext headers;
+- 5 are dropped. Each is chunk 0 of a document where that chunk held only the raw frontmatter, which is now metadata (grades 1, 2, 3, 3, 3).
+
+No query gains or loses a grade ≥ 2 label.
+
+### Effect on the benchmarks
+
+The same code (`scripts/benchmark_fixture_repair.py`) was run on the fixtures before (`244518e`) and after the repair: in-process, MPS, k = 5. Values are the means over runs. CEN and the cross-domain suites ran twice per side, CEN-G three times. On the metrics in the table, repeat runs differed by at most 0.009 (one CEN query's Hit@5). Repeat runs of CEN-G precise Hit@5 differed by up to 0.028. Raw values are in `tests/results/fixture_repair_benchmark.json`.
+
+| Suite | Path | MRR@5 | nDCG@5 | Hit@5 |
+|---|---|---|---|---|
+| CEN (overlap 100) | hybrid | 0.522 → 0.546 | 0.541 → 0.557 | 0.583 → 0.588 |
+| | precise | 0.510 → 0.548 | 0.516 → 0.555 | 0.704 → 0.745 |
+| | explore | 0.515 → 0.544 | 0.530 → 0.553 | 0.565 → 0.579 |
+| CD-ALT | hybrid / precise / explore | +0.016 / +0.053 / +0.018 | +0.010 / +0.052 / +0.015 | +0.000 / +0.038 / +0.010 |
+| CD-NAR | hybrid / precise / explore | +0.022 / +0.046 / +0.033 | +0.013 / +0.046 / +0.029 | −0.009 / +0.046 / +0.023 |
+| CD-MED | hybrid / precise / explore | +0.005 / 0 / +0.005 | +0.003 / 0 / +0.003 | 0 / 0 / 0 |
+| CD-API, CD-LEG, PG | all paths | unchanged (PG precise nDCG@5 +0.006) | | |
+
+- **Controls:** CD-LEG had no repairs and is identical. CD-API is identical: closing a code block at the very end of a document does not change retrieval. The router benchmark that CI runs is identical (it uses `sample_docs` files that were not touched), so the archived baselines stand.
+- **Graded nDCG@5 (CEN-G, overlap 50) falls while every document-level metric rises:** hybrid 0.473 → 0.457, precise 0.375 → 0.366, explore 0.376 → 0.381. The labels were pooled from retrieval results before the repair:
+  - 3 of the 12 hybrid queries that lose score had retrieved a frontmatter chunk whose label is now dropped, and all 3 fall to 0 ("OWASP Top 10 2021", "cloud storage options", "vpn tunneling protocols").
+  - In the queries that lose score, unlabelled chunks in the top 5 rise from 11 of 54 results to 15 of 44.
+  - Treat graded nDCG as unreliable for this change until the repaired documents' chunks are annotated.
+- **Absolute levels differ from the evaluation's Layer 1 numbers.** "Before" CEN hybrid MRR@5 is 0.522 here, against 0.534 in the evaluation: `BenchmarkRunner` matches gold by path, and the evaluation matched by basename (`docs/AGENT_VIEW_EVALUATION.md` §16).
+
+### Reproducing earlier results
+
+Every benchmark number recorded before 2026-10-19 was computed on the pre-repair fixtures and Centurion labels 1.2, including the agent-view evaluation.
+
+- **With the repaired fixtures,** re-verifying that evaluation fails V-03 (graded records of 24 CEN-G queries differ) and V-05 (GoldText and GPC no longer recompute).
+- **Using a worktree at `26b97ab`:** run its own `scripts/eval_agent_view/verify.py` with `--root tests/results/agent_view_eval --repo <repository> --b-python <repository>/.venv/bin/python`. This reproduces the recorded `summary.json` exactly (checked on 2026-10-19: 0 differences).
+- **Re-running the evaluation harness after the repair** would ingest different corpora: 12 CEN and 21 cross-domain documents changed, and the 11 short BEIR documents would be skipped.
+
+### Files changed
+
+- `src/candlekeep/mcp/server.py`, `src/candlekeep/rag/processor.py`, `tests/test_quality_gate.py`: the gate (`244518e`).
+- 38 fixture documents (three of them split into six) and `tests/test_processor.py` (`f7c2964`).
+- `tests/fixtures/eval_suite_100.json` (labels 1.3) and `scripts/remap_graded_labels.py` (`494a30d`).
+- `scripts/benchmark_fixture_repair.py` and `tests/results/fixture_repair_benchmark.json`: the before/after benchmark.
