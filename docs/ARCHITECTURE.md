@@ -432,12 +432,12 @@ For read-heavy workloads (the typical agent pattern), these tradeoffs are accept
 
 ### 1. Quality Gate
 Documents are validated before ingestion:
-- YAML frontmatter required (title, description, keywords, category, tags)
+- YAML frontmatter required (title, description, keywords, category, tags), and it must parse. A block the processor cannot read is rejected: invalid YAML (typically an unquoted `: ` inside a value), no closing `---` line, or not a key: value mapping. Otherwise the processor would drop it without a warning and index the raw block as body text, losing the title and description that Bardic Knowledge uses.
 - At least 2 headers (ATX `#` or setext), or frontmatter as proof of curation
 - At least 50 words and at most `CANDLEKEEP_QUALITY_MAX_WORDS` (default 10,000; 0 disables the upper bound)
 - No unclosed code blocks
 
-Rejected documents get specific error messages. Agent can fix and retry. The gate applies to individual `.md`, `.txt` and `.rst` files passed to `ingest`; ingesting a directory processes its files without the gate.
+Rejected documents get specific error messages. Agent can fix and retry. A single `.md`, `.txt` or `.rst` file that fails is rejected. When a directory is ingested, each of its `.md`, `.txt` and `.rst` files is checked: failing files are skipped and listed with their issues (the first 20 by name), and the rest are ingested.
 
 ### 2. Document Processing
 - Text extraction (markdown, PDF, plain text)

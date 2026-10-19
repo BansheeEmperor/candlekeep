@@ -163,21 +163,25 @@ class DocumentProcessor:
             start = end - overlap if end < len(text) else len(text)
         return chunks
 
-    def process_directory(self, path: str | Path) -> ProcessResult:
-        """Process all supported files in a directory."""
-        path = Path(path)
+    def directory_files(self, path: str | Path) -> list[Path]:
+        """The files process_directory reads, in its order."""
+        return [f for f in Path(path).rglob("*") if f.is_file() and f.suffix.lower() in self.SUPPORTED_EXTENSIONS]
+
+    def process_directory(self, path: str | Path, exclude: frozenset[Path] = frozenset()) -> ProcessResult:
+        """Process all supported files in a directory, except those in exclude."""
         all_chunks: list[Chunk] = []
         total_captioned = 0
         total_from_cache = 0
-        for file in path.rglob("*"):
-            if file.is_file() and file.suffix.lower() in self.SUPPORTED_EXTENSIONS:
-                try:
-                    result = self.process(file)
-                    all_chunks.extend(result.chunks)
-                    total_captioned += result.images_captioned
-                    total_from_cache += result.images_from_cache
-                except Exception:
-                    continue
+        for file in self.directory_files(path):
+            if file in exclude:
+                continue
+            try:
+                result = self.process(file)
+                all_chunks.extend(result.chunks)
+                total_captioned += result.images_captioned
+                total_from_cache += result.images_from_cache
+            except Exception:
+                continue
         return ProcessResult(
             chunks=all_chunks,
             images_captioned=total_captioned,

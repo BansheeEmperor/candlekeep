@@ -89,6 +89,8 @@ The `ingest` tool validates documents before accepting them. This ensures [Bardi
 
 **Decision:** Reject documents missing frontmatter, headers, or with extreme lengths. The agent gets specific error messages and can fix the document.
 
+The frontmatter must also parse with the processor's own rule: the processor drops a block it cannot read without a warning, so a document with, say, an unquoted colon in its title would be indexed with no title or description. Directory ingests apply the gate to each file and skip the failing ones, listing them in the result: before this, a directory bypassed the gate entirely.
+
 ### 3.6 Conditional Tool Registration
 
 Write tools (ingest, delete, repopulate) are destructive. On remote databases, they're hidden from the agent entirely — not just permission-denied at runtime, but invisible in the tool list.

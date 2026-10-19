@@ -8,6 +8,7 @@ from fastmcp import FastMCP
 from fastmcp.server.context import Context
 from fastmcp.dependencies import CurrentContext
 import chromadb.errors
+import yaml
 
 from candlekeep.config import Settings
 from candlekeep.database.vector_store import ChromaVectorStore
@@ -461,6 +462,43 @@ def _count_setext_headers(lines: list[str], start: int) -> int:
     return count
 
 
+_GATED_SUFFIXES = (".md", ".txt", ".rst")
+_REJECTED_LISTED = 20   # files named in a directory ingest's report; the rest are counted
+
+
+def _rejected_list(root: Path, rejected: dict[Path, list[str]]) -> str:
+    """The rejected files of a directory ingest, one line each, with their issues."""
+    lines = []
+    for f, issues in sorted(rejected.items())[:_REJECTED_LISTED]:
+        rel = f.relative_to(root) if f.is_relative_to(root) else f
+        lines.append(f"  - {rel}: " + "; ".join(issues))
+    if len(rejected) > _REJECTED_LISTED:
+        lines.append(f"  - … and {len(rejected) - _REJECTED_LISTED} more")
+    return "\n".join(lines) + "\n\nFix them (critique_document() shows the details) and ingest them again."
+
+
+def _frontmatter_problem(content: str) -> str | None:
+    """Why a document's frontmatter would not reach the index as metadata, or None.
+
+    Uses the processor's own pattern and YAML parser: the processor silently drops
+    frontmatter it cannot read and indexes the raw block as body text, losing the
+    title and description that Bardic Knowledge prefixes to every chunk.
+    """
+    match = DocumentProcessor.FRONTMATTER_PATTERN.match(content)
+    if not match:
+        return "Unreadable YAML frontmatter (expected a closing --- line after the metadata)"
+    try:
+        meta = yaml.safe_load(match.group(1))
+    except yaml.YAMLError as e:
+        mark = getattr(e, "problem_mark", None)
+        where = f" at line {mark.line + 2}" if mark else ""   # +1 for 0-based, +1 for the opening ---
+        reason = getattr(e, "problem", None) or str(e).split("\n")[0]
+        return f"Invalid YAML frontmatter{where}: {reason} (quote values that contain ': ')"
+    if meta is not None and not isinstance(meta, dict):
+        return "YAML frontmatter is not a mapping of key: value pairs"
+    return None
+
+
 def check_document_quality(path: Path) -> list[str]:
     """Check document quality for RAG suitability. Returns list of issues (empty = OK)."""
     content = path.read_text(encoding="utf-8", errors="replace")
@@ -471,6 +509,8 @@ def check_document_quality(path: Path) -> list[str]:
     has_frontmatter = content.startswith("---")
     if not has_frontmatter:
         issues.append("Missing YAML frontmatter (title, description, keywords, category, tags)")
+    elif problem := _frontmatter_problem(content):
+        issues.append(problem)
 
     body_start = _find_body_start(lines)
     md_headers = sum(1 for l in lines[body_start:] if l.startswith("#"))
@@ -699,7 +739,11 @@ def critique_document(path: str) -> str:
     output.append(f"**Metrics:**")
     output.append(f"- Size: {chars:,} chars, {words:,} words, {len(lines):,} lines")
     output.append(f"- Structure: {len(headers)} headers, {code_blocks // 2} code blocks")
-    output.append(f"- Frontmatter: {'✓ Present' if content.startswith('---') else '✗ Missing'}\n")
+    if not content.startswith("---"):
+        frontmatter = "✗ Missing"
+    else:
+        frontmatter = "✗ Unreadable" if _frontmatter_problem(content) else "✓ Present"
+    output.append(f"- Frontmatter: {frontmatter}\n")
 
     if issues:
         output.append(f"**Issues ({len(issues)}):**")
@@ -967,9 +1011,12 @@ def ingest(path: str, ctx: Context = CurrentContext()) -> str:
     """Ingest a file or directory into the knowledge base.
 
     Validates document quality before ingestion. Documents must have:
-    - YAML frontmatter (title, description, keywords)
+    - YAML frontmatter (title, description, keywords) that parses as a key: value mapping
     - At least 2 headers (ATX or setext) — or frontmatter as proof of curation
     - At least 50 words, at most CANDLEKEEP_QUALITY_MAX_WORDS (default 10,000; 0 disables)
+
+    A single .md/.txt/.rst file that fails is rejected. In a directory, each such
+    file is checked; failing files are skipped and listed, the rest are ingested.
 
     Supports: txt, md, pdf, rst, json, yaml files.
     """
@@ -984,8 +1031,8 @@ def ingest(path: str, ctx: Context = CurrentContext()) -> str:
             if not p.exists():
                 return f"Error: Path not found: {path}"
 
-            # Quality gate for individual files
-            if p.is_file() and p.suffix in (".md", ".txt", ".rst"):
+            # Quality gate: a single file is rejected; a directory's failing files are skipped
+            if p.is_file() and p.suffix.lower() in _GATED_SUFFIXES:
                 issues = check_document_quality(p)
                 if issues:
                     msg = f"❌ Document rejected — {len(issues)} quality issue(s):\n"
@@ -993,18 +1040,28 @@ def ingest(path: str, ctx: Context = CurrentContext()) -> str:
                     msg += "\n\nFix these issues or use critique_document() to review first."
                     return msg
 
+            rejected: dict[Path, list[str]] = {}
             if p.is_file():
                 result = get_processor().process(p)
             else:
-                result = get_processor().process_directory(p)
+                for f in get_processor().directory_files(p):
+                    if f.suffix.lower() in _GATED_SUFFIXES and (issues := check_document_quality(f)):
+                        rejected[f] = issues
+                result = get_processor().process_directory(p, exclude=frozenset(rejected))
 
             if not result.chunks:
+                if rejected:
+                    return (f"❌ Nothing ingested — {len(rejected)} file(s) failed the quality gate:\n"
+                            + _rejected_list(p, rejected))
                 return "No content found to ingest."
 
             count = get_store().add_documents(result.chunks, collection="default")
             msg = f"✓ Ingested {count} chunks from {path}"
             if result.images_captioned or result.images_from_cache:
                 msg += f" ({result.images_captioned} images captioned, {result.images_from_cache} from cache)"
+            if rejected:
+                msg += (f"\n⚠ Skipped {len(rejected)} file(s) that failed the quality gate:\n"
+                        + _rejected_list(p, rejected))
 
             # Schedule background normalisation map rebuild. Non-blocking —
             # queries during rebuild use the stale map. If a rebuild is already
