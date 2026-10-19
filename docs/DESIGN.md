@@ -154,6 +154,12 @@ The rate limiter keyed on the MCP session. Stateless HTTP — required for uvico
 
 **Decision:** Key on the `mcp-session-id` header when present; otherwise on an optional, client-supplied `X-Candlekeep-Agent` header; otherwise on the client IP. Agents that send the header get their own bucket, and agents that don't share one bucket per IP. The header is not authenticated: rate limits remain a fairness mechanism, not a security boundary.
 
+### 3.14 One Lock for Model Calls on MPS
+
+FastMCP 3 runs tools in a thread pool, and Candlekeep runs background threads (the normalisation rebuild after each ingest). PyTorch's MPS backend is not thread-safe. When two threads run a model at once the process aborts (a Metal command-buffer assertion) or segfaults. Reproduced: a search during an ingest, a search during the post-ingest rebuild, and 16 concurrent precise searches.
+
+**Decision:** on MPS, every model load, `encode` and `predict` holds one process-wide lock (`model_lock.py`). A plain lock held for a whole call let one ingest stall every search for its full embedding (6 s for 2,866 chunks, growing with ingest size). So long calls run in slices of 128 inputs, one lock hold per slice, in the model's own length order. That keeps the batches it builds, and on the Centurion corpus every embedding and score, bitwise identical. The lock hands over first-come, first-served, so a waiting search runs before the ingest's next slice. CPU and CUDA calls take no lock. Measured effect: Research Diary Entry 62.
+
 ## 4. Techniques Evaluated
 
 | Technique | Result | Status |

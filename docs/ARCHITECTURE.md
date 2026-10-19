@@ -329,12 +329,13 @@ graph TD
 |---------|-------|---------|
 | `_write_lock` (`threading.Lock`) | Write tools (ingest, delete, repopulate) | Prevents concurrent writes from corrupting ChromaDB state or racing on BM25 cache invalidation. In HTTP mode, acquisition times out after 10 seconds — the caller receives a "server busy" error instead of queuing indefinitely behind a long-running write (e.g., `repopulate_database`). stdio mode uses blocking acquire (single agent). |
 | `_reranker_semaphore` (`threading.Semaphore`) | Precise-path search | Caps concurrent cross-encoder inference at the throughput-optimal level. Value set by hardware: HTTP mode runs a calibration benchmark at startup (tests N=1 up to cores/2, picks peak throughput); stdio mode uses a core-count heuristic (`cores // 3`). See [Precise Path Concurrency](#precise-path-concurrency). |
+| `_MPS_LOCK` (`model_lock.py`, first-come first-served, re-entrant) | Every model load, `encode` and `predict` on an MPS device | PyTorch's MPS backend aborts the process when two threads run a model at once. On MPS every model call holds this lock; calls over `MPS_SLICE` (128) inputs, such as an ingest's embedding, run one slice per lock hold, so a search waits for one slice, not a whole ingest. CPU and CUDA calls take no lock. It is a leaf lock: taken after `_write_lock` and `_reranker_semaphore`, and while holding it no other lock is taken, no Candlekeep code is called back, and no other thread is waited on. Per process: uvicorn workers are spawned, each with its own MPS context. |
 | BM25 `_cache_lock` (`threading.RLock`) | Hybrid-path BM25 cache | Concurrent cold queries wait for a single build instead of each scanning the collection. Re-entrant because a self-heal during the build clears the cache; a build that spans a clear is redone. |
 | ColBERT `_cache_lock` (`threading.Lock`) | Hybrid-path ColBERT cache (opt-in) | Protects ColBERT searcher reads/rebuilds. Only active when `CANDLEKEEP_SPARSE_BACKEND=colbert`. |
 | `_search_limiter` (`_RateLimiter`) | `search` tool (all paths) | Per-client sliding window: keyed on the MCP session in stateful HTTP; in stateless HTTP (uvicorn workers, no session) on the optional `X-Candlekeep-Agent` request header, else the client IP. Rejects calls exceeding `CANDLEKEEP_RATE_LIMIT_SEARCH` per `CANDLEKEEP_RATE_LIMIT_WINDOW` seconds. HTTP mode only; no-op in stdio. |
 | `_write_limiter` (`_RateLimiter`) | Write tools (ingest, delete, repopulate) | Per-client sliding window: keyed on the MCP session in stateful HTTP; in stateless HTTP (uvicorn workers, no session) on the optional `X-Candlekeep-Agent` request header, else the client IP. Rejects calls exceeding `CANDLEKEEP_RATE_LIMIT_WRITE` per `CANDLEKEEP_RATE_LIMIT_WINDOW` seconds. HTTP mode only; no-op in stdio. |
 
-Read operations (simple search, hybrid search, list_documents, get_stats) run without locks against ChromaDB, which handles its own collection-level consistency.
+Read operations (simple search, hybrid search, list_documents, get_stats) run without locks against ChromaDB, which handles its own collection-level consistency. On MPS, their model calls (query embedding, reranking) queue on `_MPS_LOCK`.
 
 **BM25 cache updates:** The BM25 index is built lazily from the whole collection on the first hybrid or explore query and kept in memory. Every write (`ingest`, `delete_document`, `repopulate_database`) clears it, and the next query rebuilds it. The full-collection read is paginated (see [Large Collections](#large-collections)), and the build runs under `_cache_lock`, so concurrent cold queries wait for a single build. True incremental updates would require a library with native support (e.g., `whoosh`, `tantivy`).
 
@@ -360,7 +361,7 @@ The precise path runs the full pipeline (embedding → vector search → Arcane 
 
 *CPU cross-encoder runs in float64 to work around a torch ≥2.10 NaN regression (see Research Diary Entry 33). MPS is unaffected and remains in float32.*
 
-**Concurrent throughput (direct calls, MPS):**
+**Concurrent throughput (direct calls, MPS, measured before `_MPS_LOCK` serialised model calls on MPS):**
 
 | Concurrency | p50 | p95 | Throughput |
 |:-:|:-:|:-:|:-:|
@@ -373,7 +374,7 @@ The precise path runs the full pipeline (embedding → vector search → Arcane 
 
 Throughput peaks at N=3 (10.1 qps). At N=5, CPU-bound stages fight for the GIL and throughput collapses. Requests beyond the optimal N queue instead of degrading all in-flight requests.
 
-**Automatic calibration (HTTP mode):** At startup, after models are warm, the server fires concurrent cross-encoder calls at N=1 up to N=cores/2 and picks the N with the highest throughput. Stops early when throughput drops. On a 10-core machine (range N=1..5) this takes ~1.4s. The calibration result is logged (e.g., `✓ Precise-path concurrency: 3 (27.3 qps)`).
+**Automatic calibration (HTTP mode):** At startup, after models are warm, the server fires concurrent cross-encoder calls at N=1 up to N=cores/2 and picks the N with the highest throughput. Stops early when throughput drops. On a 10-core machine (range N=1..5) this takes ~1.4s. The calibration result is logged (e.g., `✓ Precise-path concurrency: 3 (27.3 qps)`). On MPS the cross-encoder calls it times are serialised by `_MPS_LOCK`, so the N it picks only decides where requests queue (on the semaphore or on the lock), not how many reranks run at once.
 
 **Heuristic fallback (stdio mode):** stdio is one-agent-per-process, so the semaphore is typically uncontended. The value is set from CPU core count (`cores // 3`) to avoid any boot-time cost. `scripts/benchmark_concurrent.py` can still be used for manual validation.
 
