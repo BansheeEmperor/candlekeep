@@ -104,6 +104,7 @@ To be filled by `verify.py --round scripts/eval_agent_view/rounds/r2.json --rend
 
 | Date | Section | Deviation | Reason | Effect on criteria |
 |---|---|---|---|---|
+| 2026-10-19 | §8, R2-3, R2-5 | Before the J1D judges ran, `judges_from_journal.py` learned a judge letter per part: a label `judge:J1D:part<k>:<j>` writes `out_J1D_part<k>_<j>.json`. A `--record` option names the extraction record and will not overwrite one. Round 1 extracted J1D with a one-off script. | The J1D extraction is reproducible, and it cannot overwrite J1's record. | None: outputs are written unchanged. |
 
 ## 17. Change log
 

@@ -9,7 +9,13 @@ Each judge agent of the workflow is labelled `judge:<P>:part<k>` (a retry adds
 structured output, which the journal records verbatim. For every part, the first
 attempt whose ids are exactly the part's ids is written, unchanged, as the JSON array
 that `judge_pack.py unblind` reads. Nothing is edited, merged or re-ordered here.
-judges/journal_extract.json records which agent produced each file.
+judges/journal_extract.json (or --record) records which agent produced each file.
+
+A part judged by several judges (J1D: two per part) labels them
+`judge:<P>:part<k>:<j>`, j a lower-case letter; each judge's output goes to
+out_<P>_part<k>_<j>.json, which `rejudge_discordant.py analyse` reads:
+
+    judges_from_journal.py --journal <dir>/journal.jsonl --record journal_extract_J1D.json
 """
 from __future__ import annotations
 
@@ -22,17 +28,22 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import common as C  # noqa: E402
 
-LABEL = re.compile(r"^judge:(?P<pack>[A-Z0-9]+):part(?P<part>\d+)(?::attempt(?P<attempt>\d+))?$")
+LABEL = re.compile(r"^judge:(?P<pack>[A-Z0-9]+):part(?P<part>\d+)(?::(?P<judge>[a-z]))?(?::attempt(?P<attempt>\d+))?$")
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--journal", required=True, type=Path)
-    ap.add_argument("--force", action="store_true", help="overwrite existing out_*.json files")
+    ap.add_argument("--force", action="store_true", help="overwrite existing out_*.json files and the record")
+    ap.add_argument("--record", default="journal_extract.json",
+                    help="file under judges/ that records the extraction (default journal_extract.json)")
     C.add_hidden_args(ap)
     args = ap.parse_args()
     C.apply_overrides(args)
     d = C.CONFIG.results_root / "judges"
+    record = d / Path(args.record).name
+    if record.exists() and not args.force:
+        raise SystemExit(f"{record} exists; use --force to overwrite, or --record another name")
     labels, results, order = {}, {}, {}
     for line in args.journal.read_text(encoding="utf-8").splitlines():
         rec = json.loads(line)
@@ -45,10 +56,10 @@ def main() -> int:
     for agent_id, label in labels.items():
         m = LABEL.match(label)
         if m:
-            key = (m["pack"], int(m["part"]))
+            key = (m["pack"], int(m["part"]), m["judge"] or "")
             attempts.setdefault(key, []).append((int(m["attempt"] or 1), order[agent_id], agent_id, label))
     written, problems = [], []
-    for (pack, part), tries in sorted(attempts.items()):
+    for (pack, part, judge), tries in sorted(attempts.items()):
         want = [item["id"] for item in C.load_json(d / f"pack_{pack}_part{part}.json")]
         chosen = None
         for n, (attempt, _, agent_id, label) in enumerate(sorted(tries), 1):
@@ -64,17 +75,19 @@ def main() -> int:
             problems.append(f"{label} ({agent_id}), agent {n} of {len(tries)}: result rejected "
                             f"(ids {'missing' if ids is None else len(ids)})")
         if chosen is None:
-            problems.append(f"{pack} part {part}: no attempt returned exactly the part's {len(want)} ids")
+            problems.append(f"{pack} part {part}{' judge ' + judge if judge else ''}: no attempt returned "
+                            f"exactly the part's {len(want)} ids")
             continue
-        out = d / f"out_{pack}_part{part}.json"
+        out = d / (f"out_{pack}_part{part}_{judge}.json" if judge else f"out_{pack}_part{part}.json")
         if out.exists() and not args.force:
             raise SystemExit(f"{out} exists; use --force to overwrite")
         C.write_json_atomic(out, chosen[3])
-        written.append({"file": out.name, "pack": pack, "part": part, "agent_number": chosen[0],
+        written.append({"file": out.name, "pack": pack, "part": part, **({"judge": judge} if judge else {}),
+                        "agent_number": chosen[0],
                         "agents_started": len(tries), "agent_id": chosen[1],
                         "label": chosen[2], "n_items": len(chosen[3]), "sha256": C.sha256_file(out)})
         print(f"{out.name}: {len(chosen[3])} items from {chosen[2]} ({chosen[1]})")
-    C.write_json_atomic(d / "journal_extract.json", {
+    C.write_json_atomic(record, {
         "journal": str(args.journal), "journal_sha256": C.sha256_file(args.journal), "extracted_at": C.now_iso(),
         "files": written, "problems": problems})
     for p in problems:
