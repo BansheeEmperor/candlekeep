@@ -2137,6 +2137,7 @@ class Judges:
         self.jdir = v.root / "judges"
         self.packs: dict = {}
         self.bad_ev: dict = {}
+        self.j1d = None          # R2-3 (a round only): discordant_rejudge()
         cen = derive_queries("CEN")
         self.non_adv = [q["qid"] for q in cen if q["category"] != "adversarial"]
         self.answers = {q["qid"]: a for q, a in zip(cen, cen_answers())}
@@ -2150,6 +2151,8 @@ class Judges:
             res = self.pack(pack, spec)
             self.packs[pack] = res
             items.extend(res["items"])
+        if ROUND is not None:
+            self.j1d = self.discordant_rejudge(items)
         self.v.checks["V-06"] = {"title": "Judge integrity", "items": items}
 
     # -- file-level helpers
@@ -2462,6 +2465,7 @@ class Judges:
             res["counts"], res["by_state"] = counts, by_state
             res["status"] = "ok" if complete else "incomplete"
         self._harness_results(name, counts if unblind and valid_first else None, it)
+        res["_unblind"], res["_verdicts"], res["_items"] = unblind, valid_first, items   # for discordant_rejudge
         if rmap and second:
             rcounts = {s: {vd: 0 for vd in VERDICTS} for s in spec["states"]}
             for rid, src in rmap.items():
@@ -2484,6 +2488,121 @@ class Judges:
                 res["kappa_by_state"][s] = {"n": len(sp), "kappa": cohen_kappa([a for a, _ in sp], [b for _, b in sp]),
                                             "agreement": _agreement(sp)}
         return res
+
+    def discordant_rejudge(self, it: list) -> dict:
+        """R2-3 (a round only): C-11's discordant queries re-judged, recomputed from the files.
+
+        A CEN-A query is discordant when its J1 verdicts for B and C differ on full. Each of
+        its B and C items is re-issued under a D id (keymap_J1D.json: D id -> J1 id) in
+        judges/pack_J1D_part<k>.json, no part holding both states of one query, and judged
+        by two new judges (out_J1D_part<k>_<judge>.json). An item counts as full when at
+        least 2 of its 3 verdicts (J1's and the two new) say full; b and c compare B and C
+        on that, over all CEN-A queries (a concordant query keeps its J1 verdicts). It is
+        informational: its checks join V-06 as pass or warn, never fail."""
+        name, local = "J1D", []
+        res = {"status": "missing", "queries": None, "n_items": None, "judges_per_item": None, "b": None, "c": None,
+               "mcnemar": None, "rows": []}
+
+        def done(status):
+            res["status"] = status
+            it.extend(dict(i, status="warn") if i["status"] == "fail" else i for i in local)
+            return res
+
+        j1 = self.packs.get("J1") or {}
+        unblind, verdicts, j1_items = j1.get("_unblind"), j1.get("_verdicts") or {}, j1.get("_items") or {}
+        kf = self.jdir / "keymap_J1D.json"
+        parts_f = sorted(self.jdir.glob("pack_J1D_part*.json"), key=lambda q: (_part_no(q) or 0, q.name))
+        outs_f = sorted(self.jdir.glob("out_J1D_part*_*.json"))
+        if not kf.exists() and not parts_f and not outs_f:
+            local.append(item(f"{name}: pack, key map and outputs (R2-3)", "warn", "missing"))
+            return done("missing")
+        if not (j1.get("complete") and unblind):
+            local.append(item(f"{name}: J1 complete (its verdicts select the queries)", "fail", "J1 incomplete"))
+            return done("invalid")
+        jid_of = {(st, q): jid for jid, (st, q) in unblind.items()}
+        queries = [q for q in self.judged if (verdicts.get(jid_of.get(("B", q))) == "full")
+                   != (verdicts.get(jid_of.get(("C", q))) == "full")]
+        want = {jid_of[(st, q)]: (st, q) for q in queries for st in ("B", "C")}
+        res["queries"] = queries
+        kobj, kerr = load_json_safe(kf)
+        km = {d: source_value(v) for d, v in keymap_entries(kobj).items()} if kobj is not None else {}
+        local.append(item(f"{name}: key map gives each B and C item of the {len(queries)} discordant queries one D id",
+                          "pass" if km and sorted(km.values()) == sorted(want) else "fail",
+                          {"error": kerr, "mapped": len(km), "expected": len(want),
+                           "not_discordant": sorted(set(km.values()) - set(want))[:5],
+                           "not_mapped": sorted(set(want) - set(km.values()))[:5]}))
+        if kobj is not None:
+            self._hash(name, kf, local, None, section14=True)
+        # Parts: each item equals its J1 item; no part holds both states of one query.
+        part_ids, content_bad, both = {}, [], []
+        for pf in parts_f:
+            obj, err = load_json_safe(pf)
+            recs = find_records(obj) if obj is not None else []
+            if obj is None:
+                content_bad.append(f"{pf.name}: {err}")
+            ids = [rec_id(r) for r in recs]
+            part_ids[_part_no(pf)] = set(ids)
+            for r in recs:
+                src = j1_items.get(km.get(rec_id(r)))
+                if src is None or any(r.get(k) != src.get(k) for k in PACK_ITEM_KEYS if k != "id"):
+                    content_bad.append(rec_id(r))
+            qs = [want.get(km.get(i), (None, None))[1] for i in ids]
+            both += sorted({q for q in qs if q is not None and qs.count(q) > 1})
+        all_ids = [i for ids in part_ids.values() for i in ids]
+        local.append(item(f"{name}: parts hold every D id once, each equal to its J1 item",
+                          "pass" if parts_f and not content_bad and sorted(all_ids) == sorted(km) else "fail",
+                          {"parts": len(parts_f), "sizes": [len(v) for v in part_ids.values()],
+                           "differing": content_bad[:5]}))
+        local.append(item(f"{name}: no part holds both states of one query", "pass" if parts_f and not both else "fail",
+                          both[:5]))
+        # Outputs: two new judges per part, each with exactly the part's ids.
+        new, per_part, bad_files, bad_ev, n_snip = {}, {}, [], [], 0
+        for f in outs_f:
+            m = re.search(r"_part(\d+)_([a-z])$", f.stem)
+            obj, err = load_json_safe(f)
+            recs = find_records(obj) if obj is not None else []
+            k = int(m.group(1)) if m else None
+            if m is None or obj is None or k not in part_ids or {rec_id(r) for r in recs} != part_ids[k] \
+                    or len(recs) != len(part_ids[k]):
+                bad_files.append(f.name)
+                continue
+            per_part.setdefault(k, []).append(m.group(2))
+            for r in recs:
+                vd = str(_first(r, VERDICT_KEYS) or "").strip().lower()
+                if vd not in VERDICTS:
+                    bad_files.append(f"{f.name}: {rec_id(r)} verdict {vd!r}")
+                    continue
+                new.setdefault(rec_id(r), []).append(vd)
+                src = j1_items.get(km.get(rec_id(r))) or {}
+                for part in evidence_parts(_first(r, EVIDENCE_KEYS)):
+                    n_snip += 1
+                    if not snippet_found(part, _first(src, OUTPUT_KEYS) or ""):
+                        bad_ev.append((rec_id(r), part[:80]))
+        local.append(item(f"{name}: two judge outputs per part, each with exactly the part's ids and valid verdicts",
+                          "pass" if part_ids and not bad_files and all(len(per_part.get(k, [])) == 2 for k in part_ids)
+                          else "fail", {"judges_per_part": {k: per_part.get(k, []) for k in sorted(part_ids)},
+                                        "bad": bad_files[:5]}))
+        local.append(item(f"{name}: every evidence snippet occurs verbatim in its tool output", "pass" if not bad_ev
+                          else "warn", {"snippets": n_snip, "not_found": len(bad_ev), "first": bad_ev[:5]}))
+        # Majority of three, then b and c over every CEN-A query.
+        votes = {jid: [verdicts.get(jid)] + [v for d, s in km.items() if s == jid for v in new.get(d, [])]
+                 for jid in want}
+        res["n_items"], res["judges_per_item"] = len(want), sorted({len(v) for v in votes.values()})
+        full = {jid: sum(v == "full" for v in vs) >= 2 for jid, vs in votes.items()}
+        pairs = []
+        for q in self.judged:
+            b_id, c_id = jid_of[("B", q)], jid_of[("C", q)]
+            if q in queries:
+                pairs.append((full[b_id], full[c_id]))
+                res["rows"].append({"qid": q, "B": votes[b_id], "C": votes[c_id]})
+            else:
+                pairs.append((verdicts.get(b_id) == "full", verdicts.get(c_id) == "full"))
+        complete = all(len(v) == 3 for v in votes.values())
+        if complete:
+            res["mcnemar"] = mcnemar(pairs)
+            res["b"], res["c"] = res["mcnemar"]["b"], res["mcnemar"]["c"]
+        failed = any(i["status"] == "fail" for i in local)
+        return done("invalid" if failed else "ok" if complete else "incomplete")
 
     def rejudge(self, name: str, items: dict, n_src: int, it: list, required: bool):
         """The re-judged subset <name>R: R ids mapped to source ids; returns ({R id: source id}, {R id: verdict rec})."""
@@ -3030,6 +3149,13 @@ def build_summary(v: Verifier, judges: Judges, ci: dict, vstatus: dict | None = 
         s["l3"][pack] = entry
     s["verification_status"] = dict(vstatus or {})
     s["criteria"] = criteria(v, s, ci)
+    if judges.j1d is not None:      # R2-3, informational: C-11 with the discordant queries re-judged
+        j = {k: val for k, val in judges.j1d.items()}
+        p = (j.get("mcnemar") or {}).get("p")
+        fam = {cid: ((s["criteria"][cid].get("mcnemar") or {}).get("p") if cid != "C-11" else p)
+               for cid in ("C-08", "C-09", "C-11")}
+        j["holm_p"] = holm({k: (1.0 if x is None else x) for k, x in fam.items()})["C-11"] if p is not None else None
+        s["l3_sensitivity"] = {"J1D": j}
     outcome = {"RQ1": worst_crit(s["criteria"], RQ1_IDS, extra=[s["criteria"]["C-14"]["parts"]["B"]]),
                "RQ2": worst_crit(s["criteria"], RQ2_IDS)}
     unverified = [k for k in VERIFY_GATE if s["verification_status"].get(k) != "pass"]
@@ -3576,6 +3702,13 @@ def render_section15(s: dict) -> str:
         vids = ", ".join(f"{x} {vstat.get(x, 'missing')}" for x in CRIT_VIDS[cid]) or "—"
         result = str(c["result"]).replace("|", "\\|")
         L.append(f"| {cid} | {result} | {STATUS_WORD.get(c['status'], c['status'])} | {CRIT_EVIDENCE[cid]} | {vids} |")
+    sens = (s.get("l3_sensitivity") or {}).get("J1D")
+    if sens is not None:
+        L += ["", "R2-3 sensitivity (informational; C-11 is decided on the J1 verdicts): "
+              + (f"the {len(sens['queries'] or [])} CEN-A queries whose J1 verdicts for B and C differ on full, each "
+                 f"B and C item with two more judges, full when 2 of 3 verdicts say full: b={sens['b']}, c={sens['c']}, "
+                 f"net {sens['c'] - sens['b']:+d}, p={_num(sens['mcnemar']['p'], 4)}, Holm p={_num(sens['holm_p'], 4)} "
+                 f"(`judges/out_J1D_*.json`)." if sens["status"] == "ok" else f"{sens['status']} (V-06).")]
     dec = s["decisions"]
     out_c = dec.get("criteria_outcome") or {}
     nv = dec.get("not_verified") or []

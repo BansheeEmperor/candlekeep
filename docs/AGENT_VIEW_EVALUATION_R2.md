@@ -105,6 +105,7 @@ To be filled by `verify.py --round scripts/eval_agent_view/rounds/r2.json --rend
 | Date | Section | Deviation | Reason | Effect on criteria |
 |---|---|---|---|---|
 | 2026-10-19 | §8, R2-3, R2-5 | Before the J1D judges ran, `judges_from_journal.py` learned a judge letter per part: a label `judge:J1D:part<k>:<j>` writes `out_J1D_part<k>_<j>.json`. A `--record` option names the extraction record and will not overwrite one. Round 1 extracted J1D with a one-off script. | The J1D extraction is reproducible, and it cannot overwrite J1's record. | None: outputs are written unchanged. |
+| 2026-10-19 | §8, R2-3, §15 | After the J1 judges and before the final verification, `verify.py` gained an independent recomputation of R2-3, run only with `--round`. It covers the discordant queries from J1's verdicts, the J1D key map, parts and judge outputs, the majority of three, McNemar, and Holm with C-08 and C-09. Its checks join V-06 as pass or warn. Its result appears in §15.4 below the criteria table. On round 1's files it reproduces round 1's J1D result exactly (11 queries, b = 0, c = 7, p = 0.0156). | R2-3 reports the analysis next to C-11, and §15 must equal the verifier's rendering (V-09). | None: C-11 is decided on the J1 verdicts, and round 1's rendering is unchanged. |
 
 ## 17. Change log
 
