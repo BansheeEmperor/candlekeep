@@ -1,5 +1,5 @@
 ---
-title: Cloud Storage Options: Object, Block, and File
+title: "Cloud Storage Options: Object, Block, and File"
 description: Comprehensive guide to AWS cloud storage services including S3, EBS, and EFS, with comparisons, lifecycle policies, and access patterns.
 keywords: 
 - cloud storage

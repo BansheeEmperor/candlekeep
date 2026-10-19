@@ -41,6 +41,19 @@ def test_process_plain_text(processor, sample_docs_dir):
 
     assert len(result.chunks) > 0
     assert all(chunk.text.strip() for chunk in result.chunks)
+    assert result.chunks[0].metadata["title"] == "Sample Text Document"
+
+
+def test_process_text_without_frontmatter(processor, sample_docs_dir, tmp_path):
+    """A file without frontmatter is chunked as is and carries no title."""
+    body = (sample_docs_dir / "plain-text.txt").read_text().split("---\n", 2)[2]
+    doc_path = tmp_path / "no-frontmatter.txt"
+    doc_path.write_text(body)
+    result = processor.process(doc_path)
+
+    assert len(result.chunks) > 0
+    assert "title" not in result.chunks[0].metadata
+    assert result.chunks[0].text.startswith("Sample Text Document")
 
 
 def test_process_directory(processor, sample_docs_dir):

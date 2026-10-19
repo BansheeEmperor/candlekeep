@@ -1,5 +1,5 @@
 ---
-title: Container Security: Comprehensive Guide
+title: "Container Security: Comprehensive Guide"
 description: A detailed guide to securing containerized applications and infrastructure.
 keywords: [container security, Docker, Kubernetes, image scanning, runtime security, network security, access control]
 category: engineering

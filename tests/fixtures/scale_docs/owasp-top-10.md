@@ -1,5 +1,5 @@
 ---
-title: OWASP Top 10 Vulnerabilities: Prevention Techniques
+title: "OWASP Top 10 Vulnerabilities: Prevention Techniques"
 description: A detailed technical guide covering the top OWASP vulnerabilities and how to prevent them in your applications.
 keywords: 
   - OWASP

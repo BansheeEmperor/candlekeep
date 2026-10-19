@@ -1,5 +1,5 @@
 ---
-title: Cloud Storage Options: Object, Block, and File
+title: "Cloud Storage Options: Object, Block, and File"
 description: An overview of the three main types of cloud storage - object, block, and file - and their use cases.
 keywords: [cloud storage, object storage, block storage, file storage, data architecture, cloud computing]
 category: engineering

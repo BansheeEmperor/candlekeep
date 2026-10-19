@@ -1,5 +1,5 @@
 ---
-title: The Liquid Gold of the Mediterranean: Exploring the Fascinating World of Olive Oil Production
+title: "The Liquid Gold of the Mediterranean: Exploring the Fascinating World of Olive Oil Production"
 description: Dive into the rich history, cultivation, and processing of one of the world's most beloved culinary oils - olive oil.
 keywords: [olive oil, Mediterranean, agriculture, olive trees, olive oil production]
 category: general

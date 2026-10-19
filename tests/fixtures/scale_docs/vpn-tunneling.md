@@ -1,10 +1,10 @@
-```yaml
+---
 title: VPN Protocols, Tunneling, and Remote Access
 description: A technical deep dive into VPN protocols like IPSec, WireGuard, and OpenVPN, including tunneling, split tunneling, and site-to-site vs remote access VPN architectures.
 keywords: [vpn, ipsec, wireguard, openvpn, tunneling, split-tunneling, site-to-site, remote-access]
 category: networking
 tags: [vpn, security, remote-access, architecture]
-```
+---
 
 ## VPN Protocols
 

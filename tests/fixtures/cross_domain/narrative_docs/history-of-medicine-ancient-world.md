@@ -1,5 +1,5 @@
 ---
-title: The Foundations of Modern Medicine: A Journey Through the Ancient World
+title: "The Foundations of Modern Medicine: A Journey Through the Ancient World"
 description: Explore the fascinating history of medical practices and advancements in the ancient civilizations of Egypt, Greece, and China.
 keywords: [ancient medicine, history of medicine, ancient Egypt, ancient Greece, ancient China]
 category: general

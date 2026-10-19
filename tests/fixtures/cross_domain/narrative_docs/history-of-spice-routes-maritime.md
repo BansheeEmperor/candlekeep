@@ -1,5 +1,5 @@
 ---
-title: The Spice Routes: A Voyage Through Maritime History
+title: "The Spice Routes: A Voyage Through Maritime History"
 description: Explore the captivating history of the ancient spice trade routes that shaped the world.
 keywords: [spice trade, maritime history, exploration, commerce, globalization]
 category: general

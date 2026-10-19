@@ -1,5 +1,5 @@
 ---
-title: "The Word "Hacker""
+title: 'The Word "Hacker"'
 date: "April 2004"
 ---
 

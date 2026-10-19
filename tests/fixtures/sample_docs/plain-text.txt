@@ -1,3 +1,11 @@
+---
+title: "Sample Text Document"
+description: "A plain text document for testing the processing of unformatted text."
+keywords: ["plain text", "document processing", "chunking", "ingestion"]
+category: "testing"
+tags: ["text", "fixture"]
+---
+
 Sample Text Document
 
 This is a plain text document for testing document processing capabilities.

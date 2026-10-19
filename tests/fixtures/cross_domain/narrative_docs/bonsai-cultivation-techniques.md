@@ -1,5 +1,5 @@
 ---
-title: The Art of Bonsai: Cultivating Miniature Masterpieces
+title: "The Art of Bonsai: Cultivating Miniature Masterpieces"
 description: Explore the intricate techniques and rich history behind the ancient Japanese art of bonsai cultivation.
 keywords: [bonsai, horticulture, Japanese gardening, miniature trees, plant care]
 category: general
