@@ -15,6 +15,7 @@ is frozen and authoritative; this directory implements its Sections 4 to 11.
 | `run_layer2.py` | Layer 2: raw `search` tool output through MCP, fixed FastMCP 3 client |
 | `judge_pack.py` | Layer 3: blind judge packs, key maps, unblinding |
 | `drive.py` | Runs every step with the right venv, ports and environment |
+| `answer_spans.py` | Exploratory: answer facts in the result vs shown to the agent (CEN-A; fixture `tests/fixtures/cen_answer_spans.json`, research diary Entry 63) |
 | `rounds/r2.json` | Everything round 2 changes (results root, EVAL_HOME, ports, states, document counts, CI plugins, informational runs); see "Rounds" |
 
 ## Layout

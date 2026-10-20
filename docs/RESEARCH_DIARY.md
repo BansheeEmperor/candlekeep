@@ -3675,3 +3675,49 @@ With both fixes, three overlap runs (14,543 searches during re-ingests) had 0 fa
 - On MPS, the startup calibration of the precise-path semaphore now times serialised reranks, so the size it picks (3–9 across starts) only decides where requests queue.
 - The post-ingest Rosetta Seal rebuild still takes the lock to build a map that BM25 does not apply (ARCHITECTURE, Rosetta Seal).
 - A deployment that forks after importing torch would inherit the lock; uvicorn workers are spawned.
+
+## Entry 63: Answer Facts in the Result vs Shown to the Agent
+
+**Date:** October 20, 2026  
+**Focus:** Where the answer is lost: in retrieval, or between the result and the tool output
+
+### Method (`scripts/eval_agent_view/answer_spans.py`)
+
+- **Facts.** For each of the 76 CEN-A queries, a blind annotator split the reference answer into the atomic facts a complete answer needs, and quoted verbatim where the gold document states each one. Annotators saw only the question, the reference answer and the gold document, never a search output. An independent verifier checked every fact and quote and added missing facts.
+- **Fixture.** The facts are in `tests/fixtures/cen_answer_spans.json`: 467 document-supported facts, of which the verifiers dropped 3 and added 4. 625 of the 626 quotes occur verbatim in their document; the remaining one was dropped.
+- **Stages.** A fact is *in the result* when one of its quotes is inside the windows the search returns (Layer 1 text of the top results, before any display budget). It is *shown* when the quote is inside the tool output the agent reads (Layer 2).
+- **Matching.** Text is normalised (escapes, emphasis markers, case and whitespace removed). A quote counts when every 40-character piece of it occurs, so a quote that crosses a chunk boundary is still found in A's windows, which repeat each chunk's prefix and overlap.
+
+### The corpus caps the answer
+
+- 10 of the 76 queries have no reference fact that the gold document states. They are version- or detail-specific questions whose gold document covers only the general topic.
+- 27 more lack some of their facts.
+- 97 of the 564 reference facts are not in the corpus at all.
+
+These 10 queries are left out below (66 queries). No retrieval change can make them answerable, and the judges' `full` counts in the agent-view evaluation (`docs/AGENT_VIEW_EVALUATION_R2.md`, J1: 76 queries) include them in their denominator.
+
+### Results, round 2 outputs (`tests/results/agent_view_eval_r2/answer_visibility/`, CEN, 66 queries)
+
+| Path | Facts in result | Facts shown, A / B′ / C′ / B′ at 1,700 | Queries with every fact in the result | Every fact shown, A / B′ / C′ / B′ at 1,700 |
+|---|---|---|---|---|
+| hybrid | 80% | 11% / 34% / 42% / 42% | 47 | 2 / 7 / 9 / 11 |
+| precise | 84% | 11% / 26% / 36% / 32% | 53 | 2 / 3 / 7 / 5 |
+| explore | 54% | 12% / 34% / 42% / 40% | 14 | 1 / 4 / 8 / 7 |
+
+- **Retrieval mostly succeeds.** The result holds 80% of the needed facts (hybrid), and every fact for 47 of the 66 queries. It is the same for all states, because their rankings and windows are identical.
+- **The display loses most of it.** B′ shows 43% of the facts that are in its result (A 14%, C′ 52%). Of the 47 queries whose result holds the whole answer, the agent sees the whole answer for 7 with B′.
+- **Explore's result holds fewer facts** (54%), because explore reserves result slots for graph expansion, and those slots stay empty (protocol §16).
+- **CEN-G** gives the same picture: hybrid 81% in result; shown A 12%, B′ 34%, C′ 41%.
+- **Controls behave as expected.** The B′ rerun and C′ with the extra budget off equal B′ exactly. A with an empty graph equals A. At 500 characters B′ shows 19%.
+
+### Agreement with the judges (J1, CEN hybrid)
+
+The facts measure and the judges agree in direction.
+- **B′:** of the 7 queries with every fact shown, 5 were judged `full`. Of the 20 with no fact shown, 2 were judged `full`.
+- **C′:** of 9 with every fact shown, 5 were judged `full`.
+
+The measure is stricter than the judges where an output states a fact in other words or from another document. It is more lenient where a fact's quote is shown but the judge wanted more context.
+
+### What it means
+
+The bottleneck is between the result and the tool output, not in Arcane Recall or retrieval. The windows already hold most of the answer, and the 1,000-character view per result shows about a third of it. Better choice of what to show (C′: 34% → 42%) and more room (B′ at 1,700: 42%) help by similar amounts. Neither gets close to the 80% the result holds.
