@@ -1348,7 +1348,7 @@ class Verifier:
                    "metrics": rec_file, "comparison": run.comparison}
         if not run.queries_ok:
             payload["metrics_from_fixture_queries"] = rec
-        write_json(self.vdir / f"recomputed_{run.layer}_{run.stem}.json", payload)
+        run.payload = payload          # written by cmd_all, not here: loading runs must not write files
         run.loaded = True
         run.doc = {"meta": meta}   # release rows and texts; everything needed later has been extracted
 
@@ -3662,7 +3662,7 @@ def render_section15(s: dict) -> str:
             L.append(f"| Informational | {label}, {p} | " + " | ".join(cells) + f" | — | {src(0 if first else 1, 'L2/info_*.json')} |")
             first = False
 
-    L += ["", H153, "", "| Pack | State | full | partial | none | Net vs B | B-full → not-full | κ (double-judged) | Source JSON |",
+    L += ["", H153, "", "| Pack | State | full | partial | none | Net vs B | B-full items that are not full in this state | κ (double-judged) | Source JSON |",
           "|---|---|---|---|---|---|---|---|---|"]
     j1 = s["l3"].get("J1") or {}
     for i, st in enumerate(("A", "B", "C")):
@@ -3742,6 +3742,14 @@ def render_section15(s: dict) -> str:
     L.append(f"| **Spearman ρ (p)** | {rho_txt(s['rq3']['spearman'])} | | descriptive only; registered metrics |")
     L.append(f"| Spearman ρ (p), GoldText for every suite | {rho_txt((s['rq3'].get('goldtext') or {}).get('spearman'))} | | "
              "secondary, not pre-registered: one unit across suites |")
+    L += ["", "**Caveats carried with this round's outcome** (protocol §16, round 2 addendum):", "",
+          "- C-11 fails on its \"at most one B-full → not-full\" clause. Both losses are single-judge variance on identical evidence: C′'s output contains all of B′'s text on every query. The R2-3 majority of three gives b = 0. C-11's outcome is the registered one; do not describe the two losses as lost content.",
+          "- C-12 passes by 76.7 characters under the registered ratio-of-means (1.457 on CD-API hybrid). The non-adversarial ratio is 1.59, and per-query averaging would fail it.",
+          "- C-08 sensitivity: 44 of 222 grade-2 chunks are under 150 characters. Without them, b = 0, c = 8, p = 0.0078, Holm p = 0.023; the criterion still passes.",
+          "- R2-4 extends B′'s view forward only. Nine of the ten C-08 wins show text from before B′'s view start, and on CEN GoldText the longer B′ view beats C′ at equal size. It does not show that passage choice beats an equal-length view.",
+          "- C-14 has no V-id: verify.py does not check the one-attempt rule or B′'s tests/ and pyproject.toml. Those were checked by hand (§16), and the hand checks pass.",
+          "- J2 (informational) has two `full` verdicts that break the rubric (K0150, K0121); they are kept as recorded and decide nothing (§16).",
+          "- C-05 cannot fail on hybrid or explore: A already leaks on every adversarial query there. The ranking identity (4,212 of 4,212) is the substantive evidence."]
     return "\n".join(L) + "\n"
 
 
@@ -3972,6 +3980,9 @@ def cmd_all(args) -> tuple:
     v.vdir.mkdir(parents=True, exist_ok=True)
     v.load_runs()
     v.collect_file_checks()
+    for run in v.runs.values():
+        if getattr(run, "payload", None) is not None:
+            write_json(v.vdir / f"recomputed_{run.layer}_{run.stem}.json", run.payload)
     v.check_v03_global()
     v.check_v01()
     v.check_v04()
