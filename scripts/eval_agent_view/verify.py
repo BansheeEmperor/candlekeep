@@ -260,6 +260,10 @@ def _json_default(o):
 
 
 def write_json(path: Path, obj) -> None:
+    # A round must never write round 1's results (round_isolation_problems guards the roots it
+    # is given; this guards every write, including one made by code that builds its own root).
+    if ROUND is not None and within(Path(path), ROUND1_ROOT):
+        raise SystemExit(f"refusing to write {path} in round {ROUND['name']!r}: it lies in round 1's results root")
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
     with open(tmp, "w", encoding="utf-8") as f:
