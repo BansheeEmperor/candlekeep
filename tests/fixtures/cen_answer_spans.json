@@ -1,0 +1,4658 @@
+{
+ "version": 1,
+ "description": "Facts of each CEN-A reference answer, with verbatim quotes of the gold document that state them (scripts/eval_agent_view/answer_spans.py).",
+ "matching": "normalised text; every 40-character piece of a quote must occur",
+ "stats": {
+  "facts": 567,
+  "kept": 467,
+  "dropped_by_verifier": 3,
+  "not_in_document": 97,
+  "added_by_verifier": 4,
+  "quotes": 626,
+  "quotes_not_verbatim": 1,
+  "facts_without_valid_quote": 0
+ },
+ "items": {
+  "CEN-001": {
+   "question": "What is semantic search?",
+   "gold_source": "tests/fixtures/sample_docs/semantic-search.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Semantic search goes beyond keyword matching to understand the meaning and intent behind queries.",
+     "quotes": [
+      "Semantic search goes beyond keyword matching to understand the meaning and intent behind queries."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Query preprocessing handles negation in queries.",
+     "quotes": [
+      "Queries with negation (\"without\", \"not\", \"except\") can confuse embedding models.",
+      "- Removing negation clauses"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Query preprocessing expands queries with synonyms (and related terms).",
+     "quotes": [
+      "Expand queries with synonyms and related terms to improve recall."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Ranking considers metadata matches (metadata boosting).",
+     "quotes": [
+      "Boost scores based on metadata matches:"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Reranking applies additional relevance signals such as recency and popularity.",
+     "quotes": [
+      "Apply additional ranking signals:"
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "The goal of semantic search is to improve the accuracy and relevance of search results."
+   ],
+   "dropped": []
+  },
+  "CEN-002": {
+   "question": "vector database",
+   "gold_source": "tests/fixtures/sample_docs/vector-databases.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "A vector database stores and retrieves data based on semantic similarity rather than exact keyword matches.",
+     "quotes": [
+      "Vector databases store and retrieve data based on semantic similarity rather than exact keyword matches."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Vector databases use embeddings to represent documents as high-dimensional vectors.",
+     "quotes": [
+      "They use embeddings to represent documents as high-dimensional vectors."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Embeddings are numerical representations of text that capture semantic meaning.",
+     "quotes": [
+      "Embeddings are numerical representations of text that capture semantic meaning."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Similarity search finds documents with similar meanings by calculating distances between vectors in high-dimensional space.",
+     "quotes": [
+      "Instead of exact matching, vector databases find documents with similar meanings by calculating distances between vectors in high-dimensional space."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "A common use case is semantic search engines.",
+     "quotes": [
+      "- Semantic search engines"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "A common use case is recommendation systems.",
+     "quotes": [
+      "- Recommendation systems"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "A common use case is question answering systems.",
+     "quotes": [
+      "- Question answering systems"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "A common use case is document clustering and classification.",
+     "quotes": [
+      "- Document clustering and classification"
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-003": {
+   "question": "REST API design",
+   "gold_source": "tests/fixtures/sample_docs/api-design.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Stateless: each request contains all the information needed to process it.",
+     "quotes": [
+      "- **Stateless**: Each request contains all information needed"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Resource-based: URLs represent resources (nouns), not actions (verbs).",
+     "quotes": [
+      "- **Resource-based**: URLs represent resources, not actions",
+      "Use nouns for resources, not verbs:"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Standard HTTP methods GET, POST, PUT and DELETE perform CRUD operations on resources.",
+     "quotes": [
+      "- **HTTP methods**: GET (read), POST (create), PUT (update), DELETE (remove)"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "APIs return standard HTTP status codes such as 200 OK, 404 Not Found and 500 Server Error.",
+     "quotes": [
+      "- **Standard status codes**: 200 OK, 201 Created, 400 Bad Request, 404 Not Found, 500 Server Error"
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-004": {
+   "question": "database normalization",
+   "gold_source": "tests/fixtures/sample_docs/database-design.md",
+   "facts": [
+    {
+     "id": "F2",
+     "fact": "First Normal Form (1NF): columns contain atomic values (no arrays or lists).",
+     "quotes": [
+      "- Atomic values (no arrays or lists in columns)"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "First Normal Form (1NF): each column has a unique name.",
+     "quotes": [
+      "- Each column has unique name"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Second Normal Form (2NF): no partial dependencies; all non-key columns depend on the entire primary key.",
+     "quotes": [
+      "- No partial dependencies (all non-key columns depend on entire primary key)"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Third Normal Form (3NF): no transitive dependencies; non-key columns do not depend on other non-key columns.",
+     "quotes": [
+      "- No transitive dependencies (non-key columns don't depend on other non-key columns)"
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "Database normalization is organizing data to reduce redundancy and improve data integrity."
+   ],
+   "dropped": []
+  },
+  "CEN-005": {
+   "question": "HTTP/2 vs HTTP/3 performance",
+   "gold_source": "tests/fixtures/scale_docs/http2-http3.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "HTTP/2 multiplexing allows multiple requests and responses in flight simultaneously over a single TCP connection, reducing latency.",
+     "quotes": [
+      "In contrast, HTTP/2 uses *multiplexing*, which allows multiple requests and responses to be in flight at the same time over a single TCP connection.",
+      "This reduces latency and improves overall performance."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "HTTP/1.1 uses a serial request-response model.",
+     "quotes": [
+      "HTTP/1.1 uses a serial, request-response model, where the client sends a request and waits for the server to respond before sending the next request."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "HTTP/2 server push lets the server proactively send resources to the client before they are requested.",
+     "quotes": [
+      "HTTP/2 also introduces *server push*, which allows the server to proactively send (or \"push\") resources to the client before the client requests them."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Server push improves performance by reducing round trips.",
+     "quotes": [
+      "This can further improve performance by reducing the number of round trips between the client and server."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "HTTP/2 compresses headers, reducing the amount of data transmitted.",
+     "quotes": [
+      "HTTP/2 introduces *header compression* using the HPACK algorithm, which can significantly reduce the size of these headers, further improving performance."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "HTTP/3 is built on the QUIC protocol instead of TCP.",
+     "quotes": [
+      "HTTP/3 is the next major version of the HTTP protocol, which aims to further improve performance and reliability by using the QUIC transport protocol instead of TCP.",
+      "HTTP/3 integrates the QUIC protocol to provide a new version of the HTTP protocol that takes advantage of QUIC's features."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "QUIC uses UDP instead of TCP.",
+     "quotes": [
+      "**UDP-based**: QUIC uses UDP as the underlying transport protocol, rather than TCP."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "QUIC allows faster connection establishment than TCP.",
+     "quotes": [
+      "This allows for faster connection establishment, as QUIC connections can be established without the lengthy TCP handshake.",
+      "**Lower latency**: QUIC's use of UDP and its connection establishment process can result in lower latency compared to TCP-based protocols, especially for the first request in a session."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "HTTP/3/QUIC recovers better from packet loss than TCP-based HTTP/2 (improved reliability, reduced head-of-line blocking).",
+     "quotes": [
+      "**Reduced head-of-line blocking**: QUIC's stream-level reliability and congestion control can help mitigate head-of-line blocking issues that can occur with TCP-based protocols.",
+      "**Improved reliability**: QUIC's built-in reliability and congestion control mechanisms can lead to more reliable and stable HTTP/3 connections compared to TCP-based HTTP/1.1 and HTTP/2."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-006": {
+   "question": "PostgreSQL 15 internals",
+   "gold_source": "tests/fixtures/scale_docs/postgresql-internals.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "PostgreSQL uses Multiversion Concurrency Control (MVCC) to manage concurrent transactions and ensure data consistency.",
+     "quotes": [
+      "PostgreSQL uses a sophisticated Multiversion Concurrency Control (MVCC) system to manage concurrent transactions and ensure data consistency."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "MVCC allows multiple transactions to access the same data simultaneously without conflicts or data corruption.",
+     "quotes": [
+      "MVCC allows multiple transactions to access the same data simultaneously without causing conflicts or data corruption."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "PostgreSQL uses Write-Ahead Logging (WAL) to ensure data durability and consistency.",
+     "quotes": [
+      "PostgreSQL uses a Write-Ahead Logging (WAL) system to ensure data durability and consistency."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Changes are first recorded in the WAL before being applied to the database.",
+     "quotes": [
+      "Before any changes are made to the database, the changes are first recorded in the WAL."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-007": {
+   "question": "Apache Kafka 3.0 features",
+   "gold_source": "tests/fixtures/scale_docs/apache-kafka.md",
+   "facts": [],
+   "facts_not_in_document": [
+    "Kafka 3.0 improved the Kafka Streams API with better support for stateful processing.",
+    "Kafka 3.0 Streams added new operators for data transformation and aggregation.",
+    "Kafka 3.0 enhanced Kafka Connect with better support for data transformation.",
+    "Kafka 3.0 enhanced Kafka Connect with improved error handling.",
+    "Kafka 3.0 expanded security with support for SASL/SCRAM authentication.",
+    "Kafka 3.0 improved integration with external authentication providers.",
+    "Kafka 3.0 added new monitoring metrics.",
+    "Kafka 3.0 improved monitoring visualization tools."
+   ],
+   "dropped": []
+  },
+  "CEN-008": {
+   "question": "TLS 1.3 handshake process",
+   "gold_source": "tests/fixtures/scale_docs/tls-ssl.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Client Hello: the client sends the TLS version, supported cipher suites, compression methods and a random value.",
+     "quotes": [
+      "1. **Client Hello**: The client sends a `ClientHello` message to the server, which includes the TLS version, a list of supported cipher suites, a list of compression methods, and a random value."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Server Hello: the server responds with the selected TLS version, cipher suite, compression method and a random value.",
+     "quotes": [
+      "2. **Server Hello**: The server responds with a `ServerHello` message, which includes the selected TLS version, cipher suite, compression method, and a random value."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Server Certificate: the server sends its X.509 certificate chain to the client.",
+     "quotes": [
+      "3. **Server Certificate**: The server sends its X.509 certificate chain to the client."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "The certificate chain includes the server's public key certificate, intermediate CA certificates and the root CA certificate.",
+     "quotes": [
+      "Server's Public Key Certificate",
+      "Intermediate CA Certificate",
+      "3. **Root CA Certificate**: This is the self-signed root CA certificate that ultimately vouches for the trust of the entire certificate chain."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Client Key Exchange: the client generates a pre-master secret and encrypts it with the server's public key from the certificate.",
+     "quotes": [
+      "6. **Client Key Exchange**: The client generates a pre-master secret and encrypts it with the server's public key (from the server's certificate)."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "The client sends the encrypted pre-master secret to the server.",
+     "quotes": [
+      "The client sends this encrypted pre-master secret in a `ClientKeyExchange` message."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Change Cipher Spec: both client and server signal that future communication will be encrypted with the negotiated cipher suite and keys.",
+     "quotes": [
+      "7. **Change Cipher Spec**: The client sends a `ChangeCipherSpec` message to indicate that all future messages will be encrypted using the negotiated cipher suite and keys.",
+      "9. **Change Cipher Spec**: The server sends a `ChangeCipherSpec` message to indicate that all future messages will be encrypted."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "Finished: client and server exchange encrypted Finished messages, completing the handshake.",
+     "quotes": [
+      "8. **Client Finished**: The client sends a `Finished` message, which is the first encrypted message using the negotiated keys.",
+      "10. **Server Finished**: The server sends a `Finished` message, which is the first encrypted message using the negotiated keys.",
+      "At this point, the TLS handshake is complete, and the client and server can exchange encrypted application data."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-009": {
+   "question": "Kubernetes v1.24 removal of dockershim",
+   "gold_source": "tests/fixtures/scale_docs/kubernetes-architecture.md",
+   "facts": [
+    {
+     "id": "F5",
+     "fact": "containerd and CRI-O are container runtimes Kubernetes supports.",
+     "quotes": [
+      "Kubernetes supports several container runtimes, including Docker, containerd, and CRI-O."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "Kubernetes v1.24 removes the dockershim.",
+    "The dockershim provided compatibility between Kubernetes and the Docker container runtime.",
+    "After the removal, Kubernetes no longer supports the Docker runtime directly.",
+    "Users need to switch to alternative container runtimes.",
+    "The change is part of decoupling the container runtime from core Kubernetes components to allow flexibility and innovation in the runtime ecosystem."
+   ],
+   "dropped": []
+  },
+  "CEN-010": {
+   "question": "gRPC over HTTP/2",
+   "gold_source": "tests/fixtures/scale_docs/grpc-protocol.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "gRPC uses HTTP/2 as its underlying transport protocol.",
+     "quotes": [
+      "The client and server stubs handle the serialization and deserialization of the data using Protocol Buffers, and the transport layer (HTTP/2) handles the low-level networking details."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "gRPC serializes the exchanged data with Protocol Buffers (protobuf).",
+     "quotes": [
+      "Protocol Buffers (protobuf) is the interface definition language used by gRPC to describe the structure of the data that is being transmitted between the client and server.",
+      "The client and server stubs handle the serialization and deserialization of the data using Protocol Buffers, and the transport layer (HTTP/2) handles the low-level networking details."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "gRPC supports bidirectional streaming between client and server.",
+     "quotes": [
+      "4. **Bidirectional Streaming**: A stream of request messages and a stream of response messages.",
+      "In a bidirectional streaming RPC, both the client and the server send a stream of messages to each other."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "gRPC supports deadlines that set a time limit for an RPC call.",
+     "quotes": [
+      "Deadlines in gRPC are used to set a time limit for an RPC call to complete."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "gRPC supports cancellation of RPC calls.",
+     "quotes": [
+      "If the RPC call does not complete within the specified deadline, the call is automatically canceled and an error is returned to the client."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "Client and server stubs are generated automatically from protobuf service definitions."
+   ],
+   "dropped": []
+  },
+  "CEN-011": {
+   "question": "Redis 7.0 Multi-part AOF",
+   "gold_source": "tests/fixtures/scale_docs/redis-data-structures.md",
+   "facts": [],
+   "facts_not_in_document": [
+    "Redis 7.0 introduced a feature called Multi-part AOF",
+    "Multi-part AOF splits the AOF into multiple files",
+    "Multi-part AOF improves the performance and reliability of AOF persistence",
+    "Multi-part AOF handles large AOF files more efficiently, letting the server load and rewrite the AOF in a more scalable way"
+   ],
+   "dropped": []
+  },
+  "CEN-012": {
+   "question": "Elasticsearch 8.x security changes",
+   "gold_source": "tests/fixtures/scale_docs/elasticsearch-basics.md",
+   "facts": [],
+   "facts_not_in_document": [
+    "Elasticsearch 8.x requires TLS encryption for all HTTP and transport connections by default",
+    "Elasticsearch 8.x no longer supports basic authentication",
+    "Users must authenticate with token-based or PKI-based authentication methods",
+    "The elasticsearch-users file for managing user credentials is deprecated in favor of the Elasticsearch security plugin"
+   ],
+   "dropped": []
+  },
+  "CEN-013": {
+   "question": "OWASP Top 10 2021",
+   "gold_source": "tests/fixtures/scale_docs/owasp-top-10.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "The OWASP Top 10 is a list of the most critical security risks to web applications",
+     "quotes": [
+      "The OWASP Top 10 vulnerabilities represent some of the most critical security risks facing web applications today."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Injection flaws, such as SQL injection and OS command injection, are among the top vulnerabilities",
+     "quotes": [
+      "Injection flaws, such as SQL, NoSQL, OS, and LDAP injection, occur when untrusted data is sent to an interpreter as part of a command or query.",
+      "SQL injection occurs when user input is not properly sanitized before being included in a database query.",
+      "OS command injection occurs when user input is used to execute system commands on the server."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Broken authentication is among the top vulnerabilities",
+     "quotes": [
+      "Application functions related to authentication and session management are often implemented incorrectly, allowing attackers to compromise passwords, keys, or session tokens, or to exploit other implementation flaws to assume other users' identities."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Cross-site scripting (XSS) is among the top vulnerabilities",
+     "quotes": [
+      "XSS flaws occur whenever an application includes untrusted data in a new web page without proper validation or escaping, or updates an existing web page with user-supplied data using a browser API that can create HTML or JavaScript."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Insecure deserialization is among the top vulnerabilities",
+     "quotes": [
+      "Insecure deserialization occurs when untrusted data is used to abuse the logic of an application's serialization and deserialization process."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Prevention: input validation",
+     "quotes": [
+      "1. **Input Validation**: Validate and sanitize all user input before using it in a SQL query.",
+      "1. **Input Validation**: Validate and sanitize all user input before using it in a system command."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "Prevention: using parameterized queries",
+     "quotes": [
+      "This can be done using parameterized queries or query building libraries that automatically escape special characters.",
+      "Use parameterized queries or query building libraries that automatically escape special characters."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "Prevention: applying the principle of least privilege",
+     "quotes": [
+      "2. **Least Privilege**: Grant the minimum necessary permissions to your application's database user.",
+      "3. **Least Privilege**: Run your application with the minimum necessary permissions to perform its tasks."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F10",
+     "fact": "Prevention: using web application firewalls (WAF)",
+     "quotes": [
+      "3. **Web Application Firewall (WAF)**: Use a WAF to detect and block SQL injection attempts at the network level, before they reach your application."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F11",
+     "fact": "Prevention: using dynamic query builders",
+     "quotes": [
+      "4. **Dynamic Query Builders**: Use dynamic query builders that automatically escape user input, such as Laravel's Query Builder or Django's ORM."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "Security misconfiguration is among the top vulnerabilities"
+   ],
+   "dropped": []
+  },
+  "CEN-015": {
+   "question": "TCP/IP layer 4",
+   "gold_source": "tests/fixtures/scale_docs/tcp-ip-fundamentals.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "The Transport Layer of the TCP/IP stack corresponds to layer 4 (the Transport layer) of the OSI model",
+     "quotes": [
+      "3. **Transport Layer**: Corresponds to the Transport layer of the OSI model.",
+      "4. **Transport Layer**: Ensures complete data transfer between applications, including segmentation, flow control, and error correction."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "The Transport Layer ensures complete data transfer between applications, including segmentation, flow control and error correction",
+     "quotes": [
+      "4. **Transport Layer**: Ensures complete data transfer between applications, including segmentation, flow control, and error correction."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "TCP provides reliable data transfer",
+     "quotes": [
+      "TCP uses retransmission and timeout mechanisms to handle lost or corrupted segments.",
+      "This dynamic adjustment of the RTO based on the observed network conditions helps TCP adapt to changing network environments and ensure reliable data delivery."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "TCP is connection-oriented",
+     "quotes": [
+      "The TCP three-way handshake is the process by which a TCP connection is established between two hosts."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "UDP offers unreliable, connectionless data transfer",
+    "The two main Transport Layer protocols are TCP and UDP"
+   ],
+   "dropped": [
+    {
+     "fact": "The two main Transport Layer protocols are TCP and UDP",
+     "reason": "The quotes name TCP or UDP only as the protocol above IP and as a header type; the document never says TCP and UDP are the two main Transport Layer protocols."
+    }
+   ]
+  },
+  "CEN-016": {
+   "question": "IPv6 address format",
+   "gold_source": "tests/fixtures/scale_docs/cloud-networking.md",
+   "facts": [],
+   "facts_not_in_document": [
+    "An IPv6 address is 128 bits long",
+    "An IPv6 address is written as eight groups of four hexadecimal digits separated by colons (e.g. 2001:0db8:85a3:0000:0000:8a2e:0370:7334)",
+    "The first 64 bits are the network prefix",
+    "The last 64 bits are the interface identifier",
+    "The interface identifier is typically derived from the device's MAC address"
+   ],
+   "dropped": []
+  },
+  "CEN-017": {
+   "question": "UUID v4 generation",
+   "gold_source": "tests/fixtures/scale_docs/data-serialization.md",
+   "facts": [],
+   "facts_not_in_document": [
+    "UUID v4 is generated from random or pseudo-random numbers",
+    "A UUID v4 is a 128-bit number",
+    "UUID v4 values are very likely to be unique across space and time",
+    "Generating UUID v4 values needs no central registration authority"
+   ],
+   "dropped": []
+  },
+  "CEN-018": {
+   "question": "0xEF hex code",
+   "gold_source": "tests/fixtures/scale_docs/cryptography-basics.md",
+   "facts": [],
+   "facts_not_in_document": [
+    "0xEF has no specific meaning and is not a commonly used value in cryptographic algorithms or standards",
+    "The source text does not mention the hexadecimal code 0xEF or give any information about its meaning or use"
+   ],
+   "dropped": []
+  },
+  "CEN-019": {
+   "question": "Python 3.10 match statement",
+   "gold_source": "tests/fixtures/scale_docs/functional-programming.md",
+   "facts": [
+    {
+     "id": "F4",
+     "fact": "Pattern matching gives a concise and expressive way to handle complex data structures and control flow",
+     "quotes": [
+      "It provides a concise and expressive way to handle different cases and control flow in a program.",
+      "Pattern matching is a powerful technique in functional programming that allows for the decomposition and extraction of data from complex data structures."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "The match statement is a pattern matching feature introduced in Python 3.10",
+    "The match statement is similar to a switch statement in other programming languages",
+    "The match statement matches a value against a series of patterns"
+   ],
+   "dropped": [
+    {
+     "fact": "The match statement matches a value against a series of patterns",
+     "reason": "The quote only defines what patterns are in generic pattern-matching syntax; the document never says that a match statement matches a value against a series of patterns."
+    }
+   ]
+  },
+  "CEN-020": {
+   "question": "ISO 27001 compliance",
+   "gold_source": "tests/fixtures/scale_docs/compliance-frameworks.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "ISO 27001 is an international standard that specifies the requirements for an information security management system (ISMS)",
+     "quotes": [
+      "ISO 27001 is an information security management system (ISMS) standard published by the International Organization for Standardization (ISO).",
+      "It provides a framework for establishing, implementing, maintaining, and continually improving an organization's information security management system."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "ISO 27001 compliance requires security controls across 14 domains, including access control, cryptography and physical security",
+     "quotes": [
+      "The standard also includes an extensive set of security controls organized into 14 domains, such as access control, cryptography, physical security, and supplier relationships."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "The standard requires organizations to conduct risk assessments",
+     "quotes": [
+      "3. **Planning**: Conducting risk assessments, identifying risks, and planning actions to address risks and opportunities.",
+      "2. Conducting a comprehensive risk assessment and implementing controls to mitigate identified risks."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Organizations must implement appropriate security measures to address identified risks",
+     "quotes": [
+      "2. Conducting a comprehensive risk assessment and implementing controls to mitigate identified risks."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Organizations must undergo third-party audits to verify the effectiveness of their ISMS",
+     "quotes": [
+      "To become ISO 27001 certified, organizations must undergo an external audit by an accredited certification body.",
+      "3. Undergoing a formal certification audit by an accredited certification body.",
+      "ISO 27001 certification provides independent validation that an organization has implemented a robust information security management system."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "The control domains include information security policies, operations security and incident management"
+   ],
+   "dropped": []
+  },
+  "CEN-021": {
+   "question": "SOC2 Type II audit",
+   "gold_source": "tests/fixtures/scale_docs/compliance-frameworks.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "A SOC 2 Type II audit evaluates the design and operating effectiveness of an organization's controls over a period of time",
+     "quotes": [
+      "2. **SOC 2 Type 2**: Evaluates the design and operating effectiveness of an organization's controls over a period of time (typically 6-12 months)."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "The Type II evaluation period is typically 6-12 months",
+     "quotes": [
+      "2. **SOC 2 Type 2**: Evaluates the design and operating effectiveness of an organization's controls over a period of time (typically 6-12 months)."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "The controls relate to security, availability, processing integrity, confidentiality and privacy of data (the 5 trust principles)",
+     "quotes": [
+      "SOC 2 (System and Organization Controls 2) is a compliance framework developed by the American Institute of CPAs (AICPA) that focuses on controls related to security, availability, processing integrity, confidentiality, and privacy of data.",
+      "The SOC 2 framework is based on 5 trust principles:"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "To achieve SOC 2 compliance, organizations must implement controls across the 5 trust principles",
+     "quotes": [
+      "To achieve SOC 2 compliance, organizations must implement controls across these 5 trust principles."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Common control: access management",
+     "quotes": [
+      "- **Access Management**: Implementing strong access controls, multi-factor authentication, and access reviews."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Common control: logging and monitoring",
+     "quotes": [
+      "- **Logging and Monitoring**: Enabling comprehensive logging and monitoring of user activity, system events, and security incidents."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Common control: change management",
+     "quotes": [
+      "- **Change Management**: Establishing a formal change management process to control modifications to the system."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "Common control: vulnerability management",
+     "quotes": [
+      "- **Vulnerability Management**: Regularly scanning for vulnerabilities and patching systems in a timely manner."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "Common control: incident response",
+     "quotes": [
+      "- **Incident Response**: Defining and testing an incident response plan to handle security incidents."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F10",
+     "fact": "Common control: backup and disaster recovery",
+     "quotes": [
+      "- **Backup and Disaster Recovery**: Implementing robust backup and disaster recovery procedures to ensure data and system availability."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F11",
+     "fact": "Common control: risk assessment",
+     "quotes": [
+      "- **Risk Assessment**: Conducting periodic risk assessments to identify and mitigate risks."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F12",
+     "fact": "Common control: vendor management",
+     "quotes": [
+      "- **Vendor Management**: Vetting and monitoring third-party service providers that handle sensitive data."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F13",
+     "fact": "Common control: security awareness training",
+     "quotes": [
+      "- **Security Awareness Training**: Providing security awareness training to all employees."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-022": {
+   "question": "BGE-small-en-v1.5 model",
+   "gold_source": "docs/ARCHITECTURE.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "bge-small-en-v1.5 is the embedding model Candlekeep uses",
+     "quotes": [
+      "It connects to ChromaDB for vector storage and uses bge-small-en-v1.5 embeddings with a 2-path adaptive search router.",
+      "| ChromaDB Vectors | ~308 KB | Stored embeddings (bge-small-en-v1.5) |",
+      "| CANDLEKEEP_EMBEDDING | bge-small | Embedding model (minilm, bge-small, nomic) |"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Candlekeep is a RAG (Retrieval-Augmented Generation) knowledge base server",
+     "quotes": [
+      "Candlekeep is a RAG (Retrieval-Augmented Generation) knowledge base server that provides semantic search and document management via the Model Context Protocol (MCP)."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "The model is used in Candlekeep's retrieval pipeline (it embeds the query for search)",
+     "quotes": [
+      "| Query embedding (bge-small) | 13ms | 11ms |",
+      "| Query embedding (bge-small) | 23ms | 20ms |"
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "The model is part of Candlekeep's Arcane Recall component, which retrieves relevant information from the document database"
+   ],
+   "dropped": []
+  },
+  "CEN-023": {
+   "question": "ChromaDB v0.4.0",
+   "gold_source": "docs/DESIGN.md",
+   "facts": [
+    {
+     "id": "F2",
+     "fact": "Candlekeep provides a RAG knowledge base that an AI agent can query",
+     "quotes": [
+      "Candlekeep provides a RAG knowledge base that an AI agent can query via MCP, getting relevant document fragments with full section context in sub-100ms (typically ~36ms on a warm model with similarity-weighted expansion)."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "A design decision is to have three search paths (the reference names simple, hybrid and precise; the document's current set is hybrid, precise and explore)",
+     "quotes": [
+      "**Decision:** Three paths — `hybrid` (default), `precise`, and `explore`.",
+      "| Metric | Simple Path | Hybrid Path ([Wild Magic](GLOSSARY.md#lexical-matching-wild-magic)) | Precise Path |"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "The calling agent decomposes complex queries instead of the search tool",
+     "quotes": [
+      "**Decision:** Remove query decomposition from the tool.",
+      "Tell the agent to make multiple searches.",
+      "3. **Agent-native** — The agent controls search strategy, decomposes complex queries, synthesizes results"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Arcane Recall returns adjacent chunks around each match",
+     "quotes": [
+      "Chunk expansion (returning adjacent chunks around each match) improved content match by +17% (15-query legacy suite; see Research Diary Entry 2) with minimal latency and zero precision loss.",
+      "**Decision:** Every search path uses Arcane Recall."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "The document contains no information about ChromaDB v0.4.0"
+   ],
+   "dropped": []
+  },
+  "CEN-024": {
+   "question": "MS-MARCO MiniLM L-6-v2",
+   "gold_source": "docs/RESEARCH_DIARY.md",
+   "facts": [
+    {
+     "id": "F2",
+     "fact": "Tier 1 (Always Use) of the Recommended Stack is Bardic Knowledge + Arcane Recall",
+     "quotes": [
+      "- **Tier 1 (Always Use):** Bardic Knowledge + Arcane Recall → P=97.3%, Content=88.7%, Latency=37ms"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Tier 1 achieves precision 97.3%, content 88.7% and latency 37ms",
+     "quotes": [
+      "- **Tier 1 (Always Use):** Bardic Knowledge + Arcane Recall → P=97.3%, Content=88.7%, Latency=37ms",
+      "| **Arcane Recall** | 97.3% | 470.0% | 161.3% | **88.7%** | 37ms | ✅ Tested | ⭐⭐⭐ Use always |"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Tier 2 (Conditional) is Flurry of Blows, for complex queries",
+     "quotes": [
+      "- **Tier 2 (Conditional):** Flurry of Blows for complex queries if latency acceptable (+~1100ms)",
+      "- **Flurry of Blows:** Use for complex queries if latency acceptable (1136ms)"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Tier 2 applies only if its additional latency of about 1100 ms is acceptable",
+     "quotes": [
+      "- **Tier 2 (Conditional):** Flurry of Blows for complex queries if latency acceptable (+~1100ms)",
+      "- **Flurry of Blows:** Use for complex queries if latency acceptable (1136ms)"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "V1",
+     "fact": "The source document describes the Candlekeep RAG system optimization project (the reference frames the Recommended Stack as belonging to that project; F1 folds this stated context into an unstated claim)",
+     "quotes": [
+      "**Project:** Candlekeep RAG System Optimization",
+      "# Research Diary: RAG Technique Optimization"
+     ],
+     "source": "verifier"
+    }
+   ],
+   "facts_not_in_document": [
+    "MS-MARCO MiniLM L-6-v2 is part of the Recommended Stack of the Candlekeep RAG optimization project"
+   ],
+   "dropped": []
+  },
+  "CEN-025": {
+   "question": "JWT RS256 signing",
+   "gold_source": "tests/fixtures/sample_docs/authentication.md",
+   "facts": [
+    {
+     "id": "F3",
+     "fact": "A JWT consists of a header, a payload and a signature",
+     "quotes": [
+      "Header.Payload.Signature"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "JWT enables stateless authentication: the server does not need to store session information",
+     "quotes": [
+      "Stateless authentication:",
+      "**Pros**: Stateless, scales horizontally"
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "JWTs use the RS256 algorithm for signing",
+    "RS256 is asymmetric: a private key signs the token and a public key verifies it",
+    "The JWT header specifies the signing algorithm",
+    "The JWT payload contains the claims",
+    "The signature is generated with the private key and ensures the token's integrity"
+   ],
+   "dropped": []
+  },
+  "CEN-026": {
+   "question": "OAuth 2.0 PKCE flow",
+   "gold_source": "tests/fixtures/sample_docs/authentication.md",
+   "facts": [
+    {
+     "id": "F3",
+     "fact": "OAuth 2.0 has an authorization code grant flow",
+     "quotes": [
+      "- **Authorization Code**: Web apps (most secure)"
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "PKCE stands for Proof Key for Code Exchange",
+    "PKCE is a security enhancement to the OAuth 2.0 authorization code grant flow",
+    "PKCE protects against authorization code interception attacks",
+    "PKCE is aimed at public clients such as mobile apps and single-page applications",
+    "The client generates a cryptographically random code verifier",
+    "The client derives a code challenge from the code verifier",
+    "The client sends the code challenge to the authorization server when requesting the authorization code",
+    "When exchanging the authorization code for an access token, the client sends the original code verifier",
+    "The authorization server checks that the verifier matches the challenge, so the token exchange comes from the client that started the request"
+   ],
+   "dropped": []
+  },
+  "CEN-027": {
+   "question": "RAID 6 configurations",
+   "gold_source": "tests/fixtures/scale_docs/database-backup-recovery.md",
+   "facts": [],
+   "facts_not_in_document": [
+    "RAID 6 provides data redundancy using two independent parity blocks",
+    "RAID 6 tolerates the simultaneous failure of any two disks without data loss and keeps operating",
+    "RAID 6 is a robust storage choice for mission-critical applications"
+   ],
+   "dropped": []
+  },
+  "CEN-028": {
+   "question": "SQL-92 standards",
+   "gold_source": "tests/fixtures/scale_docs/sql-query-optimization.md",
+   "facts": [],
+   "facts_not_in_document": [
+    "SQL-92 is the SQL standard published in 1992",
+    "SQL-92 was the third major revision of the SQL language",
+    "SQL-92 introduced support for outer joins",
+    "SQL-92 improved subquery support, including subqueries in SELECT, FROM and WHERE clauses",
+    "SQL-92 standardized syntax for CREATE TABLE, ALTER TABLE and DROP TABLE",
+    "SQL-92 improved data type support, including the TIMESTAMP type",
+    "SQL-92 laid the foundation for modern SQL and is still widely used"
+   ],
+   "dropped": []
+  },
+  "CEN-029": {
+   "question": "POSIX thread management",
+   "gold_source": "tests/fixtures/scale_docs/linux-process-management.md",
+   "facts": [
+    {
+     "id": "F2",
+     "fact": "fork() creates a new process that is a copy of the calling process",
+     "quotes": [
+      "In Linux, the `fork()` system call is used to create a new process, which is a copy of the calling process."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "exec() replaces the current process image with a new process image",
+     "quotes": [
+      "The `exec()` function replaces the current process image with a new process image, effectively terminating the old process and starting a new one.",
+      "After a process is forked, the child process can execute a different program using the `exec()` system call."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Running is one of the Linux process states",
+     "quotes": [
+      "1. **Running**: The process is currently executing on the CPU."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Waiting is one of the Linux process states",
+     "quotes": [
+      "2. **Waiting**: The process is waiting for an event, such as I/O or a signal, to occur."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Stopped is one of the Linux process states",
+     "quotes": [
+      "3. **Stopped**: The process has been temporarily stopped, usually by a signal."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Zombie is one of the Linux process states",
+     "quotes": [
+      "4. **Zombie**: The process has terminated, but its parent process has not yet collected its exit status."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "The ps command shows the current state of processes",
+     "quotes": [
+      "You can view the current state of processes using the `ps` command:"
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "POSIX thread management in Linux is handled through the fork() and exec() system calls"
+   ],
+   "dropped": []
+  },
+  "CEN-030": {
+   "question": "systemd unit files",
+   "gold_source": "tests/fixtures/scale_docs/systemd-services.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Unit files are configuration files systemd uses to manage services, sockets, mounts, devices and other system resources",
+     "quotes": [
+      "Systemd uses \"unit files\" to manage services, sockets, mounts, devices, and other system resources.",
+      "Unit files are configuration files that define how a particular service or resource should be managed."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "systemd is the init system on Linux",
+     "quotes": [
+      "Systemd is the default init system and service manager on many modern Linux distributions, including Debian, Ubuntu, Fedora, and CentOS."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Unit files are typically located in /etc/systemd/system/ and /usr/lib/systemd/system/",
+     "quotes": [
+      "Unit files are typically located in the `/etc/systemd/system/` directory, although some may also be found in `/usr/lib/systemd/system/`."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Unit files have extensions such as .service, .socket, .target or .timer depending on the unit type",
+     "quotes": [
+      "Unit files have a `.service`, `.socket`, `.target`, `.timer`, or other extension depending on the type of unit."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Unit files define the command to start and stop the service",
+     "quotes": [
+      "- `ExecStart`/`ExecStop`: The command to start/stop the service.",
+      "The `ExecStart` directive specifies the command to start the service, and the `Restart` directive tells systemd to automatically restart the service if it fails."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Unit files declare dependencies on other units",
+     "quotes": [
+      "- `Wants`/`Requires`: Declare dependencies on other units.",
+      "Systemd unit files can declare dependencies on other units using the `Wants`, `Requires`, `After`, and `Before` directives in the `[Unit]` section."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Unit files define whether the service should be restarted automatically",
+     "quotes": [
+      "- `Restart`: Specifies when to automatically restart the service."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "systemd uses targets to group related services and resources",
+     "quotes": [
+      "Systemd uses \"targets\" to group related services and resources together."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "Targets are similar to the runlevels of older init systems",
+     "quotes": [
+      "Targets are similar to the runlevels used in older init systems, but provide more flexibility and granularity."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-031": {
+   "question": "EXT4 filesystem limits",
+   "gold_source": "tests/fixtures/scale_docs/linux-filesystem.md",
+   "facts": [],
+   "facts_not_in_document": [
+    "The maximum ext4 file size is 16TB",
+    "The maximum ext4 filesystem size is 1EB (exabyte)",
+    "An ext4 directory can contain at most 64,000 subdirectories",
+    "An ext4 file can have at most 65,000 hard links",
+    "These limits come from the ext4 design and cannot be changed after the filesystem is created"
+   ],
+   "dropped": []
+  },
+  "CEN-032": {
+   "question": "YAML 1.2 syntax",
+   "gold_source": "tests/fixtures/scale_docs/configuration-management.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Ansible uses YAML as the language for defining its tasks, plays and playbooks",
+     "quotes": [
+      "It uses a simple, human-readable language called YAML to define and execute tasks, known as \"plays\" and \"playbooks\"."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Ansible Playbooks are YAML-formatted files that define the tasks to be executed on target hosts",
+     "quotes": [
+      "They are YAML-formatted files that define a series of tasks to be executed on one or more target hosts."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Playbooks follow a specific structure that includes a hosts directive naming the target hosts or groups",
+     "quotes": [
+      "Ansible Playbooks follow a specific structure:",
+      "2. **Hosts**: The `hosts` directive specifies the target hosts or groups of hosts for the playbook."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "The playbook structure includes a tasks section that defines the actions to perform on the target hosts",
+     "quotes": [
+      "3. **Tasks**: The `tasks` section defines the actions to be performed on the target hosts, such as installing packages, configuring files, or restarting services."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "The playbook structure includes a handlers section for post-task actions",
+     "quotes": [
+      "4. **Handlers**: The `handlers` section defines any post-task actions that should be triggered, such as restarting a service."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "The playbook structure includes a variables (vars) section",
+     "quotes": [
+      "5. **Variables**: The `vars` section allows you to define variables that can be used throughout the playbook."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "The playbook structure includes templates (Jinja2, through the template module)",
+     "quotes": [
+      "6. **Templates**: The `template` module allows you to use Jinja2 templates to generate dynamic configuration files."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "Ansible Playbooks are executed with the ansible-playbook command",
+     "quotes": [
+      "To execute an Ansible Playbook, you can use the `ansible-playbook` command:"
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "The YAML version used by Ansible is YAML 1.2"
+   ],
+   "dropped": []
+  },
+  "CEN-033": {
+   "question": "Docker Compose v2",
+   "gold_source": "tests/fixtures/scale_docs/container-fundamentals.md",
+   "facts": [
+    {
+     "id": "F2",
+     "fact": "Docker Compose is a tool for defining and running multi-container Docker applications",
+     "quotes": [
+      "Docker Compose is a tool for defining and running multi-container Docker applications."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "The key components that enable container technology are namespaces, control groups (cgroups) and union file systems (OverlayFS)",
+     "quotes": [
+      "The key components that enable container technology are:",
+      "Docker utilizes the core Linux container primitives (namespaces, cgroups, OverlayFS) to provide a user-friendly experience for developers and operators."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Namespaces are a Linux kernel feature that provides isolation",
+     "quotes": [
+      "Namespaces are a Linux kernel feature that provide isolation between processes.",
+      "Linux namespaces are a fundamental building block of container technology, providing isolation between processes."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Cgroups are a Linux kernel feature that provides resource management for containers",
+     "quotes": [
+      "This provides resource management and enforcement capabilities for containers.",
+      "Cgroups provide resource management and enforcement capabilities for containers."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Union file systems (OverlayFS) provide efficient layering of file systems for container images",
+     "quotes": [
+      "This is the foundation for building image layers in container technologies like Docker.",
+      "The key benefit of union file systems is their ability to create lightweight, incremental changes to a base file system, which is crucial for building and distributing container images efficiently."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "Docker Compose v2 is a newer version of the Docker Compose tool"
+   ],
+   "dropped": []
+  },
+  "CEN-034": {
+   "question": "AWS IAM policies",
+   "gold_source": "tests/fixtures/scale_docs/api-security.md",
+   "facts": [],
+   "facts_not_in_document": [
+    "AWS IAM policies are JSON-based documents that define permissions for AWS resources",
+    "IAM policies specify which actions are allowed or denied on specific resources such as S3 buckets, EC2 instances or Lambda functions",
+    "IAM policies can be attached to IAM users, groups or roles to control their access to AWS services and resources",
+    "IAM policies let organizations apply the principle of least privilege, granting AWS entities only the permissions they need"
+   ],
+   "dropped": []
+  },
+  "CEN-035": {
+   "question": "how to implement chaos engineering",
+   "gold_source": "tests/fixtures/scale_docs/chaos-engineering.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Chaos engineering experiments test the system's ability to withstand turbulent conditions",
+     "quotes": [
+      "Chaos engineering is the discipline of experimenting on a distributed system to build confidence in the system's capability to withstand turbulent conditions in production."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Experiments should be hypothesis-driven, based on a clear and testable hypothesis about the system's behavior",
+     "quotes": [
+      "1. **Hyothesis-Driven Experiments**: Chaos engineering experiments should be based on a clear hypothesis about the system's behavior. This hypothesis should be testable and measurable."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Chaos experiments should run continuously, not only during initial development or before major releases, because resilience is an ongoing concern",
+     "quotes": [
+      "2. **Continuous Verification**: Chaos experiments should be run continuously, not just during initial development or before a major release. Resilience must be an ongoing concern."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Experiments should run in controlled environments that closely mimic production so that the results are representative",
+     "quotes": [
+      "3. **Controlled Environments**: Chaos experiments should be run in a controlled environment that mimics production as closely as possible. This ensures the results are representative of real-world conditions."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Start with small, low-impact experiments and gradually increase the blast radius",
+     "quotes": [
+      "4. **Gradual Exposure**: Start with small, low-impact experiments and gradually increase the blast radius as confidence in the system grows.",
+      "Start with low-impact experiments that have a small blast radius, such as injecting network latency or terminating a single service instance."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Inject faults into the system to observe how it responds",
+     "quotes": [
+      "Fault injection is a core technique in chaos engineering, where controlled failures are intentionally introduced into a system to observe how it responds."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Network latency is one fault to inject",
+     "quotes": [
+      "- **Network Latency**: Introduce variable network latency or packet loss to simulate unreliable network conditions."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "Resource exhaustion is one fault to inject",
+     "quotes": [
+      "- **Resource Exhaustion**: Consume CPU, memory, or disk space to simulate resource constraints or outages."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "Service failures are one fault to inject",
+     "quotes": [
+      "- **Service Failures**: Intentionally shut down or degrade specific services to observe cascade effects."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F10",
+     "fact": "Dependency failures are one fault to inject",
+     "quotes": [
+      "- **Dependency Failures**: Simulate the failure of upstream dependencies like databases, caching layers, or third-party APIs."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F11",
+     "fact": "Tools such as the Chaos Toolkit can run fault-injection experiments",
+     "quotes": [
+      "Here's an example of using the Chaos Toolkit to inject a network latency fault:",
+      "In this example, the Chaos Toolkit is used to run an experiment that injects 10 seconds of increased network latency and verifies that the frontend service remains healthy (i.e., the `/health` endpoint responds successfully)."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-036": {
+   "question": "benefits of event-driven architecture",
+   "gold_source": "tests/fixtures/scale_docs/event-driven-architecture.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Loose coupling: components are decoupled, which allows easier maintenance, independent scaling and more flexibility",
+     "quotes": [
+      "1. **Loose Coupling**: Components are decoupled from each other, allowing for easier maintenance, independent scaling, and more flexibility.",
+      "The event-driven approach decouples the components of a system, allowing them to be more scalable, resilient, and loosely coupled."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Asynchronous communication: events can be processed asynchronously, which improves responsiveness and scalability",
+     "quotes": [
+      "2. **Asynchronous Communication**: Events can be processed asynchronously, improving the overall responsiveness and scalability of the system.",
+      "Events can be asynchronous, allowing for better responsiveness and non-blocking operations."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Scalability: individual components can scale independently because they are decoupled",
+     "quotes": [
+      "3. **Scalability**: Event-driven architectures can scale individual components independently, as they are decoupled from each other."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Fault tolerance: if one component fails, the rest of the system keeps working, which improves resilience",
+     "quotes": [
+      "4. **Fault Tolerance**: If one component fails, the rest of the system can continue to function, improving the overall resilience of the system."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Audit trail: the event store keeps a comprehensive record of all actions and state changes in the system",
+     "quotes": [
+      "5. **Audit Trail**: The event store provides a comprehensive audit trail of all the actions and state changes that have occurred in the system."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-037": {
+   "question": "serverless vs containers",
+   "gold_source": "tests/fixtures/scale_docs/serverless-architecture.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Serverless architecture is a cloud computing execution model in which the cloud provider is responsible for executing the code",
+     "quotes": [
+      "Serverless architecture is a cloud computing execution model where the cloud provider (AWS, Azure, Google Cloud, etc.) is responsible for executing a piece of code by dynamically allocating the required resources."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "In serverless, the cloud provider manages the underlying infrastructure (servers)",
+     "quotes": [
+      "1. **No Server Management**: The cloud provider is responsible for provisioning, scaling, and managing the servers that run the code."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "AWS Lambda is an example of serverless",
+     "quotes": [
+      "AWS Lambda is a serverless compute service provided by Amazon Web Services (AWS)."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "With serverless, developers focus on writing code without provisioning or managing servers",
+     "quotes": [
+      "In this model, the developers do not have to provision or manage any servers.",
+      "Developers can focus on writing code without worrying about infrastructure.",
+      "It allows you to run code without provisioning or managing servers."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "Containers are a way to package and run applications in a consistent, isolated environment",
+    "Containers make applications portable and scalable across different computing environments"
+   ],
+   "dropped": []
+  },
+  "CEN-039": {
+   "question": "data lakehouse architecture",
+   "gold_source": "tests/fixtures/scale_docs/data-lake-architecture.md",
+   "facts": [
+    {
+     "id": "F2",
+     "fact": "The ingestion layer brings data into the data lake from various sources",
+     "quotes": [
+      "The ingestion layer is responsible for bringing data into the data lake from various sources."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Ingestion tools include Apache Kafka, Apache Spark Streaming, AWS Kinesis and Azure Event Hubs",
+     "quotes": [
+      "Common ingestion tools include Apache Kafka, Apache Spark Streaming, AWS Kinesis, and Azure Event Hubs."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "The storage layer is the foundation of the data lake, where raw, unprocessed data is stored",
+     "quotes": [
+      "The storage layer is the foundation of the data lake, where the raw, unprocessed data is stored."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "The storage layer uses object storage services such as Amazon S3, Azure Blob Storage or Google Cloud Storage",
+     "quotes": [
+      "This layer is typically implemented using object storage services like Amazon S3, Azure Blob Storage, or Google Cloud Storage."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "The processing layer transforms and enriches the raw data stored in the data lake",
+     "quotes": [
+      "The processing layer is responsible for transforming and enriching the raw data stored in the data lake."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Processing tools such as Apache Spark, Apache Flink, AWS Glue or Azure Databricks perform batch and stream processing",
+     "quotes": [
+      "This layer typically includes tools like Apache Spark, Apache Flink, AWS Glue, or Azure Databricks, which can be used to perform batch and stream processing tasks."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "A data lakehouse combines the flexibility and scalability of a data lake with the structured data management of a data warehouse"
+   ],
+   "dropped": []
+  },
+  "CEN-040": {
+   "question": "zero trust security principles",
+   "gold_source": "tests/fixtures/scale_docs/zero-trust-architecture.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Verify Explicitly: all users, devices and applications must be continuously authenticated and authorized, regardless of network location",
+     "quotes": [
+      "1. **Verify Explicitly**: All users, devices, and applications must be continuously authenticated and authorized, regardless of network location."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Use Least Privilege Access: granular access policies grant each user, device or application only the minimum privileges it needs",
+     "quotes": [
+      "2. **Use Least Privilege Access**: Granular access policies should be defined to grant the minimum necessary privileges for each user, device, or application to perform their required functions."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Assume Breach: organizations assume a breach has already occurred and design security controls around data protection and rapid response",
+     "quotes": [
+      "3. **Assume Breach**: Organizations should assume that a breach has already occurred and design security controls accordingly, focusing on data protection and rapid response."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Verify and Monitor Everywhere: all network traffic, user activities and system events are continuously monitored and validated, both on-premises and in the cloud",
+     "quotes": [
+      "4. **Verify and Monitor Everywhere**: All network traffic, user activities, and system events should be continuously monitored and validated, both on-premises and in the cloud."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Identity verification and access control is a key component of implementing zero trust",
+     "quotes": [
+      "Implementing a zero trust architecture involves several core components, which we'll explore in more detail:",
+      "1. **Identity Verification and Access Control**"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Micro-segmentation and least privilege is a key component of implementing zero trust",
+     "quotes": [
+      "2. **Micro-Segmentation and Least Privilege**"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Continuous validation and monitoring is a key component of implementing zero trust",
+     "quotes": [
+      "3. **Continuous Validation and Monitoring**"
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-041": {
+   "question": "continuous integration best practices",
+   "gold_source": "tests/fixtures/scale_docs/ci-cd-pipelines.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "The pipeline has a source code management stage",
+     "quotes": [
+      "1. **Source Code Management**: This stage involves managing the source code, usually through a version control system like Git."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "The pipeline has a build stage that compiles the source code",
+     "quotes": [
+      "2. **Build**: The build stage compiles the source code and generates executable artifacts, such as Docker images or binary packages."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "The pipeline has a test stage that runs tests",
+     "quotes": [
+      "3. **Test**: The test stage runs various types of tests, such as unit tests, integration tests, and end-to-end tests, to ensure the application's functionality and quality."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "The pipeline has a static code analysis stage",
+     "quotes": [
+      "4. **Static Code Analysis**: This stage analyzes the source code for potential issues, such as code style violations, security vulnerabilities, and code complexity."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "The pipeline has an artifact storage stage",
+     "quotes": [
+      "5. **Artifact Storage**: The artifacts generated during the build stage, such as Docker images or binary packages, are stored in a repository for later use."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "The pipeline has a deployment stage that deploys the application",
+     "quotes": [
+      "6. **Deployment**: The final stage is responsible for deploying the application to the target environment, such as a development, staging, or production environment."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Pipeline stages are automated with tools such as Jenkins",
+     "quotes": [
+      "A CI/CD (Continuous Integration/Continuous Deployment) pipeline is a series of automated steps that build, test, and deploy software applications.",
+      "# Example Jenkins Jenkinsfile for the build stage"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "Generated artifacts (compiled binaries, Docker images, test reports) are managed by storing them in a repository for later use",
+     "quotes": [
+      "Artifacts are the files generated during the pipeline stages, such as compiled binaries, Docker images, or test reports.",
+      "Proper management of these artifacts is crucial for the success of a CI/CD pipeline.",
+      "Artifacts can be stored in various repositories, such as:"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "Parallel execution of pipeline stages reduces the overall pipeline/build time",
+     "quotes": [
+      "Parallel execution in a CI/CD pipeline allows multiple stages to run concurrently, reducing the overall pipeline duration."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F10",
+     "fact": "Caching speeds up the pipeline by avoiding re-fetching and rebuilding",
+     "quotes": [
+      "Caching in a CI/CD pipeline can significantly improve the pipeline's performance by reducing the time required to fetch dependencies and rebuild artifacts."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F11",
+     "fact": "Blue-green deployment is one deployment strategy for safe application updates",
+     "quotes": [
+      "Blue-green deployment involves maintaining two identical production environments, often called \"blue\" and \"green.\"",
+      "This strategy provides a seamless rollback by simply redirecting traffic back to the previous environment if any issues arise."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F12",
+     "fact": "Canary deployment is one deployment strategy for safe application updates",
+     "quotes": [
+      "Canary deployment gradually rolls out a new version of an application to a small subset of users, typically a percentage of the total user base."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F13",
+     "fact": "Rolling deployment is one deployment strategy for safe application updates",
+     "quotes": [
+      "Rolling deployment involves gradually replacing old instances of an application with new instances, without any downtime."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-042": {
+   "question": "database sharding strategies",
+   "gold_source": "tests/fixtures/scale_docs/database-sharding.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Database sharding horizontally partitions data across multiple database instances (shards) to improve scalability and performance",
+     "quotes": [
+      "Database sharding is a technique used to horizontally partition data across multiple database instances, or \"shards\", to improve scalability and performance."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Hash-based sharding applies a hash function to a specific column or set of columns to determine which shard stores a data item",
+     "quotes": [
+      "Hash-based sharding uses a hash function to determine the shard where a particular data item is stored.",
+      "The hash function is applied to a specific column or set of columns, and the result is used to route the data to the appropriate shard."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Hash-based sharding distributes data evenly across shards",
+     "quotes": [
+      "- Data is evenly distributed across shards, improving load balancing."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Hash-based sharding makes cross-shard queries more complex",
+     "quotes": [
+      "- Cross-shard queries can be more complex and less efficient, as data may be spread across multiple shards."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Range-based sharding partitions data by ranges of values in a specific column or set of columns",
+     "quotes": [
+      "Range-based sharding partitions data based on a range of values in a specific column or set of columns."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Range-based sharding is often used when data divides naturally into logical ranges",
+     "quotes": [
+      "This is often used when data can be naturally divided into logical ranges, such as by date or geographic region."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Range-based sharding can make cross-shard queries more efficient",
+     "quotes": [
+      "- Cross-shard queries can be more efficient, as data related to a specific range can be targeted directly."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "Range-based sharding can distribute data unevenly",
+     "quotes": [
+      "- Data may not be evenly distributed across shards, leading to unbalanced load."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "Directory-based sharding uses a central directory to map data to specific shards",
+     "quotes": [
+      "Directory-based sharding uses a centralized directory or routing table to map data to specific shards."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F10",
+     "fact": "Directory-based sharding gives more flexibility in managing shards",
+     "quotes": [
+      "- Flexible sharding strategy, as the directory can be updated to accommodate changes in the data."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F11",
+     "fact": "Directory-based sharding adds complexity",
+     "quotes": [
+      "- Maintaining the directory can add complexity to the overall system."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F12",
+     "fact": "The directory is a potential single point of failure",
+     "quotes": [
+      "- The directory introduces an additional component and potential point of failure in the system."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-043": {
+   "question": "load balancing algorithms",
+   "gold_source": "tests/fixtures/scale_docs/load-balancing.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Round-robin sends each new connection to the next server in the list, cycling through the entire pool.",
+     "quotes": [
+      "It works by sending each new connection to the next server in the list, cycling through the entire pool."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Round-robin ensures each server receives an equal number of connections.",
+     "quotes": [
+      "This ensures each server receives an equal number of connections."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Least connections sends each new connection to the server with the fewest active connections.",
+     "quotes": [
+      "The least connections algorithm sends each new connection to the server with the fewest number of active connections."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Least connections helps balance the load more evenly across backend servers.",
+     "quotes": [
+      "This helps balance the load more evenly across the backend servers, especially when there is variation in server capacity or request duration."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Weighted load balancing assigns a weight to each backend server; servers with higher weight receive more traffic than those with lower weight.",
+     "quotes": [
+      "Weighted load balancing allows you to assign a weight value to each backend server.",
+      "Servers with a higher weight will receive more traffic than those with a lower weight."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Weighted load balancing is useful for servers with different capacities.",
+     "quotes": [
+      "This is useful when you have servers with different capacities or processing power."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "IP hash uses a hash of the client's IP address to determine which server the connection is sent to.",
+     "quotes": [
+      "IP hash load balancing uses a hash of the client's IP address to determine which server the connection should be sent to."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "IP hash maintains session affinity (a client is always sent to the same backend).",
+     "quotes": [
+      "This ensures that a client is always sent to the same backend server, which is useful for maintaining session affinity.",
+      "This ensures that requests from the same client IP are always routed to the same backend."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "Load balancers can operate at different layers of the OSI model.",
+     "quotes": [
+      "Load balancers can operate at different layers of the OSI model, providing different capabilities and trade-offs."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F10",
+     "fact": "Layer 4 load balancers make decisions based on transport-layer information like IP addresses and ports.",
+     "quotes": [
+      "Layer 4 load balancers operate at the transport layer, making load balancing decisions based on information like IP addresses and port numbers."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F11",
+     "fact": "Layer 7 load balancers have more visibility into the application layer.",
+     "quotes": [
+      "Layer 7 load balancers operate at the application layer, allowing them to make more intelligent routing decisions based on application-layer protocols like HTTP.",
+      "They can inspect the content of requests and responses, enabling advanced features like content-based routing, SSL termination, and application-level health checks.",
+      "They are faster and simpler, but have limited visibility into the application layer."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-044": {
+   "question": "content delivery network optimization",
+   "gold_source": "tests/fixtures/scale_docs/cdn-architecture.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "A CDN is designed to efficiently deliver content to users around the world.",
+     "quotes": [
+      "A Content Delivery Network (CDN) is a geographically distributed network of servers and data centers designed to efficiently deliver content to users around the world."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Edge servers are strategically placed to minimize the distance and latency between the user and the content.",
+     "quotes": [
+      "Edge servers are strategically placed in various locations to minimize the distance and latency between the user and the content."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "The origin server is the primary source of the content.",
+     "quotes": [
+      "The origin server is the primary source of the content, typically hosted by the content provider."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Load balancers direct user requests to the appropriate edge server.",
+     "quotes": [
+      "Load balancers are responsible for directing user requests to the appropriate edge server, taking into account factors like geographic location, server load, and content availability."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "A cache management system manages the content stored on the edge servers.",
+     "quotes": [
+      "The cache management system is responsible for managing the content stored on the edge servers, including caching, invalidation, and refresh policies."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Edge caching is a fundamental aspect of CDN architecture where content is stored on the edge servers closest to end-users.",
+     "quotes": [
+      "Edge caching is a fundamental aspect of CDN architecture, where content is stored on the edge servers closest to the end-users."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Edge caching lets the CDN serve content directly from the edge, reducing latency and load on the origin server.",
+     "quotes": [
+      "This caching mechanism allows the CDN to serve content directly from the edge, reducing the latency and load on the origin server."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-045": {
+   "question": "service mesh advantages",
+   "gold_source": "tests/fixtures/scale_docs/service-mesh.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Traffic management: a service mesh provides advanced traffic control features such as load balancing, circuit breaking, retries, and timeouts.",
+     "quotes": [
+      "**Traffic Management**: The service mesh provides advanced traffic control features, such as load balancing, circuit breaking, retries, and timeouts."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Security: a service mesh enables secure service-to-service communication using mutual TLS (mTLS) for authentication and encryption.",
+     "quotes": [
+      "**Security**: The service mesh can enable secure communication between services using mTLS (mutual TLS) for authentication and encryption."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Observability: a service mesh collects telemetry (metrics, logs, traces) to provide visibility into the health and performance of the mesh.",
+     "quotes": [
+      "**Observability**: The service mesh collects telemetry data, such as metrics, logs, and traces, to provide visibility into the health and performance of the mesh."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "A service mesh decouples application code from infrastructure concerns, letting developers focus on business logic while the mesh handles cross-cutting concerns.",
+     "quotes": [
+      "The service mesh architecture decouples the application code from the infrastructure concerns, allowing developers to focus on building business logic while the service mesh handles the cross-cutting concerns."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-046": {
+   "question": "infrastructure as code tools",
+   "gold_source": "tests/fixtures/scale_docs/infrastructure-as-code.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Terraform is an open-source Infrastructure as Code (IaC) tool.",
+     "quotes": [
+      "Terraform is an open-source Infrastructure as Code (IaC) tool developed by HashiCorp."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Terraform lets you define and provision infrastructure in a declarative manner.",
+     "quotes": [
+      "It allows you to define and provision your infrastructure in a declarative manner, making it easier to manage, collaborate, and version control your infrastructure."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Terraform supports a wide range of cloud providers and on-premises resources.",
+     "quotes": [
+      "Terraform supports a wide range of cloud providers, including AWS, Azure, Google Cloud, and many others, as well as on-premises resources such as virtual machines, networks, and databases."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Terraform keeps infrastructure state in a state file stored in a backend such as a local file, an S3 bucket, or a HashiCorp Consul backend.",
+     "quotes": [
+      "Terraform maintains the state of your infrastructure in a state file, which is typically stored in a backend, such as a local file, an S3 bucket, or a HashiCorp Consul backend."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Terraform supports state locking to prevent multiple users or processes from modifying the state file at the same time.",
+     "quotes": [
+      "Terraform supports state locking to prevent multiple users or processes from modifying the state file at the same time, which could lead to conflicts and data loss.",
+      "Terraform also supports state locking, which prevents multiple users or processes from modifying the state file at the same time, which could lead to conflicts and data loss."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Terraform supports state importing to add existing resources to the Terraform state.",
+     "quotes": [
+      "In such cases, you can use the `terraform import` command to add existing resources to the Terraform state.",
+      "Terraform's `import` functionality allows you to add existing resources to the Terraform state, even if they were not originally created by Terraform."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-047": {
+   "question": "monitoring vs observability",
+   "gold_source": "tests/fixtures/scale_docs/monitoring-observability.md",
+   "facts": [
+    {
+     "id": "F2",
+     "fact": "Monitoring focuses on collecting and analyzing metrics to track a system's health and performance.",
+     "quotes": [
+      "Metrics are the foundation of any monitoring and observability solution.",
+      "They provide quantifiable data points that can be used to measure the health, performance, and behavior of your systems."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "RED metrics are Rate, Errors, Duration.",
+     "quotes": [
+      "Two widely adopted metric frameworks are the RED (Rate, Errors, Duration) and USE (Utilization, Saturation, Errors) models.",
+      "The RED metrics focus on three key aspects of system performance:"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "USE metrics are Utilization, Saturation, Errors.",
+     "quotes": [
+      "Two widely adopted metric frameworks are the RED (Rate, Errors, Duration) and USE (Utilization, Saturation, Errors) models.",
+      "The USE (Utilization, Saturation, Errors) metrics focus on resource utilization and saturation, providing a more holistic view of system performance:"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Observability also includes techniques such as distributed tracing and log aggregation.",
+     "quotes": [
+      "This comprehensive guide will cover the following key components of a robust monitoring and observability strategy:",
+      "By leveraging the insights provided by distributed tracing, you can improve the overall reliability, performance, and observability of your distributed systems.",
+      "Centralized log management integrates well with other monitoring and observability tools, enabling you to correlate log data with metrics and tracing information."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Observability provides a more comprehensive understanding of a system's behavior and enables faster issue resolution.",
+     "quotes": [
+      "Effective monitoring and observability help engineers quickly identify, diagnose, and resolve issues, optimize system performance, and ensure reliable and scalable service delivery.",
+      "Monitoring and observability are critical aspects of modern software systems, providing visibility into the health, performance, and behavior of applications, infrastructure, and distributed systems."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "Monitoring and observability are related but distinct concepts.",
+    "Observability is a broader concept that encompasses monitoring."
+   ],
+   "dropped": []
+  },
+  "CEN-048": {
+   "question": "auto scaling in the cloud",
+   "gold_source": "tests/fixtures/scale_docs/auto-scaling.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Auto-scaling is the ability of a system to automatically adjust its resource capacity based on actual load.",
+     "quotes": [
+      "Auto-scaling is the ability of a system to automatically adjust its resource capacity based on actual load."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Target tracking scaling adjusts capacity to maintain a target value for a specific metric, such as average CPU utilization.",
+     "quotes": [
+      "Target tracking scaling adjusts the capacity of an auto-scaling group to maintain a target value for a specific metric, such as average CPU utilization."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Target tracking keeps the target metric as close to the specified value as possible.",
+     "quotes": [
+      "The target tracking scaling policy attempts to scale out to handle increased load and scale in when the load decreases, keeping the target metric as close to the specified value as possible."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Step scaling adjusts capacity based on a set of scaling adjustments called step adjustments.",
+     "quotes": [
+      "Step scaling adjusts the capacity of an auto-scaling group based on a set of scaling adjustments, known as step adjustments."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Each step adjustment specifies a metric value range and the corresponding adjustment to the current capacity.",
+     "quotes": [
+      "Each step adjustment specifies a metric value range and the corresponding adjustment to make to the current capacity, either an absolute number of instances or a percentage change."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Predictive scaling uses load forecasting to scale capacity ahead of predicted traffic changes.",
+     "quotes": [
+      "Predictive scaling uses load forecasting to automatically scale the capacity of an auto-scaling group ahead of predicted traffic changes."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Predictive scaling proactively scales resources in advance to meet anticipated demand.",
+     "quotes": [
+      "It analyzes historical usage data and creates a scaling plan to meet future demand, adjusting the capacity of the auto-scaling group in advance."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-049": {
+   "question": "disaster recovery planning",
+   "gold_source": "tests/fixtures/scale_docs/disaster-recovery.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Disaster recovery is about recovering IT systems, data, and operations in the event of a disaster or major outage.",
+     "quotes": [
+      "Disaster recovery (DR) is the process of recovering IT systems, data, and operations in the event of a disaster or major outage."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "The two key DR metrics are Recovery Point Objective (RPO) and Recovery Time Objective (RTO).",
+     "quotes": [
+      "The two primary metrics that define a disaster recovery strategy are the *Recovery Point Objective* (RPO) and the *Recovery Time Objective* (RTO)."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "RPO is the maximum amount of data that can be lost.",
+     "quotes": [
+      "**RPO** is the maximum amount of data that an organization can afford to lose in the event of a disaster."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "RTO is the maximum time before normal operations must resume.",
+     "quotes": [
+      "**RTO** is the maximum amount of time an organization can be without access to its critical systems and data before the impact becomes unacceptable.",
+      "an RTO of 4 hours means the organization must be able to recover its critical systems and resume normal operations within 4 hours"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Backup and restore is a fundamental DR strategy.",
+     "quotes": [
+      "The most fundamental disaster recovery strategy is **backup and restore**.",
+      "Backup and restore is a fundamental component of any disaster recovery plan."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Backup and restore involves regularly creating full or incremental backups of critical data and systems that can be used to restore operations.",
+     "quotes": [
+      "This involves regularly creating full or incremental backups of critical data, applications, and system configurations, and then being able to restore that data to recover from an outage or disaster."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Backups can be stored on-site, off-site, or in the cloud.",
+     "quotes": [
+      "Backups can be stored on-site, off-site, or in the cloud, and can be done through a variety of methods such as file-level backups, image-level backups, database backups, and more.",
+      "This can include on-site storage, off-site storage, or cloud-based backup services."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "The backup strategy should be designed to meet the organization's RPO and RTO requirements.",
+     "quotes": [
+      "The specific backup strategy should be designed to meet the organization's RPO and RTO requirements."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-050": {
+   "question": "api gateway patterns",
+   "gold_source": "tests/fixtures/scale_docs/api-gateway-patterns.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Proxy pattern: the gateway forwards requests directly to the appropriate microservice without additional processing.",
+     "quotes": [
+      "The proxy pattern is the simplest API gateway implementation, where the gateway forwards requests directly to the appropriate microservice without any additional processing."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "The proxy pattern is suitable for simple use cases.",
+     "quotes": [
+      "This pattern is suitable for simple use cases where the gateway does not need to perform complex transformations or aggregations."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "The aggregator pattern is used when a client needs data from multiple microservices.",
+     "quotes": [
+      "The aggregator pattern is used when a client needs to retrieve data from multiple microservices."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "In the aggregator pattern the gateway sends individual requests to relevant services, aggregates the responses, and returns the combined result.",
+     "quotes": [
+      "The API gateway is responsible for sending the individual requests to the relevant services, aggregating the responses, and returning the combined result to the client."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "The translator pattern is used when the client and microservice APIs have different data formats or protocols.",
+     "quotes": [
+      "The translator pattern is used when the client and microservice APIs have different data formats or protocols."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "In the translator pattern the gateway translates the client's request into the microservice's format and translates the response back to the client's format.",
+     "quotes": [
+      "The API gateway is responsible for translating the client's request into the format expected by the microservice, and then translating the response back into the client's expected format."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "The decomposer pattern is used when a request needs data from multiple microservices but the client does not want to orchestrate those requests.",
+     "quotes": [
+      "The decomposer pattern is used when a client request requires data from multiple microservices, but the client does not want to be responsible for orchestrating those requests."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "In the decomposer pattern the gateway decomposes the request into individual service calls, executes them concurrently, and composes the final response.",
+     "quotes": [
+      "The API gateway is responsible for decomposing the client's request into individual service calls, executing them concurrently, and then composing the final response."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-051": {
+   "question": "cloud storage options",
+   "gold_source": "tests/fixtures/scale_docs/cloud-storage-options.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Amazon S3 is an object storage service.",
+     "quotes": [
+      "Amazon Simple Storage Service (S3) is a highly scalable and durable object storage service."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "S3 offers several storage classes for different data access patterns and durability requirements.",
+     "quotes": [
+      "S3 offers several storage classes to choose from based on your data access patterns and durability requirements:"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "S3 Standard is for frequently accessed data.",
+     "quotes": [
+      "**S3 Standard**: For frequently accessed data."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "S3 Intelligent-Tiering automatically moves data between access tiers.",
+     "quotes": [
+      "**S3 Intelligent-Tiering**: Automatically moves data between access tiers based on usage."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "S3 Standard-IA and S3 One Zone-IA are for infrequently accessed data.",
+     "quotes": [
+      "**S3 Standard-IA**: For long-lived, infrequently accessed data.",
+      "**S3 One Zone-IA**: For long-lived, infrequently accessed data that doesn't require cross-AZ resilience."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "S3 Glacier and S3 Glacier Deep Archive are for long-term archival of rarely accessed data.",
+     "quotes": [
+      "**S3 Glacier**: For long-term archival of data that is rarely accessed.",
+      "**S3 Glacier Deep Archive**: For data that is accessed once or twice a year."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "S3 Lifecycle policies can automatically transition objects between storage classes or delete objects based on age.",
+     "quotes": [
+      "S3 Lifecycle policies can be used to automatically transition objects between storage classes or delete objects based on age."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "S3 supports GET/HEAD/PUT/DELETE operations.",
+     "quotes": [
+      "**GET/HEAD/PUT/DELETE**: Basic object read/write operations."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "S3 supports multi-part uploads.",
+     "quotes": [
+      "**Multi-part Uploads**: For uploading large objects (>5GB)."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F10",
+     "fact": "S3 supports batch operations.",
+     "quotes": [
+      "**Batch Operations**: For performing bulk actions on a large number of objects."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F11",
+     "fact": "S3 supports data querying with S3 Select and S3 Glacier Select.",
+     "quotes": [
+      "**Amazon S3 Select**: For querying and filtering data within objects without retrieving the entire object.",
+      "**S3 Glacier Select**: For querying archived data in S3 Glacier without restoring the full object."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-052": {
+   "question": "data serialization formats",
+   "gold_source": "tests/fixtures/scale_docs/data-serialization.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Data serialization converts data structures or objects into a format that can be stored or transmitted and reconstructed later.",
+     "quotes": [
+      "Data serialization is the process of converting a data structure or object into a format that can be stored or transmitted, and then reconstructed later."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "JSON is a lightweight, human-readable data interchange format.",
+     "quotes": [
+      "JSON is a lightweight, human-readable data interchange format that is easy for both humans and machines to read and write."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "JSON represents data as a collection of name/value pairs and ordered lists of values.",
+     "quotes": [
+      "JSON data is represented as a collection of name/value pairs, and ordered lists of values."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "JSON has a simple syntax.",
+     "quotes": [
+      "**Simplicity**: JSON has a very simple and straightforward syntax, making it easy to read, write, and parse."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "JSON is language-independent.",
+     "quotes": [
+      "**Language independence**: JSON is language-independent, and can be used with a wide range of programming languages."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "JSON is widely adopted.",
+     "quotes": [
+      "**Widespread adoption**: JSON has become a widely adopted standard for data exchange, and is supported by a large number of libraries and tools."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "JSON can be verbose.",
+     "quotes": [
+      "**Verbosity**: JSON data can be relatively verbose, as it includes a lot of unnecessary metadata (e.g., field names, quotes, braces)."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "JSON has limited data types.",
+     "quotes": [
+      "**Limited data types**: JSON has a relatively limited set of data types, which may not be sufficient for certain use cases."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "Protobuf was developed by Google.",
+     "quotes": [
+      "It was developed by Google and is widely used in their internal systems and external projects."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F10",
+     "fact": "Protobuf is a compact, fast binary serialization format.",
+     "quotes": [
+      "**Compact and efficient**: Protobuf data is serialized into a compact binary format, which is smaller and more efficient than JSON or XML.",
+      "**Fast and low-latency**: Protobuf serialization and deserialization is very fast, making it well-suited for high-performance applications."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F11",
+     "fact": "Protobuf is language-neutral.",
+     "quotes": [
+      "Protocol Buffers (or Protobuf) is a language-neutral, platform-neutral, extensible mechanism for serializing structured data.",
+      "**Language-independent**: Protobuf can be used with a wide range of programming languages, including Java, C++, Python, Go, and more."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F12",
+     "fact": "Protobuf uses a schema definition language to define the structure of the data.",
+     "quotes": [
+      "Protobuf data is defined using a specialized Interface Description Language (IDL) that allows you to define the structure of your data"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F13",
+     "fact": "Protobuf enables efficient schema evolution.",
+     "quotes": [
+      "**Schema evolution**: Protobuf schemas can be evolved over time, allowing for efficient data migration and backwards compatibility."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F14",
+     "fact": "Avro is an Apache data serialization system providing rich data structures and a compact binary format.",
+     "quotes": [
+      "Apache Avro is a data serialization system that provides rich data structures and a compact, fast, binary data format."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F16",
+     "fact": "Avro supports dynamic typing.",
+     "quotes": [
+      "It supports dynamic data typing, which means that the schema is encoded in the serialized data, rather than being passed separately."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F17",
+     "fact": "Avro supports schema evolution.",
+     "quotes": [
+      "**Schema evolution**: Avro supports schema evolution, allowing data to be read and written even as the schema changes over time."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F18",
+     "fact": "Avro is often used in big data applications.",
+     "quotes": [
+      "**Seamless integration with Hadoop**: Avro was designed to be well-integrated with the Hadoop ecosystem, making it a popular choice for big data applications."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F20",
+     "fact": "Parquet and ORC are column-oriented formats designed for efficient storage and querying of large datasets.",
+     "quotes": [
+      "Apache Parquet is a columnar data format designed for efficient storage and query performance, particularly for large datasets.",
+      "Apache ORC is a columnar data format designed for efficient storage and query performance, similar to Apache Parquet."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F21",
+     "fact": "Parquet and ORC use compression and encoding techniques to achieve high performance.",
+     "quotes": [
+      "**High performance**: Parquet's columnar storage and compression techniques result in faster query and processing times, especially for large datasets.",
+      "ORC uses a binary file format that is optimized for large-scale workloads and provides features such as indexing, compression, and type-specific encodings to improve query performance."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F22",
+     "fact": "Parquet and ORC are commonly used in big data ecosystems like Hadoop and Spark.",
+     "quotes": [
+      "Parquet is designed to work well with big data processing frameworks like Apache Hadoop, Apache Spark, and Apache Impala.",
+      "**Widespread support**: ORC is widely supported by a variety of big data processing frameworks and tools, including Apache Hive, Apache Spark, and Apache Impala.",
+      "It was originally developed at Hortonworks (now part of Cloudera) and is widely used in the Apache Hadoop ecosystem."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "Avro is row-oriented.",
+    "Avro is often used in stream processing applications."
+   ],
+   "dropped": []
+  },
+  "CEN-053": {
+   "question": "message queue patterns",
+   "gold_source": "tests/fixtures/scale_docs/event-driven-architecture.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Event Producers: components that generate events based on actions or state changes.",
+     "quotes": [
+      "1. **Event Producers**: Components that generate events based on some action or state change.",
+      "1. **Event Producer**: Components that generate and publish events to the event bus."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Event Consumers: components that subscribe to and process events.",
+     "quotes": [
+      "2. **Event Consumers**: Components that subscribe to and process events.",
+      "2. **Event Consumer**: Components that subscribe to and process events from the event bus."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Event Bus: the middleware that facilitates publishing and subscribing of events.",
+     "quotes": [
+      "3. **Event Bus**: The middleware that facilitates the publishing and subscribing of events.",
+      "An event bus is a messaging middleware that facilitates the communication between event producers and event consumers in an event-driven architecture."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "These patterns allow asynchronous communication between components.",
+     "quotes": [
+      "Events can be asynchronous, allowing for better responsiveness and non-blocking operations.",
+      "2. **Asynchronous Communication**: Events can be processed asynchronously, improving the overall responsiveness and scalability of the system."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "These patterns decouple the components of an event-driven system.",
+     "quotes": [
+      "The event-driven approach decouples the components of a system, allowing them to be more scalable, resilient, and loosely coupled.",
+      "1. **Loose Coupling**: The event bus decouples event producers and consumers, allowing them to be developed and deployed independently."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "The approach promotes scalability.",
+     "quotes": [
+      "3. **Scalability**: Event-driven architectures can scale individual components independently, as they are decoupled from each other.",
+      "2. **Scalability**: The event bus can scale to handle a large number of events and support a growing number of producers and consumers."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "The approach promotes fault tolerance.",
+     "quotes": [
+      "4. **Fault Tolerance**: If one component fails, the rest of the system can continue to function, improving the overall resilience of the system."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "The approach promotes flexibility.",
+     "quotes": [
+      "1. **Loose Coupling**: Components are decoupled from each other, allowing for easier maintenance, independent scaling, and more flexibility.",
+      "4. **Flexibility**: The event bus allows for dynamic event subscriptions and routing, enabling the system to be more flexible and adaptable."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-054": {
+   "question": "functional programming concepts",
+   "gold_source": "tests/fixtures/scale_docs/functional-programming.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Immutability: in functional programming, values cannot be changed once created.",
+     "quotes": [
+      "It means that once a value is created, it cannot be changed.",
+      "Immutability is a core principle in functional programming."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Instead of modifying data, functional programs create new data structures with the desired changes.",
+     "quotes": [
+      "Instead of modifying existing data, functional programs create new data structures with the desired changes."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Pure functions always return the same output for the same input and have no side effects.",
+     "quotes": [
+      "A pure function is a function that, given the same input, will always return the same output and has no side effects."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Pure functions do not depend on or modify any external state.",
+     "quotes": [
+      "This means that the function does not depend on or modify any external state, and its execution does not have any observable effect outside of the function itself."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "A benefit of immutability is referential transparency.",
+     "quotes": [
+      "1. **Referential Transparency**: Immutable values are always equal to themselves, which means that a function called with the same arguments will always return the same result.",
+      "This is known as referential transparency, and it simplifies reasoning about program behavior."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "A benefit of immutability is concurrency (immutable data structures are thread-safe).",
+     "quotes": [
+      "2. **Concurrency**: Immutable data structures are inherently thread-safe, as there is no risk of race conditions or other concurrency issues."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "A benefit of immutability is easier debugging and testing.",
+     "quotes": [
+      "3. **Debugging and Testing**: Immutable data is easier to reason about, as the state of the program is always clear.",
+      "This makes it easier to debug and test functional programs."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "A benefit of pure functions is referential transparency.",
+     "quotes": [
+      "1. **Referential Transparency**: Pure functions support referential transparency, as they always return the same output for the same input."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "A benefit of pure functions is testability.",
+     "quotes": [
+      "2. **Testability**: Pure functions are easier to test, as they do not depend on external state or have side effects."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F10",
+     "fact": "A benefit of pure functions is safe parallelism/concurrency.",
+     "quotes": [
+      "3. **Parallelism and Concurrency**: Pure functions can be safely executed in parallel or concurrently, as they do not interfere with each other."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F11",
+     "fact": "A benefit of pure functions is caching and memoization.",
+     "quotes": [
+      "4. **Caching and Memoization**: The deterministic nature of pure functions allows for caching and memoization, which can improve performance."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-055": {
+   "question": "linux memory management",
+   "gold_source": "tests/fixtures/scale_docs/linux-memory-management.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Linux uses virtual memory, which lets processes access more memory than is physically available.",
+     "quotes": [
+      "Virtual memory allows processes to access more memory than is physically available on the system by mapping virtual addresses to physical addresses.",
+      "Linux, like most modern operating systems, uses a virtual memory system to manage memory."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Virtual memory is implemented through page tables that map virtual memory pages to physical memory frames.",
+     "quotes": [
+      "The virtual memory system is implemented using page tables, which map virtual memory pages to physical memory frames."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "The processor's MMU uses the page tables to translate virtual addresses to physical addresses during memory accesses.",
+     "quotes": [
+      "The processor's Memory Management Unit (MMU) uses these page tables to translate virtual addresses to physical addresses during memory accesses.",
+      "When a process attempts to access a virtual address, the MMU uses the page tables to translate the virtual address to a physical address."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Page tables are organized in a multi-level hierarchy with a top-level page directory and lower-level page tables.",
+     "quotes": [
+      "Page tables are organized in a multi-level hierarchy, with a top-level page directory and lower-level page tables."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "If the page is not present in the page tables, the MMU generates a page fault, which the kernel handles.",
+     "quotes": [
+      "If the page is not present in the page tables, the MMU generates a page fault, which is handled by the kernel."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-056": {
+   "question": "dns resolution process",
+   "gold_source": "tests/fixtures/scale_docs/dns-resolution.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "The client (e.g., web browser) first checks its local cache for the domain's IP address.",
+     "quotes": [
+      "When a client (e.g., a web browser) needs to resolve a domain name to an IP address, it first checks its own local cache to see if it has the information already stored."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "If the address is not cached, the client sends a recursive query to a DNS resolver.",
+     "quotes": [
+      "If the information is not in the local cache, the client will proceed to the next step.",
+      "The client will then send a recursive query to its configured DNS resolver, which is usually provided by the user's internet service provider (ISP) or a public DNS service like Google DNS or Cloudflare DNS.",
+      "- The client (e.g., web browser) sends a recursive query to a DNS resolver (usually provided by the user's ISP or a public DNS service)."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "The resolver queries the root DNS servers to find the appropriate TLD server.",
+     "quotes": [
+      "The recursive resolver will start by querying the root DNS servers, which maintain information about the top-level domains (TLDs) like `.com`, `.org`, and `.net`.",
+      "The root servers will respond with the address of the appropriate TLD server that can handle the next step of the resolution process."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "The resolver queries the TLD server to locate the domain's authoritative DNS server.",
+     "quotes": [
+      "The recursive resolver will then query the TLD server for the domain's authoritative DNS server.",
+      "The TLD server will respond with the address of the authoritative DNS server for the requested domain."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "The authoritative server provides the requested information, such as the IP address.",
+     "quotes": [
+      "The recursive resolver will then query the authoritative server directly to retrieve the IP address (or other requested record) for the domain."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "The resolver caches the result and returns it to the client.",
+     "quotes": [
+      "Once the recursive resolver has the requested information, it will cache the results (according to the record's Time-to-Live, or TTL) and send the response back to the client.",
+      "- The resolver caches the results and returns the final response to the client."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-057": {
+   "question": "connection pooling benefits",
+   "gold_source": "tests/fixtures/scale_docs/connection-pooling.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Improved performance: reusing existing connections instead of creating new ones for every operation reduces connection-setup overhead.",
+     "quotes": [
+      "It helps improve performance and scalability by avoiding the overhead of creating new connections for every database operation.",
+      "Database connection pooling is a technique used to manage and reuse database connections in an application."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Increased scalability.",
+     "quotes": [
+      "It helps improve performance and scalability by avoiding the overhead of creating new connections for every database operation."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "Pooling lets an application handle more concurrent requests by efficiently managing a limited number of database connections.",
+    "Efficient resource utilization: pooling optimizes the use of database server resources by maintaining a pool of reusable connections."
+   ],
+   "dropped": [
+    {
+     "fact": "Efficient resource utilization by maintaining a pool of reusable connections.",
+     "reason": "Neither quote states that pooling gives efficient resource utilization: the first says pool sizing matters for resource utilization, and the second says HikariCP lifecycle settings improve performance."
+    }
+   ]
+  },
+  "CEN-058": {
+   "question": "cryptography basics",
+   "gold_source": "tests/fixtures/scale_docs/cryptography-basics.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Symmetric encryption uses a single shared secret key to both encrypt and decrypt data.",
+     "quotes": [
+      "Symmetric encryption, also known as secret-key cryptography, is a type of encryption where a single shared secret key is used to both encrypt and decrypt data."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "AES (Advanced Encryption Standard) is an example of a symmetric encryption algorithm.",
+     "quotes": [
+      "AES is a symmetric-key algorithm adopted as an encryption standard by the U.S. government in 2001."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "AES supports 128, 192, and 256-bit key sizes and operates on 128-bit blocks.",
+     "quotes": [
+      "AES supports key sizes of 128, 192, and 256 bits, and operates on 128-bit blocks of data."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Asymmetric encryption uses two keys: a public key for encryption and a private key for decryption.",
+     "quotes": [
+      "Asymmetric encryption, also known as public-key cryptography, is a type of encryption where a pair of keys is used: a public key for encryption and a private key for decryption."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "RSA and ECDSA are examples of asymmetric cryptography.",
+     "quotes": [
+      "RSA is one of the earliest and most widely used asymmetric encryption algorithms.",
+      "ECDSA is an asymmetric cryptography algorithm used for digital signatures."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Hashing is a one-way function that converts data into a fixed-size output.",
+     "quotes": [
+      "Hashing is the process of transforming a variable-length input into a fixed-length output, called a hash value or digest.",
+      "- **One-way**: It is computationally infeasible to derive the input from the output."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "SHA-256 and bcrypt are examples of hashing functions.",
+     "quotes": [
+      "SHA-256 is a widely used cryptographic hash function that is part of the SHA-2 family of hash algorithms.",
+      "bcrypt is a password hashing function based on the Blowfish cipher."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "Key derivation functions (KDFs) derive secure cryptographic keys from a password or other input.",
+     "quotes": [
+      "Key Derivation Functions (KDFs) are algorithms used to derive one or more secret keys from a secret value, such as a password or a master key.",
+      "KDFs are essential for secure key management, as they allow you to derive strong, cryptographically secure keys from weaker or less secure sources of entropy."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "PBKDF2 and Argon2 are examples of KDFs.",
+     "quotes": [
+      "PBKDF2 is a standard KDF specified in IETF RFC 8018.",
+      "Argon2 is a modern, memory-hard KDF that is designed to be resistant to hardware-based attacks, such as GPU-based brute-force attacks."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-059": {
+   "question": "distributed transactions",
+   "gold_source": "tests/fixtures/scale_docs/concurrency-patterns.md",
+   "facts": [
+    {
+     "id": "F2",
+     "fact": "The source covers concurrency patterns and constructs within a single system (such as thread pools), not distributed transactions.",
+     "quotes": [
+      "This document explores several popular patterns and techniques for managing concurrency in software applications.",
+      "Thread pools are a common concurrency pattern that help manage the life-cycle of worker threads."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "Distributed transactions coordinate multiple operations across different systems or databases as a single logical transaction.",
+    "The source has no information on handling distributed transactions or coordinating multiple systems, so it cannot answer the query."
+   ],
+   "dropped": []
+  },
+  "CEN-060": {
+   "question": "container security hardening",
+   "gold_source": "tests/fixtures/scale_docs/container-security.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Image scanning: scan container images for known vulnerabilities with tools like Trivy, Clair, and Anchore.",
+     "quotes": [
+      "Vulnerability scanning tools, such as [Trivy](https://github.com/aquasecurity/trivy), [Clair](https://github.com/quay/clair), and [Anchore](https://github.com/anchore/anchore-engine), can be used to scan container images for known vulnerabilities.",
+      "Image scanning is the process of analyzing container images for known vulnerabilities, malware, and other security issues."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Scan container images for malware with tools like ClamAV.",
+     "quotes": [
+      "Tools like [Clamav](https://www.clamav.net/) can be used to scan container images for known malware signatures."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Runtime protection: security measures applied to running containers to prevent unauthorized or malicious activity.",
+     "quotes": [
+      "Runtime protection is the set of security measures that are applied to a running container to prevent and detect malicious activity."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Seccomp restricts what a running container can do (its system calls).",
+     "quotes": [
+      "Seccomp is a Linux kernel feature that allows you to restrict the system calls that a process can make.",
+      "This can be used to limit the attack surface of a container by restricting the system calls that the container can perform."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "AppArmor restricts the capabilities of a container.",
+     "quotes": [
+      "AppArmor is a Linux kernel security module that can be used to restrict the capabilities of a container."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Rootless containers are one of the container hardening practices.",
+     "quotes": [
+      "This document provides a comprehensive guide to various container security features and best practices, including image scanning, runtime protection, seccomp, AppArmor, rootless containers, and supply chain security."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "Supply chain security: ensure container images are secure by verifying their provenance and integrity.",
+     "quotes": [
+      "Supply chain security is the process of ensuring the integrity and security of the components that make up a container image, from the base operating system to the application code and dependencies.",
+      "Tools like [Codenotary](https://www.codenotary.com/) and [Sigstore](https://www.sigstore.dev/) can be used to cryptographically sign and verify the provenance of container images, ensuring that they come from a trusted source and have not been tampered with."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "Rootless containers run as non-root users, which reduces the risk of privilege escalation attacks."
+   ],
+   "dropped": []
+  },
+  "CEN-061": {
+   "question": "well architected framework",
+   "gold_source": "tests/fixtures/scale_docs/well-architected-framework.md",
+   "facts": [
+    {
+     "id": "F2",
+     "fact": "The Operational Excellence pillar covers the ability to run and monitor systems to deliver business value and to continually improve supporting processes and procedures.",
+     "quotes": [
+      "The Operational Excellence pillar includes the ability to run and monitor systems to deliver business value, and to continually improve supporting processes and procedures."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Design principle: automate operational procedures (perform operations as code).",
+     "quotes": [
+      "1. **Perform operations as code**: Automate the execution of your operational procedures and the deployment of your applications."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Design principle: embed documentation (annotate documentation).",
+     "quotes": [
+      "2. **Annotate documentation**: Embed operational documentation directly into your technology so it is always available and up-to-date."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Design principle: make frequent, small, reversible changes.",
+     "quotes": [
+      "3. **Make frequent, small, reversible changes**: Design systems to allow for incremental updates."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Design principle: anticipate failure.",
+     "quotes": [
+      "5. **Anticipate failure**: Expect failures and have processes in place to respond and recover quickly."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Design principle: learn from failures and all operational events.",
+     "quotes": [
+      "6. **Learn from all operational events**: Learn from both successful and unsuccessful operational events."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "Key area: implement strong change management.",
+     "quotes": [
+      "- Implement strong change management processes"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "Key area: maintain observability.",
+     "quotes": [
+      "- Maintain observability through logging, metrics, and tracing"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F10",
+     "fact": "Key area: have effective incident response.",
+     "quotes": [
+      "- Have effective incident response and escalation processes"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F11",
+     "fact": "Key area: continuously improve operations based on data.",
+     "quotes": [
+      "- Continuously improve your procedures based on operational data"
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "The AWS Well-Architected Framework is a set of best practices and design principles for building secure, high-performing, resilient, and efficient infrastructure."
+   ],
+   "dropped": []
+  },
+  "CEN-062": {
+   "question": "cost optimization strategies",
+   "gold_source": "tests/fixtures/scale_docs/cost-optimization.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Right-sizing: ensure cloud resources are appropriately sized for workload requirements.",
+     "quotes": [
+      "Right-sizing refers to the process of ensuring that your cloud resources are appropriately sized to meet your workload requirements."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Right-sizing means identifying oversized resources and resizing them to match usage.",
+     "quotes": [
+      "Once you've identified oversized resources, you can resize them to better match your workload requirements.",
+      "To identify oversized resources, you can analyze your resource utilization metrics, such as CPU, memory, and storage usage."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Reserved Instances: commit to longer-term usage in exchange for a discounted hourly rate.",
+     "quotes": [
+      "Reserved Instances (RIs) are a billing model offered by cloud providers that allows you to pay a lower hourly rate for your resources in exchange for a upfront commitment.",
+      "To purchase RIs, you'll need to determine the resources you want to reserve, the term length (typically 1 or 3 years), and the payment option (all upfront, partial upfront, or no upfront)."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Reserved Instances can save significantly compared to on-demand pricing.",
+     "quotes": [
+      "RIs can provide significant cost savings compared to on-demand pricing, particularly for resources that you know you will require consistently over time."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Spot Instances use spare compute capacity at discounted prices.",
+     "quotes": [
+      "Spot Instances are excess compute capacity that is available at a discounted rate, but can be interrupted with short notice."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Spot Instances can be interrupted.",
+     "quotes": [
+      "Spot Instances are excess compute capacity that is available at a discounted rate, but can be interrupted with short notice.",
+      "Spot Instances can be interrupted with short notice, so it's important to design your applications to handle interruptions gracefully."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Auto-scaling: automatically scale resources up and down with demand to optimize cost and resource use.",
+     "quotes": [
+      "Auto-scaling is a powerful technique for dynamically adjusting your cloud resources to match your workload demands.",
+      "By automatically scaling your resources up and down, you can ensure that you're only paying for the resources you need, when you need them."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "Storage tiering: use different storage tiers (e.g., hot vs. cold) to match data access requirements and minimize storage costs.",
+     "quotes": [
+      "Storage tiering is the practice of organizing data across different storage media based on factors like access frequency, performance requirements, and cost.",
+      "By implementing storage tiering, you can optimize your storage costs while ensuring that your data is stored in the most appropriate and cost-effective manner.",
+      "The first step in implementing storage tiering is to identify your \"hot\" (frequently accessed) and \"cold\" (infrequently accessed) data."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-063": {
+   "question": "incident response steps",
+   "gold_source": "tests/fixtures/scale_docs/incident-response.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Detection: the incident is first identified, typically through monitoring systems or user reports",
+     "quotes": [
+      "1. **Detection**: The initial identification of an incident, typically through monitoring systems, user reports, or other means."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Triaging: assessing the incident's severity, impact and urgency to determine the appropriate response",
+     "quotes": [
+      "2. **Triaging**: Assessing the incident's severity, impact, and urgency to determine the appropriate response."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Escalation: notifying the relevant teams or on-call personnel to initiate the incident response process",
+     "quotes": [
+      "3. **Escalation**: Notifying the relevant teams, individuals, or on-call personnel to initiate the incident response process."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Remediation: investigating, diagnosing and resolving the incident",
+     "quotes": [
+      "4. **Remediation**: The steps taken to investigate, diagnose, and resolve the incident."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Postmortem: reviewing the incident, identifying root causes and documenting lessons learned",
+     "quotes": [
+      "5. **Postmortem**: A review of the incident, identifying root causes, and documenting lessons learned to improve future incident response."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Closure: formally closing the incident after all necessary actions have been completed",
+     "quotes": [
+      "6. **Closure**: Formally closing the incident after all necessary actions have been completed."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "There are four incident severity levels, from Severity 1 (Critical) to Severity 4 (Low)",
+     "quotes": [
+      "#### Severity 1 (Critical)"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "Severity levels determine the response and prioritization of an incident",
+     "quotes": [
+      "Incidents are categorized into different severity levels based on their impact and urgency.",
+      "This allows for a consistent and prioritized response."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-064": {
+   "question": "multi-region deployment",
+   "gold_source": "tests/fixtures/scale_docs/multi-region-deployment.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Multi-region deployment means deploying an application or service across multiple geographic regions",
+     "quotes": [
+      "Deploying applications and services across multiple geographic regions is a common strategy to improve availability, reduce latency, and provide disaster recovery capabilities."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "A multi-region deployment can use an active-active or an active-passive configuration",
+     "quotes": [
+      "One of the fundamental decisions in a multi-region deployment is whether to use an active-active or active-passive architecture."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Active-active: the application runs in multiple regions simultaneously, with all regions actively serving user traffic",
+     "quotes": [
+      "In an active-active configuration, the application is deployed and running in multiple regions simultaneously, with all regions actively serving user traffic.",
+      "- All regions are actively serving user traffic"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Active-active provides high availability and low latency because users can be routed to the nearest region",
+     "quotes": [
+      "This provides the highest level of availability and responsiveness, as users can be routed to the nearest region for the best performance."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Active-active requires more complex coordination and data replication between regions",
+     "quotes": [
+      "- Requires more complex coordination and data replication between regions"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Active-passive: one region actively serves traffic while the other region(s) are on standby, ready to take over on failover",
+     "quotes": [
+      "In an active-passive configuration, one region is actively serving user traffic, while the other region(s) are in a standby or passive state, ready to take over in the event of a failover."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Active-passive is simpler to implement but offers lower availability and potentially higher latency",
+     "quotes": [
+      "This architecture is simpler to implement and manage, but provides lower availability and potential for higher latency."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-065": {
+   "question": "ssh configuration security",
+   "gold_source": "tests/fixtures/scale_docs/ssh-configuration.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "The SSH configuration file lets you define custom settings for connecting to remote hosts",
+     "quotes": [
+      "The SSH (Secure Shell) configuration file, typically located at `~/.ssh/config` on Unix-like systems and `%USERPROFILE%\\.ssh\\config.exe` on Windows, allows you to define custom settings for connecting to remote hosts."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Host entries in the SSH config specify the host, user, identity file and port",
+     "quotes": [
+      "1. `example`: Connects to `example.com` as the user `alice` using the `id_rsa` key, and connects on port 22.",
+      "The `Host` directive specifies the hostname pattern to match, while the other configuration options define the connection details."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "The SSH config supports ProxyCommand for connecting through a bastion host",
+     "quotes": [
+      "3. `*.internal`: Connects to any host with a subdomain of `internal` as the `admin` user, using a ProxyCommand to first connect to the `bastion.company.com` host."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "SSH authentication relies on public-key cryptography with a public/private key pair",
+     "quotes": [
+      "SSH authentication relies on public-key cryptography, where each user has a pair of keys: a public key and a private key."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "The public key is shared with remote servers, while the private key is kept secure on the local machine",
+     "quotes": [
+      "The public key is shared with the remote servers, while the private key is kept secure on the user's local machine."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "To manage multiple keys, the IdentityFile option in the SSH config specifies which key to use for each host",
+     "quotes": [
+      "To manage these keys, you can use the `IdentityFile` option in your `~/.ssh/config` file to specify which key to use for each host:",
+      "This ensures that the correct key is used for each remote host."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "The SSH agent is a background process that holds private keys in memory so you can authenticate without repeatedly entering your passphrase",
+     "quotes": [
+      "The SSH agent is a background process that holds your private keys in memory, allowing you to authenticate with remote servers without constantly entering your passphrase."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-066": {
+   "question": "vpn tunneling protocols",
+   "gold_source": "tests/fixtures/scale_docs/vpn-tunneling.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "VPN tunneling protocols establish secure connections that carry private traffic over a public network such as the internet",
+     "quotes": [
+      "Tunneling is commonly used in VPNs to allow private network traffic to be transmitted securely over a public network, such as the internet."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "IPSec operates at the network layer and provides encryption, authentication and data integrity for IP traffic",
+     "quotes": [
+      "IPSec is a standards-based VPN protocol suite that operates at the network layer (Layer 3) of the OSI model.",
+      "It provides encryption, authentication, and data integrity for IP traffic between two endpoints."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "IPSec Transport Mode encrypts the payload but leaves the original IP headers intact",
+     "quotes": [
+      "1. **Transport Mode**: The original IP packet is encrypted, but the original IP headers are left intact."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "IPSec Tunnel Mode encapsulates the entire original IP packet within a new IP packet with IPSec headers",
+     "quotes": [
+      "2. **Tunnel Mode**: The entire original IP packet, including the headers, is encapsulated within a new IP packet with IPSec headers."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "IPSec uses the ESP and AH protocols",
+     "quotes": [
+      "- **ESP (Encapsulating Security Payload)**: Provides encryption and optional authentication of the payload.",
+      "- **AH (Authentication Header)**: Provides authentication of the entire IP packet, including the payload and IP headers."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "IPSec uses the IKE protocol for key exchange",
+     "quotes": [
+      "IPSec uses the following key exchange protocols:",
+      "- **IKE (Internet Key Exchange)**: Handles the negotiation and authentication of the VPN tunnel."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "WireGuard is a newer open-source VPN protocol that aims to be faster, simpler and more secure than existing solutions",
+     "quotes": [
+      "WireGuard is a relatively new open-source VPN protocol that aims to be faster, simpler, and more secure than existing VPN solutions like IPSec and OpenVPN."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "WireGuard operates at the network layer and uses modern cryptographic primitives",
+     "quotes": [
+      "It operates at the network layer (Layer 3) and uses modern cryptographic primitives."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "WireGuard uses Curve25519 and ChaCha20-Poly1305",
+     "quotes": [
+      "- **Public-key Cryptography**: WireGuard uses Curve25519 for key exchange and ChaCha20-Poly1305 for encryption and authentication."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F10",
+     "fact": "WireGuard has a minimal attack surface",
+     "quotes": [
+      "- **Minimal Attack Surface**: WireGuard has a very small codebase (around 4,000 lines of code) compared to other VPN solutions."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F11",
+     "fact": "WireGuard uses a peer-to-peer architecture in which devices communicate directly, without a central VPN server",
+     "quotes": [
+      "- **Peer-to-Peer Architecture**: WireGuard devices communicate directly with each other, without the need for a central VPN server."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-067": {
+   "question": "websocket protocol overview",
+   "gold_source": "tests/fixtures/scale_docs/websocket-protocol.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "The WebSocket protocol provides a two-way communication channel over a single TCP connection",
+     "quotes": [
+      "The WebSocket protocol is a computer communications protocol, providing a two-way communication channel over a single TCP connection."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "WebSocket was designed as an efficient alternative to HTTP-based polling for real-time web applications",
+     "quotes": [
+      "It was designed to be an efficient alternative to traditional HTTP-based polling for real-time web applications."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "The WebSocket handshake establishes a WebSocket connection between client and server",
+     "quotes": [
+      "The WebSocket handshake is the process of establishing a WebSocket connection between a client and a server."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "The client initiates the handshake with an HTTP request that includes specific headers",
+     "quotes": [
+      "The client initiates the WebSocket handshake with an HTTP request that includes the following headers:"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "The server responds with headers indicating it is switching the protocol to WebSocket",
+     "quotes": [
+      "If the server accepts the WebSocket handshake, it responds with the following headers:",
+      "- `101 Switching Protocols`: Indicates that the server is switching the protocol to WebSocket."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "After the handshake completes, the client and server can start exchanging WebSocket frames",
+     "quotes": [
+      "After the handshake is complete, the connection is upgraded from HTTP to WebSocket, and the client and server can start exchanging WebSocket frames."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "WebSocket frames are the basic units of data transmission in the WebSocket protocol",
+     "quotes": [
+      "WebSocket frames are the basic units of data transmission in the WebSocket protocol."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "Each frame has a defined structure with fields for the frame type (opcode), payload length and payload data",
+     "quotes": [
+      "- `Opcode`: Defines the meaning of the `Payload Data`.",
+      "- `Payload Length`: The length of the `Payload Data`.",
+      "- `Payload Data`: The application data being transmitted."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-068": {
+   "question": "helm charts fundamentals",
+   "gold_source": "tests/fixtures/scale_docs/helm-charts.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Helm charts are the unit of packaging for Helm, the package manager for Kubernetes",
+     "quotes": [
+      "Helm is a package manager for Kubernetes that simplifies the deployment and management of applications.",
+      "Helm charts are the unit of packaging for Helm, and they allow you to define, install, and upgrade complex Kubernetes applications."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Helm templates are written in the Go template language and generate Kubernetes manifest files",
+     "quotes": [
+      "Helm templates are written in the Go template language and are used to generate Kubernetes manifest files."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Templates can include variables, functions and control structures for dynamic, reusable configurations",
+     "quotes": [
+      "These templates can include variables, functions, and control structures, allowing for dynamic and reusable configurations."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "The values.yaml file defines the default values for the chart's templates",
+     "quotes": [
+      "The `values.yaml` file in a Helm chart is used to define the default values for the chart's templates."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Values can be overridden when the chart is installed or upgraded",
+     "quotes": [
+      "These values can be overridden when the chart is installed or upgraded."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Helm charts can depend on other Helm charts, called subchart dependencies",
+     "quotes": [
+      "Helm charts can depend on other Helm charts, which are called \"subchart\" dependencies."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Chart dependencies are specified in the Chart.yaml file",
+     "quotes": [
+      "These dependencies can be specified in the `Chart.yaml` file using the `dependencies` field."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-069": {
+   "question": "linux process management",
+   "gold_source": "tests/fixtures/scale_docs/linux-process-management.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "The fork() system call creates a new child process that is a copy of the calling (parent) process",
+     "quotes": [
+      "In Linux, the `fork()` system call is used to create a new process, which is a copy of the calling process.",
+      "The new process is called the child process, and the original process is called the parent process."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "The exec() system call replaces the current process image with a new process image, terminating the old one and starting a new one",
+     "quotes": [
+      "The `exec()` function replaces the current process image with a new process image, effectively terminating the old process and starting a new one."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Process state: running",
+     "quotes": [
+      "1. **Running**: The process is currently executing on the CPU."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Process state: waiting",
+     "quotes": [
+      "2. **Waiting**: The process is waiting for an event, such as I/O or a signal, to occur."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Process state: stopped",
+     "quotes": [
+      "3. **Stopped**: The process has been temporarily stopped, usually by a signal."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Process state: zombie",
+     "quotes": [
+      "4. **Zombie**: The process has terminated, but its parent process has not yet collected its exit status."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "The ps command shows the current state of processes",
+     "quotes": [
+      "You can view the current state of processes using the `ps` command:"
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "Signals are notifications sent to a process to tell it about an event",
+     "quotes": [
+      "Signals are a mechanism in Linux for sending notifications to processes."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "Processes can receive and handle signals",
+     "quotes": [
+      "Processes can also handle signals by registering signal handlers, which are functions that are called when a signal is received."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F10",
+     "fact": "Signals can be used to control and manage processes",
+     "quotes": [
+      "Signals can be used to interrupt a process, terminate a process, or request specific actions from a process."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F11",
+     "fact": "The nice and renice commands adjust a process's scheduling priority",
+     "quotes": [
+      "In Linux, the `nice` and `renice` commands are used to adjust the scheduling priority of a process."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F12",
+     "fact": "Scheduling priority determines how much CPU time a process receives",
+     "quotes": [
+      "Adjusting the niceness of a process can be useful for managing system resources and ensuring that important processes receive the necessary CPU time."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-070": {
+   "question": "network troubleshooting tools",
+   "gold_source": "tests/fixtures/scale_docs/network-troubleshooting.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "tcpdump is a network packet analysis tool that captures and inspects network traffic on a specific interface",
+     "quotes": [
+      "`tcpdump` is a powerful network packet analysis tool that allows you to capture and inspect network traffic on a specific interface."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "tcpdump is used to troubleshoot network issues, analyze network behavior and identify potential security threats",
+     "quotes": [
+      "It's a valuable tool for troubleshooting network issues, analyzing network behavior, and identifying potential security threats."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "traceroute is a network diagnostic tool that identifies the path a packet takes to a destination IP address or hostname",
+     "quotes": [
+      "`traceroute` is a network diagnostic tool that helps you identify the path that a packet takes from your computer to a destination IP address or hostname."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "traceroute is useful for troubleshooting connectivity issues and finding where in the network a problem occurs",
+     "quotes": [
+      "It's particularly useful for troubleshooting connectivity issues and identifying where in the network a problem might be occurring."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "tcpdump use cases include capturing and analyzing network traffic and troubleshooting connectivity issues",
+     "quotes": [
+      "1. **Capturing and analyzing network traffic**: You can use `tcpdump` to capture network traffic and analyze it to identify issues such as network congestion, suspicious activity, or protocol-level problems.",
+      "2. **Troubleshooting connectivity issues**: `tcpdump` can help you identify where a connection is failing by capturing the packets at different points in the network."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "tcpdump use cases include identifying security threats and debugging application-level issues",
+     "quotes": [
+      "3. **Identifying security threats**: `tcpdump` can be used to detect and investigate potential security threats, such as network attacks or unauthorized access attempts.",
+      "4. **Debugging application-level issues**: `tcpdump` can be used to capture and analyze application-level network traffic, which can be useful for troubleshooting issues with specific applications or services."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-071": {
+   "question": "database replication types",
+   "gold_source": "tests/fixtures/scale_docs/database-replication.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Primary-replica (master-slave) replication has a single primary database that accepts all writes",
+     "quotes": [
+      "The most common replication architecture is primary-replica, also known as master-slave replication.",
+      "In this model, there is a single primary (or master) database that accepts all write queries."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "In primary-replica replication, changes are asynchronously replicated to one or more read-only replicas",
+     "quotes": [
+      "Changes are then asynchronously replicated to one or more read-only replica (or slave) databases."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Replication provides high availability, read scalability and disaster recovery",
+     "quotes": [
+      "- **High Availability**: If one database server fails, the application can seamlessly failover to another replica, minimizing downtime.",
+      "- **Scalability**: Read queries can be load-balanced across multiple replicas, improving overall throughput.",
+      "- **Disaster Recovery**: Replication allows you to maintain offsite backups of your data in case of a regional disaster."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Multi-primary (multi-master) replication allows writes on multiple databases",
+     "quotes": [
+      "In a multi-primary (or multi-master) replication architecture, there are multiple databases that can accept write queries."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "In multi-primary replication, conflicts are resolved automatically or manually",
+     "quotes": [
+      "- **Merge**: Conflicting changes are automatically merged based on predefined rules.",
+      "- **Manual Intervention**: Conflicts are detected and surfaced to a human operator for manual resolution."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Multi-primary replication supports higher write throughput",
+     "quotes": [
+      "- **Scalability**: Reads and writes can be distributed across all primaries."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Multi-primary replication adds complexity around conflict resolution",
+     "quotes": [
+      "- **Complexity**: The replication process and conflict resolution are more complex."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "Synchronous replication applies changes across all replicas before confirming a write, which gives stronger consistency",
+     "quotes": [
+      "In synchronous replication, the primary database waits for the replica to acknowledge that it has received and applied the changes before confirming the write to the client.",
+      "- **Data Consistency**: Replicas are always in sync with the primary, ensuring data consistency."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "Synchronous replication can reduce availability during failures",
+     "quotes": [
+      "- **Availability Tradeoff**: If the replica is unavailable, the primary will be unable to accept writes, reducing overall availability."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F11",
+     "fact": "Asynchronous replication lets replicas lag behind the primary",
+     "quotes": [
+      "- **Data Inconsistency**: Replicas may lag behind the primary, leading to temporary data inconsistencies."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F12",
+     "fact": "Asynchronous replication improves availability",
+     "quotes": [
+      "- **High Availability**: If a replica is unavailable, the primary can still accept writes, maintaining overall system availability."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F13",
+     "fact": "With asynchronous replication, data can be lost if the primary fails",
+     "quotes": [
+      "- **Failover Complexity**: If the primary fails, the replica may not have received all the latest changes, requiring more complex failover procedures."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "Asynchronous replication is the more common approach"
+   ],
+   "dropped": []
+  },
+  "CEN-072": {
+   "question": "nosql design patterns",
+   "gold_source": "tests/fixtures/scale_docs/nosql-patterns.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "NoSQL databases use flexible schema-less or schema-optional models that handle unstructured, semi-structured and rapidly changing data",
+     "quotes": [
+      "Rather than prescribing a strict schema with tables, rows, and columns, NoSQL databases often employ more flexible, schema-less or schema-optional models that can better accommodate unstructured, semi-structured, and rapidly changing data."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Denormalization: NoSQL encourages denormalization to optimize for read performance and query patterns",
+     "quotes": [
+      "Unlike the normalized data models of relational databases, NoSQL encourages denormalization to optimize for read performance and query patterns."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Denormalization minimizes the need for complex joins",
+     "quotes": [
+      "- **Minimize Joins**: NoSQL databases generally do not support complex joins like relational databases. Denormalizing data reduces the need for joins."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Aggregation: data is structured to match common query patterns, even if this duplicates data across entities",
+     "quotes": [
+      "- **Optimizing for Access Patterns**: Data is organized to match the most common query patterns, even if it means duplicating some information.",
+      "In NoSQL, data is often structured around aggregates - self-contained groups of related data that are accessed and updated as a unit.",
+      "- **Optimize for Access Patterns**: Data is structured to match the most common query patterns, even if it results in duplicating data across different entities."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Time-series data modeling: NoSQL databases are well suited to time-series data",
+     "quotes": [
+      "Time-series data, which represents measurements or events captured over time, is a common use case for NoSQL databases."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "NoSQL allows efficient storage and retrieval of time-series data points over time",
+     "quotes": [
+      "- **Efficient Storage of High-Volume Data**: NoSQL databases can efficiently store and query large volumes of time-series data without the overhead of a traditional relational schema.",
+      "- **Optimized for Time-based Queries**: NoSQL data models can be structured to enable fast, efficient queries based on time ranges, time windows, or temporal aggregations."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-073": {
+   "question": "sql query optimization",
+   "gold_source": "tests/fixtures/scale_docs/sql-query-optimization.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "EXPLAIN plans are used to analyze a query's execution plan and identify potential performance bottlenecks.",
+     "quotes": [
+      "The EXPLAIN statement is a powerful tool for analyzing the execution plan of an SQL query.",
+      "By examining the EXPLAIN plan, developers can gain insights into the steps the database engine will take to execute a query and identify potential performance bottlenecks."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Bottlenecks revealed by EXPLAIN plans include full table scans and suboptimal join algorithms.",
+     "quotes": [
+      "- **Table Scan**: Indicates that the database engine will perform a full table scan, which can be slow for large tables.",
+      "- **Suboptimal Join Algorithms**: If a query is using a nested loop join, which can be slow for large data sets, consider rewriting the query to use a more efficient join algorithm, such as a hash join or merge join."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Selecting appropriate indexes speeds up data lookups.",
+     "quotes": [
+      "Indexing is one of the most effective ways to improve SQL query performance.",
+      "Indexes allow the database engine to quickly locate and retrieve the data needed to satisfy a query, without having to perform a full table scan."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Indexes are especially useful on columns used in the WHERE clause.",
+     "quotes": [
+      "- **Table Scans**: If a query is performing a full table scan, consider adding an index to the columns used in the WHERE clause.",
+      "- **Index Columns**: Determine which columns are most frequently used in WHERE, JOIN, and ORDER BY clauses, and create indexes on those columns."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Queries can be rewritten to use more efficient join algorithms (hash join or merge join) instead of nested loop joins.",
+     "quotes": [
+      "- **Suboptimal Join Algorithms**: If a query is using a nested loop join, which can be slow for large data sets, consider rewriting the query to use a more efficient join algorithm, such as a hash join or merge join.",
+      "This algorithm is generally more efficient than the nested loop join, especially for large data sets."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Database statistics give the query optimizer information about data distribution and cardinality.",
+     "quotes": [
+      "These statistics include information such as the number of rows in a table, the distribution of values in a column, and the cardinality of indexes.",
+      "Most database engines provide mechanisms for gathering and updating statistics on the data in tables and indexes."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Accurate statistics help the optimizer generate better execution plans; inaccurate statistics can lead to suboptimal plans.",
+     "quotes": [
+      "The database engine uses the statistics gathered to estimate the cost of executing a query and to choose the most efficient execution plan.",
+      "If the statistics are inaccurate or out of date, the database engine may choose a suboptimal execution plan, leading to poor query performance.",
+      "To ensure that the database engine has accurate statistics, it's important to regularly update the statistics, especially after major changes to the data or schema."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-074": {
+   "question": "data pipeline design",
+   "gold_source": "tests/fixtures/scale_docs/data-pipeline-design.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "A data pipeline is a series of steps that transform, integrate, and move data from various sources to a target destination.",
+     "quotes": [
+      "A data pipeline is a series of steps that transform, integrate, and move data from various sources to a target destination, such as a data warehouse or analytics platform."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Component: data sources.",
+     "quotes": [
+      "1. **Data Sources**: The various sources of data, such as databases, files, APIs, and real-time data streams."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Component: ingestion.",
+     "quotes": [
+      "2. **Ingestion**: The process of extracting data from the sources and bringing it into the pipeline."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Component: transformation.",
+     "quotes": [
+      "3. **Transformation**: The manipulation and processing of the data to meet the target requirements, such as data cleaning, normalization, and enrichment."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Component: loading.",
+     "quotes": [
+      "4. **Loading**: The process of moving the transformed data to the target destination, such as a data warehouse or data lake."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Component: orchestration.",
+     "quotes": [
+      "5. **Orchestration**: The coordination and management of the various steps in the pipeline, ensuring they are executed in the correct order and with the appropriate dependencies."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Component: monitoring and alerting.",
+     "quotes": [
+      "6. **Monitoring and Alerting**: The mechanisms for tracking the pipeline's health, performance, and error conditions, and notifying the appropriate stakeholders when issues arise."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "Design consideration: data volume and velocity, so the pipeline can handle the expected data load.",
+     "quotes": [
+      "1. **Data Volume and Velocity**: Understand the expected volume of data and the rate at which it is generated to ensure the pipeline can handle the load."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "Design consideration: data variety, so the pipeline accommodates diverse data formats.",
+     "quotes": [
+      "2. **Data Variety**: Accommodate different data formats, structures, and sources to ensure the pipeline can ingest and process diverse data."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F10",
+     "fact": "Design consideration: data quality, to ensure data integrity.",
+     "quotes": [
+      "3. **Data Quality**: Implement data validation and cleansing steps to ensure the integrity and accuracy of the data."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F11",
+     "fact": "Design consideration: scalability, so the pipeline can scale as needed.",
+     "quotes": [
+      "4. **Scalability**: Design the pipeline to be able to scale up or down as the data volume and processing requirements change."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F12",
+     "fact": "Design consideration: reliability, so the pipeline is resilient.",
+     "quotes": [
+      "5. **Reliability**: Incorporate mechanisms for fault tolerance, error handling, and data recovery to ensure the pipeline's resilience."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F13",
+     "fact": "Design consideration: performance, so the pipeline is efficient.",
+     "quotes": [
+      "6. **Performance**: Optimize the pipeline's performance by minimizing latency, maximizing throughput, and leveraging parallel processing."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F14",
+     "fact": "Design consideration: maintainability, so the pipeline is easy to maintain.",
+     "quotes": [
+      "7. **Maintainability**: Structure the pipeline in a modular and extensible way, making it easier to modify, extend, and troubleshoot."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F15",
+     "fact": "Design consideration: security and governance.",
+     "quotes": [
+      "8. **Security and Governance**: Implement appropriate access controls, data encryption, and data lineage tracking to ensure the pipeline meets security and compliance requirements."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-075": {
+   "question": "testing strategies for software",
+   "gold_source": "tests/fixtures/scale_docs/testing-strategies.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Unit testing verifies the correctness of individual, isolated components or units of the system.",
+     "quotes": [
+      "1. **Unit Testing**: Verifying the correctness of individual, isolated components or units of the system.",
+      "Unit testing focuses on verifying the correctness of individual, isolated components or units of the system."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Integration testing evaluates how different components or modules of the system work together.",
+     "quotes": [
+      "2. **Integration Testing**: Evaluating how different components or modules of the system work together.",
+      "Integration testing focuses on evaluating how different components or modules of the system work together."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "End-to-End (E2E) testing validates the entire system, including user interactions and the flow of data through the application.",
+     "quotes": [
+      "3. **End-to-End (E2E) Testing**: Validating the entire system, including user interactions and the flow of data through the application.",
+      "End-to-End (E2E) testing focuses on validating the entire system, including user interactions and the flow of data through the application."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Unit tests exercise a single, isolated component or functionality and ensure it behaves as expected.",
+     "quotes": [
+      "- **Isolation**: Unit tests should exercise a single, isolated component or functionality, without external dependencies.",
+      "The goal is to ensure that each unit of the application behaves as expected, independent of other parts of the system."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Integration tests examine the interactions and data flow between different components or modules.",
+     "quotes": [
+      "- **Component Interactions**: Integration tests exercise the interactions and data flow between different components or modules of the system."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Integration tests may simulate complete end-to-end workflows.",
+     "quotes": [
+      "- **End-to-End Workflows**: Integration tests may simulate complete end-to-end workflows, including external dependencies and services."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-076": {
+   "question": "dependency injection benefits",
+   "gold_source": "tests/fixtures/scale_docs/dependency-injection.md",
+   "facts": [
+    {
+     "id": "F1",
+     "fact": "Testability: dependency injection makes unit tests easier to write because mock or stub implementations of dependencies can be substituted.",
+     "quotes": [
+      "1. **Testability**: Dependency injection makes it easier to write unit tests, as you can easily substitute mock or stub implementations of dependencies.",
+      "This allows the controller to be easily tested with a mock implementation of `IDataAccessLayer`, and it also enables the data access layer implementation to be swapped out if needed."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F2",
+     "fact": "Flexibility: decoupling objects from their dependencies makes it easy to swap out implementations, improving flexibility and maintainability.",
+     "quotes": [
+      "2. **Flexibility**: By decoupling the object from its dependencies, you can easily swap out implementations, enabling greater flexibility and maintainability."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Modularity: dependency injection promotes a modular design in which components can be developed, tested, and deployed independently.",
+     "quotes": [
+      "3. **Modularity**: Dependency injection promotes a modular design, as components can be developed, tested, and deployed independently."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Inversion of Control: dependency injection inverts control of object creation and lifetime management, letting a central authority (the IoC container) manage these concerns.",
+     "quotes": [
+      "4. **Inversion of Control**: Dependency injection inverts the control of object creation and lifetime management, allowing a central authority (the IoC container) to manage these concerns."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [],
+   "dropped": []
+  },
+  "CEN-077": {
+   "question": "behavioral design patterns",
+   "gold_source": "tests/fixtures/scale_docs/design-patterns-behavioral.md",
+   "facts": [
+    {
+     "id": "F2",
+     "fact": "Observer: lets objects be notified of changes to the state of another object.",
+     "quotes": [
+      "The Observer pattern is a behavioral design pattern that allows objects to be notified of changes to the state of another object."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Observer provides a way to implement event-driven architectures.",
+     "quotes": [
+      "It provides a way to implement event-driven architectures, where an object (the subject) can have any number of dependent objects (observers) that are automatically notified when the subject's state changes.",
+      "- **Event-driven architectures**: When you need to implement a publish-subscribe mechanism where objects can subscribe to events or state changes of other objects."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Strategy: defines a family of algorithms, encapsulates each one, and makes them interchangeable.",
+     "quotes": [
+      "The Strategy pattern is a behavioral design pattern that allows you to define a family of algorithms, encapsulate each one, and make them interchangeable."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Strategy lets the appropriate algorithm be selected at runtime.",
+     "quotes": [
+      "It enables the selection of an algorithm at runtime based on the specific requirements of the task at hand.",
+      "- **Algorithms that vary**: When you have a family of algorithms that need to be used interchangeably, the Strategy pattern allows you to encapsulate and select the appropriate algorithm at runtime."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Command: encapsulates a request as an object.",
+     "quotes": [
+      "The Command pattern is a behavioral design pattern that encapsulates a request as an object, thereby allowing you to parameterize clients with different requests, queue or log requests, and support undoable operations.",
+      "- **Encapsulation**: The Command pattern encapsulates a request as an object, making it easier to extend and modify the system."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Command allows clients to be parameterized with different requests.",
+     "quotes": [
+      "The Command pattern is a behavioral design pattern that encapsulates a request as an object, thereby allowing you to parameterize clients with different requests, queue or log requests, and support undoable operations.",
+      "- **Parameterize objects with actions**: When you want to pass methods as arguments to other methods or store them in data structures."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F8",
+     "fact": "Command allows requests to be queued or logged.",
+     "quotes": [
+      "- **Queue or log requests**: When you need to queue, schedule, or log requests, the Command pattern provides a way to do this.",
+      "- **Logging and queueing**: The Command pattern makes it easy to log or queue commands for later execution."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F9",
+     "fact": "Command supports undoable operations.",
+     "quotes": [
+      "- **Implement undo and redo**: The Command pattern makes it easy to implement undo and redo functionality, as each command can be undone by executing its undo() method.",
+      "- **Undo and redo**: The Command pattern makes it easy to implement undo and redo functionality."
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "Behavioral design patterns are a category of design patterns focused on communication and interaction between objects."
+   ],
+   "dropped": []
+  },
+  "CEN-078": {
+   "question": "creational design patterns",
+   "gold_source": "tests/fixtures/scale_docs/design-patterns-creational.md",
+   "facts": [
+    {
+     "id": "F2",
+     "fact": "The key creational patterns are Singleton, Factory Method, Abstract Factory, Builder, and Prototype.",
+     "quotes": [
+      "In this technical documentation, we have explored the five creational design patterns: Singleton, Factory Method, Abstract Factory, Builder, and Prototype."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F3",
+     "fact": "Singleton: ensures a class has only one instance and provides a global point of access to it.",
+     "quotes": [
+      "The Singleton pattern is a creational design pattern that ensures a class has only one instance and provides a global point of access to it."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F4",
+     "fact": "Factory Method: defines an interface for creating an object but lets subclasses decide which class to instantiate.",
+     "quotes": [
+      "The Factory Method pattern is a creational design pattern that defines an interface for creating an object, but allows subclasses to decide which class to instantiate."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F5",
+     "fact": "Abstract Factory: provides an interface for creating families of related or dependent objects without specifying their concrete classes.",
+     "quotes": [
+      "The Abstract Factory pattern is a creational design pattern that provides an interface for creating families of related or dependent objects, without specifying their concrete classes."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F6",
+     "fact": "Builder: separates the construction of a complex object from its representation so the same construction process can create different representations.",
+     "quotes": [
+      "The Builder pattern is a creational design pattern that separates the construction of a complex object from its representation, allowing the same construction process to create various representations."
+     ],
+     "source": "annotator"
+    },
+    {
+     "id": "F7",
+     "fact": "Prototype: uses a prototypical instance and creates new objects by copying (cloning) it.",
+     "quotes": [
+      "The Prototype pattern is a creational design pattern that allows an object to create customized objects by cloning itself.",
+      "- You need to create objects based on a prototype instance"
+     ],
+     "source": "annotator"
+    }
+   ],
+   "facts_not_in_document": [
+    "Creational design patterns deal with object creation mechanisms, creating objects in a manner suitable to the situation."
+   ],
+   "dropped": []
+  }
+ }
+}
