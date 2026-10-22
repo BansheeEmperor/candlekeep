@@ -3721,3 +3721,50 @@ The measure is stricter than the judges where an output states a fact in other w
 ### What it means
 
 The bottleneck is between the result and the tool output, not in Arcane Recall or retrieval. The windows already hold most of the answer, and the 1,000-character view per result shows about a third of it. Better choice of what to show (C′: 34% → 42%) and more room (B′ at 1,700: 42%) help by similar amounts. Neither gets close to the 80% the result holds.
+
+## Entry 64: Display Policies, Searched in a Simulator and Checked on Held-Out Questions
+
+**Date:** October 23, 2026  
+**Focus:** How to show the agent more of the answer within 4,000 characters per search
+
+### Method
+
+- **Simulator.** `scripts/eval_agent_view/view_sim.py` replays round 2's searches (B′'s Layer 1 windows, the same as C′'s) under any display policy, without running Candlekeep. Playing back B′'s own display, it reproduces B′'s measured answer facts exactly (Entry 63) and its GoldText to 0.1 on every suite checked.
+- **Policy inputs.** A policy sees only what the server has when it renders: the query text, the path, and each result's window, offsets, score, title, document text and per-segment features. The features are lexical overlap, embedding cosine and cross-encoder logit. No benchmark labels are passed.
+- **Search.** Six explorers each worked one axis on the dev half of the queries (odd numbers): the number of results shown, the split of the budget across ranks, placement around the match point, passage selection with cheap features, passage selection with semantic features, and document-level effects. A combiner stacked the compatible ideas, and an auditor checked the shortlist for leakage, cap compliance, metric gaming and reproducibility; all six policies came out clean. The held-out half (even numbers) was run once, at the end. Policies are in `scripts/eval_agent_view/view_policies/`, and results in `tests/results/agent_view_eval_r2/view_sim/`.
+
+### Held-out results (32 CEN questions with answer facts; cap 4,000 displayed characters)
+
+| Policy | Cost at query time | Facts shown: hybrid / precise / explore | Complete answers | CD GoldText (hybrid) |
+|---|---|---|---|---|
+| B′ as shipped | — | 29% / 29% / 32% | 2 / 2 / 0 | 29.7 |
+| B′ at 1,700 per result | — | 40% / 37% / 39% | 4 / 4 / 1 | 49.3 |
+| `lead_teasers_both` (top result whole, 250-character teasers) | offsets only | 65% / 70% / 47% | 15 / 15 / 5 | 116.3 |
+| `win_select` (segments chosen by query words and structure, within the windows) | lexical, pure Python | 73% / 74% / 56% | 14 / 16 / 7 | 105.0 |
+| `ce_doc_thr` (cross-encoder selects segments) | cross-encoder per segment | 71% / 75% / 54% | 15 / 18 / 7 | 117.3 |
+| **`doc_select`** (as `win_select`, over the whole top document) | lexical, plus the document's chunks | **75% / 77% / 76%** | **16 / 18 / 16** | 104.5 |
+| `doc_select_ce` (plus cross-encoder ordering of documents) | cross-encoder per segment | 79% / 78% / 76% | 17 / 17 / 16 | 104.4 |
+
+- **Paired against B′** (95% bootstrap CI, wins/losses), `doc_select`: hybrid +0.46 [+0.34, +0.58], 24/0; precise +0.48 [+0.35, +0.60], 24/2; explore +0.44 [+0.34, +0.54], 26/1.
+- **Held-out matches dev.** On dev the same policy scored 74 / 74 / 72%. The dev-tuned constants did not shrink.
+- **Guards.** srcvis is unchanged (about 86%). MH support stays at its level. BEIR GoldText is at or above B′'s, whose own output runs up to 10,000 characters there.
+- **Size.** Mean output on CEN hybrid is 3,940 characters, against 2,675 for B′.
+
+### What each axis found
+
+- **Number of results.** Fewer results do not help once the top result is read well. One result loses the gold document on 8% of CEN queries and 19% of BEIR-SF queries. The best split keeps every result, but shows all except the first as short teasers.
+- **Budget split.** Top-heavy beats equal. Lead + teasers (a 200-character floor per document, the rest by 0.1^rank) wins 13 of 18 CEN cells. Equal division is the worst choice on BEIR.
+- **Placement.** The anchor matters more than the number of results.
+  - Starting at the window or document opening, plus a 300-character piece at the matched chunk, beats starting at the match.
+  - Top-result facts before the match point: B′ shows 1 of 32 (dev, hybrid), `doc_select` 29.
+  - Facts more than 1,000 characters past it: B′ shows 1 of 45, `doc_select` 45.
+- **Selection.** Choosing segments by query-word overlap and structure beats contiguous slices by 6 to 10 points. The structural signals are the section leads, the document opening and a code penalty.
+- **Document level.** Reading the top document, not only its window, is the largest single lever. It is worth +24 points on explore, whose windows are narrow because `explore_search` passes only its final hits to `expand_results`. `expand_results` already fetches every chunk of each result's document, so the data is there at display time.
+- **Semantic features.** They add little on top: the cross-encoder ordering adds +4 on hybrid. The price is a cross-encoder pass per search (40 to 125 ms on MPS) on paths that run none today.
+
+### Caveats
+
+- **Corpus coverage.** Answer facts exist only for CEN, so dev and held-out share one corpus. The CD and BEIR suites measure gold-document text, not answers.
+- **Constants.** `doc_select` has about 14 constants, 8 inherited from a dev-tuned explorer. Freeze them; do not re-tune.
+- **Cost on no-answer queries.** The policies fill the cap on adversarial queries too (hybrid 3,900 against B′'s 3,500 characters). There is no confidence gate.
+- **Simulation only.** The simulator covers display, not retrieval. An implementation in `server.py` has to reproduce these numbers on real runs before any formal round.
