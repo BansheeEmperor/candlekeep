@@ -632,7 +632,10 @@ def search(
     if not results:
         return "No results found."
 
-    return "\n".join(_format_result(r, _settings.result_chars) for r in results)
+    if _settings.result_display == "window":
+        return "\n".join(_format_result(r, _settings.result_chars) for r in results)
+    from candlekeep.rag.display import render_results
+    return render_results(query, results, _settings.result_budget)
 
 
 def _format_result(r, budget: int) -> str:

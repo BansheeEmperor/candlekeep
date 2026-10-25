@@ -154,7 +154,15 @@ graph TD
 - [**The Scholar's Discernment**](GLOSSARY.md#the-scholars-discernment): Neighboring chunks are only included if they are semantically related to thy query (based on a similarity threshold) or contain continuation markers (like Markdown lists). Expansion stops in a direction when a neighbor fails the similarity check — benchmarked against skip-ahead alternatives (Research Diary Entry 41) and confirmed as the correct tradeoff (< 1% quality gain vs 29-32% token increase from skip-ahead).
 - **Global Capping**: The library ensures exactly `n_results` merged sections are returned, backfilling from the candidate pool as needed.
 - **Stitching**: Every chunk carries its [Bardic Knowledge](GLOSSARY.md#bardic-knowledge) prefix for embedding, and fixed-size chunks overlap by `CANDLEKEEP_CHUNK_OVERLAP` characters. When a window is assembled, the prefix is kept once at the top and the repeated prefixes and chunk overlaps are removed, so a merged window carries no duplicated text. The precise path's reranker scores the unstitched join instead (`metadata["_rerank_text"]`), because its Relevance Ward was calibrated on that text.
-- **Match-anchored output**: Each window records where its best-scoring matched chunk starts. The `search` tool returns a title line followed by `CANDLEKEEP_RESULT_CHARS` characters (default 1000) starting at that chunk, rather than the first characters of the window — usually the document header and the context before the match. The full stitched window remains available to in-process callers as `SearchResult.text`.
+- **Answer-focused output** (`rag/display.py`, `CANDLEKEEP_RESULT_DISPLAY=focused`, the default): the `search` tool spends one budget of `CANDLEKEEP_RESULT_BUDGET` displayed characters (default 4000) on the whole search.
+  - Results of one document are pooled.
+  - The top document is read as a whole: Arcane Recall passes the document stitched from all its chunks (`metadata["_doc_text"]`) and each window's place in it (`_doc_span`).
+  - Its passages are chosen by query words (more for words not in its title or file name), section leads and closeness to the document's start, with code ranked down. The top result's matched chunk is always shown.
+  - Every other document gets a short teaser of its best window passages.
+  - Measured on held-out questions, it shows 75% of the answer facts against 29% for a per-result view (Research Diary Entries 63–64).
+- **Match-anchored output** (`CANDLEKEEP_RESULT_DISPLAY=window`): each window records where its best-scoring matched chunk starts. The `search` tool returns, per result, a title line followed by `CANDLEKEEP_RESULT_CHARS` characters (default 1000) starting at that chunk.
+
+The full stitched window remains available to in-process callers as `SearchResult.text`.
 
 **Impact:**
 - Content match: significantly improved over raw search
@@ -216,7 +224,9 @@ These values represent the optimal configuration identified through the Centurio
 | `CHUNK_OVERLAP` | 50 | Character overlap between fragments |
 | `CANDLEKEEP_SPARSE_BACKEND` | `bm25` | Sparse backend for hybrid path (`bm25` or `colbert`) |
 | `CANDLEKEEP_EMBEDDING_CACHE_SIZE` | 500 | Max entries in the query embedding LRU cache |
-| `CANDLEKEEP_RESULT_CHARS` | 1000 | Characters of each search result returned to the agent, starting at the matched chunk |
+| `CANDLEKEEP_RESULT_DISPLAY` | focused | `focused`: one budget per search, spent on the top document's matching passages (other results as teasers); `window`: each result's window from its matched chunk |
+| `CANDLEKEEP_RESULT_BUDGET` | 4000 | `focused`: displayed characters per search |
+| `CANDLEKEEP_RESULT_CHARS` | 1000 | `window`: characters of each search result returned to the agent, starting at the matched chunk |
 | `_GET_PAGE_SIZE` | 5000 | Records per request for full-collection reads (see [Large Collections](#large-collections)) |
 | `EDIT_DISTANCE_THRESHOLD` | 0.15 | [Rosetta Seal](GLOSSARY.md#the-rosetta-seal) — max normalised Levenshtein distance for clustering |
 | `EMBEDDING_SIMILARITY_THRESHOLD` | 0.82 | [Rosetta Seal](GLOSSARY.md#the-rosetta-seal) — min cosine similarity for clustering (embedding gate) |
@@ -528,7 +538,9 @@ All settings via environment variables (`.env` file):
 | CANDLEKEEP_EMBEDDING_CACHE_SIZE | 500 | Max entries in query embedding LRU cache |
 | CANDLEKEEP_CHUNK_SIZE | 512 | Chunk size in characters |
 | CANDLEKEEP_CHUNK_OVERLAP | 100 | Overlap between chunks |
-| CANDLEKEEP_RESULT_CHARS | 1000 | Characters of each search result returned to the agent, starting at the matched chunk |
+| CANDLEKEEP_RESULT_DISPLAY | focused | `focused` (one budget per search, answer passages of the top document) or `window` (per-result view) |
+| CANDLEKEEP_RESULT_BUDGET | 4000 | `focused`: displayed characters per search |
+| CANDLEKEEP_RESULT_CHARS | 1000 | `window`: characters of each search result returned to the agent, starting at the matched chunk |
 | CANDLEKEEP_QUALITY_MAX_WORDS | 10000 | Max words per document in the quality gate (0=no upper bound) |
 | CANDLEKEEP_MODELS_DIR | $XDG_CACHE_HOME/candlekeep/models | Model cache location, kept separate from the data dir |
 | CANDLEKEEP_DEFER_GRAPH_REBUILD | false | Skip the per-ingest graph rebuild; call `rebuild_graph` once after a bulk load |

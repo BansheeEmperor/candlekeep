@@ -26,33 +26,38 @@ def _overlap(prev: str, nxt: str, max_k: int) -> int:
     return 0
 
 
-def _stitch(doc_chunks: dict, indices: List[int], match_idx: int, max_overlap: int) -> Tuple[str, int]:
-    """Join a window's chunks into one text.
+def _stitch_parts(doc_chunks: dict, indices: List[int], max_overlap: int) -> Tuple[str, str, Dict[int, int]]:
+    """Join chunks into one text: (header, text, {chunk index: where its content starts in text}).
 
     The Bardic Knowledge prefix (repeated on every chunk for embedding) is kept
-    once at the top, and the fixed-size chunker's overlap between neighbours is
-    removed. Returns (text, offset where the matched chunk's content starts).
+    once at the top as the header, and the fixed-size chunker's overlap between
+    neighbours is removed.
     """
     parts = [(i, doc_chunks[i]) for i in indices if i in doc_chunks]
     if not parts:
-        return "", 0
+        return "", "", {}
     prefix = bardic_prefix(parts[0][1].metadata)
     header = prefix if prefix and parts[0][1].text.startswith(prefix) else ""
-    text, match_offset = header, len(header)
+    text, starts = header, {}
     for n, (i, chunk) in enumerate(parts):
         body = chunk.text[len(prefix):] if prefix and chunk.text.startswith(prefix) else chunk.text
         k = _overlap(text, body, max_overlap) if n else 0
         if k:
-            start = len(text) - k
+            starts[i] = len(text) - k
             text += body[k:]
         else:
             if n:
                 text += "\n\n"
-            start = len(text)
+            starts[i] = len(text)
             text += body
-        if i == match_idx:
-            match_offset = start
-    return text, match_offset
+    return header, text, starts
+
+
+def _stitch(doc_chunks: dict, indices: List[int], match_idx: int, max_overlap: int) -> Tuple[str, int]:
+    """Join a window's chunks into one text (see _stitch_parts). Returns (text, offset
+    where the matched chunk's content starts)."""
+    header, text, starts = _stitch_parts(doc_chunks, indices, max_overlap)
+    return text, starts.get(match_idx, len(header))
 
 
 def expand_results(
@@ -164,13 +169,21 @@ def expand_results(
     seen_texts = set()
     overlap = getattr(getattr(db, "settings", None), "chunk_overlap", None)
     max_overlap = overlap + 50 if isinstance(overlap, int) else 150
+    documents = {}      # source -> (document body, {chunk index: start in the body}), stitched once
+
+    def document(source):
+        if source not in documents:
+            doc_chunks = chunks_by_source[source]
+            header, text, starts = _stitch_parts(doc_chunks, sorted(doc_chunks), max_overlap)
+            documents[source] = (text[len(header):], {i: s - len(header) for i, s in starts.items()})
+        return documents[source]
 
     for indices, score, meta, source, match_idx in all_windows:
         if len(expanded) >= n_results:
             break
             
         doc_chunks = chunks_by_source.get(source, {})
-        match_offset = 0
+        match_offset, header = 0, ""
         if not doc_chunks:
             # Fallback for orphan results (though should not happen in normal flow)
             # Find the original result text if possible
@@ -183,7 +196,8 @@ def expand_results(
                 # Let's handle the empty case gracefully.
                 expanded_text = ""
         else:
-            expanded_text, match_offset = _stitch(doc_chunks, indices, match_idx, max_overlap)
+            header, expanded_text, chunk_starts = _stitch_parts(doc_chunks, indices, max_overlap)
+            match_offset = chunk_starts.get(match_idx, len(header))
         
         if expanded_text in seen_texts:
             continue
@@ -199,6 +213,16 @@ def expand_results(
         # scoring the shorter stitched text moves logits across the Ward.
         meta["_rerank_text"] = ("\n\n".join(doc_chunks[i].text for i in indices if i in doc_chunks)
                                 if doc_chunks else expanded_text)
+        first = next((i for i in indices if i in doc_chunks), None)
+        if first is not None:
+            # The whole document stitched like a window, and where this window's body lies in it:
+            # the search tool's display (rag/display.py) can show passages of the top document
+            # outside its window. The window body equals the span when its chunks are contiguous.
+            body, doc_starts = document(source)
+            start = doc_starts[first]
+            meta["_doc_text"] = body
+            meta["_doc_span"] = (start, start + len(expanded_text) - len(header))
+            meta["_prefix_len"] = len(header)
         expanded.append(SearchResult(
             text=expanded_text,
             score=score,
