@@ -136,3 +136,69 @@ class TestServerBudget:
         from candlekeep.mcp import server
         monkeypatch.setattr(server._settings, "result_budget", 4000)
         assert server._display_budget(n) == budget
+
+
+def _long_doc():
+    """A document whose sections cover distinct topics, with code, a table and a list."""
+    parts = ["# Handbook\n\nThe handbook covers several unrelated subjects in turn."]
+    for i in range(10):
+        parts.append(f"## Topic {i}\n\nThis section discusses subject{i} in general terms. " + "padding words " * 40)
+    parts.append("## Rotation\n\nTo rotate the zebracrypt keys, run the rotation job weekly.")
+    parts.append("```python\nrotate_keys(zebracrypt=True)\n```")
+    parts.append("| Setting | Value |\n|---|---|\n| interval | weekly |")
+    parts.append("- first step\n- second step\n- third step")
+    return "\n\n".join(parts)
+
+
+class TestQueryWords:
+    def test_the_passage_with_the_query_words_is_chosen_far_outside_the_window(self):
+        doc = _long_doc()
+        r = _result(doc, (0, 900), score=0.9)
+        out = display.render_results("how do I rotate zebracrypt keys", [r], 2000)
+        assert "To rotate the zebracrypt keys" in out
+
+    def test_an_unrelated_query_does_not_pull_that_passage(self):
+        doc = _long_doc()
+        r = _result(doc, (0, 900), score=0.9)
+        out = display.render_results("subject2 general terms", [r], 1500)
+        assert "zebracrypt" not in out
+
+
+class TestSegments:
+    def test_code_tables_and_list_items_are_their_own_passages(self):
+        kinds = {k for _a, _b, k in display.segment(_long_doc(), 0)}
+        assert {"heading", "para", "code", "table", "list"} <= kinds
+
+    def test_a_fenced_block_stays_whole(self):
+        doc = _long_doc()
+        code = [(a, b) for a, b, k in display.segment(doc, 0) if k == "code"]
+        assert len(code) == 1 and doc[code[0][0]:code[0][1]] == "```python\nrotate_keys(zebracrypt=True)\n```"
+
+    def test_a_gap_is_marked_and_section_headings_come_with_their_passages(self):
+        doc = _long_doc()
+        r = _result(doc, (0, 900), score=0.9)
+        out = display.render_results("zebracrypt keys rotation", [r], 1200)
+        assert "\n[…]\n" in out and "## Rotation" in out
+
+
+class TestServerWiring:
+    def _results(self):
+        doc = _doc()
+        return [_result(doc, (0, len(doc)), match_at=300, score=0.9),
+                _result(_doc(6), (0, 1500), source="b.md", title="B", score=0.5)]
+
+    def test_window_mode_is_the_per_result_view(self, monkeypatch):
+        from candlekeep.mcp import server
+        monkeypatch.setattr(server._settings, "result_display", "window")
+        rs = self._results()
+        assert server._render_results("q", rs, 5) == "\n".join(server._format_result(r, server._settings.result_chars) for r in rs)
+
+    @pytest.mark.parametrize("n, budget", [(5, 4000), (10, 8000)])
+    def test_focused_mode_keeps_to_the_budget_for_n_results(self, monkeypatch, n, budget):
+        from candlekeep.mcp import server
+        monkeypatch.setattr(server._settings, "result_display", "focused")
+        monkeypatch.setattr(server._settings, "result_budget", 4000)
+        rs = self._results() * 1
+        out = server._render_results("topic3", rs, n)
+        assert sum(len(b) for b in _bodies(out)) <= budget
+        assert out == display.render_results("topic3", rs, budget)
