@@ -128,3 +128,11 @@ class TestDocumentSpan:
         db, chunks = self._db(["one", "two", "three"])
         r = expand_results(db, [chunks[1]], n_results=1, expansion_chunks=1)[0]
         assert r.text[:r.metadata["_prefix_len"]] == self.HEAD
+
+
+class TestServerBudget:
+    @pytest.mark.parametrize("n, budget", [(1, 4000), (5, 4000), (10, 8000), (20, 16000)])
+    def test_budget_grows_with_the_number_of_results(self, monkeypatch, n, budget):
+        from candlekeep.mcp import server
+        monkeypatch.setattr(server._settings, "result_budget", 4000)
+        assert server._display_budget(n) == budget

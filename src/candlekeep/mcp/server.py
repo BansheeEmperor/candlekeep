@@ -635,7 +635,14 @@ def search(
     if _settings.result_display == "window":
         return "\n".join(_format_result(r, _settings.result_chars) for r in results)
     from candlekeep.rag.display import render_results
-    return render_results(query, results, _settings.result_budget)
+    return render_results(query, results, _display_budget(n_results))
+
+
+def _display_budget(n_results: int) -> int:
+    """The focused display's budget: CANDLEKEEP_RESULT_BUDGET for the default 5 results, and
+    proportionally more for more. The per-result view showed up to 1,000 characters per result,
+    and a fixed 4,000 for 10 results showed less gold text than it (research diary Entry 64)."""
+    return _settings.result_budget * max(n_results, 5) // 5
 
 
 def _format_result(r, budget: int) -> str:

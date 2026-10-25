@@ -164,7 +164,7 @@ FastMCP 3 runs tools in a thread pool, and Candlekeep runs background threads (t
 
 Each search result is an Arcane Recall window, typically 2,500 characters, and the search tool used to show each one from its matched chunk, 1,000 characters at most. With that view, round 2 of the agent-view evaluation found the agent shown 34% of the answer facts that the windows held 80% of. Most of the missing facts sat in the top document: before its match point, further down, or outside its window (Research Diary Entry 63).
 
-**Decision:** the search tool spends one budget of 4,000 displayed characters per search (`rag/display.py`).
+**Decision:** the search tool spends one budget of 4,000 displayed characters per search of 5 results (`rag/display.py`); a search for more results gets proportionally more. With a fixed 4,000, 10-result BEIR-NF searches showed less gold text than the per-result view (up to 10,000 characters there).
 - The top document is read as a whole, from the chunks Arcane Recall already fetches.
 - Its passages are chosen by query words, section leads and position, and the top result's matched chunk is always shown.
 - Every other document gets a 200-character teaser.

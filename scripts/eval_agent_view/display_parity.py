@@ -27,8 +27,9 @@ def as_items(res):
 
 
 def main() -> int:
-    cap, compared, diffs = 4000, 0, []
+    compared, diffs = 0, []
     for suite in view_sim.SUITES:
+        cap = 8000 if suite.startswith("BEIR") else 4000      # the server's budget for 10 and 5 results
         with open(view_sim.CACHE / f"{suite}.pkl", "rb") as f:
             data = pickle.load(f)
         for path, runs in data["runs"].items():
