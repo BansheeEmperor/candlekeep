@@ -174,6 +174,24 @@ The constants were chosen on half of the evaluation's questions and checked on t
 - **Unchanged:** the share of searches that show a gold document.
 - **Gold-document text:** 3.5 times as much on the cross-domain suites (Entry 64).
 
+**Confirmed in a pre-registered evaluation.** Round 3 of the agent-view evaluation, on a fresh ingest, compared this display (`fe89134`) with the per-result view. The protocol is `docs/AGENT_VIEW_EVALUATION_R3.md` on the evaluation branch.
+
+| Measure | Per-result view | This display |
+|---|---|---|
+| Answer facts shown, 32 held-out CEN questions | 29% | 75% (+46 points, 95% CI +34 to +58) |
+| Questions with every fact shown, same 32 | 2 | 16 |
+| Complete answers, majority of three blind judges, 76 questions | 9 | 35 |
+| Gold passage visible, CEN-G hybrid | 0.716 | 0.866 |
+
+- **Unchanged:** rankings and latency (within 8 ms at p50).
+- **Gold-document text:** no suite or path loses any.
+- **Budget:** displayed text never exceeds it.
+- **Trade-offs** (§16 and §18 of the protocol):
+  - a gold document ranked 2nd to 5th behind a wrong top result gets only a teaser;
+  - on multi-hop questions, supporting documents other than the top one get about half the text;
+  - queries without an answer get more text;
+  - one judged answer lost content the per-result view showed.
+
 The per-result view remains available as `CANDLEKEEP_RESULT_DISPLAY=window`.
 
 ## 4. Techniques Evaluated
