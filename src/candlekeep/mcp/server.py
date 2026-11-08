@@ -640,7 +640,8 @@ def _render_results(query: str, results, n_results: int) -> str:
     if _settings.result_display == "window":
         return "\n".join(_format_result(r, _settings.result_chars) for r in results)
     from candlekeep.rag.display import render_results
-    return render_results(query, results, _display_budget(n_results))
+    return render_results(query, results, _display_budget(n_results),
+                          _settings.result_min_relevance, _settings.result_relevance_gap)
 
 
 def _display_budget(n_results: int) -> int:

@@ -18,6 +18,29 @@ def calculate_cosine_similarity(vec1: List[float], vec2: List[float]) -> float:
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
 
+def _doc_relevance(query_embedding, embeddings_by_source: dict) -> Dict[str, float]:
+    """{source: the query's cosine to the source's best stored chunk embedding}; sources without
+    stored embeddings are left out."""
+    out: Dict[str, float] = {}
+    if query_embedding is None:
+        return out
+    q = np.asarray(query_embedding, dtype=float)
+    qn = float(np.linalg.norm(q))
+    if qn == 0:
+        return out
+    for source, emb in embeddings_by_source.items():
+        if not isinstance(emb, dict) or not emb:
+            continue
+        m = np.asarray(list(emb.values()), dtype=float)
+        if m.ndim != 2 or m.shape[1] != q.shape[0]:
+            continue
+        norms = np.linalg.norm(m, axis=1)
+        ok = norms > 0
+        if ok.any():
+            out[source] = float(np.max(m[ok] @ q / (norms[ok] * qn)))
+    return out
+
+
 def _overlap(prev: str, nxt: str, max_k: int) -> int:
     """Length of the longest suffix of prev that is a prefix of nxt (0 if < _MIN_OVERLAP)."""
     for k in range(min(len(prev), len(nxt), max_k), _MIN_OVERLAP - 1, -1):
@@ -105,6 +128,10 @@ def expand_results(
     query_embedding = None
     if query:
         query_embedding = db.embed_query(query)
+
+    # Each document's relevance for the search display's budget split (Freynan Mirror,
+    # rag/display.py): the query's cosine to the document's best stored chunk embedding.
+    doc_relevance = _doc_relevance(query_embedding, stored_embeddings_by_source)
 
     for source, source_results in results_by_source.items():
         doc_chunks = chunks_by_source[source]
@@ -223,6 +250,8 @@ def expand_results(
             meta["_doc_text"] = body
             meta["_doc_span"] = (start, start + len(expanded_text) - len(header))
             meta["_prefix_len"] = len(header)
+        if source in doc_relevance:
+            meta["_doc_relevance"] = doc_relevance[source]
         expanded.append(SearchResult(
             text=expanded_text,
             score=score,

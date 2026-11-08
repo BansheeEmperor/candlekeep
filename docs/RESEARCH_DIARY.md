@@ -3802,3 +3802,133 @@ The guard bullet above overstates BEIR. Averaged over SciFact and NFCorpus, `doc
 - **Latency:** p50 rose 0 to 8 ms; the most is on precise, where the top document is stitched and segmented for more candidates.
 
 Round 3 is pre-registered in `docs/AGENT_VIEW_EVALUATION_R3.md`.
+
+## Entry 66: Freynan Mirror — Which Score Can Carry a Relevance-Weighted Budget?
+
+**Date:** November 8, 2026  
+**Focus:** Before building the Freynan Mirror (budget split by relevance, plus a relevance floor below which results get nothing), find a score whose size means the same thing on every query
+
+### Method (`scripts/eval_agent_view/freynan_probe.py`, `freynan_compare.py`)
+
+- **Replay.** The probe replays every search of CEN, MH, the five cross-domain suites and both BEIR sets in-process with B′'s code, on copies of round 3's ingests (1,296 queries × 3 paths).
+- **What it records per result:**
+  - which retriever found it (vector, BM25 or both);
+  - RRF;
+  - the vector similarity;
+  - BM25, raw and divided by the query's top BM25;
+  - the query's cosine to the stored embeddings of the matched chunk, the window's best chunk and the document's best chunk (`doc_cos`);
+  - the share of the query's content words the window contains (`kw`);
+  - the cross-encoder logit.
+- **Fidelity.** It reproduces 98% of round 3's B′ result lists; the rest differ on reload of the Chroma index.
+
+### Results, hybrid (the default path)
+
+| Score | Gold vs rest, pooled (absolute floor) | Within a query | Top result: answerable vs no-answer |
+|---|---|---|---|
+| RRF | 0.812 | 0.801 | 0.881 |
+| `doc_cos` | 0.809 | 0.858 | **0.983** |
+| `kw` | 0.825 | 0.745 | 0.931 |
+| `doc_cos + 0.1 kw` | 0.857 | **0.871** | **0.983** |
+| `doc_cos + 0.2 kw` | **0.870** | 0.867 | 0.980 |
+| cross-encoder | 0.859 | 0.849 | 0.980 |
+
+(AUC. Explore behaves the same; on precise the cross-encoder is the native score and `doc_cos` gives 0.878 within a query.)
+
+- **RRF cannot carry a budget.** In 149 hybrid searches the top result is wrong and a gold document sits at ranks 2–5. RRF scores that gold document at or above the top in 2 of 149; `doc_cos` in 74, and within 10% of the top in 145.
+- **No-answer detection.** The top result's `doc_cos` separates answerable from no-answer queries at AUC 0.983, as well as the cross-encoder and at no query-time cost. Arcane Recall already fetches every chunk embedding of each result's document.
+- **Retriever bias.** Consider a floor that keeps 90% of all gold results.
+  - With `doc_cos`, it keeps 80% of gold found only by vector search and 72% of gold found only by BM25: a mild bias against keyword-only hits.
+  - With `doc_cos + 0.3 kw`, it keeps 63% and 75%. The keyword term trades one bias for the other.
+  - With RRF, it keeps 46% and 31%.
+
+### What follows
+
+The Freynan Mirror's relevance score should be the stored-chunk cosine, possibly plus a small keyword term. Cosines are compressed (relevant and unrelated documents both sit between about 0.6 and 0.9), so splitting the budget in raw proportion would be close to an equal split. The split needs a sharpening transform above the floor, tuned on fresh questions.
+
+---
+
+## Entry 67: The Freynan Mirror, Tuned on Fresh Questions and Piloted Through MCP
+
+**Date:** November 8, 2026  
+**Focus:** Split the answer-focused display's budget by document relevance instead of rank, with relevance floors, and check whether that helps the agent
+
+### Fresh questions (`tests/fixtures/eval_suite_fresh.json`, `fresh_answer_spans.json`)
+
+Every display constant so far was chosen on CEN questions that earlier entries had already looked at many times. This entry uses a fresh set on the same corpus (I01).
+- **Writing:** six writers wrote the questions blind, and six verifiers checked them. Of 232 questions, 221 were kept: 81 overview, 86 detail, 24 multi-document and 30 without an answer, the last written as near misses.
+- **Answer facts:** 896 facts with 1,125 verbatim quotes. Every quote was checked against the gold document (12 failed and were dropped).
+- **Split:** dev and test halves, stratified by category (`random.Random(20261108)`).
+- **Searches:** B′'s searches were replayed with `freynan_probe.py run --l1-dir` on copies of round 3's ingests, and cached for `view_sim.py` (`VIEW_SIM_CACHE`).
+- **Earlier suites:** CEN, MH, the five cross-domain suites and both BEIR sets serve as guards, on their usual qid-parity halves.
+
+### Policy family (`view_policies/freynan/freynan.py`) and grid (`freynan_tune.py`)
+
+- **Relevance:** `doc_cos` (Entry 66), plus `a × kw` in some configurations.
+- **Floor:** absolute `F`, relative `r_max − δ`, or the higher of the two.
+- **Weights above the floor:** `wmin + (1 − wmin) × ((r − floor) / (r_max − floor))^p`.
+- **Order:** by document rank or by relevance.
+- **Empty searches:** when nothing reaches `F`, show nothing, or only the top result's matched chunk.
+- **Kept from doc_select:** the top document is read whole, and the 200-character floor per document.
+
+Selection rule, fixed before the test half was run: the best facts on the CEN-F dev half, provided CEN/MH facts drop by no more than 0.5 point and gold text and SrcVis on the cross-domain and BEIR suites drop by no more than 1 point.
+
+### Dev results
+
+- **An absolute floor alone does not transfer.** Answerable searches have a top `doc_cos` of at least 0.76 in 90% of searches on CEN-F, but 0.67 on CEN and 0.64 on BEIR-NF. The CEN-F unanswerable questions have a median of 0.72. A floor that removes the CEN-F noise therefore cuts real answers elsewhere.
+- **The relative floor carries most of the gain.** With F 0.65 on `doc_cos + 0.1 kw`, δ = 0.10, p = 2 and rank order (`doc_cos` alone with F 0.60 gives 69.0% and 125): facts 63.9% → 69.3%, questions with every fact 109 → 124, the 27 rescue searches (top result wrong, a gold document at ranks 2–5) 32% → 76%. CEN/MH facts rose 73.4% → 75.6%, and characters on their unanswerable searches fell 3,098 → 919.
+- **Multi-document support fell** 44% → 33%: a supporting second document fell below δ, or got almost no weight after sharpening. `wmin` alone recovered little (36%). Keeping 44% needed δ = 0.15.
+- **Ordering by relevance hurt the rescue searches.** The document read whole then becomes the one with the best cosine, which is often wrong.
+
+### Test half
+
+| Measure | doc_select | A: F 0.65 on `doc_cos + 0.1 kw`, δ 0.10 | **B: F 0.60, δ 0.15, p 2, wmin 0.05** |
+|---|---|---|---|
+| CEN-F facts shown | 69.9% | 73.2% | 72.4% |
+| Every fact shown | 119 | 131 | 124 |
+| Rescue searches (17) | 39% | 80% | 77% |
+| Multi-document support | 50% | 50% | 58% |
+| CEN/MH facts | 75.7% | 76.0% | 77.2% |
+| CEN/MH unanswerable, characters | 3,088 | 1,149 | 1,148 |
+| SrcVis, cross-domain + BEIR | 85.0% | 83.8% | 84.7% |
+
+A fails the SrcVis guard: CD-ALT loses 7 points (0.883 → 0.811), because the keyword term pushes up documents that match the query's words. B passes, and it became the server's display (`rag/display.py`, `082bd34`). The defaults are `CANDLEKEEP_RESULT_MIN_RELEVANCE=0.60` and `CANDLEKEEP_RESULT_RELEVANCE_GAP=0.15`.
+- **Port check:** the server makes the simulator policy's exact choices on all 4,551 cached searches.
+- **The CEN-F unanswerable questions keep their noise** (3,807 characters under both). They score like real answers, so no cosine floor can tell them apart.
+
+### Pilot through MCP (`rounds/freynan-pilot.json`, `freynan_pilot.py`)
+
+A fresh ingest of I01 and I07; B′ and the Freynan Mirror ran through MCP on the same ingest.
+
+| Answer facts shown (hybrid / precise / explore) | B′ | Freynan Mirror |
+|---|---|---|
+| CEN-F test | 58% / 50% / 59% | 76% / 67% / 75% |
+| CEN-F dev | 55% / 47% / 58% | 71% / 60% / 70% |
+| CEN | 34% / 25% / 34% | 76% / 76% / 76% |
+
+- **CEN unanswerable searches:** 1,392 / 873 / 1,381 characters, against 3,737 / 828 / 2,852 for B′.
+- **Latency:** within 6 ms of B′ at p50.
+- **SrcVis:** equal to B′ on CEN, MH and CEN-F. On CD-ALT hybrid and explore it is 2.7 points lower: two questions lost their gold document, at ranks 3 and 5.
+- **Against doc_select:** the pilot has no doc_select run on this ingest. Round 3's doc_select pilot showed 74% / 75% / 73% on CEN, on a different ingest.
+
+### The CD-ALT losses, and a fix that was not adopted
+
+The keyword retriever did not find either gold document (BM25 score 0); the absolute floor dropped them.
+- In one search, the gold document scores 0.599, just under 0.60.
+- In the other, even the top result scores 0.593, so the search is shown as unanswerable.
+
+Both are short literal queries, which embed poorly. Exempting lexical queries (the router's `_is_lexical_query`, plus hex literals and tokens with digits) from the absolute floor recovered both. It also lost a CEN question in which the floor had dropped a wrong top-ranked document (0.586) and so given the gold document (0.645) the whole budget. Lowering the floor for lexical queries (0.50–0.57) instead of removing it, and keeping documents that BM25 scored strongly, changed nothing or traded one question for another. B stays as it is.
+
+### What the floors cost
+
+Over every cached search (all suites, all paths):
+- **Every result below 0.60:** 54 of 3,869 answerable searches, of which only 8 had a gold document among their results. Against that, 291 of 472 unanswerable searches.
+- **Gold document dropped while other documents were kept:** 10 answerable searches.
+
+So the floors hide every gold document in 18 of 3,869 answerable searches (0.5%: 13 BEIR-NF, 4 CD-ALT, 1 BEIR-SF), and cut 62% of unanswerable searches to one matched chunk.
+
+### Takeaways
+
+1. **Gain:** splitting by relevance instead of rank adds about 2.5 points of facts on average. Nearly all of it comes from the searches whose top result is wrong, where the facts shown roughly double.
+2. **Floors:** combine absolute and relative. The absolute floor removes clearly unanswerable searches; the relative floor drops the stragglers of answerable ones. Neither works alone.
+3. **Limit:** a cosine floor cannot remove near-miss noise. That would need a different signal, such as the cross-encoder or an answerability check.
+4. **Model dependence:** the absolute floor is on the embedding model's cosine scale (0.60 with `bge-small`) and must be re-chosen for another model.

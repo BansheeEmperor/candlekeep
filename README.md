@@ -15,6 +15,7 @@ A RAG knowledge base server that gives AI agents the power to search, retrieve, 
 - [**The Rosetta Seal**](docs/GLOSSARY.md#the-rosetta-seal) — Corpus-derived BM25 token normalisation map that bridges surface-form variants (`crossencoder` ↔ `cross-encoder`), rebuilt automatically in the background after each ingest
 - [**Divine Insight**](docs/GLOSSARY.md#cross-encoder-reranking) — Cross-encoder reranking for when precision matters more than speed
 - [**The Relevance Ward**](docs/GLOSSARY.md#the-relevance-ward) — Results below a [configured threshold](docs/ARCHITECTURE.md#tuned-parameters-reference) are filtered, so the library says "I don't know" instead of guessing
+- [**The Freynan Mirror**](docs/GLOSSARY.md#the-freynan-mirror) — The search output's budget is split by each document's relevance, not its rank; documents below a relevance floor are left out
 - **True Sight** — Images in PDFs and markdown are captioned at ingestion via VLM, making diagram details searchable
 
 ## Features

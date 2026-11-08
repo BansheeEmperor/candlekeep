@@ -80,6 +80,12 @@ def get_models_dir() -> Path:
     return base / "candlekeep" / "models"
 
 
+def _optional_float(name: str, default: str) -> float | None:
+    """A float env var; "off", "none" or empty disables it (None)."""
+    value = os.getenv(name, default).strip().lower()
+    return None if value in ("", "off", "none") else float(value)
+
+
 @dataclass
 class Settings:
     """Candlekeep configuration settings."""
@@ -111,6 +117,15 @@ class Settings:
     # "focused": characters of displayed text per search of 5 results (titles, passages and gap
     # markers); a search for more results gets proportionally more (8,000 for 10)
     result_budget: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_RESULT_BUDGET", "4000")))
+    # "focused", the Freynan Mirror's relevance floors. A document's relevance is the query's cosine
+    # to its best chunk embedding, so the absolute floor depends on the embedding model (0.60 was
+    # chosen with bge-small). Documents below CANDLEKEEP_RESULT_MIN_RELEVANCE, or more than
+    # CANDLEKEEP_RESULT_RELEVANCE_GAP below the most relevant document, get none of the budget;
+    # "off" disables a floor.
+    result_min_relevance: float | None = field(
+        default_factory=lambda: _optional_float("CANDLEKEEP_RESULT_MIN_RELEVANCE", "0.60"))
+    result_relevance_gap: float | None = field(
+        default_factory=lambda: _optional_float("CANDLEKEEP_RESULT_RELEVANCE_GAP", "0.15"))
     # "window": characters of each search result shown to the agent, starting at the matched chunk
     result_chars: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_RESULT_CHARS", "1000")))
 

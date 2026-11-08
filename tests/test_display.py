@@ -201,4 +201,92 @@ class TestServerWiring:
         rs = self._results() * 1
         out = server._render_results("topic3", rs, n)
         assert sum(len(b) for b in _bodies(out)) <= budget
-        assert out == display.render_results("topic3", rs, budget)
+        assert out == display.render_results("topic3", rs, budget, server._settings.result_min_relevance,
+                                             server._settings.result_relevance_gap)
+
+    def test_relevance_floors_come_from_the_settings(self, monkeypatch):
+        from candlekeep.mcp import server
+        monkeypatch.setattr(server._settings, "result_display", "focused")
+        monkeypatch.setattr(server._settings, "result_min_relevance", 0.5)
+        monkeypatch.setattr(server._settings, "result_relevance_gap", None)
+        rs = self._results()
+        rs[0].metadata["_doc_relevance"], rs[1].metadata["_doc_relevance"] = 0.9, 0.3
+        assert "Source: b.md" not in server._render_results("topic3", rs, 5)
+
+
+def _scored(relevances, n_sections=6):
+    """One result per document, in rank order, with the given relevance scores."""
+    out = []
+    for i, rel in enumerate(relevances):
+        doc = _doc(n_sections)
+        r = _result(doc, (0, len(doc)), source=f"d{i}.md", title=f"D{i}", score=1.0 - i / 10)
+        r.metadata["_doc_relevance"] = rel
+        out.append(r)
+    return out
+
+
+class TestFreynanMirror:
+    def _shown(self, out):
+        return dict(zip(re.findall(r"Source: (\S+)", out), (len(b) for b in _bodies(out))))
+
+    def test_documents_below_the_relative_floor_get_nothing(self):
+        out = display.render_results("topic2", _scored([0.90, 0.88, 0.70]), 4000, None, 0.15)
+        assert set(self._shown(out)) == {"d0.md", "d1.md"}
+
+    def test_documents_below_the_absolute_floor_get_nothing(self):
+        out = display.render_results("topic2", _scored([0.90, 0.80, 0.55]), 4000, 0.60, None)
+        assert "d2.md" not in self._shown(out)
+
+    def test_documents_of_almost_equal_relevance_get_almost_equal_shares(self):
+        shown = self._shown(display.render_results("topic2", _scored([0.900, 0.899], 20), 4000, None, 0.15))
+        assert abs(shown["d0.md"] - shown["d1.md"]) < 0.15 * 4000
+
+    def test_rank_order_split_without_relevance_scores(self):
+        rs = _scored([0.90, 0.899], 20)
+        del rs[1].metadata["_doc_relevance"]
+        shown = self._shown(display.render_results("topic2", rs, 4000, None, 0.15))
+        assert shown["d0.md"] > 3 * shown["d1.md"]
+
+    def test_only_the_matched_chunk_when_nothing_reaches_the_absolute_floor(self):
+        rs = _scored([0.50, 0.45])
+        doc = rs[0].metadata["_doc_text"]
+        out = display.render_results("topic2", rs, 4000, 0.60, 0.15)
+        assert list(self._shown(out)) == ["d0.md"]
+        assert _bodies(out)[0] == "Document: D0\n\n" + doc[:display.MUST]
+
+    def test_floors_off_keep_every_document(self):
+        out = display.render_results("topic2", _scored([0.90, 0.60, 0.30]), 4000, None, None)
+        assert len(self._shown(out)) == 3
+
+    def test_stays_within_the_budget(self):
+        out = display.render_results("topic2", _scored([0.9, 0.89, 0.88, 0.87]), 3000, 0.6, 0.15)
+        assert sum(len(b) for b in _bodies(out)) <= 3000
+
+
+class TestDocumentRelevance:
+    def test_arcane_recall_passes_the_best_chunk_cosine(self):
+        meta = {"source": "doc.md", "filename": "doc.md", "title": "T"}
+        chunks = [SearchResult(text=f"Document: T.\n\nchunk {i}", score=1.0, doc_id=f"doc.md:{i}",
+                               metadata={**meta, "chunk_index": i}) for i in range(3)]
+        db = MagicMock()
+        db.get_chunks_by_source = MagicMock(return_value=chunks)
+        db.get_stored_embeddings_by_source = MagicMock(return_value={0: [1.0, 0.0], 1: [0.6, 0.8], 2: [0.0, 1.0]})
+        db.embed_query = MagicMock(return_value=[0.0, 2.0])
+        r = expand_results(db, [chunks[0]], n_results=1, expansion_chunks=1, query="q")[0]
+        assert r.metadata["_doc_relevance"] == pytest.approx(1.0)
+
+    def test_no_relevance_without_a_query(self):
+        meta = {"source": "doc.md", "filename": "doc.md", "title": "T"}
+        chunks = [SearchResult(text="Document: T.\n\nchunk", score=1.0, doc_id="doc.md:0", metadata={**meta, "chunk_index": 0})]
+        db = MagicMock()
+        db.get_chunks_by_source = MagicMock(return_value=chunks)
+        r = expand_results(db, chunks, n_results=1)[0]
+        assert "_doc_relevance" not in r.metadata
+
+
+class TestSettings:
+    @pytest.mark.parametrize("value, expected", [("0.6", 0.6), ("off", None), ("", None), ("None", None)])
+    def test_relevance_floor_can_be_disabled(self, monkeypatch, value, expected):
+        from candlekeep.config import _optional_float
+        monkeypatch.setenv("CANDLEKEEP_RESULT_MIN_RELEVANCE", value)
+        assert _optional_float("CANDLEKEEP_RESULT_MIN_RELEVANCE", "0.60") == expected

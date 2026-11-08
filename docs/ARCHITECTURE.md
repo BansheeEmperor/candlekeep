@@ -158,8 +158,13 @@ graph TD
   - Results of one document are pooled.
   - The top document is read as a whole: Arcane Recall passes the document stitched from all its chunks (`metadata["_doc_text"]`) and each window's place in it (`_doc_span`).
   - Its passages are chosen by query words (more for words not in its title or file name), section leads and closeness to the document's start, with code ranked down. The top result's matched chunk is always shown.
-  - Every other document gets a short teaser of its best window passages.
-  - Measured on held-out questions, it shows 75% of the answer facts against 29% for a per-result view (Research Diary Entries 63–64).
+  - The budget is split across documents by relevance ([The Freynan Mirror](GLOSSARY.md#the-freynan-mirror)).
+    - Relevance is the query's cosine to the document's best stored chunk embedding. Arcane Recall passes it as `metadata["_doc_relevance"]`, from the embeddings it already fetches.
+    - Documents below the floor get nothing. The floor is the higher of `CANDLEKEEP_RESULT_MIN_RELEVANCE` and the best document's score minus `CANDLEKEEP_RESULT_RELEVANCE_GAP`.
+    - The rest is split by the squared margin above the floor, so documents of almost equal relevance get almost equal shares. Each document above the floor gets at least a short teaser of its best window passages.
+    - If nothing reaches the absolute floor, only the top result's matched chunk is shown.
+    - Without relevance scores, the split falls back to document rank (weight 0.1^k).
+  - Measured on held-out questions, it shows 75% of the answer facts against 29% for a per-result view (Research Diary Entries 63–64). The relevance split adds about 2.5 points, and roughly doubles the facts shown when the top result is the wrong document (Entry 67; [DESIGN §3.16](DESIGN.md#316-the-freynan-mirror-budget-by-relevance-not-rank)).
 - **Match-anchored output** (`CANDLEKEEP_RESULT_DISPLAY=window`): each window records where its best-scoring matched chunk starts. The `search` tool returns, per result, a title line followed by `CANDLEKEEP_RESULT_CHARS` characters (default 1000) starting at that chunk.
 
 The full stitched window remains available to in-process callers as `SearchResult.text`.
@@ -226,6 +231,8 @@ These values represent the optimal configuration identified through the Centurio
 | `CANDLEKEEP_EMBEDDING_CACHE_SIZE` | 500 | Max entries in the query embedding LRU cache |
 | `CANDLEKEEP_RESULT_DISPLAY` | focused | `focused`: one budget per search, spent on the top document's matching passages (other results as teasers); `window`: each result's window from its matched chunk |
 | `CANDLEKEEP_RESULT_BUDGET` | 4000 | `focused`: displayed characters per search of 5 results; proportionally more for more results (8,000 for 10) |
+| `CANDLEKEEP_RESULT_MIN_RELEVANCE` | 0.60 | `focused`, [Freynan Mirror](GLOSSARY.md#the-freynan-mirror): documents whose best chunk cosine to the query is below this get none of the budget; `off` disables it. On the embedding model's scale; chosen with `bge-small` (Entry 67) |
+| `CANDLEKEEP_RESULT_RELEVANCE_GAP` | 0.15 | `focused`, Freynan Mirror: documents more than this below the most relevant document get none of the budget; `off` disables it |
 | `CANDLEKEEP_RESULT_CHARS` | 1000 | `window`: characters of each search result returned to the agent, starting at the matched chunk |
 | `_GET_PAGE_SIZE` | 5000 | Records per request for full-collection reads (see [Large Collections](#large-collections)) |
 | `EDIT_DISTANCE_THRESHOLD` | 0.15 | [Rosetta Seal](GLOSSARY.md#the-rosetta-seal) — max normalised Levenshtein distance for clustering |
@@ -540,6 +547,8 @@ All settings via environment variables (`.env` file):
 | CANDLEKEEP_CHUNK_OVERLAP | 100 | Overlap between chunks |
 | CANDLEKEEP_RESULT_DISPLAY | focused | `focused` (one budget per search, answer passages of the top document) or `window` (per-result view) |
 | CANDLEKEEP_RESULT_BUDGET | 4000 | `focused`: displayed characters per search of 5 results; proportionally more for more results |
+| CANDLEKEEP_RESULT_MIN_RELEVANCE | 0.60 | `focused`: absolute relevance floor of the budget split (query cosine to a document's best chunk); `off` disables it |
+| CANDLEKEEP_RESULT_RELEVANCE_GAP | 0.15 | `focused`: relative floor, the most relevant document's score minus this; `off` disables it |
 | CANDLEKEEP_RESULT_CHARS | 1000 | `window`: characters of each search result returned to the agent, starting at the matched chunk |
 | CANDLEKEEP_QUALITY_MAX_WORDS | 10000 | Max words per document in the quality gate (0=no upper bound) |
 | CANDLEKEEP_MODELS_DIR | $XDG_CACHE_HOME/candlekeep/models | Model cache location, kept separate from the data dir |

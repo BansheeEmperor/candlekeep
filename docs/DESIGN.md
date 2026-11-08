@@ -194,6 +194,42 @@ The constants were chosen on half of the evaluation's questions and checked on t
 
 The per-result view remains available as `CANDLEKEEP_RESULT_DISPLAY=window`.
 
+### 3.16 The Freynan Mirror: Budget by Relevance, Not Rank
+
+§3.15's display split the budget by document rank: weight 0.1^k, so the top document took nearly all of it. When the top result was the wrong document and a gold one sat at ranks 2 to 5, that gold document got a 200-character teaser. Searches without an answer still filled the budget.
+
+**Decision:** each document's share follows its relevance. Documents that are not relevant enough get none.
+- **Relevance:** the query's cosine to the document's best stored chunk embedding. It costs nothing at query time, because Arcane Recall already fetches every chunk embedding of each result's document.
+- **Floor:** the higher of an absolute floor (`CANDLEKEEP_RESULT_MIN_RELEVANCE`, 0.60) and the most relevant document's score minus a gap (`CANDLEKEEP_RESULT_RELEVANCE_GAP`, 0.15). Documents below it get nothing.
+- **Split:** above the floor, weight 0.05 + 0.95 × ((r − floor) / (r_max − floor))², so documents of almost equal relevance get almost equal shares.
+- **Empty search:** when no document reaches the absolute floor, only the top result's matched chunk is shown.
+- **Without scores:** a result without stored embeddings falls back to the rank split.
+
+**Why this score.** The fused RRF score cannot carry a budget. It takes about two values: roughly 0.033 when both retrievers return a result and 0.016 when one does. The document cosine separates answerable from unanswerable searches with an AUC of 0.98 (Research Diary Entry 66).
+
+**Why both floors.**
+- **Absolute floor alone:** its level does not transfer across question sets. The fresh set's unanswerable questions were written as near misses and score like real answers.
+- **Relative floor alone:** it keeps the noise of unanswerable searches.
+
+**Evidence** (simulator, held-out questions, against §3.15; Entry 67):
+
+| Measure | Rank split | Freynan Mirror |
+|---|---|---|
+| Answer facts shown, fresh question set | 69.9% | 72.4% |
+| Questions with every fact shown | 119 | 124 |
+| Facts when the top result is wrong and a gold document is at ranks 2–5 (17 searches) | 39% | 77% |
+| Multi-document questions showing every supporting document | 50% | 58% |
+| Characters shown on unanswerable searches, earlier question sets | 3,088 | 1,148 |
+| Searches showing a gold document | 85.0% | 84.7% |
+
+- **Port check:** the server makes the simulator policy's exact choices on all 4,551 cached searches.
+- **Pilot:** through MCP on a fresh ingest, answer facts shown were 76% / 67% / 75% (hybrid / precise / explore) on the fresh held-out questions.
+
+**Trade-offs.**
+- The floors hide every gold document in 18 of 3,869 answerable searches: 13 on BEIR-NF, 4 on CD-ALT, 1 on BEIR-SF. In return, they cut the output of 291 of 472 unanswerable searches to one matched chunk.
+- Short literal queries embed poorly, so their gold documents can fall below the absolute floor. Exempting lexical queries from it recovered the CD-ALT cases but lost others, so the rule was not adopted (Entry 67).
+- The absolute floor is on the embedding model's cosine scale; 0.60 was chosen with `bge-small`.
+
 ## 4. Techniques Evaluated
 
 | Technique | Result | Status |

@@ -17,13 +17,20 @@ diary Entries 63 and 64). This display spends one budget for the whole search:
    document's share of the budget allows; gaps of up to 40 characters are shown instead of a
    gap marker; the first passage that does not fit may be shown cut, once. The top result's
    matched chunk (its first 300 characters) is always shown.
-4. Allocation ("lead + teasers"). Every document gets up to 200 characters; the rest goes by
-   weight 0.1^k over document rank, so the top document gets nearly all of it, and what a
-   document cannot use is passed on.
+4. Allocation (the Freynan Mirror). Each document's relevance r is the query's cosine to its best
+   stored chunk embedding (Arcane Recall's `_doc_relevance`). A document gets no budget when r
+   is below the floor: the higher of an absolute floor (`min_relevance`) and the most relevant
+   document's r minus a gap (`relevance_gap`). Every document above the floor gets up to 200
+   characters, and the rest goes by weight WMIN + (1 - WMIN) * ((r - floor) / (r_max - floor))^2,
+   so documents of almost equal relevance get almost equal shares; what a document cannot use is
+   passed on. When no document reaches the absolute floor, only the top result's matched chunk is
+   shown. Without relevance scores (a result without stored embeddings), the split is by
+   document rank instead: weight 0.1^k, so the top document gets nearly all of it ("lead +
+   teasers").
 
 The constants were chosen on half of the evaluation's questions and confirmed on the other half
-(Entry 64); they are frozen here. Displayed text (title lines, passages and gap markers) never
-exceeds the budget; per-result header lines are not counted.
+(Entries 64 and 67); they are frozen here. Displayed text (title lines, passages and gap markers)
+never exceeds the budget; per-result header lines are not counted.
 """
 from __future__ import annotations
 
@@ -32,7 +39,9 @@ import re
 GAP = "\n[…]\n"
 GAP_LEN = len(GAP)
 FLOOR = 200            # characters every document can get
-WEIGHT = 0.1           # share of the rest by document rank: WEIGHT ** k
+WEIGHT = 0.1           # without relevance scores: share of the rest by document rank, WEIGHT ** k
+SHARPEN = 2.0          # the relevance split's exponent (cosines are compressed)
+WMIN = 0.05            # the least weight of a document above the relevance floor
 MUST = 300             # characters of the top result's matched chunk that are always shown
 CLOSE = 40             # gaps up to this many characters are shown instead of a marker
 MIN_BUDGET = 150       # a document's share below this is not shown
@@ -186,7 +195,8 @@ def items_of(results) -> list:
         out.append({"rank": rank, "doc": m.get("source") or m.get("filename") or "",
                     "source": m.get("filename") or m.get("source") or "", "score": r.score, "text": text,
                     "prefix_len": pl, "match_offset": m.get("_match_offset", 0) or 0, "title": m.get("title"),
-                    "doc_text": m.get("_doc_text"), "doc_span": tuple(span) if span else None})
+                    "doc_text": m.get("_doc_text"), "doc_span": tuple(span) if span else None,
+                    "relevance": m.get("_doc_relevance")})
     return out
 
 
@@ -344,8 +354,29 @@ class _Group:
         return out
 
 
-def select(query: str, items: list, budget: int) -> list:
-    """The displays for one search: [{rank, pieces, space ("doc" or "window"), title}], in order."""
+def _relevance_split(groups, min_relevance, relevance_gap):
+    """The Freynan Mirror: (the groups kept, their weights), or None when a document has no
+    relevance score. No group kept: nothing reaches the absolute floor."""
+    rel = [min(g, key=lambda r: r["rank"]).get("relevance") for g in groups]
+    if any(not isinstance(v, (int, float)) for v in rel):
+        return None
+    floors = [f for f in (min_relevance, max(rel) - relevance_gap if relevance_gap is not None else None)
+              if f is not None]
+    floor = max(floors) if floors else None
+    keep = [k for k in range(len(groups)) if floor is None or rel[k] >= floor]
+    if not keep:
+        return [], []
+    top = max(rel[k] for k in keep)
+    base = floor if floor is not None and floor < top else min(rel[k] for k in keep) - 1e-6
+    span = top - base
+    weights = [WMIN + (1 - WMIN) * ((rel[k] - base) / span) ** SHARPEN if span > 1e-9 else 1.0 for k in keep]
+    return [groups[k] for k in keep], weights
+
+
+def select(query: str, items: list, budget: int, min_relevance: float | None = None,
+           relevance_gap: float | None = None) -> list:
+    """The displays for one search: [{rank, pieces, space ("doc" or "window"), title}], in order.
+    min_relevance / relevance_gap: the Freynan Mirror's absolute and relative floors (None: none)."""
     if not items:
         return []
     by = {}
@@ -353,14 +384,26 @@ def select(query: str, items: list, budget: int) -> list:
         by.setdefault(r["doc"], []).append(r)
     groups = sorted((sorted(g, key=lambda r: ((r.get("doc_span") or (10 ** 9,))[0], r["rank"])) for g in by.values()),
                     key=lambda g: min(r["rank"] for r in g))
+    split = _relevance_split(groups, min_relevance, relevance_gap)
+    if split is None:
+        weights = [WEIGHT ** k for k in range(len(groups))]
+    else:
+        kept, weights = split
+        if not kept:                         # nothing is relevant enough: the top result's matched chunk only
+            top = _Group(groups[0], query, True)
+            if top.must is None:
+                return []
+            u, a, b = top.must
+            top.sel = {u: [(a, b)]} if top.cost_of({u: [(a, b)]}) <= budget else {}
+            return top.displays()
+        groups = kept
     G = [_Group(g, query, k == 0) for k, g in enumerate(groups)]
     dem = [g.demand() for g in G]
     base = [min(FLOOR, d) for d in dem]
     for k, g in enumerate(G):
         if g.must is not None:
             base[k] = max(base[k], min(MUST + _title_len(g.r) + 100, dem[k]))
-    extra = _waterfill([d - b for d, b in zip(dem, base)], [WEIGHT ** k for k in range(len(G))],
-                       max(0, budget - sum(base)))
+    extra = _waterfill([d - b for d, b in zip(dem, base)], weights, max(0, budget - sum(base)))
     shown, remaining = {}, budget
     for k, g in enumerate(G):
         target = int(base[k] + extra[k])
@@ -400,7 +443,8 @@ def render(items: list, displays: list) -> str:
     return "\n".join(blocks)
 
 
-def render_results(query: str, results, budget: int) -> str:
+def render_results(query: str, results, budget: int, min_relevance: float | None = None,
+                   relevance_gap: float | None = None) -> str:
     """The search tool's output for results (SearchResults in rank order) within budget characters."""
     items = items_of(results)
-    return render(items, select(query, items, budget))
+    return render(items, select(query, items, budget, min_relevance, relevance_gap))

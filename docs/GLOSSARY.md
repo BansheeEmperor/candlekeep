@@ -74,6 +74,10 @@
 **Technical Name:** Cosine Similarity Thresholding
 **The Lore:** A protective barrier that prevents the library from guessing. If no scrolls are found with enough confidence (as defined by the [relevance threshold](ARCHITECTURE.md#tuned-parameters-reference)) to be considered true, the library remains silent rather than presenting false or irrelevant information.
 
+### The Freynan Mirror
+**Technical Name:** Relevance-Weighted Budget Allocation with Relevance Floors
+**The Lore:** The mirror shows each scroll as large as its truth deserves. Two scrolls of nearly equal worth appear nearly equal in size. A scroll far below the most worthy one, or below the [floor](ARCHITECTURE.md#tuned-parameters-reference) of worth itself, is not shown at all. When no scroll reaches that floor, the mirror shows only a glimpse of the closest one (`rag/display.py`, [DESIGN §3.16](DESIGN.md#316-the-freynan-mirror-budget-by-relevance-not-rank)).
+
 ### True Sight
 **Technical Name:** Vision-Language Model (VLM) Image Captioning
 **The Lore:** The ability of the library to see and describe images found within the scrolls. By using a VLM to caption diagrams and charts at ingestion, the library transforms visual knowledge into searchable text, ensuring no detail — even a non-textual one — remains hidden from the seeker.
