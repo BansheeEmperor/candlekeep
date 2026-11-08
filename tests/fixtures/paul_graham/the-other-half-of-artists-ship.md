@@ -1,5 +1,5 @@
 ---
-title: "The Other Half of "Artists Ship""
+title: 'The Other Half of "Artists Ship"'
 date: "November 2008"
 ---
 

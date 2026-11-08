@@ -68,6 +68,21 @@ class TestCollectionOp:
         assert store._count() == 42
         assert store.client.opened == 1
 
+    def test_concurrent_delete_retried(self):
+        class Flaky(_Collection):
+            calls = 0
+
+            def count(self):
+                Flaky.calls += 1
+                if Flaky.calls == 1:
+                    raise RuntimeError("Error executing plan: Internal error: Error finding id")
+                return 7
+
+        store = _store(None)
+        store.collection = Flaky("same")
+        assert store._collection_op(lambda col: col.count()) == 7
+        assert store.collection.id == "same"   # retried in place, no reconnect
+
     def test_other_errors_reraised(self):
         store = _store(ValueError("bad where clause"))
         with pytest.raises(ValueError):
@@ -122,3 +137,20 @@ class TestQualityMaxWords:
     def test_zero_disables_cap(self, monkeypatch):
         issues = self._check(monkeypatch, 0, 12000)
         assert not any("too long" in i.lower() for i in issues)
+
+
+class TestConcurrentDeleteDuringQuery:
+    """A record deleted between the index lookup and the row read comes back as None."""
+
+    def test_search_skips_rows_deleted_mid_query(self):
+        store = object.__new__(ChromaVectorStore)
+        store.settings = Settings()
+        store.embedder = type("E", (), {"embed_query": staticmethod(lambda q: [0.0, 1.0])})()
+        store._query = lambda **kw: {
+            "ids": [["a", "b"]],
+            "documents": [["kept text", None]],
+            "metadatas": [[{"source": "a.md", "filename": "a.md"}, None]],
+            "distances": [[0.1, 0.2]],
+        }
+        results = store.search("query", n_results=2)
+        assert [r.doc_id for r in results] == ["a"]

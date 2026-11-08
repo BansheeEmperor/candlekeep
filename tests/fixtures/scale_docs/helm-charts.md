@@ -1,5 +1,5 @@
 ---
-title: Helm Chart Development: A Comprehensive Guide
+title: "Helm Chart Development: A Comprehensive Guide"
 description: A detailed technical guide on developing Helm charts, including templates, values, dependencies, hooks, testing, and repository management.
 keywords: 
   - Helm

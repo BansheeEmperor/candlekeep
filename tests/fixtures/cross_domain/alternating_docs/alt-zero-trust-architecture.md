@@ -1,5 +1,5 @@
 ---
-title: Zero Trust Architecture: Identity, Micro-Segmentation, and Continuous Validation
+title: "Zero Trust Architecture: Identity, Micro-Segmentation, and Continuous Validation"
 description: An in-depth exploration of the key principles and technologies that underpin Zero Trust security architectures.
 keywords: [zero trust, identity, micro-segmentation, continuous validation, network security, access control, least privilege]
 category: engineering

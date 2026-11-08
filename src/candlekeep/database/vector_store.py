@@ -11,6 +11,15 @@ from candlekeep.config import Settings
 from candlekeep.database.embeddings import EmbeddingManager
 from candlekeep.database.interface import VectorDatabase, SearchResult, Chunk
 
+# Full-collection reads are paged. chromadb >= 1.5 rejects a single get() that
+# returns metadatas for more than 32,766 records ("too many SQL variables" —
+# SQLite's bound-variable limit), so an unpaged get() breaks BM25, stats and
+# list_documents once a collection passes ~32k chunks. In a page-size sweep
+# (HTTP server, documents + metadatas) 4k-10k pages were the fastest plateau;
+# larger pages were slower, noisier and used more client memory, smaller pages
+# paid per-request overhead. 5000 sits mid-plateau, well below the limit.
+_GET_PAGE_SIZE = 5000
+
 
 def _human_readable_size(size_bytes: int) -> str:
     """Convert bytes to human readable format."""
@@ -36,6 +45,15 @@ def _is_stale_collection(exc: Exception) -> bool:
         return True
     name = type(exc).__name__.lower()
     return "collection" in name and any(t in name for t in ("notfound", "invalid", "exist"))
+
+
+def _is_concurrent_delete(exc: Exception) -> bool:
+    """True if a query failed because a concurrent write deleted a record it had
+    already found in the index ("Error executing plan: Internal error: Error
+    finding id"). Seen when a search overlaps a re-ingest; the next try sees a
+    consistent index.
+    """
+    return "error finding id" in str(exc).lower()
 
 
 def _is_chroma_unavailable(exc: Exception) -> bool:
@@ -183,7 +201,8 @@ class ChromaVectorStore(VectorDatabase):
           * stale collection UUID (data swapped underneath us) -> re-resolve by
             name + flush caches, retry immediately;
           * Chroma unreachable (server mid-restart) -> short backoff,
-            re-resolve, retry.
+            re-resolve, retry;
+          * a record deleted by a concurrent write mid-query -> retry.
 
         Any other error, or exhausted retries, re-raises the original.
         """
@@ -195,6 +214,9 @@ class ChromaVectorStore(VectorDatabase):
                 last = e
                 if _is_stale_collection(e):
                     self._reconnect()
+                    continue
+                if _is_concurrent_delete(e) and i < self._reconnect_attempts - 1:
+                    time.sleep(0.05)
                     continue
                 if _is_chroma_unavailable(e) and i < self._reconnect_attempts - 1:
                     time.sleep(self._reconnect_backoff * (i + 1))
@@ -213,6 +235,25 @@ class ChromaVectorStore(VectorDatabase):
     def _get(self, **kwargs):
         """Self-healing wrapper around collection.get()."""
         return self._collection_op(lambda col: col.get(**kwargs))
+
+    def _get_paginated(self, page_size: int = _GET_PAGE_SIZE, **kwargs) -> dict:
+        """Read every matching record via self-healing get() calls of at most
+        page_size records each (see _GET_PAGE_SIZE).
+
+        Returns ids plus whichever of documents/metadatas/embeddings the
+        include= kwarg selects, concatenated in collection order.
+        """
+        merged: dict = {"ids": []}
+        offset = 0
+        while True:
+            page = self._get(limit=page_size, offset=offset, **kwargs)
+            merged["ids"].extend(page["ids"])
+            for key in ("documents", "metadatas", "embeddings"):
+                if page.get(key) is not None:
+                    merged.setdefault(key, []).extend(page[key])
+            if len(page["ids"]) < page_size:
+                return merged
+            offset += len(page["ids"])
 
     def _count(self):
         """Self-healing wrapper around collection.count()."""
@@ -283,7 +324,6 @@ class ChromaVectorStore(VectorDatabase):
         clear_bm25_cache()
 
         # If ColBERT backend is active, mark its index dirty for lazy rebuild.
-        import os
         if os.getenv("CANDLEKEEP_SPARSE_BACKEND", "bm25") == "colbert":
             from candlekeep.rag.colbert import mark_colbert_dirty
             mark_colbert_dirty()
@@ -324,6 +364,9 @@ class ChromaVectorStore(VectorDatabase):
                 results["metadatas"][0],
                 results["distances"][0],
             )
+            # An ingest running at the same time can delete a record after the index lookup
+            # and before its row is read; Chroma then returns None for it.
+            if meta is not None and doc is not None
         ]
 
         # Filter out overview/index documents
@@ -423,7 +466,7 @@ class ChromaVectorStore(VectorDatabase):
 
     def list_documents(self) -> list[dict]:
         """List all unique source documents."""
-        results = self._get()
+        results = self._get_paginated(include=["metadatas"])
         sources = {}
         for meta in results["metadatas"]:
             src = meta["source"]
@@ -449,7 +492,7 @@ class ChromaVectorStore(VectorDatabase):
             total_size = 0
         
         # Estimate tokens
-        all_docs = self._get()
+        all_docs = self._get_paginated(include=["documents"])
         total_chars = sum(len(doc) for doc in all_docs.get("documents", []))
         estimated_tokens = total_chars // 4
         
@@ -504,7 +547,7 @@ class ChromaVectorStore(VectorDatabase):
 
     def get_all_chunks(self) -> list[SearchResult]:
         """Get all chunks from the database."""
-        results = self._get()
+        results = self._get_paginated(include=["documents", "metadatas"])
         if not results["ids"]:
             return []
 

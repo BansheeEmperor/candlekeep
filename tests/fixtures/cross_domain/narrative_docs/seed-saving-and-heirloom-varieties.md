@@ -1,5 +1,5 @@
 ---
-title: Preserving the Past, Cultivating the Future: The Importance of Seed Saving and Heirloom Varieties
+title: "Preserving the Past, Cultivating the Future: The Importance of Seed Saving and Heirloom Varieties"
 description: Discover the rich history and practical benefits of saving seeds and growing heirloom plant varieties.
 keywords: [seed saving, heirloom varieties, genetic diversity, sustainable gardening, food security]
 category: general

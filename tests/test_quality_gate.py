@@ -139,3 +139,108 @@ class TestQualityGate:
         path = _write_temp("Just a tiny file.")
         issues = check_document_quality(path)
         assert len(issues) >= 2  # frontmatter + headers + short
+
+
+BODY = """
+# Heading
+
+## Section One
+
+This document has enough words and structure to pass every other check of the
+quality gate, so the frontmatter is the only thing under test here. It keeps
+going for a while to clear the minimum word count without any trouble at all.
+"""
+
+INVALID_YAML = """---
+title: Cloud Storage Options: Object, Block, and File
+description: An unquoted colon in the title breaks the YAML mapping.
+---
+""" + BODY
+
+QUOTED_COLON = """---
+title: "Cloud Storage Options: Object, Block, and File"
+description: The same title, quoted.
+---
+""" + BODY
+
+UNTERMINATED = """---
+title: "Never closed"
+description: The block has no closing line.
+""" + BODY
+
+NOT_A_MAPPING = """---
+- just
+- a list
+---
+""" + BODY
+
+
+class TestFrontmatterParsing:
+    """The gate must reject frontmatter the processor would silently drop."""
+
+    def test_invalid_yaml_rejected(self):
+        issues = check_document_quality(_write_temp(INVALID_YAML))
+        assert any(i.startswith("Invalid YAML frontmatter at line 2") for i in issues), issues
+
+    def test_quoted_colon_accepted_and_title_kept(self):
+        from candlekeep.rag.processor import DocumentProcessor
+        path = _write_temp(QUOTED_COLON)
+        assert check_document_quality(path) == []
+        meta, _ = DocumentProcessor()._parse_frontmatter(path.read_text())
+        assert meta["title"] == "Cloud Storage Options: Object, Block, and File"
+
+    def test_unterminated_frontmatter_rejected(self):
+        issues = check_document_quality(_write_temp(UNTERMINATED))
+        assert any("Unreadable YAML frontmatter" in i for i in issues), issues
+
+    def test_non_mapping_frontmatter_rejected(self):
+        issues = check_document_quality(_write_temp(NOT_A_MAPPING))
+        assert any("not a mapping" in i for i in issues), issues
+
+    def test_rejected_frontmatter_is_what_the_processor_drops(self):
+        """Every case the gate flags is one where the processor keeps no metadata."""
+        from candlekeep.rag.processor import DocumentProcessor
+        for doc in (INVALID_YAML, UNTERMINATED):
+            meta, body = DocumentProcessor()._parse_frontmatter(doc)
+            assert meta == {} and body.startswith("---")
+
+
+class TestDirectoryIngestGate:
+    """ingest() on a directory skips files that fail the gate and lists them."""
+
+    @staticmethod
+    def _ingest(path):
+        import sys
+        from unittest.mock import MagicMock, patch
+        import candlekeep.mcp.server  # noqa: F401
+        mod = sys.modules["candlekeep.mcp.server"]
+        store = MagicMock()
+        store.add_documents.side_effect = lambda chunks, collection: len(chunks)
+        with patch.object(mod, "_check_ready", return_value=None), \
+             patch.object(mod, "get_store", return_value=store), \
+             patch("candlekeep.rag.token_normalisation.schedule_background_rebuild"):
+            return mod.ingest(str(path)), store
+
+    def test_failing_files_skipped_and_listed(self, tmp_path):
+        (tmp_path / "good.md").write_text(GOOD_DOC)
+        (tmp_path / "sub").mkdir()
+        (tmp_path / "sub" / "bad.md").write_text(INVALID_YAML)
+        msg, store = self._ingest(tmp_path)
+        assert msg.startswith("✓ Ingested")
+        assert "Skipped 1 file(s)" in msg and "sub/bad.md: Invalid YAML frontmatter" in msg
+        chunks = store.add_documents.call_args.args[0]
+        assert {c.metadata["filename"] for c in chunks} == {"good.md"}
+
+    def test_nothing_ingested_when_every_file_fails(self, tmp_path):
+        (tmp_path / "bad.md").write_text(INVALID_YAML)
+        (tmp_path / "short.md").write_text(TOO_SHORT)
+        msg, store = self._ingest(tmp_path)
+        assert msg.startswith("❌ Nothing ingested — 2 file(s) failed the quality gate")
+        store.add_documents.assert_not_called()
+
+    def test_single_file_still_rejected(self, tmp_path):
+        bad = tmp_path / "bad.md"
+        bad.write_text(INVALID_YAML)
+        msg, store = self._ingest(bad)
+        assert msg.startswith("❌ Document rejected") and "Invalid YAML frontmatter" in msg
+        store.add_documents.assert_not_called()

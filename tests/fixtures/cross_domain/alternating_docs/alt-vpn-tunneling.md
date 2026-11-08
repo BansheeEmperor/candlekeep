@@ -1,5 +1,5 @@
 ---
-title: VPN Tunneling: Secure Connections Across Networks
+title: "VPN Tunneling: Secure Connections Across Networks"
 description: An in-depth exploration of the technical concepts and implementation details of VPN tunneling, a fundamental networking technology.
 keywords: [VPN, tunneling, encryption, network security, IP encapsulation, SSL/TLS]
 category: engineering

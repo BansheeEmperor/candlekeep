@@ -398,3 +398,4 @@ public class Resource {
             System.out.println("Acquired resource A");
             synchronized (RESOURCE_B) {
                 System.out.println("Acquired resource B");
+```

@@ -153,6 +153,8 @@ graph TD
 - [**Arcane Coalescence**](GLOSSARY.md#arcane-coalescence): If multiple results come from the same section of a document, they are merged into a single cohesive Divine Window, preventing redundant text and saving tokens.
 - [**The Scholar's Discernment**](GLOSSARY.md#the-scholars-discernment): Neighboring chunks are only included if they are semantically related to thy query (based on a similarity threshold) or contain continuation markers (like Markdown lists). Expansion stops in a direction when a neighbor fails the similarity check — benchmarked against skip-ahead alternatives (Research Diary Entry 41) and confirmed as the correct tradeoff (< 1% quality gain vs 29-32% token increase from skip-ahead).
 - **Global Capping**: The library ensures exactly `n_results` merged sections are returned, backfilling from the candidate pool as needed.
+- **Stitching**: Every chunk carries its [Bardic Knowledge](GLOSSARY.md#bardic-knowledge) prefix for embedding, and fixed-size chunks overlap by `CANDLEKEEP_CHUNK_OVERLAP` characters. When a window is assembled, the prefix is kept once at the top and the repeated prefixes and chunk overlaps are removed, so a merged window carries no duplicated text. The precise path's reranker scores the unstitched join instead (`metadata["_rerank_text"]`), because its Relevance Ward was calibrated on that text.
+- **Match-anchored output**: Each window records where its best-scoring matched chunk starts. The `search` tool returns a title line followed by `CANDLEKEEP_RESULT_CHARS` characters (default 1000) starting at that chunk, rather than the first characters of the window — usually the document header and the context before the match. The full stitched window remains available to in-process callers as `SearchResult.text`.
 
 **Impact:**
 - Content match: significantly improved over raw search
@@ -214,6 +216,8 @@ These values represent the optimal configuration identified through the Centurio
 | `CHUNK_OVERLAP` | 50 | Character overlap between fragments |
 | `CANDLEKEEP_SPARSE_BACKEND` | `bm25` | Sparse backend for hybrid path (`bm25` or `colbert`) |
 | `CANDLEKEEP_EMBEDDING_CACHE_SIZE` | 500 | Max entries in the query embedding LRU cache |
+| `CANDLEKEEP_RESULT_CHARS` | 1000 | Characters of each search result returned to the agent, starting at the matched chunk |
+| `_GET_PAGE_SIZE` | 5000 | Records per request for full-collection reads (see [Large Collections](#large-collections)) |
 | `EDIT_DISTANCE_THRESHOLD` | 0.15 | [Rosetta Seal](GLOSSARY.md#the-rosetta-seal) — max normalised Levenshtein distance for clustering |
 | `EMBEDDING_SIMILARITY_THRESHOLD` | 0.82 | [Rosetta Seal](GLOSSARY.md#the-rosetta-seal) — min cosine similarity for clustering (embedding gate) |
 | `CANDLEKEEP_NORMALISE_ON_INGEST` | `false` | [Rosetta Seal](GLOSSARY.md#the-rosetta-seal) — regenerate map after each `ingest()` call |
@@ -252,6 +256,11 @@ This efficiency is achieved through the $O(\log N)$ search complexity of ChromaD
 ### Stable Precise Path
 The `precise` path latency remains stable regardless of corpus size, as the cross-encoder reranking bottleneck is constrained to a fixed number of top candidates.
 
+### Large Collections
+
+- **Paginated full-collection reads.** Building the BM25 index, `list_documents`, `get_stats`, and the Rosetta Seal and ColBERT rebuilds read the whole collection. chromadb 1.5 and later reject a single `get()` that returns metadata for more than 32,766 records (SQLite's bound-variable limit), so these reads go through `ChromaVectorStore._get_paginated()`, which pages through the self-healing `_get` wrapper 5,000 records at a time (`_GET_PAGE_SIZE`). In a page-size sweep, pages of 4,000–10,000 records were the fastest; larger pages were slower and used more client memory, and smaller pages paid per-request overhead. Each call site requests only the fields it uses.
+- **Co-occurrence graph rebuild.** `GraphStore.rebuild_cooccurrence()` de-duplicates mentions per (entity, chunk) and computes each entity's chunk count once, in indexed temporary tables, before joining — instead of running correlated subqueries for every entity pair. The output is identical and the rebuild is more than an order of magnitude faster on large graphs. It runs in a background thread after each ingest unless `CANDLEKEEP_DEFER_GRAPH_REBUILD` is set, in which case call `rebuild_graph` once after the bulk load.
+
 ### Concurrency Model
 
 Candlekeep supports two transport modes with three deployment configurations:
@@ -268,6 +277,8 @@ Candlekeep supports two transport modes with three deployment configurations:
 **HTTP multi-worker mode (recommended):** Multiple Candlekeep workers behind uvicorn serve agents concurrently. Each worker is an independent process with its own models, caches, and concurrency controls. The OS distributes incoming connections across workers. Suitable for 10–100+ concurrent agents. See [Multi-Worker Deployment](#multi-worker-deployment).
 
 Even for small deployments (2–5 agents), HTTP mode via uvicorn is recommended over stdio. The benefits — shared model memory, no per-agent cold-start, connection multiplexing — apply at any scale. Use `--workers 1` for small pools and increase as needed.
+
+**Tool execution:** FastMCP 3 runs Candlekeep's synchronous tools in a worker thread pool rather than on the asyncio event loop, so a long-running call (`ingest`, `rebuild_graph`, `rebuild_normalisation_map`) no longer stalls other agents' requests in HTTP mode. Tool calls therefore run concurrently: shared lazy caches are locked (see the BM25 `_cache_lock` below), and the write lock's HTTP-mode timeout applies to concurrent writers.
 
 ```mermaid
 graph TD
@@ -318,16 +329,17 @@ graph TD
 |---------|-------|---------|
 | `_write_lock` (`threading.Lock`) | Write tools (ingest, delete, repopulate) | Prevents concurrent writes from corrupting ChromaDB state or racing on BM25 cache invalidation. In HTTP mode, acquisition times out after 10 seconds — the caller receives a "server busy" error instead of queuing indefinitely behind a long-running write (e.g., `repopulate_database`). stdio mode uses blocking acquire (single agent). |
 | `_reranker_semaphore` (`threading.Semaphore`) | Precise-path search | Caps concurrent cross-encoder inference at the throughput-optimal level. Value set by hardware: HTTP mode runs a calibration benchmark at startup (tests N=1 up to cores/2, picks peak throughput); stdio mode uses a core-count heuristic (`cores // 3`). See [Precise Path Concurrency](#precise-path-concurrency). |
-| BM25 `_cache_lock` (`threading.Lock`) | Hybrid-path BM25 cache | Existing lock, protects cache reads/rebuilds. |
+| `_MPS_LOCK` (`model_lock.py`, first-come first-served, re-entrant) | Every model load, `encode` and `predict` on an MPS device | PyTorch's MPS backend aborts the process when two threads run a model at once. On MPS every model call holds this lock; calls over `MPS_SLICE` (128) inputs, such as an ingest's embedding, run one slice per lock hold, so a search waits for one slice, not a whole ingest. CPU and CUDA calls take no lock. It is a leaf lock: taken after `_write_lock` and `_reranker_semaphore`, and while holding it no other lock is taken, no Candlekeep code is called back, and no other thread is waited on. Per process: uvicorn workers are spawned, each with its own MPS context. |
+| BM25 `_cache_lock` (`threading.RLock`) | Hybrid-path BM25 cache | Concurrent cold queries wait for a single build instead of each scanning the collection. Re-entrant because a self-heal during the build clears the cache; a build that spans a clear is redone. |
 | ColBERT `_cache_lock` (`threading.Lock`) | Hybrid-path ColBERT cache (opt-in) | Protects ColBERT searcher reads/rebuilds. Only active when `CANDLEKEEP_SPARSE_BACKEND=colbert`. |
-| `_search_limiter` (`_RateLimiter`) | `search` tool (all paths) | Per-session sliding window. Rejects calls exceeding `CANDLEKEEP_RATE_LIMIT_SEARCH` per `CANDLEKEEP_RATE_LIMIT_WINDOW` seconds. HTTP mode only; no-op in stdio. |
-| `_write_limiter` (`_RateLimiter`) | Write tools (ingest, delete, repopulate) | Per-session sliding window. Rejects calls exceeding `CANDLEKEEP_RATE_LIMIT_WRITE` per `CANDLEKEEP_RATE_LIMIT_WINDOW` seconds. HTTP mode only; no-op in stdio. |
+| `_search_limiter` (`_RateLimiter`) | `search` tool (all paths) | Per-client sliding window: keyed on the MCP session in stateful HTTP; in stateless HTTP (uvicorn workers, no session) on the optional `X-Candlekeep-Agent` request header, else the client IP. Rejects calls exceeding `CANDLEKEEP_RATE_LIMIT_SEARCH` per `CANDLEKEEP_RATE_LIMIT_WINDOW` seconds. HTTP mode only; no-op in stdio. |
+| `_write_limiter` (`_RateLimiter`) | Write tools (ingest, delete, repopulate) | Per-client sliding window: keyed on the MCP session in stateful HTTP; in stateless HTTP (uvicorn workers, no session) on the optional `X-Candlekeep-Agent` request header, else the client IP. Rejects calls exceeding `CANDLEKEEP_RATE_LIMIT_WRITE` per `CANDLEKEEP_RATE_LIMIT_WINDOW` seconds. HTTP mode only; no-op in stdio. |
 
-Read operations (simple search, hybrid search, list_documents, get_stats) run without locks against ChromaDB, which handles its own collection-level consistency.
+Read operations (simple search, hybrid search, list_documents, get_stats) run without locks against ChromaDB, which handles its own collection-level consistency. On MPS, their model calls (query embedding, reranking) queue on `_MPS_LOCK`.
 
-**BM25 cache updates:** After a write, the BM25 cache is updated incrementally — old chunks for the affected source are removed and new chunks are added to the in-memory tokenized corpus, then BM25Okapi IDF statistics are recomputed. This avoids the ChromaDB round-trip and re-tokenization of a full cache rebuild. The IDF recomputation is O(N) arithmetic over pre-tokenized data, which is a constant-factor improvement over the previous approach (O(N) network fetch + O(N) tokenization + O(N) IDF). At 2,770 chunks the difference is small; at 50k+ chunks the network fetch elimination becomes significant. Full cache invalidation (`clear_bm25_cache`) is used only for `repopulate_database`. True O(k) incremental IDF updates would require switching to a library with native support (e.g., `whoosh`, `tantivy`).
+**BM25 cache updates:** The BM25 index is built lazily from the whole collection on the first hybrid or explore query and kept in memory. Every write (`ingest`, `delete_document`, `repopulate_database`) clears it, and the next query rebuilds it. The full-collection read is paginated (see [Large Collections](#large-collections)), and the build runs under `_cache_lock`, so concurrent cold queries wait for a single build. True incremental updates would require a library with native support (e.g., `whoosh`, `tantivy`).
 
-**[The Rosetta Seal](GLOSSARY.md#the-rosetta-seal) (normalisation map):** At `repopulate_database` time, the map is cleared. After each `ingest()`, a background daemon thread regenerates the map from the current corpus — non-blocking, zero latency impact on ingest or query paths. Queries during the rebuild use the stale map (bounded degradation, not silent failure). Once complete, the new map is atomically swapped in. The map is saved to `CANDLEKEEP_DATA_DIR/normalisation_map.json` and loaded lazily on first query. Benchmark: +15.7% BM25 MRR on surface-variant queries, zero regression on the Centurion Set, 0.07s generation time. See [Research Diary Entry 55](RESEARCH_DIARY.md#entry-55-the-rosetta-seal--corpus-derived-bm25-token-normalisation) for the full analysis.
+**[The Rosetta Seal](GLOSSARY.md#the-rosetta-seal) (normalisation map):** At `repopulate_database` time, the map is cleared. After each `ingest()`, a background daemon thread regenerates the map from the current corpus — non-blocking, zero latency impact on ingest or query paths. Queries during the rebuild use the stale map (bounded degradation, not silent failure). Once complete, the new map is atomically swapped in. The map is saved to `CANDLEKEEP_DATA_DIR/normalisation_map.json`. Benchmark (measured while the map was applied in BM25 tokenization): +15.7% BM25 MRR on surface-variant queries, zero regression on the Centurion Set, 0.07s generation time. **Known limitation:** the map is currently generated, saved and reported by `get_stats`, but BM25 tokenization does not apply it. See [Research Diary Entry 55](RESEARCH_DIARY.md#entry-55-the-rosetta-seal--corpus-derived-bm25-token-normalisation) for the full analysis.
 
 **ColBERT cache updates (opt-in):** When `CANDLEKEEP_SPARSE_BACKEND=colbert`, writes mark the ColBERT index dirty for lazy rebuild on the next query. Unlike BM25 (which supports incremental IDF recomputation), ColBERT requires a full index rebuild because the late interaction scoring depends on global token statistics. Single-file ingestion marks dirty; batch ingestion (`repopulate_database`) rebuilds once at the end. During rebuild, queries silently fall back to BM25 with a warning log. BM25 is always maintained regardless of the sparse backend setting.
 
@@ -349,7 +361,7 @@ The precise path runs the full pipeline (embedding → vector search → Arcane 
 
 *CPU cross-encoder runs in float64 to work around a torch ≥2.10 NaN regression (see Research Diary Entry 33). MPS is unaffected and remains in float32.*
 
-**Concurrent throughput (direct calls, MPS):**
+**Concurrent throughput (direct calls, MPS, measured before `_MPS_LOCK` serialised model calls on MPS):**
 
 | Concurrency | p50 | p95 | Throughput |
 |:-:|:-:|:-:|:-:|
@@ -362,7 +374,7 @@ The precise path runs the full pipeline (embedding → vector search → Arcane 
 
 Throughput peaks at N=3 (10.1 qps). At N=5, CPU-bound stages fight for the GIL and throughput collapses. Requests beyond the optimal N queue instead of degrading all in-flight requests.
 
-**Automatic calibration (HTTP mode):** At startup, after models are warm, the server fires concurrent cross-encoder calls at N=1 up to N=cores/2 and picks the N with the highest throughput. Stops early when throughput drops. On a 10-core machine (range N=1..5) this takes ~1.4s. The calibration result is logged (e.g., `✓ Precise-path concurrency: 3 (27.3 qps)`).
+**Automatic calibration (HTTP mode):** At startup, after models are warm, the server fires concurrent cross-encoder calls at N=1 up to N=cores/2 and picks the N with the highest throughput. Stops early when throughput drops. On a 10-core machine (range N=1..5) this takes ~1.4s. The calibration result is logged (e.g., `✓ Precise-path concurrency: 3 (27.3 qps)`). On MPS the cross-encoder calls it times are serialised by `_MPS_LOCK`, so the N it picks only decides where requests queue (on the semaphore or on the lock), not how many reranks run at once.
 
 **Heuristic fallback (stdio mode):** stdio is one-agent-per-process, so the semaphore is typically uncontended. The value is set from CPU core count (`cores // 3`) to avoid any boot-time cost. `scripts/benchmark_concurrent.py` can still be used for manual validation.
 
@@ -380,6 +392,8 @@ uvicorn candlekeep.mcp.server:app \
 
 The ASGI entrypoint (`candlekeep.mcp.server:app`) uses `stateless_http=True`, which makes each MCP request independent — no per-session state on the server. This is required for multi-worker mode, where consecutive requests from the same agent may land on different workers.
 
+**Rate limiting in stateless mode:** there is no MCP session, so give each agent its own bucket by sending an `X-Candlekeep-Agent` header (most MCP clients accept custom headers for HTTP servers, e.g. `"headers": {"X-Candlekeep-Agent": "agent-1"}`). Agents that don't send it share one bucket per client IP. The header is client-supplied: rate limits are a fairness mechanism, not a security boundary.
+
 **Benchmark results (25 concurrent agents, 82 docs / 2,630 chunks, CPU):**
 
 | Config | p50 | p95 | p99 | Throughput | Improvement |
@@ -387,7 +401,7 @@ The ASGI entrypoint (`candlekeep.mcp.server:app`) uses `stateless_http=True`, wh
 | 1 worker | 705ms | 1502ms | 2041ms | 10.6 qps | baseline |
 | 4 workers | **7ms** | **123ms** | **211ms** | **15.7 qps** | **100× p50** |
 
-At 50 concurrent agents, 4 workers maintain p50=6ms and p95=104ms at 30.5 qps — the system is not saturated. The bottleneck in single-worker mode is the Python asyncio event loop serializing concurrent SSE streams, not the RAG pipeline or ChromaDB.
+At 50 concurrent agents, 4 workers maintain p50=6ms and p95=104ms at 30.5 qps — the system is not saturated. The bottleneck in single-worker mode is the Python asyncio event loop serializing concurrent SSE streams, not the RAG pipeline or ChromaDB. These figures were measured with FastMCP 2, which ran synchronous tools directly on the event loop; FastMCP 3 runs them in a thread pool (see **Tool execution** under [Concurrency Model](#concurrency-model)).
 
 *Benchmark: `scripts/benchmark_scale.py --agents 25 --duration 300`. Data: Research Diary Entry 42.*
 
@@ -402,7 +416,7 @@ Each worker is an independent OS process. The following in-process state is NOT 
 | `_write_lock` | Two workers can write simultaneously. ChromaDB handles its own collection-level consistency, so data corruption is unlikely. Concurrent writes to the same source file could produce duplicate chunks until the next re-ingestion. | Low — agents write infrequently. |
 | `_reranker_semaphore` | Each worker independently caps cross-encoder concurrency. With W workers × N permits each, total concurrent cross-encoder calls = W×N, which may exceed the hardware-optimal level. | Low — GIL contention within each worker naturally throttles this. |
 | BM25 cache | After a write on worker A, workers B/C/D have stale BM25 caches until their next cache rebuild (triggered by the first hybrid query after the cache is invalidated, or by a write on that worker). Vector search (the primary retrieval path) always reflects the latest ChromaDB state. | Low — BM25 is a supplementary signal. Staleness is bounded. |
-| `_RateLimiter` | Per-session rate limits are tracked per-worker. An agent whose requests are distributed across workers gets W× the intended rate limit. | Low — rate limits are a fairness mechanism, not a security boundary. |
+| `_RateLimiter` | Limits are tracked per-worker. An agent whose requests are distributed across workers gets W× the intended rate limit. Without an `X-Candlekeep-Agent` header, agents behind one IP share a bucket. | Low — rate limits are a fairness mechanism, not a security boundary. |
 
 For read-heavy workloads (the typical agent pattern), these tradeoffs are acceptable. Writes are infrequent, and the vector search path is always consistent. If write serialization across workers becomes necessary, replace `threading.Lock` with `fcntl.flock` on a shared lockfile — this requires no external dependencies.
 
@@ -419,12 +433,12 @@ For read-heavy workloads (the typical agent pattern), these tradeoffs are accept
 
 ### 1. Quality Gate
 Documents are validated before ingestion:
-- YAML frontmatter required (title, description, keywords)
-- At least 2 markdown headers
-- Between 100 and 10,000 words
+- YAML frontmatter required (title, description, keywords, category, tags), and it must parse. A block the processor cannot read is rejected: invalid YAML (typically an unquoted `: ` inside a value), no closing `---` line, or not a key: value mapping. Otherwise the processor would drop it without a warning and index the raw block as body text, losing the title and description that Bardic Knowledge uses.
+- At least 2 headers (ATX `#` or setext), or frontmatter as proof of curation
+- At least 50 words and at most `CANDLEKEEP_QUALITY_MAX_WORDS` (default 10,000; 0 disables the upper bound)
 - No unclosed code blocks
 
-Rejected documents get specific error messages. Agent can fix and retry.
+Rejected documents get specific error messages. Agent can fix and retry. A single `.md`, `.txt` or `.rst` file that fails is rejected. When a directory is ingested, each of its `.md`, `.txt` and `.rst` files is checked: failing files are skipped and listed with their issues (the first 20 by name), and the rest are ingested.
 
 ### 2. Document Processing
 - Text extraction (markdown, PDF, plain text)
@@ -439,12 +453,12 @@ This is an ingestion-time technique — the context is baked into the stored emb
 
 ## Tool Registration
 
-All 14 tools (8 read-only, 6 write) are registered at startup. Database permissions (e.g., Bearer tokens for ChromaDB) determine whether write operations succeed.
+All 15 tools (8 read-only, 7 write) are registered at startup. Database permissions (e.g., Bearer tokens for ChromaDB) determine whether write operations succeed.
 
 | Category | Tools |
 |-----------|-----------|
 | Read Tools | search, list_documents, get_stats, critique_document, explore_entity, generate_documentation, memory_recall, memory_list |
-| Write Tools | ingest, delete_document, repopulate_database, rebuild_normalisation_map, memory_store, memory_delete |
+| Write Tools | ingest, delete_document, repopulate_database, rebuild_normalisation_map, rebuild_graph, memory_store, memory_delete |
 
 ## The Chronicle (Agent Memory)
 
@@ -514,6 +528,7 @@ All settings via environment variables (`.env` file):
 | CANDLEKEEP_EMBEDDING_CACHE_SIZE | 500 | Max entries in query embedding LRU cache |
 | CANDLEKEEP_CHUNK_SIZE | 512 | Chunk size in characters |
 | CANDLEKEEP_CHUNK_OVERLAP | 100 | Overlap between chunks |
+| CANDLEKEEP_RESULT_CHARS | 1000 | Characters of each search result returned to the agent, starting at the matched chunk |
 | CANDLEKEEP_QUALITY_MAX_WORDS | 10000 | Max words per document in the quality gate (0=no upper bound) |
 | CANDLEKEEP_MODELS_DIR | $XDG_CACHE_HOME/candlekeep/models | Model cache location, kept separate from the data dir |
 | CANDLEKEEP_DEFER_GRAPH_REBUILD | false | Skip the per-ingest graph rebuild; call `rebuild_graph` once after a bulk load |

@@ -1,5 +1,5 @@
 ---
-title: The Sahara Desert: An Ecological Oasis in the Vast Expanse
+title: "The Sahara Desert: An Ecological Oasis in the Vast Expanse"
 description: Explore the intricate web of life thriving in the Sahara Desert, a land of extremes and resilience.
 keywords: [Sahara Desert, desert ecology, desert biodiversity, desert adaptation, desert climate]
 category: general

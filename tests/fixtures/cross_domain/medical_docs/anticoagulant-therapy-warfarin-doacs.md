@@ -1,5 +1,5 @@
 ---
-title: Anticoagulant Therapy: Warfarin and Direct Oral Anticoagulants (DOACs)
+title: "Anticoagulant Therapy: Warfarin and Direct Oral Anticoagulants (DOACs)"
 description: A comprehensive clinical reference on the use of warfarin and direct oral anticoagulants (DOACs) for the prevention and treatment of thromboembolic disorders.
 keywords: [anticoagulation, warfarin, DOACs, rivaroxaban, apixaban, edoxaban, dabigatran]
 category: clinical

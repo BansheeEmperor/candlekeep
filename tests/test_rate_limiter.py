@@ -100,9 +100,16 @@ class TestRateLimiter:
 class TestRateCheck:
     """Tests for the _rate_check helper that integrates with Context."""
 
-    def _make_ctx(self, session_id="test-session"):
+    def _make_ctx(self, session_id="test-session", agent=None, ip="10.0.0.1"):
+        """Context whose HTTP request carries the given session / agent headers."""
+        headers = {}
+        if session_id:
+            headers["mcp-session-id"] = session_id
+        if agent is not None:
+            headers["x-candlekeep-agent"] = agent
         ctx = MagicMock()
-        ctx.session_id = session_id
+        ctx.request_context.request.headers = headers
+        ctx.request_context.request.client.host = ip
         return ctx
 
     def test_skipped_in_stdio_mode(self):
@@ -131,18 +138,53 @@ class TestRateCheck:
         finally:
             _settings.transport = original
 
-    def test_graceful_on_missing_session_id(self):
-        """If session_id raises, allow the call rather than crash."""
+    def test_graceful_on_missing_request(self):
+        """If there is no request context, allow the call rather than crash."""
         from candlekeep.mcp.server import _settings
         original = _settings.transport
         try:
             _settings.transport = "http"
             limiter = _RateLimiter(max_calls=1, window_seconds=60)
             ctx = MagicMock()
-            type(ctx).session_id = property(lambda self: (_ for _ in ()).throw(RuntimeError("no session")))
+            type(ctx).request_context = property(lambda self: (_ for _ in ()).throw(RuntimeError("no request")))
+            assert _rate_check(limiter, ctx) is None
             assert _rate_check(limiter, ctx) is None
         finally:
             _settings.transport = original
+
+    def _http(self, fn):
+        from candlekeep.mcp.server import _settings
+        original = _settings.transport
+        try:
+            _settings.transport = "http"
+            fn()
+        finally:
+            _settings.transport = original
+
+    def test_stateless_agents_get_separate_buckets(self):
+        """No session (stateless HTTP): X-Candlekeep-Agent keys the bucket."""
+        def run():
+            limiter = _RateLimiter(max_calls=1, window_seconds=60)
+            a, b = self._make_ctx(session_id=None, agent="a"), self._make_ctx(session_id=None, agent="b")
+            assert _rate_check(limiter, a) is None
+            assert _rate_check(limiter, a) is not None
+            assert _rate_check(limiter, b) is None
+        self._http(run)
+
+    def test_stateless_without_header_keys_on_ip(self):
+        def run():
+            limiter = _RateLimiter(max_calls=1, window_seconds=60)
+            assert _rate_check(limiter, self._make_ctx(session_id=None, ip="1.1.1.1")) is None
+            assert _rate_check(limiter, self._make_ctx(session_id=None, ip="1.1.1.1")) is not None
+            assert _rate_check(limiter, self._make_ctx(session_id=None, ip="2.2.2.2")) is None
+        self._http(run)
+
+    def test_session_takes_precedence_over_agent_header(self):
+        from candlekeep.mcp.server import _rate_key
+        assert _rate_key(self._make_ctx(session_id="s1", agent="a")) == "session:s1"
+        assert _rate_key(self._make_ctx(session_id=None, agent="  a  ")) == "agent:a"
+        assert _rate_key(self._make_ctx(session_id=None, agent="x" * 500)) == "agent:" + "x" * 128
+        assert _rate_key(self._make_ctx(session_id=None, agent="")) == "ip:10.0.0.1"
 
     def test_disabled_limiter_always_allows(self):
         from candlekeep.mcp.server import _settings

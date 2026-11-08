@@ -7,6 +7,8 @@
 
 ---
 
+> **Note.** Entries 60–67 cite the agent-view evaluation's protocols (`docs/AGENT_VIEW_EVALUATION*.md`), tooling (`scripts/eval_agent_view/`) and answer-fact fixtures. They are kept with the evaluation's data, outside this repository; the entries record the methods and results.
+
 ## Results Overview
 
 *Consolidated from the technique research summary (2026-02-11). For detailed per-entry data, see the diary entries below.*
@@ -3523,3 +3525,155 @@ Adopted **Overlapping Sentinels (100 characters)** as the new framework default 
 - `docs/BENCHMARKING.md` — Formalized the 5k MuSiQue "Scale Inversion" findings.
 
 This completes the deep multi-hop validation cycle. Candlekeep is now demonstrably superior to the leading competitor in speed, cost, and recall at scale.
+
+---
+
+## Entry 60: Fixture Repair After the Quality Gate Began Parsing Frontmatter
+
+**Date:** October 19, 2026  
+**Focus:** Test-corpus hygiene and benchmark comparability
+
+### Why
+
+The agent-view evaluation (`docs/AGENT_VIEW_EVALUATION.md`) showed that the processor drops frontmatter it cannot parse without a warning. It indexes the raw block as body text, so the document loses its title, description and Bardic Knowledge prefix. The quality gate did not catch this, because it only checked that a file starts with `---`, and directory ingests skipped the gate entirely. Commit `244518e` makes the gate parse the frontmatter with the processor's own rule and check every file of a directory ingest. Run over the repository's fixtures, the new gate rejected 38 of 878 documents, so an MCP directory ingest of the fixture corpora would have skipped them.
+
+### What was repaired (commit `f7c2964`)
+
+| Problem | Files | Repair |
+|---|---|---|
+| Frontmatter that did not parse: an unquoted `: ` in a title, or quotes inside a quoted title | 26: `scale_docs` 6, `alternating_docs` 8, `medical_docs` 1, `narrative_docs` 9, `paul_graham` 2 | The value is re-quoted; the parsed value equals the text as written, and no other byte changes |
+| A truncated document that ends inside a code block | 8: `scale_docs` 5 (concurrency-patterns, container-security, data-pipeline-design, design-patterns-structural, package-management), `api_ref_docs` 3 (identity-verification-api, image-scanning-api, snapshot-api) | The block is closed at the end of the file; the truncated content is left as is |
+| Metadata written as a ```` ```yaml ```` block | `scale_docs/vpn-tunneling.md` | The two fences become `---` |
+| No frontmatter | `sample_docs/plain-text.txt` | Frontmatter added, body unchanged; a new processor test keeps the no-frontmatter case covered |
+| Over 10,000 words | `paul_graham`: how-to-raise-money, the-other-road-ahead, what-i-worked-on | Split at the paragraph nearest the middle into `-part-1` / `-part-2`, titled "(Part n of 2)"; the two bodies join to the original exactly, and no evaluation query uses these essays as gold |
+
+`container-security.md` had both a frontmatter and a code-block problem. All 881 gated fixture files now pass, including the three new essay parts. BEIR documents are not repository files: the evaluation harness renders them from `corpus.jsonl`. Eleven of them are under 50 words (1 SciFact, 10 NFCorpus), so an MCP directory ingest would skip them. That is dataset text and was left alone.
+
+### Graded labels re-pointed (Centurion Set 1.2 → 1.3, commit `494a30d`)
+
+In seven of the repaired CEN documents (the six frontmatter repairs and `vpn-tunneling.md`), the raw frontmatter used to form chunk 0, so every later chunk index moved. `scripts/remap_graded_labels.py` rebuilds each labelled chunk with the labelling-time processor, loaded from `51f939f` (Entry 52), and moves the key to the current chunk with the same text. Of the 709 keys:
+
+- 660 are unchanged;
+- 44 move, all on exact text matches: 42 in the repaired documents, and 2 in `ci-cd-pipelines.md`, which had drifted when `69172ef` added setext headers;
+- 5 are dropped. Each is chunk 0 of a document where that chunk held only the raw frontmatter, which is now metadata (grades 1, 2, 3, 3, 3).
+
+No query gains or loses a grade ≥ 2 label.
+
+### Effect on the benchmarks
+
+The same code (`scripts/benchmark_fixture_repair.py`) was run on the fixtures before (`244518e`) and after the repair: in-process, MPS, k = 5. Values are the means over runs. CEN and the cross-domain suites ran twice per side, CEN-G three times. On the metrics in the table, repeat runs differed by at most 0.009 (one CEN query's Hit@5). Repeat runs of CEN-G precise Hit@5 differed by up to 0.028. Raw values are in `tests/results/fixture_repair_benchmark.json`.
+
+| Suite | Path | MRR@5 | nDCG@5 | Hit@5 |
+|---|---|---|---|---|
+| CEN (overlap 100) | hybrid | 0.522 → 0.546 | 0.541 → 0.557 | 0.583 → 0.588 |
+| | precise | 0.510 → 0.548 | 0.516 → 0.555 | 0.704 → 0.745 |
+| | explore | 0.515 → 0.544 | 0.530 → 0.553 | 0.565 → 0.579 |
+| CD-ALT | hybrid / precise / explore | +0.016 / +0.053 / +0.018 | +0.010 / +0.052 / +0.015 | +0.000 / +0.038 / +0.010 |
+| CD-NAR | hybrid / precise / explore | +0.022 / +0.046 / +0.033 | +0.013 / +0.046 / +0.029 | −0.009 / +0.046 / +0.023 |
+| CD-MED | hybrid / precise / explore | +0.005 / 0 / +0.005 | +0.003 / 0 / +0.003 | 0 / 0 / 0 |
+| CD-API, CD-LEG, PG | all paths | unchanged (PG precise nDCG@5 +0.006) | | |
+
+- **Controls:** CD-LEG had no repairs and is identical. CD-API is identical: closing a code block at the very end of a document does not change retrieval. The router benchmark that CI runs is identical (it uses `sample_docs` files that were not touched), so the archived baselines stand.
+- **Graded nDCG@5 (CEN-G, overlap 50) falls while every document-level metric rises:** hybrid 0.473 → 0.457, precise 0.375 → 0.366, explore 0.376 → 0.381. The labels were pooled from retrieval results before the repair:
+  - 3 of the 12 hybrid queries that lose score had retrieved a frontmatter chunk whose label is now dropped, and all 3 fall to 0 ("OWASP Top 10 2021", "cloud storage options", "vpn tunneling protocols").
+  - In the queries that lose score, unlabelled chunks in the top 5 rise from 11 of 54 results to 15 of 44.
+  - Treat graded nDCG as unreliable for this change until the repaired documents' chunks are annotated.
+- **Absolute levels differ from the evaluation's Layer 1 numbers.** "Before" CEN hybrid MRR@5 is 0.522 here, against 0.534 in the evaluation: `BenchmarkRunner` matches gold by path, and the evaluation matched by basename (`docs/AGENT_VIEW_EVALUATION.md` §16).
+
+### Reproducing earlier results
+
+Every benchmark number recorded before 2026-10-19 was computed on the pre-repair fixtures and Centurion labels 1.2, including the agent-view evaluation.
+
+- **With the repaired fixtures,** re-verifying that evaluation fails V-03 (graded records of 24 CEN-G queries differ) and V-05 (GoldText and GPC no longer recompute).
+- **Using a worktree at `26b97ab`:** run its own `scripts/eval_agent_view/verify.py` with `--root tests/results/agent_view_eval --repo <repository> --b-python <repository>/.venv/bin/python`. This reproduces the recorded `summary.json` exactly (checked on 2026-10-19: 0 differences).
+- **Re-running the evaluation harness after the repair** would ingest different corpora: 12 CEN and 21 cross-domain documents changed, and the 11 short BEIR documents would be skipped.
+
+### Files changed
+
+- `src/candlekeep/mcp/server.py`, `src/candlekeep/rag/processor.py`, `tests/test_quality_gate.py`: the gate (`244518e`).
+- 38 fixture documents (three of them split into six) and `tests/test_processor.py` (`f7c2964`).
+- `tests/fixtures/eval_suite_100.json` (labels 1.3) and `scripts/remap_graded_labels.py` (`494a30d`).
+- `scripts/benchmark_fixture_repair.py` and `tests/results/fixture_repair_benchmark.json`: the before/after benchmark.
+
+---
+
+## Entry 61: The Reranker Must Score Unstitched Windows
+
+**Date:** October 19, 2026  
+**Focus:** Precise-path regression found by the agent-view evaluation
+
+Stitching (`docs/DESIGN.md` §3.10) keeps the Bardic prefix once and removes chunk overlaps. It was meant for the search tool's view, but it also changed the text the precise path's cross-encoder scores. The informational CI run of the agent-view evaluation, with model calls serialised, showed the effect on the project's router benchmark: precise precision 87.4% → 82.3% and recall 76.8% → 73.2% (2 of 23 queries).
+
+- "OAuth 2.0 flows" returned nothing. Its authentication.md window scored −9.57 unstitched and −10.88 stitched, below the Relevance Ward at −10, which was calibrated on unstitched text.
+- "How do I design a scalable API with proper caching?" lost its 5th result to the same logit shift.
+
+Re-scoring the stitched windows with their unstitched text reproduced the old logits for all 111 candidates. Windows were the same in both states; only the text differed.
+
+**Fix (`72c233f`):** `expand_results` records each window's unstitched join in `metadata["_rerank_text"]`, and `rerank_results` scores it. Results keep the stitched text for display.
+
+**Verification:**
+- On the evaluation's corpora and Chroma processes, the precise, hybrid and explore rankings equal those before stitching on all 4,212 query-path pairs.
+- The router benchmark equals the pre-stitching run exactly on every path.
+- Latency is unchanged in alternating runs (precise p50 44.5 / 43.5 ms, against 46.3 / 43.3 ms before stitching).
+
+---
+
+## Entry 62: Serialising Model Calls on MPS
+
+**Date:** October 19, 2026  
+**Focus:** Process crashes under concurrency on Apple GPUs, and what the fix costs
+
+### The crash
+
+PyTorch's MPS backend is not thread-safe. When two threads run a model at once, the process aborts with a Metal command-buffer assertion or segfaults. FastMCP 3 runs tools in a thread pool, and an ingest starts a background normalisation rebuild, so a Candlekeep server on MPS crashed whenever two model calls overlapped. Reproduced, with the laptop awake and under `caffeinate`:
+
+- two threads in `EmbeddingManager.embed`, one embedding a batch and one a query: 4 segfaults and 1 hang in 5 runs;
+- a search during an ingest: the server crashed in every run (Entries 60–61 code, 4 of 4);
+- 16 concurrent precise searches: crashed in 4 of 4 runs, inside `CrossEncoder.predict`. The reranker semaphore allows several reranks at once;
+- 16 concurrent hybrid or explore searches: no crash in 4 runs each. Their query embeddings are short and rarely overlap.
+
+It also aborted the CI suite on MPS (`tests/test_arcane_recall.py`, while the Rosetta Seal rebuild ran), which is why the agent-view evaluation's C-14 failed closed.
+
+### The fix (`408654f`)
+
+`src/candlekeep/model_lock.py`:
+
+- **One process-wide lock.** It is re-entrant and hands over first-come, first-served. On MPS, every model load, `encode` and `predict` holds it. CPU and CUDA calls take no lock.
+- **Slices.** A call over 128 inputs runs in slices of 128, one lock hold each, in the model's own longest-first order. A first version that held the lock for a whole call let one ingest stall every search for its entire embedding: 6.0 s for 2,866 chunks, growing linearly with ingest size.
+- **Fair handoff.** With slicing alone, CPython's lock lets the slicing thread re-acquire at once. The lock therefore goes to the longest waiter.
+- **Numerics.** Because slices follow encode's length order in multiples of its batch size, the 2,955 Centurion embeddings and 300 reranker scores are bitwise equal to a single call's.
+- **Leaf lock.** Nothing else is locked, called back or waited on while it is held; a review traced every lock in the codebase and found no ordering cycle.
+
+### Performance (`scripts/benchmark_model_lock.py`, `tests/results/mps_lock_benchmark.json`)
+
+Each scenario ran on a fresh Chroma and Candlekeep server on an Apple M5 Pro (MPS), alternating no lock (`72c233f`) and lock. Every server first ingested `scale_docs`.
+
+| Scenario | No lock | Lock |
+|---|---|---|
+| Single client, p50 over 5 rounds: hybrid / precise / explore | 58.0 / 57.1 / 40.3 ms | 57.6 / 58.2 / 40.1 ms |
+| 16 sessions, hybrid | 25.4, 25.6 qps | 27.7, 29.1 qps |
+| 16 sessions, precise | crashed 2 of 2 | 28.2, 28.2 qps (p95 about 700 ms) |
+| 16 sessions, explore | 34.5, 33.5 qps | 37.1, 41.4 qps |
+| Ingest alone (13 per side) | 46.2 s | 46.2 s |
+| Re-ingest while 4 sessions search | crashed 2 of 2 | completes; search p50 115 ms, p95 190 ms, max 0.5–1.0 s |
+
+- **The lock costs nothing in steady state.** A paired in-process test (324 pairs, same store, alternating) measured −0.09 ms per precise search and −0.02 ms per hybrid search; the single-client precise difference above is within its per-round range (−2.8 to +4.4 ms).
+- **Under concurrency it is faster.** Serialised MPS calls beat contended ones: hybrid +12% and explore +15% throughput.
+- **Search during an ingest now works.** Lock timing in the overlap run shows the ingest in 46 slices, each held for at most 0.38 s, and the longest wait of any search 0.33 s. Without slicing, that wait was 5.9 s.
+- **Ingesting under load is slower, but not because of the lock.** The re-ingest takes about 140 s under load against 46 s alone. The ingest waited only 1.1 s in total for the lock; the rest is CPU and Chroma contention with four busy searchers.
+- **CI on MPS.** The suite now passes three times in three with no plugin. Before, the baseline aborted 3 times in 3.
+
+### Two concurrency bugs found on the way (`ebc2900`, `4ab25c1`)
+
+Once search-during-ingest could run on MPS, it exposed two read-during-write races that FastMCP 3's thread pool already allowed on CPU and CUDA:
+
+- A query can return a record deleted after its index lookup, with a None document and metadata. Vector search raised `'NoneType' object has no attribute 'get'` (1–2 searches in about 4,800 per run). Vector search and memory recall now skip such rows.
+- Chroma can fail the query with "Error finding id" (1 in about 4,800). `_collection_op` now retries it after 50 ms.
+
+With both fixes, three overlap runs (14,543 searches during re-ingests) had 0 failed searches.
+
+### Notes
+
+- On MPS, the startup calibration of the precise-path semaphore now times serialised reranks, so the size it picks (3–9 across starts) only decides where requests queue.
+- The post-ingest Rosetta Seal rebuild still takes the lock to build a map that BM25 does not apply (ARCHITECTURE, Rosetta Seal).
+- A deployment that forks after importing torch would inherit the lock; uvicorn workers are spawned.

@@ -1,5 +1,5 @@
 ---
-title: Elasticsearch: Mastering Indexing, Mappings, and Beyond
+title: "Elasticsearch: Mastering Indexing, Mappings, and Beyond"
 description: A comprehensive guide to the key features and capabilities of Elasticsearch, including indexing, mappings, analyzers, queries, aggregations, and sharding.
 keywords: [elasticsearch, indexing, mappings, analyzers, queries, aggregations, sharding]
 category: engineering

@@ -1,0 +1,1567 @@
+{
+ "description": "Fixture repair of 2026-10-19: the same code run on the fixtures before and after the repair (docs/RESEARCH_DIARY.md Entry 60).",
+ "script": "scripts/benchmark_fixture_repair.py",
+ "before": {
+  "fixtures_commit": "244518e",
+  "centurion_labels": "1.2"
+ },
+ "after": {
+  "fixtures_commit": "f7c2964",
+  "centurion_labels": "1.3 (494a30d)"
+ },
+ "device": "mps (model calls serialised)",
+ "k": 5,
+ "suites": {
+  "CEN": {
+   "chunk_overlap": 100,
+   "queries": 108,
+   "documents": [
+    89,
+    89
+   ],
+   "chunks": [
+    2970,
+    2955
+   ],
+   "runs": [
+    2,
+    2
+   ],
+   "paths": {
+    "hybrid": {
+     "mrr": {
+      "before": [
+       0.522377,
+       0.522377
+      ],
+      "after": [
+       0.547377,
+       0.54429
+      ],
+      "delta_of_means": 0.023457
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.541464,
+       0.541464
+      ],
+      "after": [
+       0.559763,
+       0.555133
+      ],
+      "delta_of_means": 0.015984
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.481481,
+       0.481481
+      ],
+      "after": [
+       0.518519,
+       0.518519
+      ],
+      "delta_of_means": 0.037037
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.583333,
+       0.583333
+      ],
+      "after": [
+       0.592593,
+       0.583333
+      ],
+      "delta_of_means": 0.00463
+     },
+     "avg_precision_5": {
+      "before": [
+       0.456173,
+       0.456173
+      ],
+      "after": [
+       0.479784,
+       0.477932
+      ],
+      "delta_of_means": 0.022685
+     }
+    },
+    "precise": {
+     "mrr": {
+      "before": [
+       0.510031,
+       0.510031
+      ],
+      "after": [
+       0.54892,
+       0.547068
+      ],
+      "delta_of_means": 0.037963
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.516314,
+       0.516314
+      ],
+      "after": [
+       0.557338,
+       0.553351
+      ],
+      "delta_of_means": 0.039031
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.675926,
+       0.675926
+      ],
+      "after": [
+       0.712963,
+       0.712963
+      ],
+      "delta_of_means": 0.037037
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.703704,
+       0.703704
+      ],
+      "after": [
+       0.75,
+       0.740741
+      ],
+      "delta_of_means": 0.041667
+     },
+     "avg_precision_5": {
+      "before": [
+       0.57284,
+       0.569599
+      ],
+      "after": [
+       0.593056,
+       0.593519
+      ],
+      "delta_of_means": 0.022068
+     }
+    },
+    "explore": {
+     "mrr": {
+      "before": [
+       0.514969,
+       0.514969
+      ],
+      "after": [
+       0.544753,
+       0.542438
+      ],
+      "delta_of_means": 0.028627
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.52978,
+       0.52978
+      ],
+      "after": [
+       0.555133,
+       0.550504
+      ],
+      "delta_of_means": 0.023038
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.481481,
+       0.481481
+      ],
+      "after": [
+       0.518519,
+       0.518519
+      ],
+      "delta_of_means": 0.037037
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.564815,
+       0.564815
+      ],
+      "after": [
+       0.583333,
+       0.574074
+      ],
+      "delta_of_means": 0.013889
+     },
+     "avg_precision_5": {
+      "before": [
+       0.491821,
+       0.491821
+      ],
+      "after": [
+       0.525154,
+       0.523302
+      ],
+      "delta_of_means": 0.032407
+     }
+    }
+   }
+  },
+  "CEN-G": {
+   "chunk_overlap": 50,
+   "queries": 108,
+   "documents": [
+    89,
+    89
+   ],
+   "chunks": [
+    2868,
+    2853
+   ],
+   "runs": [
+    3,
+    3
+   ],
+   "paths": {
+    "hybrid": {
+     "mrr": {
+      "before": [
+       0.523765,
+       0.523765,
+       0.522222
+      ],
+      "after": [
+       0.546605,
+       0.546605,
+       0.540432
+      ],
+      "delta_of_means": 0.021296
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.542676,
+       0.542676,
+       0.541464
+      ],
+      "after": [
+       0.553921,
+       0.553921,
+       0.549291
+      ],
+      "delta_of_means": 0.010106
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.481481,
+       0.481481,
+       0.481481
+      ],
+      "after": [
+       0.527778,
+       0.527778,
+       0.518519
+      ],
+      "delta_of_means": 0.04321
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.583333,
+       0.583333,
+       0.583333
+      ],
+      "after": [
+       0.574074,
+       0.574074,
+       0.574074
+      ],
+      "delta_of_means": -0.009259
+     },
+     "avg_precision_5": {
+      "before": [
+       0.460802,
+       0.460802,
+       0.458951
+      ],
+      "after": [
+       0.478395,
+       0.478395,
+       0.478395
+      ],
+      "delta_of_means": 0.01821
+     },
+     "avg_ndcg_5_graded": {
+      "before": [
+       0.472617,
+       0.470837,
+       0.476638
+      ],
+      "after": [
+       0.454895,
+       0.453914,
+       0.462964
+      ],
+      "delta_of_means": -0.016107
+     }
+    },
+    "precise": {
+     "mrr": {
+      "before": [
+       0.506944,
+       0.506944,
+       0.506944
+      ],
+      "after": [
+       0.552006,
+       0.54892,
+       0.53966
+      ],
+      "delta_of_means": 0.039918
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.511684,
+       0.511684,
+       0.511684
+      ],
+      "after": [
+       0.563822,
+       0.559192,
+       0.549933
+      ],
+      "delta_of_means": 0.045965
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.694444,
+       0.694444,
+       0.685185
+      ],
+      "after": [
+       0.731481,
+       0.731481,
+       0.712963
+      ],
+      "delta_of_means": 0.033951
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.712963,
+       0.712963,
+       0.703704
+      ],
+      "after": [
+       0.777778,
+       0.768519,
+       0.75
+      ],
+      "delta_of_means": 0.055556
+     },
+     "avg_precision_5": {
+      "before": [
+       0.576698,
+       0.576698,
+       0.564198
+      ],
+      "after": [
+       0.613117,
+       0.611265,
+       0.592747
+      ],
+      "delta_of_means": 0.033179
+     },
+     "avg_ndcg_5_graded": {
+      "before": [
+       0.374278,
+       0.375263,
+       0.375214
+      ],
+      "after": [
+       0.369717,
+       0.36552,
+       0.36322
+      ],
+      "delta_of_means": -0.008766
+     }
+    },
+    "explore": {
+     "mrr": {
+      "before": [
+       0.513117,
+       0.513117,
+       0.511574
+      ],
+      "after": [
+       0.545525,
+       0.545525,
+       0.539352
+      ],
+      "delta_of_means": 0.030864
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.525151,
+       0.525151,
+       0.523938
+      ],
+      "after": [
+       0.553921,
+       0.553921,
+       0.549291
+      ],
+      "delta_of_means": 0.027631
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.481481,
+       0.481481,
+       0.481481
+      ],
+      "after": [
+       0.527778,
+       0.527778,
+       0.518519
+      ],
+      "delta_of_means": 0.04321
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.555556,
+       0.555556,
+       0.555556
+      ],
+      "after": [
+       0.574074,
+       0.574074,
+       0.574074
+      ],
+      "delta_of_means": 0.018519
+     },
+     "avg_precision_5": {
+      "before": [
+       0.489969,
+       0.489969,
+       0.489969
+      ],
+      "after": [
+       0.523302,
+       0.523302,
+       0.520988
+      ],
+      "delta_of_means": 0.032562
+     },
+     "avg_ndcg_5_graded": {
+      "before": [
+       0.375443,
+       0.374912,
+       0.37736
+      ],
+      "after": [
+       0.378986,
+       0.378084,
+       0.384733
+      ],
+      "delta_of_means": 0.004696
+     }
+    }
+   }
+  },
+  "CD-ALT": {
+   "chunk_overlap": 100,
+   "queries": 104,
+   "documents": [
+    88,
+    88
+   ],
+   "chunks": [
+    1205,
+    1189
+   ],
+   "runs": [
+    2,
+    2
+   ],
+   "paths": {
+    "hybrid": {
+     "mrr": {
+      "before": [
+       0.567949,
+       0.567949
+      ],
+      "after": [
+       0.583654,
+       0.583654
+      ],
+      "delta_of_means": 0.015705
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.585012,
+       0.585012
+      ],
+      "after": [
+       0.595294,
+       0.595294
+      ],
+      "delta_of_means": 0.010282
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.538462,
+       0.538462
+      ],
+      "after": [
+       0.557692,
+       0.557692
+      ],
+      "delta_of_means": 0.019231
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.625,
+       0.625
+      ],
+      "after": [
+       0.625,
+       0.625
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_precision_5": {
+      "before": [
+       0.323558,
+       0.323558
+      ],
+      "after": [
+       0.339904,
+       0.339904
+      ],
+      "delta_of_means": 0.016346
+     }
+    },
+    "precise": {
+     "mrr": {
+      "before": [
+       0.548077,
+       0.548077
+      ],
+      "after": [
+       0.600962,
+       0.600962
+      ],
+      "delta_of_means": 0.052885
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.555402,
+       0.555402
+      ],
+      "after": [
+       0.607028,
+       0.607028
+      ],
+      "delta_of_means": 0.051626
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.692308,
+       0.692308
+      ],
+      "after": [
+       0.740385,
+       0.740385
+      ],
+      "delta_of_means": 0.048077
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.740385,
+       0.740385
+      ],
+      "after": [
+       0.778846,
+       0.778846
+      ],
+      "delta_of_means": 0.038462
+     },
+     "avg_precision_5": {
+      "before": [
+       0.442147,
+       0.43734
+      ],
+      "after": [
+       0.434295,
+       0.434295
+      ],
+      "delta_of_means": -0.005449
+     }
+    },
+    "explore": {
+     "mrr": {
+      "before": [
+       0.560417,
+       0.560417
+      ],
+      "after": [
+       0.578045,
+       0.578045
+      ],
+      "delta_of_means": 0.017628
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.574138,
+       0.574138
+      ],
+      "after": [
+       0.589227,
+       0.589227
+      ],
+      "delta_of_means": 0.01509
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.538462,
+       0.538462
+      ],
+      "after": [
+       0.557692,
+       0.557692
+      ],
+      "delta_of_means": 0.019231
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.605769,
+       0.605769
+      ],
+      "after": [
+       0.615385,
+       0.615385
+      ],
+      "delta_of_means": 0.009615
+     },
+     "avg_precision_5": {
+      "before": [
+       0.526923,
+       0.526923
+      ],
+      "after": [
+       0.561058,
+       0.561058
+      ],
+      "delta_of_means": 0.034135
+     }
+    }
+   }
+  },
+  "CD-API": {
+   "chunk_overlap": 100,
+   "queries": 108,
+   "documents": [
+    95,
+    95
+   ],
+   "chunks": [
+    1735,
+    1735
+   ],
+   "runs": [
+    2,
+    2
+   ],
+   "paths": {
+    "hybrid": {
+     "mrr": {
+      "before": [
+       0.611883,
+       0.611883
+      ],
+      "after": [
+       0.611883,
+       0.611883
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.62116,
+       0.62116
+      ],
+      "after": [
+       0.62116,
+       0.62116
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.583333,
+       0.583333
+      ],
+      "after": [
+       0.583333,
+       0.583333
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.648148,
+       0.648148
+      ],
+      "after": [
+       0.648148,
+       0.648148
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_precision_5": {
+      "before": [
+       0.509568,
+       0.509568
+      ],
+      "after": [
+       0.509568,
+       0.509568
+      ],
+      "delta_of_means": 0.0
+     }
+    },
+    "precise": {
+     "mrr": {
+      "before": [
+       0.598765,
+       0.598765
+      ],
+      "after": [
+       0.598765,
+       0.598765
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.609126,
+       0.609126
+      ],
+      "after": [
+       0.609126,
+       0.609126
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.851852,
+       0.851852
+      ],
+      "after": [
+       0.851852,
+       0.851852
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.907407,
+       0.907407
+      ],
+      "after": [
+       0.907407,
+       0.907407
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_precision_5": {
+      "before": [
+       0.612037,
+       0.615895
+      ],
+      "after": [
+       0.615895,
+       0.611265
+      ],
+      "delta_of_means": -0.000386
+     }
+    },
+    "explore": {
+     "mrr": {
+      "before": [
+       0.595679,
+       0.595679
+      ],
+      "after": [
+       0.595679,
+       0.595679
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.599647,
+       0.599647
+      ],
+      "after": [
+       0.599647,
+       0.599647
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.583333,
+       0.583333
+      ],
+      "after": [
+       0.583333,
+       0.583333
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.611111,
+       0.611111
+      ],
+      "after": [
+       0.611111,
+       0.611111
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_precision_5": {
+      "before": [
+       0.578241,
+       0.578241
+      ],
+      "after": [
+       0.578241,
+       0.578241
+      ],
+      "delta_of_means": 0.0
+     }
+    }
+   }
+  },
+  "CD-LEG": {
+   "chunk_overlap": 100,
+   "queries": 107,
+   "documents": [
+    90,
+    90
+   ],
+   "chunks": [
+    1520,
+    1520
+   ],
+   "runs": [
+    2,
+    2
+   ],
+   "paths": {
+    "hybrid": {
+     "mrr": {
+      "before": [
+       0.678349,
+       0.678349
+      ],
+      "after": [
+       0.678349,
+       0.678349
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.685914,
+       0.685914
+      ],
+      "after": [
+       0.685914,
+       0.685914
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.663551,
+       0.663551
+      ],
+      "after": [
+       0.663551,
+       0.663551
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.700935,
+       0.700935
+      ],
+      "after": [
+       0.700935,
+       0.700935
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_precision_5": {
+      "before": [
+       0.535826,
+       0.535826
+      ],
+      "after": [
+       0.535826,
+       0.535826
+      ],
+      "delta_of_means": 0.0
+     }
+    },
+    "precise": {
+     "mrr": {
+      "before": [
+       0.686916,
+       0.686916
+      ],
+      "after": [
+       0.686916,
+       0.686916
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.68814,
+       0.68814
+      ],
+      "after": [
+       0.68814,
+       0.68814
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.953271,
+       0.953271
+      ],
+      "after": [
+       0.953271,
+       0.953271
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.962617,
+       0.962617
+      ],
+      "after": [
+       0.962617,
+       0.962617
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_precision_5": {
+      "before": [
+       0.564174,
+       0.562773
+      ],
+      "after": [
+       0.567134,
+       0.563707
+      ],
+      "delta_of_means": 0.001947
+     }
+    },
+    "explore": {
+     "mrr": {
+      "before": [
+       0.67134,
+       0.67134
+      ],
+      "after": [
+       0.67134,
+       0.67134
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.675344,
+       0.675344
+      ],
+      "after": [
+       0.675344,
+       0.675344
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.663551,
+       0.663551
+      ],
+      "after": [
+       0.663551,
+       0.663551
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.682243,
+       0.682243
+      ],
+      "after": [
+       0.682243,
+       0.682243
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_precision_5": {
+      "before": [
+       0.661994,
+       0.661994
+      ],
+      "after": [
+       0.661994,
+       0.661994
+      ],
+      "delta_of_means": 0.0
+     }
+    }
+   }
+  },
+  "CD-MED": {
+   "chunk_overlap": 100,
+   "queries": 108,
+   "documents": [
+    91,
+    91
+   ],
+   "chunks": [
+    1433,
+    1431
+   ],
+   "runs": [
+    2,
+    2
+   ],
+   "paths": {
+    "hybrid": {
+     "mrr": {
+      "before": [
+       0.691667,
+       0.691667
+      ],
+      "after": [
+       0.696296,
+       0.696296
+      ],
+      "delta_of_means": 0.00463
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.695657,
+       0.695657
+      ],
+      "after": [
+       0.699074,
+       0.699074
+      ],
+      "delta_of_means": 0.003417
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.685185,
+       0.685185
+      ],
+      "after": [
+       0.694444,
+       0.694444
+      ],
+      "delta_of_means": 0.009259
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.703704,
+       0.703704
+      ],
+      "after": [
+       0.703704,
+       0.703704
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_precision_5": {
+      "before": [
+       0.411883,
+       0.411883
+      ],
+      "after": [
+       0.418827,
+       0.418827
+      ],
+      "delta_of_means": 0.006944
+     }
+    },
+    "precise": {
+     "mrr": {
+      "before": [
+       0.679012,
+       0.679012
+      ],
+      "after": [
+       0.679012,
+       0.679012
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.687829,
+       0.687829
+      ],
+      "after": [
+       0.687829,
+       0.687829
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.898148,
+       0.898148
+      ],
+      "after": [
+       0.898148,
+       0.898148
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.962963,
+       0.962963
+      ],
+      "after": [
+       0.962963,
+       0.962963
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_precision_5": {
+      "before": [
+       0.516358,
+       0.516358
+      ],
+      "after": [
+       0.512191,
+       0.512654
+      ],
+      "delta_of_means": -0.003935
+     }
+    },
+    "explore": {
+     "mrr": {
+      "before": [
+       0.689815,
+       0.689815
+      ],
+      "after": [
+       0.694444,
+       0.694444
+      ],
+      "delta_of_means": 0.00463
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.691027,
+       0.691027
+      ],
+      "after": [
+       0.694444,
+       0.694444
+      ],
+      "delta_of_means": 0.003417
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.685185,
+       0.685185
+      ],
+      "after": [
+       0.694444,
+       0.694444
+      ],
+      "delta_of_means": 0.009259
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.694444,
+       0.694444
+      ],
+      "after": [
+       0.694444,
+       0.694444
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_precision_5": {
+      "before": [
+       0.645062,
+       0.645062
+      ],
+      "after": [
+       0.652006,
+       0.652006
+      ],
+      "delta_of_means": 0.006944
+     }
+    }
+   }
+  },
+  "CD-NAR": {
+   "chunk_overlap": 100,
+   "queries": 108,
+   "documents": [
+    89,
+    89
+   ],
+   "chunks": [
+    1408,
+    1390
+   ],
+   "runs": [
+    2,
+    2
+   ],
+   "paths": {
+    "hybrid": {
+     "mrr": {
+      "before": [
+       0.674691,
+       0.675463
+      ],
+      "after": [
+       0.697531,
+       0.697531
+      ],
+      "delta_of_means": 0.022454
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.689393,
+       0.690605
+      ],
+      "after": [
+       0.702711,
+       0.702711
+      ],
+      "delta_of_means": 0.012712
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.648148,
+       0.648148
+      ],
+      "after": [
+       0.685185,
+       0.685185
+      ],
+      "delta_of_means": 0.037037
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.722222,
+       0.722222
+      ],
+      "after": [
+       0.712963,
+       0.712963
+      ],
+      "delta_of_means": -0.009259
+     },
+     "avg_precision_5": {
+      "before": [
+       0.515741,
+       0.515741
+      ],
+      "after": [
+       0.518519,
+       0.518519
+      ],
+      "delta_of_means": 0.002778
+     }
+    },
+    "precise": {
+     "mrr": {
+      "before": [
+       0.655864,
+       0.655864
+      ],
+      "after": [
+       0.70216,
+       0.70216
+      ],
+      "delta_of_means": 0.046296
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.659832,
+       0.659832
+      ],
+      "after": [
+       0.706128,
+       0.706128
+      ],
+      "delta_of_means": 0.046296
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.925926,
+       0.925926
+      ],
+      "after": [
+       0.972222,
+       0.972222
+      ],
+      "delta_of_means": 0.046296
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.944444,
+       0.944444
+      ],
+      "after": [
+       0.990741,
+       0.990741
+      ],
+      "delta_of_means": 0.046296
+     },
+     "avg_precision_5": {
+      "before": [
+       0.576698,
+       0.575926
+      ],
+      "after": [
+       0.591975,
+       0.591975
+      ],
+      "delta_of_means": 0.015664
+     }
+    },
+    "explore": {
+     "mrr": {
+      "before": [
+       0.662809,
+       0.665895
+      ],
+      "after": [
+       0.697531,
+       0.697531
+      ],
+      "delta_of_means": 0.033179
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.670304,
+       0.676146
+      ],
+      "after": [
+       0.702711,
+       0.702711
+      ],
+      "delta_of_means": 0.029486
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.648148,
+       0.648148
+      ],
+      "after": [
+       0.685185,
+       0.685185
+      ],
+      "delta_of_means": 0.037037
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.685185,
+       0.694444
+      ],
+      "after": [
+       0.712963,
+       0.712963
+      ],
+      "delta_of_means": 0.023148
+     },
+     "avg_precision_5": {
+      "before": [
+       0.627315,
+       0.630401
+      ],
+      "after": [
+       0.662037,
+       0.662037
+      ],
+      "delta_of_means": 0.033179
+     }
+    }
+   }
+  },
+  "PG": {
+   "chunk_overlap": 100,
+   "queries": 48,
+   "documents": [
+    215,
+    218
+   ],
+   "chunks": [
+    7190,
+    7189
+   ],
+   "runs": [
+    1,
+    1
+   ],
+   "paths": {
+    "hybrid": {
+     "mrr": {
+      "before": [
+       0.534722
+      ],
+      "after": [
+       0.534722
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.526955
+      ],
+      "after": [
+       0.526955
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.458333
+      ],
+      "after": [
+       0.458333
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.645833
+      ],
+      "after": [
+       0.645833
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_precision_5": {
+      "before": [
+       0.284722
+      ],
+      "after": [
+       0.283333
+      ],
+      "delta_of_means": -0.001389
+     }
+    },
+    "precise": {
+     "mrr": {
+      "before": [
+       0.527778
+      ],
+      "after": [
+       0.527778
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.499012
+      ],
+      "after": [
+       0.505399
+      ],
+      "delta_of_means": 0.006387
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.75
+      ],
+      "after": [
+       0.75
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.770833
+      ],
+      "after": [
+       0.770833
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_precision_5": {
+      "before": [
+       0.515278
+      ],
+      "after": [
+       0.518403
+      ],
+      "delta_of_means": 0.003125
+     }
+    },
+    "explore": {
+     "mrr": {
+      "before": [
+       0.53125
+      ],
+      "after": [
+       0.53125
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_ndcg_5": {
+      "before": [
+       0.526955
+      ],
+      "after": [
+       0.526955
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_1": {
+      "before": [
+       0.458333
+      ],
+      "after": [
+       0.458333
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_hit_rate_5": {
+      "before": [
+       0.645833
+      ],
+      "after": [
+       0.645833
+      ],
+      "delta_of_means": 0.0
+     },
+     "avg_precision_5": {
+      "before": [
+       0.363542
+      ],
+      "after": [
+       0.36875
+      ],
+      "delta_of_means": 0.005208
+     }
+    }
+   }
+  }
+ }
+}

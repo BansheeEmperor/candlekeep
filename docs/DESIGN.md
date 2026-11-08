@@ -89,6 +89,8 @@ The `ingest` tool validates documents before accepting them. This ensures [Bardi
 
 **Decision:** Reject documents missing frontmatter, headers, or with extreme lengths. The agent gets specific error messages and can fix the document.
 
+The frontmatter must also parse with the processor's own rule: the processor drops a block it cannot read without a warning, so a document with, say, an unquoted colon in its title would be indexed with no title or description. Directory ingests apply the gate to each file and skip the failing ones, listing them in the result: before this, a directory bypassed the gate entirely.
+
 ### 3.6 Conditional Tool Registration
 
 Write tools (ingest, delete, repopulate) are destructive. On remote databases, they're hidden from the agent entirely — not just permission-denied at runtime, but invisible in the tool list.
@@ -125,6 +127,38 @@ Two implementation choices are worth recording:
 
 - **Tags as per-tag boolean keys.** ChromaDB's `$contains` matches document text only, not metadata, so whole-tag filtering goes through exact-match `$and` clauses over dedicated `tag:<name> = true` keys. This makes substring collisions impossible — a `boot` filter cannot match a `reboot` tag.
 - **A 0.5 cosine-similarity floor on recall.** A scaled-down [Relevance Ward](GLOSSARY.md#the-relevance-ward): returning no memory is better than returning a loosely related one.
+
+### 3.10 Stitched, Match-Anchored Search Results
+
+[Arcane Recall](GLOSSARY.md#arcane-recall) merges neighbouring chunks into windows, and every chunk carries its Bardic Knowledge prefix plus the chunker's overlap with its neighbour. Concatenating chunks verbatim repeated the document header once per chunk and duplicated the overlap text. The `search` tool's fixed-length view also started at the top of the window — usually the header and the context before the match — so the matched passage often fell outside what the agent received.
+
+**Decision:** Keep the prefix in the embeddings, where it helps ranking, but strip it at presentation time. Windows keep the header once and drop chunk overlaps, and each window records where its best-scoring matched chunk starts. The tool returns a title line plus `CANDLEKEEP_RESULT_CHARS` characters (default 1000) from the match. Because the duplication is gone, the same character budget carries more of the document, which is what allows a larger default budget without a proportional increase in output size.
+
+Stitching is for presentation only. The precise path's cross-encoder still scores each window as the unstitched join of its chunks, prefixes and overlaps kept. Its Relevance Ward (−10) was calibrated on that text. Scoring the stitched text instead moved logits across the Ward: on the router benchmark, precise precision fell from 87.4% to 82.3% and recall from 76.8% to 73.2%. With the unstitched text, the precise rankings match those before stitching on every query of the agent-view evaluation's suites (Research Diary Entry 61).
+
+### 3.11 Paginated Reads for Large Collections
+
+Several features read the entire collection at once: the BM25 index build, `list_documents`, `get_stats`, and the normalisation-map and ColBERT rebuilds. chromadb 1.5 introduced a hard limit — a single `get()` returning metadata for more than 32,766 records fails — so hybrid and explore search failed on every query once a collection crossed that size. Pinning an older chromadb would only hide the problem.
+
+**Decision:** Route every full-collection read through one paginated, self-healing helper with a fixed page size of 5,000 records, chosen from a page-size sweep as the middle of the fastest range and well below the limit.
+
+### 3.12 Tool Execution Off the Event Loop
+
+FastMCP 2 ran synchronous tools directly on the asyncio event loop, so one long-running tool call (ingesting a large directory, a graph or normalisation-map rebuild) made the HTTP server unresponsive to every other agent until it finished. FastMCP 3 runs synchronous tools in a thread pool.
+
+**Decision:** Require `fastmcp>=3.4.9,<4`. Tool outputs are unchanged. Running tools concurrently exposed an unlocked shared cache, so the BM25 index build now runs under a re-entrant lock with a generation check — a build that spans a cache clear (for example a self-heal reconnect) is redone rather than cached. FastMCP 4 (built on MCP SDK v2) was evaluated and produced identical outputs, but it changes session semantics through its sessionless protocol mode and is left for a separate upgrade.
+
+### 3.13 Rate-Limit Identity in Stateless HTTP
+
+The rate limiter keyed on the MCP session. Stateless HTTP — required for uvicorn multi-worker deployments — has no session, so every request looked like a new client and limits never applied.
+
+**Decision:** Key on the `mcp-session-id` header when present; otherwise on an optional, client-supplied `X-Candlekeep-Agent` header; otherwise on the client IP. Agents that send the header get their own bucket, and agents that don't share one bucket per IP. The header is not authenticated: rate limits remain a fairness mechanism, not a security boundary.
+
+### 3.14 One Lock for Model Calls on MPS
+
+FastMCP 3 runs tools in a thread pool, and Candlekeep runs background threads (the normalisation rebuild after each ingest). PyTorch's MPS backend is not thread-safe. When two threads run a model at once the process aborts (a Metal command-buffer assertion) or segfaults. Reproduced: a search during an ingest, a search during the post-ingest rebuild, and 16 concurrent precise searches.
+
+**Decision:** on MPS, every model load, `encode` and `predict` holds one process-wide lock (`model_lock.py`). A plain lock held for a whole call let one ingest stall every search for its full embedding (6 s for 2,866 chunks, growing with ingest size). So long calls run in slices of 128 inputs, one lock hold per slice, in the model's own length order. That keeps the batches it builds, and on the Centurion corpus every embedding and score, bitwise identical. The lock hands over first-come, first-served, so a waiting search runs before the ingest's next slice. CPU and CUDA calls take no lock. Measured effect: Research Diary Entry 62.
 
 ## 4. Techniques Evaluated
 

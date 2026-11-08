@@ -1,5 +1,5 @@
 ---
-title: Surviving the Scorching Sands: Flora and Fauna Adaptations in the Desert
+title: "Surviving the Scorching Sands: Flora and Fauna Adaptations in the Desert"
 description: Explore the remarkable ways plants and animals have adapted to thrive in the harsh desert environment.
 keywords: [desert, adaptation, flora, fauna, survival, arid, ecosystem]
 category: general

@@ -1,5 +1,5 @@
 ---
-title: Helm Chart Development: A Comprehensive Guide
+title: "Helm Chart Development: A Comprehensive Guide"
 description: A detailed guide to creating and managing Kubernetes Helm charts for application deployment.
 keywords: [Helm, Kubernetes, charts, YAML, templates, releases, values]
 category: engineering
