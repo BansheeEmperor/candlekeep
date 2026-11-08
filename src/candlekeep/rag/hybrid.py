@@ -1,5 +1,6 @@
 """Lexical search and rank fusion for hybrid retrieval."""
 import re
+import threading
 from typing import List
 import logging
 from rank_bm25 import BM25Okapi
@@ -19,35 +20,38 @@ STOP_WORDS = {
 
 _bm25_cache = None
 _corpus_ids = None
+# Tools run concurrently in FastMCP's thread pool, so concurrent cold queries
+# must wait for one build instead of each scanning and tokenising the collection.
+# Re-entrant because a self-heal during the build's reads calls clear_bm25_cache().
+_cache_lock = threading.RLock()
+_cache_generation = 0  # bumped by every clear; a build spanning a clear is redone
 
 def clear_bm25_cache():
     """Clear BM25 cache when the database is repopulated."""
-    global _bm25_cache, _corpus_ids
-    _bm25_cache = None
-    _corpus_ids = None
+    global _bm25_cache, _corpus_ids, _cache_generation
+    with _cache_lock:
+        _bm25_cache = None
+        _corpus_ids = None
+        _cache_generation += 1
 
 def update_bm25_cache(db):
     """Lazily initialize BM25 on the full corpus."""
     global _bm25_cache, _corpus_ids
-    if _bm25_cache is not None:
+    with _cache_lock:
+        if _bm25_cache is None:
+            for _ in range(2):
+                generation = _cache_generation
+                # Fetch ALL documents from ChromaDB (paged — see vector_store._GET_PAGE_SIZE)
+                results = db._get_paginated(include=["documents"])
+                bm25 = BM25Okapi([_tokenize(doc) for doc in results['documents']])
+                if generation == _cache_generation:
+                    break
+            _bm25_cache, _corpus_ids = bm25, results['ids']
         return _bm25_cache, _corpus_ids
-
-    # Fetch ALL documents from ChromaDB
-    results = db.collection.get()
-    documents = results['documents']
-    _corpus_ids = results['ids']
-    metadatas = results['metadatas']
-
-    # Tokenize corpus
-    tokenized_corpus = [_tokenize(doc) for doc in documents]
-    _bm25_cache = BM25Okapi(tokenized_corpus)
-    return _bm25_cache, _corpus_ids
 
 def remove_from_bm25_cache(source: str):
     """Clear BM25 cache when a source is removed."""
-    global _bm25_cache, _corpus_ids
-    _bm25_cache = None
-    _corpus_ids = None
+    clear_bm25_cache()
 
 def _tokenize(text: str) -> List[str]:
     """Surgical tokenization for technical documentation."""

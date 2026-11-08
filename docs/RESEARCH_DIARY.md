@@ -7,6 +7,8 @@
 
 ---
 
+> **Note.** Entries 60–67 cite the agent-view evaluation's protocols (`docs/AGENT_VIEW_EVALUATION*.md`), tooling (`scripts/eval_agent_view/`) and answer-fact fixtures. They are kept with the evaluation's data, outside this repository; the entries record the methods and results.
+
 ## Results Overview
 
 *Consolidated from the technique research summary (2026-02-11). For detailed per-entry data, see the diary entries below.*
@@ -3523,3 +3525,410 @@ Adopted **Overlapping Sentinels (100 characters)** as the new framework default 
 - `docs/BENCHMARKING.md` — Formalized the 5k MuSiQue "Scale Inversion" findings.
 
 This completes the deep multi-hop validation cycle. Candlekeep is now demonstrably superior to the leading competitor in speed, cost, and recall at scale.
+
+---
+
+## Entry 60: Fixture Repair After the Quality Gate Began Parsing Frontmatter
+
+**Date:** October 19, 2026  
+**Focus:** Test-corpus hygiene and benchmark comparability
+
+### Why
+
+The agent-view evaluation (`docs/AGENT_VIEW_EVALUATION.md`) showed that the processor drops frontmatter it cannot parse without a warning. It indexes the raw block as body text, so the document loses its title, description and Bardic Knowledge prefix. The quality gate did not catch this, because it only checked that a file starts with `---`, and directory ingests skipped the gate entirely. Commit `244518e` makes the gate parse the frontmatter with the processor's own rule and check every file of a directory ingest. Run over the repository's fixtures, the new gate rejected 38 of 878 documents, so an MCP directory ingest of the fixture corpora would have skipped them.
+
+### What was repaired (commit `f7c2964`)
+
+| Problem | Files | Repair |
+|---|---|---|
+| Frontmatter that did not parse: an unquoted `: ` in a title, or quotes inside a quoted title | 26: `scale_docs` 6, `alternating_docs` 8, `medical_docs` 1, `narrative_docs` 9, `paul_graham` 2 | The value is re-quoted; the parsed value equals the text as written, and no other byte changes |
+| A truncated document that ends inside a code block | 8: `scale_docs` 5 (concurrency-patterns, container-security, data-pipeline-design, design-patterns-structural, package-management), `api_ref_docs` 3 (identity-verification-api, image-scanning-api, snapshot-api) | The block is closed at the end of the file; the truncated content is left as is |
+| Metadata written as a ```` ```yaml ```` block | `scale_docs/vpn-tunneling.md` | The two fences become `---` |
+| No frontmatter | `sample_docs/plain-text.txt` | Frontmatter added, body unchanged; a new processor test keeps the no-frontmatter case covered |
+| Over 10,000 words | `paul_graham`: how-to-raise-money, the-other-road-ahead, what-i-worked-on | Split at the paragraph nearest the middle into `-part-1` / `-part-2`, titled "(Part n of 2)"; the two bodies join to the original exactly, and no evaluation query uses these essays as gold |
+
+`container-security.md` had both a frontmatter and a code-block problem. All 881 gated fixture files now pass, including the three new essay parts. BEIR documents are not repository files: the evaluation harness renders them from `corpus.jsonl`. Eleven of them are under 50 words (1 SciFact, 10 NFCorpus), so an MCP directory ingest would skip them. That is dataset text and was left alone.
+
+### Graded labels re-pointed (Centurion Set 1.2 → 1.3, commit `494a30d`)
+
+In seven of the repaired CEN documents (the six frontmatter repairs and `vpn-tunneling.md`), the raw frontmatter used to form chunk 0, so every later chunk index moved. `scripts/remap_graded_labels.py` rebuilds each labelled chunk with the labelling-time processor, loaded from `51f939f` (Entry 52), and moves the key to the current chunk with the same text. Of the 709 keys:
+
+- 660 are unchanged;
+- 44 move, all on exact text matches: 42 in the repaired documents, and 2 in `ci-cd-pipelines.md`, which had drifted when `69172ef` added setext headers;
+- 5 are dropped. Each is chunk 0 of a document where that chunk held only the raw frontmatter, which is now metadata (grades 1, 2, 3, 3, 3).
+
+No query gains or loses a grade ≥ 2 label.
+
+### Effect on the benchmarks
+
+The same code (`scripts/benchmark_fixture_repair.py`) was run on the fixtures before (`244518e`) and after the repair: in-process, MPS, k = 5. Values are the means over runs. CEN and the cross-domain suites ran twice per side, CEN-G three times. On the metrics in the table, repeat runs differed by at most 0.009 (one CEN query's Hit@5). Repeat runs of CEN-G precise Hit@5 differed by up to 0.028. Raw values are in `tests/results/fixture_repair_benchmark.json`.
+
+| Suite | Path | MRR@5 | nDCG@5 | Hit@5 |
+|---|---|---|---|---|
+| CEN (overlap 100) | hybrid | 0.522 → 0.546 | 0.541 → 0.557 | 0.583 → 0.588 |
+| | precise | 0.510 → 0.548 | 0.516 → 0.555 | 0.704 → 0.745 |
+| | explore | 0.515 → 0.544 | 0.530 → 0.553 | 0.565 → 0.579 |
+| CD-ALT | hybrid / precise / explore | +0.016 / +0.053 / +0.018 | +0.010 / +0.052 / +0.015 | +0.000 / +0.038 / +0.010 |
+| CD-NAR | hybrid / precise / explore | +0.022 / +0.046 / +0.033 | +0.013 / +0.046 / +0.029 | −0.009 / +0.046 / +0.023 |
+| CD-MED | hybrid / precise / explore | +0.005 / 0 / +0.005 | +0.003 / 0 / +0.003 | 0 / 0 / 0 |
+| CD-API, CD-LEG, PG | all paths | unchanged (PG precise nDCG@5 +0.006) | | |
+
+- **Controls:** CD-LEG had no repairs and is identical. CD-API is identical: closing a code block at the very end of a document does not change retrieval. The router benchmark that CI runs is identical (it uses `sample_docs` files that were not touched), so the archived baselines stand.
+- **Graded nDCG@5 (CEN-G, overlap 50) falls while every document-level metric rises:** hybrid 0.473 → 0.457, precise 0.375 → 0.366, explore 0.376 → 0.381. The labels were pooled from retrieval results before the repair:
+  - 3 of the 12 hybrid queries that lose score had retrieved a frontmatter chunk whose label is now dropped, and all 3 fall to 0 ("OWASP Top 10 2021", "cloud storage options", "vpn tunneling protocols").
+  - In the queries that lose score, unlabelled chunks in the top 5 rise from 11 of 54 results to 15 of 44.
+  - Treat graded nDCG as unreliable for this change until the repaired documents' chunks are annotated.
+- **Absolute levels differ from the evaluation's Layer 1 numbers.** "Before" CEN hybrid MRR@5 is 0.522 here, against 0.534 in the evaluation: `BenchmarkRunner` matches gold by path, and the evaluation matched by basename (`docs/AGENT_VIEW_EVALUATION.md` §16).
+
+### Reproducing earlier results
+
+Every benchmark number recorded before 2026-10-19 was computed on the pre-repair fixtures and Centurion labels 1.2, including the agent-view evaluation.
+
+- **With the repaired fixtures,** re-verifying that evaluation fails V-03 (graded records of 24 CEN-G queries differ) and V-05 (GoldText and GPC no longer recompute).
+- **Using a worktree at `26b97ab`:** run its own `scripts/eval_agent_view/verify.py` with `--root tests/results/agent_view_eval --repo <repository> --b-python <repository>/.venv/bin/python`. This reproduces the recorded `summary.json` exactly (checked on 2026-10-19: 0 differences).
+- **Re-running the evaluation harness after the repair** would ingest different corpora: 12 CEN and 21 cross-domain documents changed, and the 11 short BEIR documents would be skipped.
+
+### Files changed
+
+- `src/candlekeep/mcp/server.py`, `src/candlekeep/rag/processor.py`, `tests/test_quality_gate.py`: the gate (`244518e`).
+- 38 fixture documents (three of them split into six) and `tests/test_processor.py` (`f7c2964`).
+- `tests/fixtures/eval_suite_100.json` (labels 1.3) and `scripts/remap_graded_labels.py` (`494a30d`).
+- `scripts/benchmark_fixture_repair.py` and `tests/results/fixture_repair_benchmark.json`: the before/after benchmark.
+
+---
+
+## Entry 61: The Reranker Must Score Unstitched Windows
+
+**Date:** October 19, 2026  
+**Focus:** Precise-path regression found by the agent-view evaluation
+
+Stitching (`docs/DESIGN.md` §3.10) keeps the Bardic prefix once and removes chunk overlaps. It was meant for the search tool's view, but it also changed the text the precise path's cross-encoder scores. The informational CI run of the agent-view evaluation, with model calls serialised, showed the effect on the project's router benchmark: precise precision 87.4% → 82.3% and recall 76.8% → 73.2% (2 of 23 queries).
+
+- "OAuth 2.0 flows" returned nothing. Its authentication.md window scored −9.57 unstitched and −10.88 stitched, below the Relevance Ward at −10, which was calibrated on unstitched text.
+- "How do I design a scalable API with proper caching?" lost its 5th result to the same logit shift.
+
+Re-scoring the stitched windows with their unstitched text reproduced the old logits for all 111 candidates. Windows were the same in both states; only the text differed.
+
+**Fix (`72c233f`):** `expand_results` records each window's unstitched join in `metadata["_rerank_text"]`, and `rerank_results` scores it. Results keep the stitched text for display.
+
+**Verification:**
+- On the evaluation's corpora and Chroma processes, the precise, hybrid and explore rankings equal those before stitching on all 4,212 query-path pairs.
+- The router benchmark equals the pre-stitching run exactly on every path.
+- Latency is unchanged in alternating runs (precise p50 44.5 / 43.5 ms, against 46.3 / 43.3 ms before stitching).
+
+---
+
+## Entry 62: Serialising Model Calls on MPS
+
+**Date:** October 19, 2026  
+**Focus:** Process crashes under concurrency on Apple GPUs, and what the fix costs
+
+### The crash
+
+PyTorch's MPS backend is not thread-safe. When two threads run a model at once, the process aborts with a Metal command-buffer assertion or segfaults. FastMCP 3 runs tools in a thread pool, and an ingest starts a background normalisation rebuild, so a Candlekeep server on MPS crashed whenever two model calls overlapped. Reproduced, with the laptop awake and under `caffeinate`:
+
+- two threads in `EmbeddingManager.embed`, one embedding a batch and one a query: 4 segfaults and 1 hang in 5 runs;
+- a search during an ingest: the server crashed in every run (Entries 60–61 code, 4 of 4);
+- 16 concurrent precise searches: crashed in 4 of 4 runs, inside `CrossEncoder.predict`. The reranker semaphore allows several reranks at once;
+- 16 concurrent hybrid or explore searches: no crash in 4 runs each. Their query embeddings are short and rarely overlap.
+
+It also aborted the CI suite on MPS (`tests/test_arcane_recall.py`, while the Rosetta Seal rebuild ran), which is why the agent-view evaluation's C-14 failed closed.
+
+### The fix (`408654f`)
+
+`src/candlekeep/model_lock.py`:
+
+- **One process-wide lock.** It is re-entrant and hands over first-come, first-served. On MPS, every model load, `encode` and `predict` holds it. CPU and CUDA calls take no lock.
+- **Slices.** A call over 128 inputs runs in slices of 128, one lock hold each, in the model's own longest-first order. A first version that held the lock for a whole call let one ingest stall every search for its entire embedding: 6.0 s for 2,866 chunks, growing linearly with ingest size.
+- **Fair handoff.** With slicing alone, CPython's lock lets the slicing thread re-acquire at once. The lock therefore goes to the longest waiter.
+- **Numerics.** Because slices follow encode's length order in multiples of its batch size, the 2,955 Centurion embeddings and 300 reranker scores are bitwise equal to a single call's.
+- **Leaf lock.** Nothing else is locked, called back or waited on while it is held; a review traced every lock in the codebase and found no ordering cycle.
+
+### Performance (`scripts/benchmark_model_lock.py`, `tests/results/mps_lock_benchmark.json`)
+
+Each scenario ran on a fresh Chroma and Candlekeep server on an Apple M5 Pro (MPS), alternating no lock (`72c233f`) and lock. Every server first ingested `scale_docs`.
+
+| Scenario | No lock | Lock |
+|---|---|---|
+| Single client, p50 over 5 rounds: hybrid / precise / explore | 58.0 / 57.1 / 40.3 ms | 57.6 / 58.2 / 40.1 ms |
+| 16 sessions, hybrid | 25.4, 25.6 qps | 27.7, 29.1 qps |
+| 16 sessions, precise | crashed 2 of 2 | 28.2, 28.2 qps (p95 about 700 ms) |
+| 16 sessions, explore | 34.5, 33.5 qps | 37.1, 41.4 qps |
+| Ingest alone (13 per side) | 46.2 s | 46.2 s |
+| Re-ingest while 4 sessions search | crashed 2 of 2 | completes; search p50 115 ms, p95 190 ms, max 0.5–1.0 s |
+
+- **The lock costs nothing in steady state.** A paired in-process test (324 pairs, same store, alternating) measured −0.09 ms per precise search and −0.02 ms per hybrid search; the single-client precise difference above is within its per-round range (−2.8 to +4.4 ms).
+- **Under concurrency it is faster.** Serialised MPS calls beat contended ones: hybrid +12% and explore +15% throughput.
+- **Search during an ingest now works.** Lock timing in the overlap run shows the ingest in 46 slices, each held for at most 0.38 s, and the longest wait of any search 0.33 s. Without slicing, that wait was 5.9 s.
+- **Ingesting under load is slower, but not because of the lock.** The re-ingest takes about 140 s under load against 46 s alone. The ingest waited only 1.1 s in total for the lock; the rest is CPU and Chroma contention with four busy searchers.
+- **CI on MPS.** The suite now passes three times in three with no plugin. Before, the baseline aborted 3 times in 3.
+
+### Two concurrency bugs found on the way (`ebc2900`, `4ab25c1`)
+
+Once search-during-ingest could run on MPS, it exposed two read-during-write races that FastMCP 3's thread pool already allowed on CPU and CUDA:
+
+- A query can return a record deleted after its index lookup, with a None document and metadata. Vector search raised `'NoneType' object has no attribute 'get'` (1–2 searches in about 4,800 per run). Vector search and memory recall now skip such rows.
+- Chroma can fail the query with "Error finding id" (1 in about 4,800). `_collection_op` now retries it after 50 ms.
+
+With both fixes, three overlap runs (14,543 searches during re-ingests) had 0 failed searches.
+
+### Notes
+
+- On MPS, the startup calibration of the precise-path semaphore now times serialised reranks, so the size it picks (3–9 across starts) only decides where requests queue.
+- The post-ingest Rosetta Seal rebuild still takes the lock to build a map that BM25 does not apply (ARCHITECTURE, Rosetta Seal).
+- A deployment that forks after importing torch would inherit the lock; uvicorn workers are spawned.
+
+## Entry 63: Answer Facts in the Result vs Shown to the Agent
+
+**Date:** October 20, 2026  
+**Focus:** Where the answer is lost: in retrieval, or between the result and the tool output
+
+### Method (`scripts/eval_agent_view/answer_spans.py`)
+
+- **Facts.** For each of the 76 CEN-A queries, a blind annotator split the reference answer into the atomic facts a complete answer needs, and quoted verbatim where the gold document states each one. Annotators saw only the question, the reference answer and the gold document, never a search output. An independent verifier checked every fact and quote and added missing facts.
+- **Fixture.** The facts are in `tests/fixtures/cen_answer_spans.json`: 467 document-supported facts, of which the verifiers dropped 3 and added 4. 625 of the 626 quotes occur verbatim in their document; the remaining one was dropped.
+- **Stages.** A fact is *in the result* when one of its quotes is inside the windows the search returns (Layer 1 text of the top results, before any display budget). It is *shown* when the quote is inside the tool output the agent reads (Layer 2).
+- **Matching.** Text is normalised (escapes, emphasis markers, case and whitespace removed). A quote counts when every 40-character piece of it occurs, so a quote that crosses a chunk boundary is still found in A's windows, which repeat each chunk's prefix and overlap.
+
+### The corpus caps the answer
+
+- 10 of the 76 queries have no reference fact that the gold document states. They are version- or detail-specific questions whose gold document covers only the general topic.
+- 27 more lack some of their facts.
+- 97 of the 564 reference facts are not in the corpus at all.
+
+These 10 queries are left out below (66 queries). No retrieval change can make them answerable, and the judges' `full` counts in the agent-view evaluation (`docs/AGENT_VIEW_EVALUATION_R2.md`, J1: 76 queries) include them in their denominator.
+
+### Results, round 2 outputs (`tests/results/agent_view_eval_r2/answer_visibility/`, CEN, 66 queries)
+
+| Path | Facts in result | Facts shown, A / B′ / C′ / B′ at 1,700 | Queries with every fact in the result | Every fact shown, A / B′ / C′ / B′ at 1,700 |
+|---|---|---|---|---|
+| hybrid | 80% | 11% / 34% / 42% / 42% | 47 | 2 / 7 / 9 / 11 |
+| precise | 84% | 11% / 26% / 36% / 32% | 53 | 2 / 3 / 7 / 5 |
+| explore | 54% | 12% / 34% / 42% / 40% | 14 | 1 / 4 / 8 / 7 |
+
+- **Retrieval mostly succeeds.** The result holds 80% of the needed facts (hybrid), and every fact for 47 of the 66 queries. It is the same for all states, because their rankings and windows are identical.
+- **The display loses most of it.** B′ shows 43% of the facts that are in its result (A 14%, C′ 52%). Of the 47 queries whose result holds the whole answer, the agent sees the whole answer for 7 with B′.
+- **Explore's result holds fewer facts** (54%), because explore reserves result slots for graph expansion, and those slots stay empty (protocol §16).
+- **CEN-G** gives the same picture: hybrid 81% in result; shown A 12%, B′ 34%, C′ 41%.
+- **Controls behave as expected.** The B′ rerun and C′ with the extra budget off equal B′ exactly. A with an empty graph equals A. At 500 characters B′ shows 19%.
+
+### Agreement with the judges (J1, CEN hybrid)
+
+The facts measure and the judges agree in direction.
+- **B′:** of the 7 queries with every fact shown, 5 were judged `full`. Of the 20 with no fact shown, 2 were judged `full`.
+- **C′:** of 9 with every fact shown, 5 were judged `full`.
+
+The measure is stricter than the judges where an output states a fact in other words or from another document. It is more lenient where a fact's quote is shown but the judge wanted more context.
+
+### What it means
+
+The bottleneck is between the result and the tool output, not in Arcane Recall or retrieval. The windows already hold most of the answer, and the 1,000-character view per result shows about a third of it. Better choice of what to show (C′: 34% → 42%) and more room (B′ at 1,700: 42%) help by similar amounts. Neither gets close to the 80% the result holds.
+
+## Entry 64: Display Policies, Searched in a Simulator and Checked on Held-Out Questions
+
+**Date:** October 23, 2026  
+**Focus:** How to show the agent more of the answer within 4,000 characters per search
+
+### Method
+
+- **Simulator.** `scripts/eval_agent_view/view_sim.py` replays round 2's searches (B′'s Layer 1 windows, the same as C′'s) under any display policy, without running Candlekeep. Playing back B′'s own display, it reproduces B′'s measured answer facts exactly (Entry 63) and its GoldText to 0.1 on every suite checked.
+- **Policy inputs.** A policy sees only what the server has when it renders: the query text, the path, and each result's window, offsets, score, title, document text and per-segment features. The features are lexical overlap, embedding cosine and cross-encoder logit. No benchmark labels are passed.
+- **Search.** Six explorers each worked one axis on the dev half of the queries (odd numbers): the number of results shown, the split of the budget across ranks, placement around the match point, passage selection with cheap features, passage selection with semantic features, and document-level effects. A combiner stacked the compatible ideas, and an auditor checked the shortlist for leakage, cap compliance, metric gaming and reproducibility; all six policies came out clean. The held-out half (even numbers) was run once, at the end. Policies are in `scripts/eval_agent_view/view_policies/`, and results in `tests/results/agent_view_eval_r2/view_sim/`.
+
+### Held-out results (32 CEN questions with answer facts; cap 4,000 displayed characters)
+
+| Policy | Cost at query time | Facts shown: hybrid / precise / explore | Complete answers | CD GoldText (hybrid) |
+|---|---|---|---|---|
+| B′ as shipped | — | 29% / 29% / 32% | 2 / 2 / 0 | 29.7 |
+| B′ at 1,700 per result | — | 40% / 37% / 39% | 4 / 4 / 1 | 49.3 |
+| `lead_teasers_both` (top result whole, 250-character teasers) | offsets only | 65% / 70% / 47% | 15 / 15 / 5 | 116.3 |
+| `win_select` (segments chosen by query words and structure, within the windows) | lexical, pure Python | 73% / 74% / 56% | 14 / 16 / 7 | 105.0 |
+| `ce_doc_thr` (cross-encoder selects segments) | cross-encoder per segment | 71% / 75% / 54% | 15 / 18 / 7 | 117.3 |
+| **`doc_select`** (as `win_select`, over the whole top document) | lexical, plus the document's chunks | **75% / 77% / 76%** | **16 / 18 / 16** | 104.5 |
+| `doc_select_ce` (plus cross-encoder ordering of documents) | cross-encoder per segment | 79% / 78% / 76% | 17 / 17 / 16 | 104.4 |
+
+- **Paired against B′** (95% bootstrap CI, wins/losses), `doc_select`: hybrid +0.46 [+0.34, +0.58], 24/0; precise +0.48 [+0.35, +0.60], 24/2; explore +0.44 [+0.34, +0.54], 26/1.
+- **Held-out matches dev.** On dev the same policy scored 74 / 74 / 72%. The dev-tuned constants did not shrink.
+- **Guards.** srcvis is unchanged (about 86%). MH support stays at its level. BEIR GoldText is at or above B′'s, whose own output runs up to 10,000 characters there.
+- **Size.** Mean output on CEN hybrid is 3,940 characters, against 2,675 for B′.
+
+### What each axis found
+
+- **Number of results.** Fewer results do not help once the top result is read well. One result loses the gold document on 8% of CEN queries and 19% of BEIR-SF queries. The best split keeps every result, but shows all except the first as short teasers.
+- **Budget split.** Top-heavy beats equal. Lead + teasers (a 200-character floor per document, the rest by 0.1^rank) wins 13 of 18 CEN cells. Equal division is the worst choice on BEIR.
+- **Placement.** The anchor matters more than the number of results.
+  - Starting at the window or document opening, plus a 300-character piece at the matched chunk, beats starting at the match.
+  - Top-result facts before the match point: B′ shows 1 of 32 (dev, hybrid), `doc_select` 29.
+  - Facts more than 1,000 characters past it: B′ shows 1 of 45, `doc_select` 45.
+- **Selection.** Choosing segments by query-word overlap and structure beats contiguous slices by 6 to 10 points. The structural signals are the section leads, the document opening and a code penalty.
+- **Document level.** Reading the top document, not only its window, is the largest single lever. It is worth +24 points on explore, whose windows are narrow because `explore_search` passes only its final hits to `expand_results`. `expand_results` already fetches every chunk of each result's document, so the data is there at display time.
+- **Semantic features.** They add little on top: the cross-encoder ordering adds +4 on hybrid. The price is a cross-encoder pass per search (40 to 125 ms on MPS) on paths that run none today.
+
+### Caveats
+
+- **Corpus coverage.** Answer facts exist only for CEN, so dev and held-out share one corpus. The CD and BEIR suites measure gold-document text, not answers.
+- **Constants.** `doc_select` has about 14 constants, 8 inherited from a dev-tuned explorer. Freeze them; do not re-tune.
+- **Cost on no-answer queries.** The policies fill the cap on adversarial queries too (hybrid 3,900 against B′'s 3,500 characters). There is no confidence gate.
+- **Simulation only.** The simulator covers display, not retrieval. An implementation in `server.py` has to reproduce these numbers on real runs before any formal round.
+
+### Erratum (October 25, 2026)
+
+The guard bullet above overstates BEIR. Averaged over SciFact and NFCorpus, `doc_select`'s BEIR GoldText is at B′'s level; per suite it is not. At the fixed 4,000-character cap, BEIR-NF hybrid and precise show less gold text than B′'s per-result view, by −12.7 [−17.7, −7.8] and −14.8 [−20.4, −9.4] shingles over all queries, while BEIR-SF is above it. B′'s view can show up to 10,000 characters on those 10-result searches. The committed files `tests/results/agent_view_eval_r2/view_sim/doc_select_*.json` held this when the entry was written. Entry 65 records the consequence: a budget that grows with the number of results.
+
+## Entry 65: The Answer-Focused Display in the Server, and Its Pilot
+
+**Date:** October 25, 2026  
+**Focus:** Porting Entry 64's `doc_select` into the search tool, and checking it through MCP
+
+### Implementation (branch `feat/answer-focused-display`, `b6dcbb1`, `fe89134`)
+
+- **Display.** `src/candlekeep/rag/display.py` implements the policy with its constants frozen.
+- **Arcane Recall.** `expand_results` already fetched every chunk of each result's document. It now also passes the document stitched from those chunks (`_doc_text`), each window's span in it (`_doc_span`) and the prefix length.
+- **Search tool.** It renders with the display by default (`CANDLEKEEP_RESULT_DISPLAY=focused`). `window` restores the per-result view.
+- **Budget.** `CANDLEKEEP_RESULT_BUDGET` (4,000) is for 5 results and grows with the number requested, to 8,000 for 10. At a fixed 4,000, 10-result BEIR-NF searches showed less gold-document text than the per-result view, whose output can reach 10,000 characters there: −12.7 shingles on hybrid, CI entirely below 0. At 8,000 every BEIR cell is above the per-result view.
+- **Port check.** `scripts/eval_agent_view/display_parity.py`: on all 4,212 cached searches the server's display makes exactly the simulator policy's choices.
+- **Edge case.** A document whose share fell under 150 characters is not shown, as in the simulator. When no document at all would be shown, the first is now shown whole; this changes none of the cached searches.
+
+### Pilot through MCP (`rounds/r3-pilot.json`, budget 4,000, fresh ingest)
+
+| Path | Facts shown (66 CEN questions) | Every fact shown | Simulator prediction |
+|---|---|---|---|
+| hybrid | 74% | 37 | 74% |
+| precise | 75% | 39 | 76% |
+| explore | 73% | 37 | 74% |
+
+- **Against B′ in round 2:** 34% / 26% / 34% of facts shown, with every fact shown for 7 / 3 / 4 questions.
+- **GPV on CEN-G hybrid:** 0.716 → 0.866 (2 queries lost, 12 gained).
+- **Latency:** p50 rose 0 to 8 ms; the most is on precise, where the top document is stitched and segmented for more candidates.
+
+Round 3 is pre-registered in `docs/AGENT_VIEW_EVALUATION_R3.md`.
+
+## Entry 66: Freynan Mirror — Which Score Can Carry a Relevance-Weighted Budget?
+
+**Date:** November 8, 2026  
+**Focus:** Before building the Freynan Mirror (budget split by relevance, plus a relevance floor below which results get nothing), find a score whose size means the same thing on every query
+
+### Method (`scripts/eval_agent_view/freynan_probe.py`, `freynan_compare.py`)
+
+- **Replay.** The probe replays every search of CEN, MH, the five cross-domain suites and both BEIR sets in-process with B′'s code, on copies of round 3's ingests (1,296 queries × 3 paths).
+- **What it records per result:**
+  - which retriever found it (vector, BM25 or both);
+  - RRF;
+  - the vector similarity;
+  - BM25, raw and divided by the query's top BM25;
+  - the query's cosine to the stored embeddings of the matched chunk, the window's best chunk and the document's best chunk (`doc_cos`);
+  - the share of the query's content words the window contains (`kw`);
+  - the cross-encoder logit.
+- **Fidelity.** It reproduces 98% of round 3's B′ result lists; the rest differ on reload of the Chroma index.
+
+### Results, hybrid (the default path)
+
+| Score | Gold vs rest, pooled (absolute floor) | Within a query | Top result: answerable vs no-answer |
+|---|---|---|---|
+| RRF | 0.812 | 0.801 | 0.881 |
+| `doc_cos` | 0.809 | 0.858 | **0.983** |
+| `kw` | 0.825 | 0.745 | 0.931 |
+| `doc_cos + 0.1 kw` | 0.857 | **0.871** | **0.983** |
+| `doc_cos + 0.2 kw` | **0.870** | 0.867 | 0.980 |
+| cross-encoder | 0.859 | 0.849 | 0.980 |
+
+(AUC. Explore behaves the same; on precise the cross-encoder is the native score and `doc_cos` gives 0.878 within a query.)
+
+- **RRF cannot carry a budget.** In 149 hybrid searches the top result is wrong and a gold document sits at ranks 2–5. RRF scores that gold document at or above the top in 2 of 149; `doc_cos` in 74, and within 10% of the top in 145.
+- **No-answer detection.** The top result's `doc_cos` separates answerable from no-answer queries at AUC 0.983, as well as the cross-encoder and at no query-time cost. Arcane Recall already fetches every chunk embedding of each result's document.
+- **Retriever bias.** Consider a floor that keeps 90% of all gold results.
+  - With `doc_cos`, it keeps 80% of gold found only by vector search and 72% of gold found only by BM25: a mild bias against keyword-only hits.
+  - With `doc_cos + 0.3 kw`, it keeps 63% and 75%. The keyword term trades one bias for the other.
+  - With RRF, it keeps 46% and 31%.
+
+### What follows
+
+The Freynan Mirror's relevance score should be the stored-chunk cosine, possibly plus a small keyword term. Cosines are compressed (relevant and unrelated documents both sit between about 0.6 and 0.9), so splitting the budget in raw proportion would be close to an equal split. The split needs a sharpening transform above the floor, tuned on fresh questions.
+
+---
+
+## Entry 67: The Freynan Mirror, Tuned on Fresh Questions and Piloted Through MCP
+
+**Date:** November 8, 2026  
+**Focus:** Split the answer-focused display's budget by document relevance instead of rank, with relevance floors, and check whether that helps the agent
+
+### Fresh questions (`tests/fixtures/eval_suite_fresh.json`, `fresh_answer_spans.json`)
+
+Every display constant so far was chosen on CEN questions that earlier entries had already looked at many times. This entry uses a fresh set on the same corpus (I01).
+- **Writing:** six writers wrote the questions blind, and six verifiers checked them. Of 232 questions, 221 were kept: 81 overview, 86 detail, 24 multi-document and 30 without an answer, the last written as near misses.
+- **Answer facts:** 896 facts with 1,125 verbatim quotes. Every quote was checked against the gold document (12 failed and were dropped).
+- **Split:** dev and test halves, stratified by category (`random.Random(20261108)`).
+- **Searches:** B′'s searches were replayed with `freynan_probe.py run --l1-dir` on copies of round 3's ingests, and cached for `view_sim.py` (`VIEW_SIM_CACHE`).
+- **Earlier suites:** CEN, MH, the five cross-domain suites and both BEIR sets serve as guards, on their usual qid-parity halves.
+
+### Policy family (`view_policies/freynan/freynan.py`) and grid (`freynan_tune.py`)
+
+- **Relevance:** `doc_cos` (Entry 66), plus `a × kw` in some configurations.
+- **Floor:** absolute `F`, relative `r_max − δ`, or the higher of the two.
+- **Weights above the floor:** `wmin + (1 − wmin) × ((r − floor) / (r_max − floor))^p`.
+- **Order:** by document rank or by relevance.
+- **Empty searches:** when nothing reaches `F`, show nothing, or only the top result's matched chunk.
+- **Kept from doc_select:** the top document is read whole, and the 200-character floor per document.
+
+Selection rule, fixed before the test half was run: the best facts on the CEN-F dev half, provided CEN/MH facts drop by no more than 0.5 point and gold text and SrcVis on the cross-domain and BEIR suites drop by no more than 1 point.
+
+### Dev results
+
+- **An absolute floor alone does not transfer.** Answerable searches have a top `doc_cos` of at least 0.76 in 90% of searches on CEN-F, but 0.67 on CEN and 0.64 on BEIR-NF. The CEN-F unanswerable questions have a median of 0.72. A floor that removes the CEN-F noise therefore cuts real answers elsewhere.
+- **The relative floor carries most of the gain.** With F 0.65 on `doc_cos + 0.1 kw`, δ = 0.10, p = 2 and rank order (`doc_cos` alone with F 0.60 gives 69.0% and 125): facts 63.9% → 69.3%, questions with every fact 109 → 124, the 27 rescue searches (top result wrong, a gold document at ranks 2–5) 32% → 76%. CEN/MH facts rose 73.4% → 75.6%, and characters on their unanswerable searches fell 3,098 → 919.
+- **Multi-document support fell** 44% → 33%: a supporting second document fell below δ, or got almost no weight after sharpening. `wmin` alone recovered little (36%). Keeping 44% needed δ = 0.15.
+- **Ordering by relevance hurt the rescue searches.** The document read whole then becomes the one with the best cosine, which is often wrong.
+
+### Test half
+
+| Measure | doc_select | A: F 0.65 on `doc_cos + 0.1 kw`, δ 0.10 | **B: F 0.60, δ 0.15, p 2, wmin 0.05** |
+|---|---|---|---|
+| CEN-F facts shown | 69.9% | 73.2% | 72.4% |
+| Every fact shown | 119 | 131 | 124 |
+| Rescue searches (17) | 39% | 80% | 77% |
+| Multi-document support | 50% | 50% | 58% |
+| CEN/MH facts | 75.7% | 76.0% | 77.2% |
+| CEN/MH unanswerable, characters | 3,088 | 1,149 | 1,148 |
+| SrcVis, cross-domain + BEIR | 85.0% | 83.8% | 84.7% |
+
+A fails the SrcVis guard: CD-ALT loses 7 points (0.883 → 0.811), because the keyword term pushes up documents that match the query's words. B passes, and it became the server's display (`rag/display.py`, `082bd34`). The defaults are `CANDLEKEEP_RESULT_MIN_RELEVANCE=0.60` and `CANDLEKEEP_RESULT_RELEVANCE_GAP=0.15`.
+- **Port check:** the server makes the simulator policy's exact choices on all 4,551 cached searches.
+- **The CEN-F unanswerable questions keep their noise** (3,807 characters under both). They score like real answers, so no cosine floor can tell them apart.
+
+### Pilot through MCP (`rounds/freynan-pilot.json`, `freynan_pilot.py`)
+
+A fresh ingest of I01 and I07; B′ and the Freynan Mirror ran through MCP on the same ingest.
+
+| Answer facts shown (hybrid / precise / explore) | B′ | Freynan Mirror |
+|---|---|---|
+| CEN-F test | 58% / 50% / 59% | 76% / 67% / 75% |
+| CEN-F dev | 55% / 47% / 58% | 71% / 60% / 70% |
+| CEN | 34% / 25% / 34% | 76% / 76% / 76% |
+
+- **CEN unanswerable searches:** 1,392 / 873 / 1,381 characters, against 3,737 / 828 / 2,852 for B′.
+- **Latency:** within 6 ms of B′ at p50.
+- **SrcVis:** equal to B′ on CEN, MH and CEN-F. On CD-ALT hybrid and explore it is 2.7 points lower: two questions lost their gold document, at ranks 3 and 5.
+- **Against doc_select:** the pilot has no doc_select run on this ingest. Round 3's doc_select pilot showed 74% / 75% / 73% on CEN, on a different ingest.
+
+### The CD-ALT losses, and a fix that was not adopted
+
+The keyword retriever did not find either gold document (BM25 score 0); the absolute floor dropped them.
+- In one search, the gold document scores 0.599, just under 0.60.
+- In the other, even the top result scores 0.593, so the search is shown as unanswerable.
+
+Both are short literal queries, which embed poorly. Exempting lexical queries (the router's `_is_lexical_query`, plus hex literals and tokens with digits) from the absolute floor recovered both. It also lost a CEN question in which the floor had dropped a wrong top-ranked document (0.586) and so given the gold document (0.645) the whole budget. Lowering the floor for lexical queries (0.50–0.57) instead of removing it, and keeping documents that BM25 scored strongly, changed nothing or traded one question for another. B stays as it is.
+
+### What the floors cost
+
+Over every cached search (all suites, all paths):
+- **Every result below 0.60:** 54 of 3,869 answerable searches, of which only 8 had a gold document among their results. Against that, 291 of 472 unanswerable searches.
+- **Gold document dropped while other documents were kept:** 10 answerable searches.
+
+So the floors hide every gold document in 18 of 3,869 answerable searches (0.5%: 13 BEIR-NF, 4 CD-ALT, 1 BEIR-SF), and cut 62% of unanswerable searches to one matched chunk.
+
+### Takeaways
+
+1. **Gain:** splitting by relevance instead of rank adds about 2.5 points of facts on average. Nearly all of it comes from the searches whose top result is wrong, where the facts shown roughly double.
+2. **Floors:** combine absolute and relative. The absolute floor removes clearly unanswerable searches; the relative floor drops the stragglers of answerable ones. Neither works alone.
+3. **Limit:** a cosine floor cannot remove near-miss noise. That would need a different signal, such as the cross-encoder or an answerability check.
+4. **Model dependence:** the absolute floor is on the embedding model's cosine scale (0.60 with `bge-small`) and must be re-chosen for another model.

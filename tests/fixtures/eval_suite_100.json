@@ -1,7 +1,7 @@
 {
   "metadata": {
     "name": "Centurion Set",
-    "version": "1.2",
+    "version": "1.3",
     "total_queries": 108,
     "categories": [
       "lexical",
@@ -24,6 +24,14 @@
         "kappa_ordinal_linear": 0.4196,
         "exact_agreement": 0.4204,
         "adjacent_agreement": 0.8186
+      },
+      "remap": {
+        "date": "2026-10-19",
+        "script": "scripts/remap_graded_labels.py",
+        "reason": "keys re-pointed from the labelling-time chunking to the current chunker and the repaired fixtures",
+        "kept": 660,
+        "moved": 44,
+        "dropped": 5
       }
     }
   },
@@ -392,7 +400,7 @@
         "tests/fixtures/scale_docs/redis-data-structures.md:14": 0,
         "tests/fixtures/scale_docs/redis-data-structures.md:0": 0,
         "tests/fixtures/scale_docs/redis-data-structures.md:2": 0,
-        "tests/fixtures/scale_docs/helm-charts.md:8": 0
+        "tests/fixtures/scale_docs/helm-charts.md:7": 0
       }
     },
     {
@@ -423,11 +431,10 @@
         "tests/fixtures/scale_docs/api-security.md:14": 1,
         "tests/fixtures/scale_docs/api-security.md:38": 1,
         "tests/fixtures/scale_docs/security-audit-checklist.md:44": 1,
-        "tests/fixtures/scale_docs/elasticsearch-basics.md:29": 2,
-        "tests/fixtures/scale_docs/elasticsearch-basics.md:3": 2,
+        "tests/fixtures/scale_docs/elasticsearch-basics.md:28": 2,
+        "tests/fixtures/scale_docs/elasticsearch-basics.md:2": 2,
         "tests/fixtures/scale_docs/security-audit-checklist.md:35": 1,
-        "tests/fixtures/scale_docs/elasticsearch-basics.md:0": 1,
-        "tests/fixtures/scale_docs/elasticsearch-basics.md:15": 2
+        "tests/fixtures/scale_docs/elasticsearch-basics.md:14": 2
       }
     },
     {
@@ -455,9 +462,8 @@
         "site"
       ],
       "graded_relevance": {
-        "tests/fixtures/scale_docs/owasp-top-10.md:31": 2,
-        "tests/fixtures/scale_docs/owasp-top-10.md:0": 2,
-        "tests/fixtures/scale_docs/elasticsearch-basics.md:23": 0,
+        "tests/fixtures/scale_docs/owasp-top-10.md:30": 2,
+        "tests/fixtures/scale_docs/elasticsearch-basics.md:22": 0,
         "tests/fixtures/scale_docs/security-audit-checklist.md:7": 1,
         "tests/fixtures/scale_docs/security-audit-checklist.md:38": 0
       }
@@ -474,7 +480,7 @@
         "tests/fixtures/sample_docs/vector-databases.md:1": 1,
         "tests/fixtures/scale_docs/design-patterns-behavioral.md:16": 0,
         "tests/fixtures/sample_docs/vector-databases.md:0": 3,
-        "tests/fixtures/scale_docs/container-security.md:18": 0
+        "tests/fixtures/scale_docs/container-security.md:16": 0
       }
     },
     {
@@ -537,7 +543,7 @@
         "tests/fixtures/scale_docs/dns-resolution.md:18": 1,
         "tests/fixtures/scale_docs/tcp-ip-fundamentals.md:7": 1,
         "tests/fixtures/scale_docs/cloud-networking.md:1": 1,
-        "tests/fixtures/scale_docs/vpn-tunneling.md:1": 1,
+        "tests/fixtures/scale_docs/vpn-tunneling.md:0": 1,
         "tests/fixtures/scale_docs/data-serialization.md:12": 0
       }
     },
@@ -566,7 +572,7 @@
         "json"
       ],
       "graded_relevance": {
-        "tests/fixtures/scale_docs/container-security.md:33": 0,
+        "tests/fixtures/scale_docs/container-security.md:31": 0,
         "tests/fixtures/scale_docs/data-pipeline-design.md:43": 1,
         "tests/fixtures/scale_docs/testing-strategies.md:25": 0,
         "tests/fixtures/scale_docs/linux-filesystem.md:39": 0,
@@ -601,7 +607,7 @@
         "tests/fixtures/scale_docs/error-handling-patterns.md:5": 0,
         "tests/fixtures/scale_docs/api-security.md:26": 0,
         "tests/fixtures/scale_docs/api-security.md:30": 0,
-        "tests/fixtures/scale_docs/container-security.md:20": 0,
+        "tests/fixtures/scale_docs/container-security.md:18": 0,
         "tests/fixtures/scale_docs/shell-scripting.md:14": 0
       }
     },
@@ -631,8 +637,8 @@
       ],
       "graded_relevance": {
         "tests/fixtures/scale_docs/functional-programming.md:15": 1,
-        "tests/fixtures/scale_docs/elasticsearch-basics.md:16": 0,
-        "tests/fixtures/scale_docs/owasp-top-10.md:26": 0,
+        "tests/fixtures/scale_docs/elasticsearch-basics.md:15": 0,
+        "tests/fixtures/scale_docs/owasp-top-10.md:25": 0,
         "tests/fixtures/scale_docs/functional-programming.md:20": 3,
         "tests/fixtures/scale_docs/connection-pooling.md:3": 0
       }
@@ -730,9 +736,9 @@
       ],
       "graded_relevance": {
         "tests/fixtures/scale_docs/data-warehouse-modeling.md:32": 1,
-        "tests/fixtures/scale_docs/container-security.md:20": 0,
-        "tests/fixtures/scale_docs/vpn-tunneling.md:23": 0,
-        "tests/fixtures/scale_docs/container-security.md:6": 0,
+        "tests/fixtures/scale_docs/container-security.md:18": 0,
+        "tests/fixtures/scale_docs/vpn-tunneling.md:22": 0,
+        "tests/fixtures/scale_docs/container-security.md:4": 0,
         "tests/fixtures/scale_docs/data-quality.md:19": 0,
         "tests/fixtures/scale_docs/event-driven-architecture.md:16": 0,
         "tests/fixtures/scale_docs/tcp-ip-fundamentals.md:2": 0
@@ -764,10 +770,10 @@
       ],
       "graded_relevance": {
         "tests/fixtures/sample_docs/vector-databases.md:5": 0,
-        "tests/fixtures/scale_docs/container-security.md:18": 0,
-        "tests/fixtures/scale_docs/container-security.md:6": 0,
-        "tests/fixtures/scale_docs/vpn-tunneling.md:23": 0,
-        "tests/fixtures/scale_docs/container-security.md:5": 0
+        "tests/fixtures/scale_docs/container-security.md:16": 0,
+        "tests/fixtures/scale_docs/container-security.md:4": 0,
+        "tests/fixtures/scale_docs/vpn-tunneling.md:22": 0,
+        "tests/fixtures/scale_docs/container-security.md:3": 0
       }
     },
     {
@@ -795,10 +801,10 @@
         "architecture"
       ],
       "graded_relevance": {
-        "tests/fixtures/scale_docs/container-security.md:24": 0,
-        "tests/fixtures/scale_docs/vpn-tunneling.md:23": 0,
+        "tests/fixtures/scale_docs/container-security.md:22": 0,
+        "tests/fixtures/scale_docs/vpn-tunneling.md:22": 0,
         "tests/fixtures/scale_docs/data-warehouse-modeling.md:32": 1,
-        "tests/fixtures/scale_docs/container-security.md:33": 0
+        "tests/fixtures/scale_docs/container-security.md:31": 0
       }
     },
     {
@@ -1068,8 +1074,8 @@
         "structure"
       ],
       "graded_relevance": {
-        "tests/fixtures/scale_docs/zero-trust-architecture.md:11": 2,
-        "tests/fixtures/scale_docs/helm-charts.md:6": 1,
+        "tests/fixtures/scale_docs/zero-trust-architecture.md:9": 2,
+        "tests/fixtures/scale_docs/helm-charts.md:5": 1,
         "tests/fixtures/scale_docs/api-gateway-patterns.md:6": 0,
         "tests/fixtures/scale_docs/configuration-management.md:0": 1,
         "tests/fixtures/scale_docs/api-gateway-patterns.md:18": 1,
@@ -1112,7 +1118,7 @@
         "tests/fixtures/sample_docs/api-design.md:3": 0,
         "tests/fixtures/scale_docs/container-fundamentals.md:34": 1,
         "tests/fixtures/scale_docs/container-fundamentals.md:0": 2,
-        "tests/fixtures/scale_docs/container-security.md:8": 1
+        "tests/fixtures/scale_docs/container-security.md:6": 1
       }
     },
     {
@@ -1338,8 +1344,8 @@
         "tests/fixtures/sample_docs/authentication.md:14": 1,
         "tests/fixtures/sample_docs/authentication.md:10": 0,
         "tests/fixtures/scale_docs/well-architected-framework.md:12": 1,
-        "tests/fixtures/scale_docs/zero-trust-architecture.md:2": 3,
-        "tests/fixtures/scale_docs/zero-trust-architecture.md:25": 3,
+        "tests/fixtures/scale_docs/zero-trust-architecture.md:0": 3,
+        "tests/fixtures/scale_docs/zero-trust-architecture.md:23": 3,
         "tests/fixtures/scale_docs/security-audit-checklist.md:14": 2,
         "tests/fixtures/scale_docs/security-audit-checklist.md:31": 1,
         "tests/fixtures/scale_docs/firewall-rules.md:18": 0
@@ -1711,8 +1717,7 @@
         "tests/fixtures/scale_docs/cost-optimization.md:15": 2,
         "tests/fixtures/scale_docs/cost-optimization.md:3": 1,
         "tests/fixtures/scale_docs/cost-optimization.md:0": 3,
-        "tests/fixtures/scale_docs/cloud-storage-options.md:0": 3,
-        "tests/fixtures/scale_docs/cloud-storage-options.md:21": 0,
+        "tests/fixtures/scale_docs/cloud-storage-options.md:20": 0,
         "tests/fixtures/scale_docs/linux-filesystem.md:21": 1,
         "tests/fixtures/scale_docs/cost-optimization.md:2": 1,
         "tests/fixtures/scale_docs/migration-strategies.md:30": 1,
@@ -2007,9 +2012,8 @@
         "tests/fixtures/scale_docs/network-security-hardening.md:0": 1,
         "tests/fixtures/scale_docs/network-security-hardening.md:26": 1,
         "tests/fixtures/scale_docs/network-security-hardening.md:34": 1,
-        "tests/fixtures/scale_docs/container-security.md:3": 3,
-        "tests/fixtures/scale_docs/security-audit-checklist.md:44": 1,
-        "tests/fixtures/scale_docs/container-security.md:0": 3
+        "tests/fixtures/scale_docs/container-security.md:1": 3,
+        "tests/fixtures/scale_docs/security-audit-checklist.md:44": 1
       }
     },
     {
@@ -2204,10 +2208,9 @@
       "graded_relevance": {
         "tests/fixtures/scale_docs/http2-http3.md:13": 1,
         "tests/fixtures/scale_docs/ssh-configuration.md:9": 1,
-        "tests/fixtures/scale_docs/vpn-tunneling.md:0": 3,
-        "tests/fixtures/scale_docs/vpn-tunneling.md:20": 2,
-        "tests/fixtures/scale_docs/vpn-tunneling.md:9": 3,
-        "tests/fixtures/scale_docs/vpn-tunneling.md:7": 3
+        "tests/fixtures/scale_docs/vpn-tunneling.md:19": 2,
+        "tests/fixtures/scale_docs/vpn-tunneling.md:8": 3,
+        "tests/fixtures/scale_docs/vpn-tunneling.md:6": 3
       }
     },
     {
@@ -2263,12 +2266,12 @@
         "values"
       ],
       "graded_relevance": {
-        "tests/fixtures/scale_docs/helm-charts.md:1": 3,
-        "tests/fixtures/scale_docs/helm-charts.md:18": 3,
-        "tests/fixtures/scale_docs/helm-charts.md:13": 2,
-        "tests/fixtures/scale_docs/helm-charts.md:11": 2,
-        "tests/fixtures/scale_docs/helm-charts.md:5": 3,
-        "tests/fixtures/scale_docs/helm-charts.md:7": 3,
+        "tests/fixtures/scale_docs/helm-charts.md:0": 3,
+        "tests/fixtures/scale_docs/helm-charts.md:17": 3,
+        "tests/fixtures/scale_docs/helm-charts.md:12": 2,
+        "tests/fixtures/scale_docs/helm-charts.md:10": 2,
+        "tests/fixtures/scale_docs/helm-charts.md:4": 3,
+        "tests/fixtures/scale_docs/helm-charts.md:6": 3,
         "tests/fixtures/scale_docs/container-fundamentals.md:20": 0
       }
     },
@@ -2690,7 +2693,7 @@
         "tests/fixtures/scale_docs/cloud-design-patterns.md:11": 2,
         "tests/fixtures/scale_docs/monitoring-observability.md:9": 1,
         "tests/fixtures/scale_docs/disaster-recovery.md:0": 3,
-        "tests/fixtures/scale_docs/cloud-storage-options.md:15": 1,
+        "tests/fixtures/scale_docs/cloud-storage-options.md:14": 1,
         "tests/fixtures/scale_docs/monitoring-observability.md:17": 1,
         "tests/fixtures/scale_docs/monitoring-observability.md:15": 1,
         "tests/fixtures/scale_docs/cloud-design-patterns.md:6": 2
@@ -2703,7 +2706,7 @@
       "category": "adversarial",
       "expected_content": [],
       "graded_relevance": {
-        "tests/fixtures/scale_docs/ci-cd-pipelines.md:18": 0,
+        "tests/fixtures/scale_docs/ci-cd-pipelines.md:19": 0,
         "tests/fixtures/scale_docs/ci-cd-pipelines.md:15": 0,
         "tests/fixtures/scale_docs/database-migrations.md:10": 0,
         "tests/fixtures/scale_docs/data-serialization.md:44": 0,
@@ -2746,7 +2749,7 @@
       "expected_content": [],
       "graded_relevance": {
         "tests/fixtures/scale_docs/linux-permissions.md:21": 0,
-        "tests/fixtures/scale_docs/ci-cd-pipelines.md:18": 0,
+        "tests/fixtures/scale_docs/ci-cd-pipelines.md:19": 0,
         "tests/fixtures/scale_docs/ci-cd-pipelines.md:15": 0,
         "tests/fixtures/scale_docs/database-migrations.md:10": 0,
         "tests/fixtures/scale_docs/disaster-recovery.md:8": 0
@@ -2840,7 +2843,7 @@
         "tests/fixtures/scale_docs/chaos-engineering.md:10": 0,
         "tests/fixtures/scale_docs/chaos-engineering.md:4": 0,
         "tests/fixtures/scale_docs/auto-scaling.md:3": 0,
-        "tests/fixtures/scale_docs/elasticsearch-basics.md:27": 0,
+        "tests/fixtures/scale_docs/elasticsearch-basics.md:26": 0,
         "tests/fixtures/scale_docs/well-architected-framework.md:13": 0,
         "tests/fixtures/scale_docs/monitoring-observability.md:32": 0
       }
@@ -2920,7 +2923,7 @@
         "tests/fixtures/scale_docs/http2-http3.md:28": 0,
         "tests/fixtures/scale_docs/tcp-ip-fundamentals.md:25": 1,
         "tests/fixtures/scale_docs/cloud-networking.md:6": 0,
-        "tests/fixtures/scale_docs/zero-trust-architecture.md:14": 0,
+        "tests/fixtures/scale_docs/zero-trust-architecture.md:12": 0,
         "tests/fixtures/scale_docs/data-warehouse-modeling.md:9": 0,
         "tests/fixtures/scale_docs/tcp-ip-fundamentals.md:1": 3,
         "tests/fixtures/scale_docs/dns-resolution.md:26": 0,
@@ -2957,7 +2960,7 @@
         "tests/fixtures/scale_docs/design-patterns-creational.md:10": 0,
         "tests/fixtures/scale_docs/penetration-testing-methodology.md:26": 0,
         "tests/fixtures/sample_docs/authentication.md:10": 0,
-        "tests/fixtures/scale_docs/cloud-storage-options.md:21": 0,
+        "tests/fixtures/scale_docs/cloud-storage-options.md:20": 0,
         "tests/fixtures/scale_docs/incident-response.md:34": 0
       }
     },

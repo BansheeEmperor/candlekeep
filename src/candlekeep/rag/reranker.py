@@ -6,6 +6,7 @@ import torch
 from sentence_transformers import CrossEncoder
 from candlekeep.database.interface import SearchResult
 from candlekeep.config import Settings
+from candlekeep.model_lock import call_in_slices, model_call_lock
 
 _cross_encoder: CrossEncoder | None = None
 _cross_encoder_key: str | None = None
@@ -23,25 +24,27 @@ def _get_cross_encoder(model_name: str, device: str = "cpu") -> CrossEncoder:
     if _cross_encoder is None or _cross_encoder_key != key:
         settings = Settings.from_env()
         cache_dir = settings.models_dir
-        
-        try:
-            _cross_encoder = CrossEncoder(
-                model_name, 
-                device=device, 
-                local_files_only=True,
-                cache_folder=str(cache_dir)
-            )
-        except Exception:
-            print(f"[candlekeep] ❌ Cross-encoder '{model_name}' not found locally in {cache_dir}. "
-                  f"Run ./scripts/setup.sh", file=sys.stderr)
-            sys.exit(1)
 
-        # Workaround: torch ≥2.10 float32 matmul NaN on CPU (macOS ARM).
-        # Promote to float64 on CPU where the issue manifests.
-        if device == "cpu":
-            _cross_encoder.model = _cross_encoder.model.to(torch.float64)
+        with model_call_lock(device):
+            if _cross_encoder is None or _cross_encoder_key != key:   # not loaded by another thread meanwhile
+                try:
+                    model = CrossEncoder(
+                        model_name,
+                        device=device,
+                        local_files_only=True,
+                        cache_folder=str(cache_dir)
+                    )
+                except Exception:
+                    print(f"[candlekeep] ❌ Cross-encoder '{model_name}' not found locally in {cache_dir}. "
+                          f"Run ./scripts/setup.sh", file=sys.stderr)
+                    sys.exit(1)
 
-        _cross_encoder_key = key
+                # Workaround: torch ≥2.10 float32 matmul NaN on CPU (macOS ARM).
+                # Promote to float64 on CPU where the issue manifests.
+                if device == "cpu":
+                    model.model = model.model.to(torch.float64)
+
+                _cross_encoder, _cross_encoder_key = model, key
     return _cross_encoder
 
 
@@ -62,8 +65,9 @@ def rerank_results(
         return results
 
     model = _get_cross_encoder(model_name, device)
-    pairs = [(query, r.text) for r in results]
-    scores = model.predict(pairs)
+    # Arcane Recall windows carry the unstitched text the reranker was calibrated on.
+    pairs = [(query, r.metadata.get("_rerank_text", r.text)) for r in results]
+    scores = call_in_slices(model.predict, pairs, getattr(model, "device", device))
 
     reranked = []
     for result, score in zip(results, scores):

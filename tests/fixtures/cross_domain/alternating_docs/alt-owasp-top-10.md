@@ -1,5 +1,5 @@
 ---
-title: OWASP Top 10 Vulnerabilities: Prevention Techniques
+title: "OWASP Top 10 Vulnerabilities: Prevention Techniques"
 description: A technical guide to understanding and mitigating the most critical web application security risks.
 keywords: [OWASP, web application security, vulnerability, injection, authentication, sensitive data exposure, cross-site scripting, security misconfiguration, using components with known vulnerabilities, insufficient logging and monitoring]
 category: engineering

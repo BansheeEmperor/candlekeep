@@ -304,3 +304,4 @@ There are several strategies for handling schema evolution in a data pipeline:
    {
      "namespace": "example.avro",
      "type":
+   ```

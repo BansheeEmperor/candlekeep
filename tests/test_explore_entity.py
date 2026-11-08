@@ -67,7 +67,7 @@ def test_get_stats_includes_graph_section(tmp_path):
          patch.object(_mod, "get_store") as mock_store, \
          patch("candlekeep.database.graph_store.get_graph_store", return_value=gs):
         mock_store.return_value.get_stats.return_value = mock_stats
-        result = _mod.get_stats.fn()
+        result = _mod.get_stats()
 
     assert "Entity Co-occurrence Graph" in result
     assert "2" in result

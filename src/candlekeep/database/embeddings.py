@@ -3,6 +3,7 @@ import threading
 from collections import OrderedDict
 from sentence_transformers import SentenceTransformer
 from candlekeep.config import Settings, EMBEDDING_MODELS, EmbeddingModel
+from candlekeep.model_lock import call_in_slices, model_call_lock
 
 
 class EmbeddingManager:
@@ -42,26 +43,29 @@ class EmbeddingManager:
             sys.exit(1)
 
         trust_remote_code = model_name == "nomic"
-        self._model = SentenceTransformer(
-            model_id,
-            cache_folder=str(cache_dir),
-            trust_remote_code=trust_remote_code,
-            local_files_only=True,
-            device=self.settings.device,
-        )
+        with model_call_lock(self.settings.device):
+            if self._model is not None and self._current_model == model_id:   # another thread loaded it meanwhile
+                return self._model
+            model = SentenceTransformer(
+                model_id,
+                cache_folder=str(cache_dir),
+                trust_remote_code=trust_remote_code,
+                local_files_only=True,
+                device=self.settings.device,
+            )
         
-        # Promote to float64 on CPU for better determinism and to match reranker precision
-        if self.settings.device == "cpu":
-            try:
-                import torch
-                self._model.to(torch.float64)
-            except Exception as e:
-                # Fallback to float32 if conversion fails (e.g. meta tensors in CI)
-                import sys
-                print(f"[candlekeep] ⚠ Could not promote embedding model to float64: {e}. "
-                      f"Continuing with float32.", file=sys.stderr)
-            
-        self._current_model = model_id
+            # Promote to float64 on CPU for better determinism and to match reranker precision
+            if self.settings.device == "cpu":
+                try:
+                    import torch
+                    model.to(torch.float64)
+                except Exception as e:
+                    # Fallback to float32 if conversion fails (e.g. meta tensors in CI)
+                    import sys
+                    print(f"[candlekeep] ⚠ Could not promote embedding model to float64: {e}. "
+                          f"Continuing with float32.", file=sys.stderr)
+
+            self._model, self._current_model = model, model_id
         return self._model
 
     def embed(self, texts: list[str] | str, model_name: EmbeddingModel | None = None, is_query: bool = False) -> list[list[float]]:
@@ -76,7 +80,7 @@ class EmbeddingManager:
             prefix = "search_query: " if is_query else "search_document: "
             texts = [prefix + t for t in texts]
         
-        embeddings = model.encode(texts, convert_to_numpy=True)
+        embeddings = call_in_slices(lambda batch: model.encode(batch, convert_to_numpy=True), texts, model.device)
         return embeddings.tolist()
 
     def embed_query(self, query: str, model_name: EmbeddingModel | None = None) -> list[float]:

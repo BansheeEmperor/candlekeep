@@ -1,5 +1,5 @@
 ---
-title: Elasticsearch: Indexing, Mappings, Analyzers, Queries, Aggregations, Sharding
+title: "Elasticsearch: Indexing, Mappings, Analyzers, Queries, Aggregations, Sharding"
 description: A comprehensive technical guide to Elasticsearch's core features and functionality, including indexing, mappings, analyzers, queries, aggregations, and sharding.
 keywords: 
   - elasticsearch

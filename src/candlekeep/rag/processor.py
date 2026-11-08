@@ -7,6 +7,20 @@ from candlekeep.config import Settings
 from candlekeep.database.interface import Chunk
 
 
+def bardic_prefix(meta: dict) -> str:
+    """Bardic Knowledge context prepended to every chunk before embedding.
+
+    Arcane Recall uses the same string to strip the repeated prefix when it
+    stitches neighbouring chunks into one result.
+    """
+    parts = []
+    if "title" in meta:
+        parts.append(f"Document: {meta['title']}")
+    if "description" in meta:
+        parts.append(f"Description: {meta['description']}")
+    return ". ".join(parts) + ".\n\n" if parts else ""
+
+
 @dataclass
 class ProcessResult:
     chunks: list[Chunk]
@@ -42,16 +56,7 @@ class DocumentProcessor:
         base_meta = {"source": str(path), "filename": path.name, "extension": path.suffix}
         base_meta.update(frontmatter)
 
-        context_prefix = ""
-        if self.settings.bardic_knowledge:
-            context_parts = []
-            if "title" in base_meta:
-                context_parts.append(f"Document: {base_meta['title']}")
-            if "description" in base_meta:
-                context_parts.append(f"Description: {base_meta['description']}")
-            context_prefix = ". ".join(context_parts)
-            if context_prefix:
-                context_prefix += ".\n\n"
+        context_prefix = bardic_prefix(base_meta) if self.settings.bardic_knowledge else ""
 
         text_chunks = [
             Chunk(
@@ -158,21 +163,25 @@ class DocumentProcessor:
             start = end - overlap if end < len(text) else len(text)
         return chunks
 
-    def process_directory(self, path: str | Path) -> ProcessResult:
-        """Process all supported files in a directory."""
-        path = Path(path)
+    def directory_files(self, path: str | Path) -> list[Path]:
+        """The files process_directory reads, in its order."""
+        return [f for f in Path(path).rglob("*") if f.is_file() and f.suffix.lower() in self.SUPPORTED_EXTENSIONS]
+
+    def process_directory(self, path: str | Path, exclude: frozenset[Path] = frozenset()) -> ProcessResult:
+        """Process all supported files in a directory, except those in exclude."""
         all_chunks: list[Chunk] = []
         total_captioned = 0
         total_from_cache = 0
-        for file in path.rglob("*"):
-            if file.is_file() and file.suffix.lower() in self.SUPPORTED_EXTENSIONS:
-                try:
-                    result = self.process(file)
-                    all_chunks.extend(result.chunks)
-                    total_captioned += result.images_captioned
-                    total_from_cache += result.images_from_cache
-                except Exception:
-                    continue
+        for file in self.directory_files(path):
+            if file in exclude:
+                continue
+            try:
+                result = self.process(file)
+                all_chunks.extend(result.chunks)
+                total_captioned += result.images_captioned
+                total_from_cache += result.images_from_cache
+            except Exception:
+                continue
         return ProcessResult(
             chunks=all_chunks,
             images_captioned=total_captioned,

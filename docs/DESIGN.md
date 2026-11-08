@@ -89,6 +89,8 @@ The `ingest` tool validates documents before accepting them. This ensures [Bardi
 
 **Decision:** Reject documents missing frontmatter, headers, or with extreme lengths. The agent gets specific error messages and can fix the document.
 
+The frontmatter must also parse with the processor's own rule: the processor drops a block it cannot read without a warning, so a document with, say, an unquoted colon in its title would be indexed with no title or description. Directory ingests apply the gate to each file and skip the failing ones, listing them in the result: before this, a directory bypassed the gate entirely.
+
 ### 3.6 Conditional Tool Registration
 
 Write tools (ingest, delete, repopulate) are destructive. On remote databases, they're hidden from the agent entirely — not just permission-denied at runtime, but invisible in the tool list.
@@ -125,6 +127,108 @@ Two implementation choices are worth recording:
 
 - **Tags as per-tag boolean keys.** ChromaDB's `$contains` matches document text only, not metadata, so whole-tag filtering goes through exact-match `$and` clauses over dedicated `tag:<name> = true` keys. This makes substring collisions impossible — a `boot` filter cannot match a `reboot` tag.
 - **A 0.5 cosine-similarity floor on recall.** A scaled-down [Relevance Ward](GLOSSARY.md#the-relevance-ward): returning no memory is better than returning a loosely related one.
+
+### 3.10 Stitched, Match-Anchored Search Results
+
+[Arcane Recall](GLOSSARY.md#arcane-recall) merges neighbouring chunks into windows, and every chunk carries its Bardic Knowledge prefix plus the chunker's overlap with its neighbour. Concatenating chunks verbatim repeated the document header once per chunk and duplicated the overlap text. The `search` tool's fixed-length view also started at the top of the window — usually the header and the context before the match — so the matched passage often fell outside what the agent received.
+
+**Decision:** Keep the prefix in the embeddings, where it helps ranking, but strip it at presentation time. Windows keep the header once and drop chunk overlaps, and each window records where its best-scoring matched chunk starts. The tool returns a title line plus `CANDLEKEEP_RESULT_CHARS` characters (default 1000) from the match. Because the duplication is gone, the same character budget carries more of the document, which is what allows a larger default budget without a proportional increase in output size. This per-result view is now the `window` display; the default display is §3.15's.
+
+Stitching is for presentation only. The precise path's cross-encoder still scores each window as the unstitched join of its chunks, prefixes and overlaps kept. Its Relevance Ward (−10) was calibrated on that text. Scoring the stitched text instead moved logits across the Ward: on the router benchmark, precise precision fell from 87.4% to 82.3% and recall from 76.8% to 73.2%. With the unstitched text, the precise rankings match those before stitching on every query of the agent-view evaluation's suites (Research Diary Entry 61).
+
+### 3.11 Paginated Reads for Large Collections
+
+Several features read the entire collection at once: the BM25 index build, `list_documents`, `get_stats`, and the normalisation-map and ColBERT rebuilds. chromadb 1.5 introduced a hard limit — a single `get()` returning metadata for more than 32,766 records fails — so hybrid and explore search failed on every query once a collection crossed that size. Pinning an older chromadb would only hide the problem.
+
+**Decision:** Route every full-collection read through one paginated, self-healing helper with a fixed page size of 5,000 records, chosen from a page-size sweep as the middle of the fastest range and well below the limit.
+
+### 3.12 Tool Execution Off the Event Loop
+
+FastMCP 2 ran synchronous tools directly on the asyncio event loop, so one long-running tool call (ingesting a large directory, a graph or normalisation-map rebuild) made the HTTP server unresponsive to every other agent until it finished. FastMCP 3 runs synchronous tools in a thread pool.
+
+**Decision:** Require `fastmcp>=3.4.9,<4`. Tool outputs are unchanged. Running tools concurrently exposed an unlocked shared cache, so the BM25 index build now runs under a re-entrant lock with a generation check — a build that spans a cache clear (for example a self-heal reconnect) is redone rather than cached. FastMCP 4 (built on MCP SDK v2) was evaluated and produced identical outputs, but it changes session semantics through its sessionless protocol mode and is left for a separate upgrade.
+
+### 3.13 Rate-Limit Identity in Stateless HTTP
+
+The rate limiter keyed on the MCP session. Stateless HTTP — required for uvicorn multi-worker deployments — has no session, so every request looked like a new client and limits never applied.
+
+**Decision:** Key on the `mcp-session-id` header when present; otherwise on an optional, client-supplied `X-Candlekeep-Agent` header; otherwise on the client IP. Agents that send the header get their own bucket, and agents that don't share one bucket per IP. The header is not authenticated: rate limits remain a fairness mechanism, not a security boundary.
+
+### 3.14 One Lock for Model Calls on MPS
+
+FastMCP 3 runs tools in a thread pool, and Candlekeep runs background threads (the normalisation rebuild after each ingest). PyTorch's MPS backend is not thread-safe. When two threads run a model at once the process aborts (a Metal command-buffer assertion) or segfaults. Reproduced: a search during an ingest, a search during the post-ingest rebuild, and 16 concurrent precise searches.
+
+**Decision:** on MPS, every model load, `encode` and `predict` holds one process-wide lock (`model_lock.py`). A plain lock held for a whole call let one ingest stall every search for its full embedding (6 s for 2,866 chunks, growing with ingest size). So long calls run in slices of 128 inputs, one lock hold per slice, in the model's own length order. That keeps the batches it builds, and on the Centurion corpus every embedding and score, bitwise identical. The lock hands over first-come, first-served, so a waiting search runs before the ingest's next slice. CPU and CUDA calls take no lock. Measured effect: Research Diary Entry 62.
+
+### 3.15 One Display Budget per Search, Spent on the Answer
+
+Each search result is an Arcane Recall window, typically 2,500 characters, and the search tool used to show each one from its matched chunk, 1,000 characters at most. With that view, round 2 of the agent-view evaluation found the agent shown 34% of the answer facts that the windows held 80% of. Most of the missing facts sat in the top document: before its match point, further down, or outside its window (Research Diary Entry 63).
+
+**Decision:** the search tool spends one budget of 4,000 displayed characters per search of 5 results (`rag/display.py`); a search for more results gets proportionally more. With a fixed 4,000, 10-result BEIR-NF searches showed less gold text than the per-result view (up to 10,000 characters there).
+- The top document is read as a whole, from the chunks Arcane Recall already fetches.
+- Its passages are chosen by query words, section leads and position, and the top result's matched chunk is always shown.
+- Every other document gets a 200-character teaser.
+
+The constants were chosen on half of the evaluation's questions and checked on the other half.
+- **Facts shown, hybrid / precise / explore:** 75% / 77% / 76% on the held-out questions, against 29% / 29% / 32% for the per-result view.
+- **Unchanged:** the share of searches that show a gold document.
+- **Gold-document text:** 3.5 times as much on the cross-domain suites (Entry 64).
+
+**Confirmed in a pre-registered evaluation.** Round 3 of the agent-view evaluation, on a fresh ingest, compared this display (`fe89134`) with the per-result view. Its protocol and data are kept outside this repository (Research Diary Entries 63–65).
+
+| Measure | Per-result view | This display |
+|---|---|---|
+| Answer facts shown, 32 held-out CEN questions | 29% | 75% (+46 points, 95% CI +34 to +58) |
+| Questions with every fact shown, same 32 | 2 | 16 |
+| Complete answers, majority of three blind judges, 76 questions | 9 | 35 |
+| Gold passage visible, CEN-G hybrid | 0.716 | 0.866 |
+
+- **Unchanged:** rankings and latency (within 8 ms at p50).
+- **Gold-document text:** no suite or path loses any.
+- **Budget:** displayed text never exceeds it.
+- **Trade-offs** (§16 and §18 of the protocol):
+  - a gold document ranked 2nd to 5th behind a wrong top result gets only a teaser;
+  - on multi-hop questions, supporting documents other than the top one get about half the text;
+  - queries without an answer get more text;
+  - one judged answer lost content the per-result view showed.
+
+The per-result view remains available as `CANDLEKEEP_RESULT_DISPLAY=window`.
+
+### 3.16 The Freynan Mirror: Budget by Relevance, Not Rank
+
+§3.15's display split the budget by document rank: weight 0.1^k, so the top document took nearly all of it. When the top result was the wrong document and a gold one sat at ranks 2 to 5, that gold document got a 200-character teaser. Searches without an answer still filled the budget.
+
+**Decision:** each document's share follows its relevance. Documents that are not relevant enough get none.
+- **Relevance:** the query's cosine to the document's best stored chunk embedding. It costs nothing at query time, because Arcane Recall already fetches every chunk embedding of each result's document.
+- **Floor:** the higher of an absolute floor (`CANDLEKEEP_RESULT_MIN_RELEVANCE`, 0.60) and the most relevant document's score minus a gap (`CANDLEKEEP_RESULT_RELEVANCE_GAP`, 0.15). Documents below it get nothing.
+- **Split:** above the floor, weight 0.05 + 0.95 × ((r − floor) / (r_max − floor))², so documents of almost equal relevance get almost equal shares.
+- **Empty search:** when no document reaches the absolute floor, only the top result's matched chunk is shown.
+- **Without scores:** a result without stored embeddings falls back to the rank split.
+
+**Why this score.** The fused RRF score cannot carry a budget. It takes about two values: roughly 0.033 when both retrievers return a result and 0.016 when one does. The document cosine separates answerable from unanswerable searches with an AUC of 0.98 (Research Diary Entry 66).
+
+**Why both floors.**
+- **Absolute floor alone:** its level does not transfer across question sets. The fresh set's unanswerable questions were written as near misses and score like real answers.
+- **Relative floor alone:** it keeps the noise of unanswerable searches.
+
+**Evidence** (simulator, held-out questions, against §3.15; Entry 67):
+
+| Measure | Rank split | Freynan Mirror |
+|---|---|---|
+| Answer facts shown, fresh question set | 69.9% | 72.4% |
+| Questions with every fact shown | 119 | 124 |
+| Facts when the top result is wrong and a gold document is at ranks 2–5 (17 searches) | 39% | 77% |
+| Multi-document questions showing every supporting document | 50% | 58% |
+| Characters shown on unanswerable searches, earlier question sets | 3,088 | 1,148 |
+| Searches showing a gold document | 85.0% | 84.7% |
+
+- **Port check:** the server makes the simulator policy's exact choices on all 4,551 cached searches.
+- **Pilot:** through MCP on a fresh ingest, answer facts shown were 76% / 67% / 75% (hybrid / precise / explore) on the fresh held-out questions.
+
+**Trade-offs.**
+- The floors hide every gold document in 18 of 3,869 answerable searches: 13 on BEIR-NF, 4 on CD-ALT, 1 on BEIR-SF. In return, they cut the output of 291 of 472 unanswerable searches to one matched chunk.
+- Short literal queries embed poorly, so their gold documents can fall below the absolute floor. Exempting lexical queries from it recovered the CD-ALT cases but lost others, so the rule was not adopted (Entry 67).
+- The absolute floor is on the embedding model's cosine scale; 0.60 was chosen with `bge-small`.
 
 ## 4. Techniques Evaluated
 

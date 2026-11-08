@@ -1,5 +1,5 @@
 ---
-title: The Essence of Terroir: Exploring the Art of Winemaking
+title: "The Essence of Terroir: Exploring the Art of Winemaking"
 description: Delve into the captivating world of winemaking, where the unique characteristics of a region, known as terroir, shape the flavor and quality of each bottle.
 keywords: [winemaking, terroir, viticulture, grape growing, wine regions]
 category: general

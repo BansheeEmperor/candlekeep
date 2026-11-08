@@ -163,6 +163,22 @@ python -c "import secrets; print(secrets.token_urlsafe(32))"
 CANDLEKEEP_MCP_TOKEN=your-token uvicorn candlekeep.mcp.server:app --host 0.0.0.0 --port 8111
 ```
 
+The ASGI app is stateless (no MCP sessions), so per-agent rate limiting needs an identity: send an `X-Candlekeep-Agent` header from each agent. Agents without it share one rate-limit bucket per client IP.
+
+```json
+{
+  "mcpServers": {
+    "candlekeep": {
+      "url": "http://localhost:8111/mcp",
+      "headers": {
+        "Authorization": "Bearer your-token-here",
+        "X-Candlekeep-Agent": "agent-1"
+      }
+    }
+  }
+}
+```
+
 FastMCP does not support HTTPS natively. For deployments where the server is not on the same host as the agents, TLS termination via a reverse proxy is the accepted approach. Configuration of the reverse proxy is out of scope for Candlekeep.
 
 ### stdio mode

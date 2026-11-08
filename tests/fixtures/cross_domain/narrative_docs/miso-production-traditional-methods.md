@@ -1,5 +1,5 @@
 ---
-title: The Timeless Art of Miso Production: Traditional Methods Revealed
+title: "The Timeless Art of Miso Production: Traditional Methods Revealed"
 description: Explore the centuries-old craft of miso production, delving into the rich history, intricate processes, and cultural significance of this beloved Japanese ingredient.
 keywords: [miso, fermentation, traditional methods, Japanese cuisine, soybean, koji]
 category: general

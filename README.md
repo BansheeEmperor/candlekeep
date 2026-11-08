@@ -15,6 +15,7 @@ A RAG knowledge base server that gives AI agents the power to search, retrieve, 
 - [**The Rosetta Seal**](docs/GLOSSARY.md#the-rosetta-seal) — Corpus-derived BM25 token normalisation map that bridges surface-form variants (`crossencoder` ↔ `cross-encoder`), rebuilt automatically in the background after each ingest
 - [**Divine Insight**](docs/GLOSSARY.md#cross-encoder-reranking) — Cross-encoder reranking for when precision matters more than speed
 - [**The Relevance Ward**](docs/GLOSSARY.md#the-relevance-ward) — Results below a [configured threshold](docs/ARCHITECTURE.md#tuned-parameters-reference) are filtered, so the library says "I don't know" instead of guessing
+- [**The Freynan Mirror**](docs/GLOSSARY.md#the-freynan-mirror) — The search output's budget is split by each document's relevance, not its rank; documents below a relevance floor are left out
 - **True Sight** — Images in PDFs and markdown are captioned at ingestion via VLM, making diagram details searchable
 
 ## Features
@@ -22,6 +23,7 @@ A RAG knowledge base server that gives AI agents the power to search, retrieve, 
 - **[Adaptive Search Routing](docs/ARCHITECTURE.md#the-three-roads)**: Three paths — `hybrid` (BM25+Vector), `precise` (Reranked), and `explore` ([Divination](docs/GLOSSARY.md#divination) — entity expansion)
 - **True Sight**: Opt-in vision captioning for PDFs and markdown images — deployment topologies, benchmark charts, and architecture diagrams become searchable
 - **Statistical Rigor**: Validated against **The Centurion Set** (100+ multi-category queries)
+- **[Answer-Focused Results](docs/DESIGN.md#315-one-display-budget-per-search-spent-on-the-answer)**: In a pre-registered evaluation, agents saw 75% of the facts a complete answer needs, against 29% with per-result excerpts, and blind judges rated 35 of 76 outputs complete, against 9
 - **Quality Gate**: Documents must have frontmatter and structure to enter the library
 - **Embedding Protection**: Auto-detects model mismatch on remote databases
 - **15 MCP Tools**: Search, ingest, critique, generate docs, agent memory, and more
@@ -115,7 +117,7 @@ See [Setup Guide](docs/SETUP.md) for auth configuration and production deploymen
 
 ## MCP Tools
 
-- **search** — Semantic search with adaptive routing (`simple` 22–36ms, `precise` ~1550ms)
+- **search** — Semantic search with adaptive routing (`hybrid`, `precise`, `explore`). It spends one budget per search (4,000 characters for 5 results) on the passages of the top document that answer the question, and shows the other results as short teasers
 - **list_documents** — List all indexed tomes
 - **get_stats** — Library statistics
 - **critique_document** — Check document quality before ingestion
@@ -138,17 +140,15 @@ Access to write tools is managed by your database permissions (configured via `C
 ## Testing
 
 ```bash
-# Unit tests — no database required (~1.4s)
-pytest tests/test_router.py tests/test_quality_gate.py tests/test_arcane_recall_unit.py \
-       tests/test_protection.py tests/test_processor.py tests/test_search.py \
-       tests/test_providers.py
+# Unit tests — no database required
+pytest -m unit
 
 # Benchmarks — requires local ChromaDB on localhost:8000
 ./scripts/start_chroma.sh
 pytest tests/test_router_benchmark.py -v -s
 ```
 
-59 unit tests covering router, quality gate, chunk expansion, embedding protection, document processing, and LLM/True Sight providers. Benchmark tests include regression assertions that fail if precision or content match drops below 80%.
+Unit tests cover the router, quality gate, chunk expansion and stitching, embedding protection, document processing, paginated reads, the entity graph, rate limiting, and LLM/True Sight providers. Benchmark tests include regression assertions that fail if precision or content match drops below 80%.
 
 ## Requirements
 

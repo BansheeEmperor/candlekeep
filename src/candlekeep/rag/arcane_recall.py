@@ -5,6 +5,10 @@ Retrieve small chunks but return expanded parent context.
 from typing import List, Set, Dict, Tuple
 import numpy as np
 from candlekeep.database.interface import VectorDatabase, SearchResult
+from candlekeep.rag.processor import bardic_prefix
+
+# Shortest suffix/prefix match treated as chunker overlap when stitching.
+_MIN_OVERLAP = 16
 
 
 def calculate_cosine_similarity(vec1: List[float], vec2: List[float]) -> float:
@@ -12,6 +16,71 @@ def calculate_cosine_similarity(vec1: List[float], vec2: List[float]) -> float:
     a = np.array(vec1)
     b = np.array(vec2)
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+
+def _doc_relevance(query_embedding, embeddings_by_source: dict) -> Dict[str, float]:
+    """{source: the query's cosine to the source's best stored chunk embedding}; sources without
+    stored embeddings are left out."""
+    out: Dict[str, float] = {}
+    if query_embedding is None:
+        return out
+    q = np.asarray(query_embedding, dtype=float)
+    qn = float(np.linalg.norm(q))
+    if qn == 0:
+        return out
+    for source, emb in embeddings_by_source.items():
+        if not isinstance(emb, dict) or not emb:
+            continue
+        m = np.asarray(list(emb.values()), dtype=float)
+        if m.ndim != 2 or m.shape[1] != q.shape[0]:
+            continue
+        norms = np.linalg.norm(m, axis=1)
+        ok = norms > 0
+        if ok.any():
+            out[source] = float(np.max(m[ok] @ q / (norms[ok] * qn)))
+    return out
+
+
+def _overlap(prev: str, nxt: str, max_k: int) -> int:
+    """Length of the longest suffix of prev that is a prefix of nxt (0 if < _MIN_OVERLAP)."""
+    for k in range(min(len(prev), len(nxt), max_k), _MIN_OVERLAP - 1, -1):
+        if prev.endswith(nxt[:k]):
+            return k
+    return 0
+
+
+def _stitch_parts(doc_chunks: dict, indices: List[int], max_overlap: int) -> Tuple[str, str, Dict[int, int]]:
+    """Join chunks into one text: (header, text, {chunk index: where its content starts in text}).
+
+    The Bardic Knowledge prefix (repeated on every chunk for embedding) is kept
+    once at the top as the header, and the fixed-size chunker's overlap between
+    neighbours is removed.
+    """
+    parts = [(i, doc_chunks[i]) for i in indices if i in doc_chunks]
+    if not parts:
+        return "", "", {}
+    prefix = bardic_prefix(parts[0][1].metadata)
+    header = prefix if prefix and parts[0][1].text.startswith(prefix) else ""
+    text, starts = header, {}
+    for n, (i, chunk) in enumerate(parts):
+        body = chunk.text[len(prefix):] if prefix and chunk.text.startswith(prefix) else chunk.text
+        k = _overlap(text, body, max_overlap) if n else 0
+        if k:
+            starts[i] = len(text) - k
+            text += body[k:]
+        else:
+            if n:
+                text += "\n\n"
+            starts[i] = len(text)
+            text += body
+    return header, text, starts
+
+
+def _stitch(doc_chunks: dict, indices: List[int], match_idx: int, max_overlap: int) -> Tuple[str, int]:
+    """Join a window's chunks into one text (see _stitch_parts). Returns (text, offset
+    where the matched chunk's content starts)."""
+    header, text, starts = _stitch_parts(doc_chunks, indices, max_overlap)
+    return text, starts.get(match_idx, len(header))
 
 
 def expand_results(
@@ -60,6 +129,10 @@ def expand_results(
     if query:
         query_embedding = db.embed_query(query)
 
+    # Each document's relevance for the search display's budget split (Freynan Mirror,
+    # rag/display.py): the query's cosine to the document's best stored chunk embedding.
+    doc_relevance = _doc_relevance(query_embedding, stored_embeddings_by_source)
+
     for source, source_results in results_by_source.items():
         doc_chunks = chunks_by_source[source]
         
@@ -95,24 +168,25 @@ def expand_results(
                     else:
                         break
             
-            source_windows.append((sorted(list(current_window)), res.score, res.metadata))
+            source_windows.append((sorted(list(current_window)), res.score, res.metadata, idx))
 
         # Merge overlapping windows for this source
         if source_windows:
             source_windows.sort(key=lambda x: x[0][0]) # Sort by start index
             
-            curr_indices, curr_score, curr_meta = source_windows[0]
-            for next_indices, next_score, next_meta in source_windows[1:]:
+            curr_indices, curr_score, curr_meta, curr_match = source_windows[0]
+            for next_indices, next_score, next_meta, next_match in source_windows[1:]:
                 # If they overlap or are adjacent
                 if next_indices[0] <= curr_indices[-1] + 1:
-                    # Merge indices
+                    # Merge indices; the window is anchored on its best-scoring match
                     combined = sorted(list(set(curr_indices) | set(next_indices)))
                     curr_indices = combined
-                    curr_score = max(curr_score, next_score)
+                    if next_score > curr_score:
+                        curr_score, curr_match = next_score, next_match
                 else:
-                    all_windows.append((curr_indices, curr_score, curr_meta, source))
-                    curr_indices, curr_score, curr_meta = next_indices, next_score, next_meta
-            all_windows.append((curr_indices, curr_score, curr_meta, source))
+                    all_windows.append((curr_indices, curr_score, curr_meta, source, curr_match))
+                    curr_indices, curr_score, curr_meta, curr_match = next_indices, next_score, next_meta, next_match
+            all_windows.append((curr_indices, curr_score, curr_meta, source, curr_match))
 
     # ... (rest of window processing from previous block)
     # Global sort across all sources and limit to n_results
@@ -120,12 +194,23 @@ def expand_results(
     
     expanded = []
     seen_texts = set()
-    
-    for indices, score, meta, source in all_windows:
+    overlap = getattr(getattr(db, "settings", None), "chunk_overlap", None)
+    max_overlap = overlap + 50 if isinstance(overlap, int) else 150
+    documents = {}      # source -> (document body, {chunk index: start in the body}), stitched once
+
+    def document(source):
+        if source not in documents:
+            doc_chunks = chunks_by_source[source]
+            header, text, starts = _stitch_parts(doc_chunks, sorted(doc_chunks), max_overlap)
+            documents[source] = (text[len(header):], {i: s - len(header) for i, s in starts.items()})
+        return documents[source]
+
+    for indices, score, meta, source, match_idx in all_windows:
         if len(expanded) >= n_results:
             break
             
         doc_chunks = chunks_by_source.get(source, {})
+        match_offset, header = 0, ""
         if not doc_chunks:
             # Fallback for orphan results (though should not happen in normal flow)
             # Find the original result text if possible
@@ -138,17 +223,39 @@ def expand_results(
                 # Let's handle the empty case gracefully.
                 expanded_text = ""
         else:
-            context_parts = [doc_chunks[i].text for i in indices if i in doc_chunks]
-            expanded_text = "\n\n".join(context_parts)
+            header, expanded_text, chunk_starts = _stitch_parts(doc_chunks, indices, max_overlap)
+            match_offset = chunk_starts.get(match_idx, len(header))
         
         if expanded_text in seen_texts:
             continue
         seen_texts.add(expanded_text)
         
+        meta = meta.copy()
+        # Where the best-scoring matched chunk starts in text; the search tool
+        # starts its truncated view here instead of at the window's first chunk.
+        meta["_match_offset"] = match_offset
+        # The window as the cross-encoder scores it: the chunk texts joined
+        # unstitched, prefixes and overlaps kept. The reranker and its Relevance
+        # Ward (router.MIN_RERANKER_SCORE) were calibrated on this text;
+        # scoring the shorter stitched text moves logits across the Ward.
+        meta["_rerank_text"] = ("\n\n".join(doc_chunks[i].text for i in indices if i in doc_chunks)
+                                if doc_chunks else expanded_text)
+        first = next((i for i in indices if i in doc_chunks), None)
+        if first is not None:
+            # The whole document stitched like a window, and where this window's body lies in it:
+            # the search tool's display (rag/display.py) can show passages of the top document
+            # outside its window. The window body equals the span when its chunks are contiguous.
+            body, doc_starts = document(source)
+            start = doc_starts[first]
+            meta["_doc_text"] = body
+            meta["_doc_span"] = (start, start + len(expanded_text) - len(header))
+            meta["_prefix_len"] = len(header)
+        if source in doc_relevance:
+            meta["_doc_relevance"] = doc_relevance[source]
         expanded.append(SearchResult(
             text=expanded_text,
             score=score,
-            metadata=meta.copy(),
+            metadata=meta,
             doc_id=source
         ))
 

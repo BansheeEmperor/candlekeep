@@ -1,5 +1,5 @@
 ---
-title: Container Security: Comprehensive Guide
+title: "Container Security: Comprehensive Guide"
 description: Comprehensive technical documentation on container security, including image scanning, runtime protection, seccomp, AppArmor, rootless containers, and supply chain security.
 keywords: 
   - container security
@@ -468,3 +468,4 @@ profile nginx-container flags=(attach_disconnected,mediate_deleted) {
   deny /sys/fs/cg[^r]*/** wklx,
   deny /sys/firmware/** rd,
   deny /sys/kernel/debug/** rwklx
+```

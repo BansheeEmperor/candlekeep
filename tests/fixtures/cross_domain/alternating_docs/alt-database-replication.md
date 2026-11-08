@@ -1,5 +1,5 @@
 ---
-title: Database Replication: Ensuring Data Availability and Consistency
+title: "Database Replication: Ensuring Data Availability and Consistency"
 description: An in-depth exploration of database replication techniques, their benefits, and implementation strategies.
 keywords: [database, replication, high availability, failover, data consistency, sharding, master-slave, multi-master]
 category: engineering
