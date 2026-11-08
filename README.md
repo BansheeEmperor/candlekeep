@@ -22,6 +22,7 @@ A RAG knowledge base server that gives AI agents the power to search, retrieve, 
 - **[Adaptive Search Routing](docs/ARCHITECTURE.md#the-three-roads)**: Three paths — `hybrid` (BM25+Vector), `precise` (Reranked), and `explore` ([Divination](docs/GLOSSARY.md#divination) — entity expansion)
 - **True Sight**: Opt-in vision captioning for PDFs and markdown images — deployment topologies, benchmark charts, and architecture diagrams become searchable
 - **Statistical Rigor**: Validated against **The Centurion Set** (100+ multi-category queries)
+- **[Answer-Focused Results](docs/DESIGN.md#315-one-display-budget-per-search-spent-on-the-answer)**: In a pre-registered evaluation, agents saw 75% of the facts a complete answer needs, against 29% with per-result excerpts, and blind judges rated 35 of 76 outputs complete, against 9
 - **Quality Gate**: Documents must have frontmatter and structure to enter the library
 - **Embedding Protection**: Auto-detects model mismatch on remote databases
 - **15 MCP Tools**: Search, ingest, critique, generate docs, agent memory, and more
@@ -115,7 +116,7 @@ See [Setup Guide](docs/SETUP.md) for auth configuration and production deploymen
 
 ## MCP Tools
 
-- **search** — Semantic search with adaptive routing (`hybrid`, `precise`, `explore`); each result starts at the matched passage
+- **search** — Semantic search with adaptive routing (`hybrid`, `precise`, `explore`). It spends one budget per search (4,000 characters for 5 results) on the passages of the top document that answer the question, and shows the other results as short teasers
 - **list_documents** — List all indexed tomes
 - **get_stats** — Library statistics
 - **critique_document** — Check document quality before ingestion

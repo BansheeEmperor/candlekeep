@@ -3677,3 +3677,128 @@ With both fixes, three overlap runs (14,543 searches during re-ingests) had 0 fa
 - On MPS, the startup calibration of the precise-path semaphore now times serialised reranks, so the size it picks (3–9 across starts) only decides where requests queue.
 - The post-ingest Rosetta Seal rebuild still takes the lock to build a map that BM25 does not apply (ARCHITECTURE, Rosetta Seal).
 - A deployment that forks after importing torch would inherit the lock; uvicorn workers are spawned.
+
+## Entry 63: Answer Facts in the Result vs Shown to the Agent
+
+**Date:** October 20, 2026  
+**Focus:** Where the answer is lost: in retrieval, or between the result and the tool output
+
+### Method (`scripts/eval_agent_view/answer_spans.py`)
+
+- **Facts.** For each of the 76 CEN-A queries, a blind annotator split the reference answer into the atomic facts a complete answer needs, and quoted verbatim where the gold document states each one. Annotators saw only the question, the reference answer and the gold document, never a search output. An independent verifier checked every fact and quote and added missing facts.
+- **Fixture.** The facts are in `tests/fixtures/cen_answer_spans.json`: 467 document-supported facts, of which the verifiers dropped 3 and added 4. 625 of the 626 quotes occur verbatim in their document; the remaining one was dropped.
+- **Stages.** A fact is *in the result* when one of its quotes is inside the windows the search returns (Layer 1 text of the top results, before any display budget). It is *shown* when the quote is inside the tool output the agent reads (Layer 2).
+- **Matching.** Text is normalised (escapes, emphasis markers, case and whitespace removed). A quote counts when every 40-character piece of it occurs, so a quote that crosses a chunk boundary is still found in A's windows, which repeat each chunk's prefix and overlap.
+
+### The corpus caps the answer
+
+- 10 of the 76 queries have no reference fact that the gold document states. They are version- or detail-specific questions whose gold document covers only the general topic.
+- 27 more lack some of their facts.
+- 97 of the 564 reference facts are not in the corpus at all.
+
+These 10 queries are left out below (66 queries). No retrieval change can make them answerable, and the judges' `full` counts in the agent-view evaluation (`docs/AGENT_VIEW_EVALUATION_R2.md`, J1: 76 queries) include them in their denominator.
+
+### Results, round 2 outputs (`tests/results/agent_view_eval_r2/answer_visibility/`, CEN, 66 queries)
+
+| Path | Facts in result | Facts shown, A / B′ / C′ / B′ at 1,700 | Queries with every fact in the result | Every fact shown, A / B′ / C′ / B′ at 1,700 |
+|---|---|---|---|---|
+| hybrid | 80% | 11% / 34% / 42% / 42% | 47 | 2 / 7 / 9 / 11 |
+| precise | 84% | 11% / 26% / 36% / 32% | 53 | 2 / 3 / 7 / 5 |
+| explore | 54% | 12% / 34% / 42% / 40% | 14 | 1 / 4 / 8 / 7 |
+
+- **Retrieval mostly succeeds.** The result holds 80% of the needed facts (hybrid), and every fact for 47 of the 66 queries. It is the same for all states, because their rankings and windows are identical.
+- **The display loses most of it.** B′ shows 43% of the facts that are in its result (A 14%, C′ 52%). Of the 47 queries whose result holds the whole answer, the agent sees the whole answer for 7 with B′.
+- **Explore's result holds fewer facts** (54%), because explore reserves result slots for graph expansion, and those slots stay empty (protocol §16).
+- **CEN-G** gives the same picture: hybrid 81% in result; shown A 12%, B′ 34%, C′ 41%.
+- **Controls behave as expected.** The B′ rerun and C′ with the extra budget off equal B′ exactly. A with an empty graph equals A. At 500 characters B′ shows 19%.
+
+### Agreement with the judges (J1, CEN hybrid)
+
+The facts measure and the judges agree in direction.
+- **B′:** of the 7 queries with every fact shown, 5 were judged `full`. Of the 20 with no fact shown, 2 were judged `full`.
+- **C′:** of 9 with every fact shown, 5 were judged `full`.
+
+The measure is stricter than the judges where an output states a fact in other words or from another document. It is more lenient where a fact's quote is shown but the judge wanted more context.
+
+### What it means
+
+The bottleneck is between the result and the tool output, not in Arcane Recall or retrieval. The windows already hold most of the answer, and the 1,000-character view per result shows about a third of it. Better choice of what to show (C′: 34% → 42%) and more room (B′ at 1,700: 42%) help by similar amounts. Neither gets close to the 80% the result holds.
+
+## Entry 64: Display Policies, Searched in a Simulator and Checked on Held-Out Questions
+
+**Date:** October 23, 2026  
+**Focus:** How to show the agent more of the answer within 4,000 characters per search
+
+### Method
+
+- **Simulator.** `scripts/eval_agent_view/view_sim.py` replays round 2's searches (B′'s Layer 1 windows, the same as C′'s) under any display policy, without running Candlekeep. Playing back B′'s own display, it reproduces B′'s measured answer facts exactly (Entry 63) and its GoldText to 0.1 on every suite checked.
+- **Policy inputs.** A policy sees only what the server has when it renders: the query text, the path, and each result's window, offsets, score, title, document text and per-segment features. The features are lexical overlap, embedding cosine and cross-encoder logit. No benchmark labels are passed.
+- **Search.** Six explorers each worked one axis on the dev half of the queries (odd numbers): the number of results shown, the split of the budget across ranks, placement around the match point, passage selection with cheap features, passage selection with semantic features, and document-level effects. A combiner stacked the compatible ideas, and an auditor checked the shortlist for leakage, cap compliance, metric gaming and reproducibility; all six policies came out clean. The held-out half (even numbers) was run once, at the end. Policies are in `scripts/eval_agent_view/view_policies/`, and results in `tests/results/agent_view_eval_r2/view_sim/`.
+
+### Held-out results (32 CEN questions with answer facts; cap 4,000 displayed characters)
+
+| Policy | Cost at query time | Facts shown: hybrid / precise / explore | Complete answers | CD GoldText (hybrid) |
+|---|---|---|---|---|
+| B′ as shipped | — | 29% / 29% / 32% | 2 / 2 / 0 | 29.7 |
+| B′ at 1,700 per result | — | 40% / 37% / 39% | 4 / 4 / 1 | 49.3 |
+| `lead_teasers_both` (top result whole, 250-character teasers) | offsets only | 65% / 70% / 47% | 15 / 15 / 5 | 116.3 |
+| `win_select` (segments chosen by query words and structure, within the windows) | lexical, pure Python | 73% / 74% / 56% | 14 / 16 / 7 | 105.0 |
+| `ce_doc_thr` (cross-encoder selects segments) | cross-encoder per segment | 71% / 75% / 54% | 15 / 18 / 7 | 117.3 |
+| **`doc_select`** (as `win_select`, over the whole top document) | lexical, plus the document's chunks | **75% / 77% / 76%** | **16 / 18 / 16** | 104.5 |
+| `doc_select_ce` (plus cross-encoder ordering of documents) | cross-encoder per segment | 79% / 78% / 76% | 17 / 17 / 16 | 104.4 |
+
+- **Paired against B′** (95% bootstrap CI, wins/losses), `doc_select`: hybrid +0.46 [+0.34, +0.58], 24/0; precise +0.48 [+0.35, +0.60], 24/2; explore +0.44 [+0.34, +0.54], 26/1.
+- **Held-out matches dev.** On dev the same policy scored 74 / 74 / 72%. The dev-tuned constants did not shrink.
+- **Guards.** srcvis is unchanged (about 86%). MH support stays at its level. BEIR GoldText is at or above B′'s, whose own output runs up to 10,000 characters there.
+- **Size.** Mean output on CEN hybrid is 3,940 characters, against 2,675 for B′.
+
+### What each axis found
+
+- **Number of results.** Fewer results do not help once the top result is read well. One result loses the gold document on 8% of CEN queries and 19% of BEIR-SF queries. The best split keeps every result, but shows all except the first as short teasers.
+- **Budget split.** Top-heavy beats equal. Lead + teasers (a 200-character floor per document, the rest by 0.1^rank) wins 13 of 18 CEN cells. Equal division is the worst choice on BEIR.
+- **Placement.** The anchor matters more than the number of results.
+  - Starting at the window or document opening, plus a 300-character piece at the matched chunk, beats starting at the match.
+  - Top-result facts before the match point: B′ shows 1 of 32 (dev, hybrid), `doc_select` 29.
+  - Facts more than 1,000 characters past it: B′ shows 1 of 45, `doc_select` 45.
+- **Selection.** Choosing segments by query-word overlap and structure beats contiguous slices by 6 to 10 points. The structural signals are the section leads, the document opening and a code penalty.
+- **Document level.** Reading the top document, not only its window, is the largest single lever. It is worth +24 points on explore, whose windows are narrow because `explore_search` passes only its final hits to `expand_results`. `expand_results` already fetches every chunk of each result's document, so the data is there at display time.
+- **Semantic features.** They add little on top: the cross-encoder ordering adds +4 on hybrid. The price is a cross-encoder pass per search (40 to 125 ms on MPS) on paths that run none today.
+
+### Caveats
+
+- **Corpus coverage.** Answer facts exist only for CEN, so dev and held-out share one corpus. The CD and BEIR suites measure gold-document text, not answers.
+- **Constants.** `doc_select` has about 14 constants, 8 inherited from a dev-tuned explorer. Freeze them; do not re-tune.
+- **Cost on no-answer queries.** The policies fill the cap on adversarial queries too (hybrid 3,900 against B′'s 3,500 characters). There is no confidence gate.
+- **Simulation only.** The simulator covers display, not retrieval. An implementation in `server.py` has to reproduce these numbers on real runs before any formal round.
+
+### Erratum (October 25, 2026)
+
+The guard bullet above overstates BEIR. Averaged over SciFact and NFCorpus, `doc_select`'s BEIR GoldText is at B′'s level; per suite it is not. At the fixed 4,000-character cap, BEIR-NF hybrid and precise show less gold text than B′'s per-result view, by −12.7 [−17.7, −7.8] and −14.8 [−20.4, −9.4] shingles over all queries, while BEIR-SF is above it. B′'s view can show up to 10,000 characters on those 10-result searches. The committed files `tests/results/agent_view_eval_r2/view_sim/doc_select_*.json` held this when the entry was written. Entry 65 records the consequence: a budget that grows with the number of results.
+
+## Entry 65: The Answer-Focused Display in the Server, and Its Pilot
+
+**Date:** October 25, 2026  
+**Focus:** Porting Entry 64's `doc_select` into the search tool, and checking it through MCP
+
+### Implementation (branch `feat/answer-focused-display`, `b6dcbb1`, `fe89134`)
+
+- **Display.** `src/candlekeep/rag/display.py` implements the policy with its constants frozen.
+- **Arcane Recall.** `expand_results` already fetched every chunk of each result's document. It now also passes the document stitched from those chunks (`_doc_text`), each window's span in it (`_doc_span`) and the prefix length.
+- **Search tool.** It renders with the display by default (`CANDLEKEEP_RESULT_DISPLAY=focused`). `window` restores the per-result view.
+- **Budget.** `CANDLEKEEP_RESULT_BUDGET` (4,000) is for 5 results and grows with the number requested, to 8,000 for 10. At a fixed 4,000, 10-result BEIR-NF searches showed less gold-document text than the per-result view, whose output can reach 10,000 characters there: −12.7 shingles on hybrid, CI entirely below 0. At 8,000 every BEIR cell is above the per-result view.
+- **Port check.** `scripts/eval_agent_view/display_parity.py`: on all 4,212 cached searches the server's display makes exactly the simulator policy's choices.
+- **Edge case.** A document whose share fell under 150 characters is not shown, as in the simulator. When no document at all would be shown, the first is now shown whole; this changes none of the cached searches.
+
+### Pilot through MCP (`rounds/r3-pilot.json`, budget 4,000, fresh ingest)
+
+| Path | Facts shown (66 CEN questions) | Every fact shown | Simulator prediction |
+|---|---|---|---|
+| hybrid | 74% | 37 | 74% |
+| precise | 75% | 39 | 76% |
+| explore | 73% | 37 | 74% |
+
+- **Against B′ in round 2:** 34% / 26% / 34% of facts shown, with every fact shown for 7 / 3 / 4 questions.
+- **GPV on CEN-G hybrid:** 0.716 → 0.866 (2 queries lost, 12 gained).
+- **Latency:** p50 rose 0 to 8 ms; the most is on precise, where the top document is stitched and segmented for more candidates.
+
+Round 3 is pre-registered in `docs/AGENT_VIEW_EVALUATION_R3.md`.

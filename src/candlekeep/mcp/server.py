@@ -632,7 +632,23 @@ def search(
     if not results:
         return "No results found."
 
-    return "\n".join(_format_result(r, _settings.result_chars) for r in results)
+    return _render_results(query, results, n_results)
+
+
+def _render_results(query: str, results, n_results: int) -> str:
+    """The search tool's output for non-empty results, in the configured display."""
+    if _settings.result_display == "window":
+        return "\n".join(_format_result(r, _settings.result_chars) for r in results)
+    from candlekeep.rag.display import render_results
+    return render_results(query, results, _display_budget(n_results))
+
+
+def _display_budget(n_results: int) -> int:
+    """The focused display's budget: CANDLEKEEP_RESULT_BUDGET for the default 5 results, and
+    proportionally more for more. The per-result view showed up to 1,000 characters per result,
+    and a fixed 4,000 for 10 results showed less gold text than it on BEIR-NF (research diary
+    Entry 65, and the erratum to Entry 64)."""
+    return _settings.result_budget * max(n_results, 5) // 5
 
 
 def _format_result(r, budget: int) -> str:

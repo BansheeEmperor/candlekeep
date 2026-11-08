@@ -104,7 +104,14 @@ class Settings:
     # safe for such corpora.
     quality_max_words: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_QUALITY_MAX_WORDS", "10000")))
     
-    # Characters of each search result shown to the agent, starting at the matched chunk
+    # What the search tool shows: "focused" (one budget for the whole search, spent on the passages
+    # of the top document that match the question, the other results as short teasers;
+    # rag/display.py) or "window" (each result's window from its matched chunk, result_chars each)
+    result_display: str = field(default_factory=lambda: os.getenv("CANDLEKEEP_RESULT_DISPLAY", "focused").strip().lower())
+    # "focused": characters of displayed text per search of 5 results (titles, passages and gap
+    # markers); a search for more results gets proportionally more (8,000 for 10)
+    result_budget: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_RESULT_BUDGET", "4000")))
+    # "window": characters of each search result shown to the agent, starting at the matched chunk
     result_chars: int = field(default_factory=lambda: int(os.getenv("CANDLEKEEP_RESULT_CHARS", "1000")))
 
     # Personality

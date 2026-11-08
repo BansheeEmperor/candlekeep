@@ -132,7 +132,7 @@ Two implementation choices are worth recording:
 
 [Arcane Recall](GLOSSARY.md#arcane-recall) merges neighbouring chunks into windows, and every chunk carries its Bardic Knowledge prefix plus the chunker's overlap with its neighbour. Concatenating chunks verbatim repeated the document header once per chunk and duplicated the overlap text. The `search` tool's fixed-length view also started at the top of the window — usually the header and the context before the match — so the matched passage often fell outside what the agent received.
 
-**Decision:** Keep the prefix in the embeddings, where it helps ranking, but strip it at presentation time. Windows keep the header once and drop chunk overlaps, and each window records where its best-scoring matched chunk starts. The tool returns a title line plus `CANDLEKEEP_RESULT_CHARS` characters (default 1000) from the match. Because the duplication is gone, the same character budget carries more of the document, which is what allows a larger default budget without a proportional increase in output size.
+**Decision:** Keep the prefix in the embeddings, where it helps ranking, but strip it at presentation time. Windows keep the header once and drop chunk overlaps, and each window records where its best-scoring matched chunk starts. The tool returns a title line plus `CANDLEKEEP_RESULT_CHARS` characters (default 1000) from the match. Because the duplication is gone, the same character budget carries more of the document, which is what allows a larger default budget without a proportional increase in output size. This per-result view is now the `window` display; the default display is §3.15's.
 
 Stitching is for presentation only. The precise path's cross-encoder still scores each window as the unstitched join of its chunks, prefixes and overlaps kept. Its Relevance Ward (−10) was calibrated on that text. Scoring the stitched text instead moved logits across the Ward: on the router benchmark, precise precision fell from 87.4% to 82.3% and recall from 76.8% to 73.2%. With the unstitched text, the precise rankings match those before stitching on every query of the agent-view evaluation's suites (Research Diary Entry 61).
 
@@ -159,6 +159,40 @@ The rate limiter keyed on the MCP session. Stateless HTTP — required for uvico
 FastMCP 3 runs tools in a thread pool, and Candlekeep runs background threads (the normalisation rebuild after each ingest). PyTorch's MPS backend is not thread-safe. When two threads run a model at once the process aborts (a Metal command-buffer assertion) or segfaults. Reproduced: a search during an ingest, a search during the post-ingest rebuild, and 16 concurrent precise searches.
 
 **Decision:** on MPS, every model load, `encode` and `predict` holds one process-wide lock (`model_lock.py`). A plain lock held for a whole call let one ingest stall every search for its full embedding (6 s for 2,866 chunks, growing with ingest size). So long calls run in slices of 128 inputs, one lock hold per slice, in the model's own length order. That keeps the batches it builds, and on the Centurion corpus every embedding and score, bitwise identical. The lock hands over first-come, first-served, so a waiting search runs before the ingest's next slice. CPU and CUDA calls take no lock. Measured effect: Research Diary Entry 62.
+
+### 3.15 One Display Budget per Search, Spent on the Answer
+
+Each search result is an Arcane Recall window, typically 2,500 characters, and the search tool used to show each one from its matched chunk, 1,000 characters at most. With that view, round 2 of the agent-view evaluation found the agent shown 34% of the answer facts that the windows held 80% of. Most of the missing facts sat in the top document: before its match point, further down, or outside its window (Research Diary Entry 63).
+
+**Decision:** the search tool spends one budget of 4,000 displayed characters per search of 5 results (`rag/display.py`); a search for more results gets proportionally more. With a fixed 4,000, 10-result BEIR-NF searches showed less gold text than the per-result view (up to 10,000 characters there).
+- The top document is read as a whole, from the chunks Arcane Recall already fetches.
+- Its passages are chosen by query words, section leads and position, and the top result's matched chunk is always shown.
+- Every other document gets a 200-character teaser.
+
+The constants were chosen on half of the evaluation's questions and checked on the other half.
+- **Facts shown, hybrid / precise / explore:** 75% / 77% / 76% on the held-out questions, against 29% / 29% / 32% for the per-result view.
+- **Unchanged:** the share of searches that show a gold document.
+- **Gold-document text:** 3.5 times as much on the cross-domain suites (Entry 64).
+
+**Confirmed in a pre-registered evaluation.** Round 3 of the agent-view evaluation, on a fresh ingest, compared this display (`fe89134`) with the per-result view. Its protocol and data are kept outside this repository (Research Diary Entries 63–65).
+
+| Measure | Per-result view | This display |
+|---|---|---|
+| Answer facts shown, 32 held-out CEN questions | 29% | 75% (+46 points, 95% CI +34 to +58) |
+| Questions with every fact shown, same 32 | 2 | 16 |
+| Complete answers, majority of three blind judges, 76 questions | 9 | 35 |
+| Gold passage visible, CEN-G hybrid | 0.716 | 0.866 |
+
+- **Unchanged:** rankings and latency (within 8 ms at p50).
+- **Gold-document text:** no suite or path loses any.
+- **Budget:** displayed text never exceeds it.
+- **Trade-offs** (§16 and §18 of the protocol):
+  - a gold document ranked 2nd to 5th behind a wrong top result gets only a teaser;
+  - on multi-hop questions, supporting documents other than the top one get about half the text;
+  - queries without an answer get more text;
+  - one judged answer lost content the per-result view showed.
+
+The per-result view remains available as `CANDLEKEEP_RESULT_DISPLAY=window`.
 
 ## 4. Techniques Evaluated
 
